@@ -66,6 +66,12 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.SharedPhotoVideoCell2;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.UserCell;
+import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
+import org.telegram.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
+import org.telegram.ui.Components.blur3.drawable.color.BlurredBackgroundProvider;
+import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
+import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceBitmap;
+import org.telegram.ui.Components.blur3.utils.Blur3Utils;
 import org.telegram.ui.ContactsActivity;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.Gifts.GiftSheet;
@@ -76,10 +82,6 @@ import org.telegram.ui.Stories.StoriesController;
 import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.HashSet;
-import java.util.Objects;
-
-import uz.unnarsx.cherrygram.chats.ui.WindowBlurHelper;
-import uz.unnarsx.cherrygram.donates.BadgeHelper;
 
 public class ItemOptions {
 
@@ -139,6 +141,7 @@ public class ItemOptions {
     }
 
     public ActionBarPopupWindow actionBarPopupWindow;
+    private BlurredBackgroundSourceBitmap scrimBlur3SourceBitmap;
     private final float[] point = new float[2];
 
     private Runnable dismissListener;
@@ -148,9 +151,17 @@ public class ItemOptions {
     private boolean drawScrim = true;
 
     private boolean blur;
+    private boolean blurForMenu;
+
+    public ItemOptions setBlur(boolean blur, boolean blurForMenu) {
+        this.blur = blur;
+        this.blurForMenu = blurForMenu;
+        return this;
+    }
 
     public ItemOptions setBlur(boolean b) {
         this.blur = b;
+        this.blurForMenu = b;
         return this;
     }
 
@@ -188,7 +199,7 @@ public class ItemOptions {
     }
 
     private ItemOptions(BaseFragment fragment, View scrimView, boolean swipeback, boolean useScrollView, boolean shownFromBottom) {
-        if (fragment == null && fragment.getContext() == null) {
+        if (fragment.getContext() == null) {
             return;
         }
         fragment = downFragment(fragment);
@@ -210,10 +221,6 @@ public class ItemOptions {
     }
 
     private ItemOptions(ViewGroup container, Theme.ResourcesProvider resourcesProvider, View scrimView, boolean swipeback, boolean shownFromBottom, boolean useScrollView) {
-        this(container, resourcesProvider, scrimView, swipeback, shownFromBottom, useScrollView, false);
-    }
-
-    private ItemOptions(ViewGroup container, Theme.ResourcesProvider resourcesProvider, View scrimView, boolean swipeback, boolean shownFromBottom, boolean useScrollView, boolean fullyRounded) {
         if (container == null || container.getContext() == null) {
             return;
         }
@@ -226,7 +233,6 @@ public class ItemOptions {
         this.swipeback = swipeback;
         this.shownFromBottom = shownFromBottom;
         this.useScrollView = useScrollView;
-        this.fullyRounded = fullyRounded;
 
         init();
     }
@@ -245,7 +251,7 @@ public class ItemOptions {
     }
 
     private void init() {
-        lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert4, resourcesProvider, (swipeback ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_USE_SWIPEBACK : 0) | (shownFromBottom ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_SHOWN_FROM_BOTTOM : 0) | (!useScrollView ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_DONT_USE_SCROLLVIEW : 0), fullyRounded, fullyRounded ? 50 : 0) {
+        lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert4, resourcesProvider, (swipeback ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_USE_SWIPEBACK : 0) | (shownFromBottom ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_SHOWN_FROM_BOTTOM : 0) | (!useScrollView ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_DONT_USE_SCROLLVIEW : 0)) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 if (this == layout && maxHeight > 0) {
@@ -319,23 +325,23 @@ public class ItemOptions {
         if (!condition) {
             return this;
         }
-        return add(iconResId, iconDrawable, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, null, onClickListener);
+        return add(iconResId, iconDrawable, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, onClickListener);
     }
 
     public ItemOptions add(CharSequence text, Runnable onClickListener) {
-        return add(0, text, false, null, onClickListener);
+        return add(0, text, false, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, Runnable onClickListener) {
-        return add(iconResId, text, false, null, onClickListener);
+        return add(iconResId, text, false, onClickListener);
     }
 
-    public ItemOptions add(int iconResId, CharSequence text, Runnable onLongClickListener, Runnable onClickListener) {
-        return add(iconResId, text, false, onLongClickListener, onClickListener);
+    public ItemOptions add(Drawable icon, CharSequence text, Runnable onClickListener) {
+        return add(0, icon, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, boolean isRed, Runnable onClickListener) {
-        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, null, onClickListener);
+        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, int color, Runnable onClickListener) {
@@ -343,10 +349,10 @@ public class ItemOptions {
     }
 
     public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onClickListener) {
-        return add(iconResId, null, text, iconColorKey, textColorKey, null, onClickListener);
+        return add(iconResId, null, text, iconColorKey, textColorKey, onClickListener);
     }
 
-    public ItemOptions add(int iconResId, Drawable iconDrawable, CharSequence text, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
+    public ItemOptions add(int iconResId, Drawable iconDrawable, CharSequence text, int iconColorKey, int textColorKey, Runnable onClickListener) {
         if (context == null) {
             return this;
         }
@@ -366,14 +372,7 @@ public class ItemOptions {
             if (onClickListener != null) {
                 onClickListener.run();
             }
-            dismiss();
-        });
-        subItem.setOnLongClickListener(view1 -> {
-            if (onLongClickListener != null) {
-                onLongClickListener.run();
-            }
-            dismiss();
-            return false;
+            if (dismissWithButtons) dismiss();
         });
         if (minWidthDp > 0) {
             subItem.setMinimumWidth(dp(minWidthDp));
@@ -847,7 +846,6 @@ public class ItemOptions {
         final TextView titleText = new TextView(context);
         titleText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         titleText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        titleText.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
         titleText.setEllipsize(TextUtils.TruncateAt.END);
         titleText.setSingleLine(true);
         if (obj instanceof TLRPC.User) {
@@ -869,7 +867,6 @@ public class ItemOptions {
             if (onClickListener != null) {
                 onClickListener.run();
             }
-            if (dismissWithButtons) dismiss();
         });
         addView(userButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 52));
 
@@ -1045,6 +1042,17 @@ public class ItemOptions {
         return layout;
     }
 
+    public ItemOptions setBlurBackground(BlurredBackgroundDrawableViewFactory factory, BlurredBackgroundProvider colorProvider, boolean multiwindow) {
+        if (layout instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
+            layout.setBackground(factory.create(layout, multiwindow)
+                .setColorProvider(colorProvider)
+                .setPadding(dp(8))
+                .setHasPadding(true)
+                .setRadius(dp(12)));
+        }
+        return this;
+    }
+
     public ItemOptions setBlurBackground(BlurringShader.BlurManager blurManager, float ox, float oy) {
         Drawable baseDrawable = context.getResources().getDrawable(R.drawable.popup_fixed_alert2).mutate();
         if (layout instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
@@ -1165,6 +1173,10 @@ public class ItemOptions {
                     }
                 }
             }
+        }
+
+        if (blur && scrimBlur3SourceBitmap == null) {
+            scrimBlur3SourceBitmap = new BlurredBackgroundSourceBitmap();
         }
 
         ViewGroup container = pointContainer = this.container == null ? fragment.getParentLayout().getOverlayContainerView() : this.container;
@@ -1364,6 +1376,19 @@ public class ItemOptions {
             container.dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
         }
 
+        if (blurForMenu && scrimBlur3SourceBitmap != null) {
+            setGapBackgroundColor(Theme.multAlpha(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider), 0.06f));
+            BlurredBackgroundDrawable bg = new BlurredBackgroundDrawableViewFactory(scrimBlur3SourceBitmap)
+                .create(layout, true)
+                .setColorProvider(BlurredBackgroundProviderImpl.scrimMenuBackground(resourcesProvider))
+                .setPadding(dp(8))
+                .setHasPadding(true)
+                .setRadius(dp(12));
+
+            bg.setSourceOffset(X + this.translateX, Y + this.translateY);
+            layout.setBackground(bg);
+        }
+
         actionBarPopupWindow.setScaleOut(scaleOut);
         actionBarPopupWindow.showAtLocation(
             container,
@@ -1462,9 +1487,6 @@ public class ItemOptions {
 
     private ValueAnimator dimAnimator;
     private void dismissDim(ViewGroup container) {
-        if (fragment != null && fragment.getParentActivity() != null && fragment.getParentActivity().getWindow() != null) {
-            WindowBlurHelper.hideStatusBar(fragment.getParentActivity().getWindow(), false);
-        }
         if (dimView == null) {
             return;
         }
@@ -1613,14 +1635,26 @@ public class ItemOptions {
             if (blur) {
                 blurPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
                 scrimView.setAlpha(0.0f);
-                AndroidUtilities.makeGlobalBlurBitmap(b -> {
+                ScrimOptions.makeGlobalBlurBitmaps((bitmapBg, bitmapOptions) -> {
                     scrimView.setAlpha(1.0f);
-                    blurBitmap = b;
-                }, 12.0f);
+                    blurBitmap = bitmapBg;
+                    if (scrimBlur3SourceBitmap != null) {
+                        scrimBlur3SourceBitmap.setBitmap(bitmapOptions);
+                        Blur3Utils.checkBitmapSourceMatrixScale(scrimBlur3SourceBitmap, DimView.this);
+                        if (layout != null) {
+                            layout.invalidate();
+                        }
+                    }
+                });
+            }
+        }
 
-                if (fragment != null && fragment.getParentActivity() != null && fragment.getParentActivity().getWindow() != null) {
-                    WindowBlurHelper.hideStatusBar(fragment.getParentActivity().getWindow(), true);
-                }
+        @Override
+        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+            super.onSizeChanged(w, h, oldw, oldh);
+            Blur3Utils.checkBitmapSourceMatrixScale(scrimBlur3SourceBitmap, DimView.this);
+            if (layout != null) {
+                layout.invalidate();
             }
         }
 
@@ -1867,170 +1901,4 @@ public class ItemOptions {
             collectionsLayout.addView(subitem, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         }
     }
-
-    /** Cherrygram start */
-    private boolean fullyRounded = false;
-
-    public static ItemOptions makeOptions(@NonNull ViewGroup container, @Nullable Theme.ResourcesProvider resourcesProvider, @NonNull View scrimView, boolean swipeback, boolean shownFromBottom, boolean useScrollView, boolean fullyRounded) {
-        return new ItemOptions(container, resourcesProvider, scrimView, swipeback, shownFromBottom, useScrollView, fullyRounded);
-    }
-
-    public ItemOptions add(int iconResId, CharSequence text, boolean isRed, Runnable onLongClickListener, Runnable onClickListener) {
-        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onLongClickListener, onClickListener);
-    }
-
-    public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
-        return add(iconResId, null, text, iconColorKey, textColorKey, onLongClickListener, onClickListener);
-    }
-
-    public ItemOptions addTextIf(boolean condition, CharSequence text, int textSizeDp) {
-        if (!condition) {
-            return this;
-        }
-        return this.addText(text, textSizeDp, -1);
-    }
-
-    public ItemOptions addViewIf(boolean condition, View view) {
-        if (!condition) return this;
-        return this.addView(view);
-    }
-
-    public ItemOptions addSpaceGapCGIf(boolean condition, int cornerRadius) {
-        if (!condition) return this;
-        return this.addSpaceGapCG(cornerRadius);
-    }
-
-    public ItemOptions addSpaceGapCG(int cornerRadius) {
-        if (!(layout instanceof LinearLayout)) {
-            layout = new LinearLayout(context);
-            ((LinearLayout) layout).setOrientation(LinearLayout.VERTICAL);
-            layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-        }
-        lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert2, resourcesProvider, 0, true, cornerRadius);
-        lastLayout.setDispatchKeyEventListener(keyEvent -> {
-            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && actionBarPopupWindow != null && actionBarPopupWindow.isShowing()) {
-                dismiss();
-            }
-        });
-        layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, -8, 0, 0));
-        return this;
-    }
-
-    public ItemOptions addEmojiStatus(TLRPC.User user, long documentID, boolean particles) {
-
-        ActionBarMenuSubItem subItem = new ActionBarMenuSubItem(context, false, false, resourcesProvider);
-
-        String name = UserObject.getUserName(user);
-        int maxChars = 20;
-        if (name.length() > maxChars) {
-            name = name.substring(0, maxChars) + "…";
-        }
-        subItem.setText(name);
-        subItem.getTextView().setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
-        subItem.setClipToPadding(false);
-
-        BackupImageView imageView = new BackupImageView(context);
-        AvatarDrawable avatarDrawable = new AvatarDrawable();
-        avatarDrawable.setInfo(user);
-        imageView.setRoundRadius(dp(34));
-        imageView.setForUserOrChat(user, avatarDrawable);
-        subItem.addView(imageView, LayoutHelper.createFrame(34, 34, Gravity.CENTER_VERTICAL | Gravity.LEFT, -5, 0, -5, 0));
-
-        subItem.setColors(
-                textColor != null ? textColor : Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider),
-                iconColor != null ? iconColor : Theme.getColor(Theme.key_actionBarDefaultSubmenuItemIcon, resourcesProvider)
-        );
-
-        LinearLayout textAndStatuses = new LinearLayout(context);
-        textAndStatuses.setOrientation(LinearLayout.HORIZONTAL);
-        textAndStatuses.setGravity(Gravity.CENTER_VERTICAL);
-
-        ViewGroup parent = (ViewGroup) subItem.getTextView().getParent();
-        if (parent != null) {
-            parent.removeView(subItem.getTextView());
-        }
-        textAndStatuses.addView(subItem.getTextView(), LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
-
-        final BackupImageView emojiDrawableImageView = new BackupImageView(context);
-        final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emojiDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(emojiDrawableImageView, dp(24), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
-        emojiDrawableImageView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(@NonNull View v) {
-                emojiDrawable.attach();
-            }
-
-            @Override
-            public void onViewDetachedFromWindow(@NonNull View v) {
-                emojiDrawable.detach();
-            }
-        });
-
-        final BackupImageView cgEmojiDrawableImageView = new BackupImageView(context);
-        final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cgStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(cgEmojiDrawableImageView, dp(24), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
-        cgEmojiDrawableImageView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(@NonNull View v) {
-                cgStatusDrawable.attach();
-            }
-
-            @Override
-            public void onViewDetachedFromWindow(@NonNull View v) {
-                cgStatusDrawable.detach();
-            }
-        });
-
-        boolean isPremium = user.premium;
-
-        final Utilities.Callback<Object[]> updateStatus = args -> {
-            final int color = Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider);
-
-            if (isPremium) {
-                Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user.emoji_status);
-
-                emojiDrawable.set(Objects.requireNonNullElse(emojiStatusId, 6028338546736107668L), true);
-                emojiDrawable.setParticles(false, false);
-                emojiDrawable.setColor(color);
-
-                emojiDrawableImageView.setImageDrawable(emojiDrawable);
-            }
-
-            if (documentID != 0) {
-                cgStatusDrawable.set(documentID, true);
-                cgStatusDrawable.setParticles(particles, particles);
-                cgStatusDrawable.setColor(!particles ? color : BadgeHelper.Companion.getEmojiStatusColor(user.id, color, true));
-
-                cgEmojiDrawableImageView.setImageDrawable(cgStatusDrawable);
-            }
-        };
-        updateStatus.run(null);
-
-        if (isPremium) {
-            textAndStatuses.addView(
-                    emojiDrawableImageView,
-                    LayoutHelper.createLinear(24, 24, Gravity.CENTER_VERTICAL, dp(1), 0, 0, 0)
-            );
-        }
-        if (documentID != 0) {
-            textAndStatuses.addView(
-                    cgEmojiDrawableImageView,
-                    LayoutHelper.createLinear(24, 24, Gravity.CENTER_VERTICAL, dp(1), 0, 0, 0)
-            );
-        }
-
-        subItem.addView(
-                textAndStatuses,
-                LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 35, 0, 0, 0)
-        );
-
-        if (minWidthDp > 0) {
-            subItem.setMinimumWidth(dp(minWidthDp));
-            addView(subItem, LayoutHelper.createLinear(minWidthDp, LayoutHelper.WRAP_CONTENT));
-        } else {
-            addView(subItem, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
-        }
-
-        return this;
-    }
-    /** Cherrygram finish */
-
 }

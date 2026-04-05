@@ -16,12 +16,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -37,12 +40,13 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -80,7 +84,6 @@ import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedEmojiSpan;
 import org.telegram.ui.Components.BackupImageView;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.EmojiPacksAlert;
 import org.telegram.ui.Components.EmojiView;
@@ -89,17 +92,21 @@ import org.telegram.ui.Components.PaintingOverlay;
 import org.telegram.ui.Components.Reactions.CustomEmojiReactionsWindow;
 import org.telegram.ui.Components.ReactionsContainerLayout;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.Components.ScrimOptions;
 import org.telegram.ui.Components.StickersAlert;
 import org.telegram.ui.Components.StickersDialogs;
 import org.telegram.ui.Components.SuggestEmojiView;
+import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
+import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
+import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceBitmap;
+import org.telegram.ui.Components.blur3.utils.Blur3Utils;
+import org.telegram.ui.Components.chat.ViewPositionWatcher;
 import org.telegram.ui.Stories.DarkThemeResourceProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
+import me.vkryl.core.reference.ReferenceList;
 
 public class ContentPreviewViewer {
 
@@ -295,9 +302,12 @@ public class ContentPreviewViewer {
 
     private boolean isRecentSticker;
 
-    private WindowInsets lastInsets;
+    private WindowInsetsCompat lastInsets;
 
     private int currentAccount;
+
+    private final BlurredBackgroundSourceBitmap scrimBlur3SourceBitmap = new BlurredBackgroundSourceBitmap();
+    private final BlurredBackgroundDrawableViewFactory scrimBlur3Factory = new BlurredBackgroundDrawableViewFactory(scrimBlur3SourceBitmap);
 
     private ColorDrawable backgroundDrawable = new ColorDrawable(0x71000000);
     private Bitmap blurrBitmap;
@@ -318,7 +328,7 @@ public class ContentPreviewViewer {
     private boolean menuVisible;
     private View popupLayout;
     private float blurProgress;
-    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private UnlockPremiumView unlockPremiumView;
     private ReactionsContainerLayout reactionsLayout;
     private FrameLayout reactionsLayoutContainer;
@@ -338,6 +348,12 @@ public class ContentPreviewViewer {
                 flags |= ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_USE_SWIPEBACK;
             }
             ActionBarPopupWindow.ActionBarPopupWindowLayout previewMenu = new ActionBarPopupWindow.ActionBarPopupWindowLayout(containerView.getContext(), R.drawable.popup_fixed_alert4, resourcesProvider, flags);
+            previewMenu.setBackground(scrimBlur3Factory.create(previewMenu, true)
+                .setColorProvider(BlurredBackgroundProviderImpl.scrimMenuBackground(resourcesProvider))
+                .setRadius(dp(12))
+                .setPadding(dp(8))
+                .setHasPadding(true));
+
             if (currentContentType == CONTENT_TYPE_CUSTOM_STIKER) {
                 ArrayList<CharSequence> items = new ArrayList<>();
                 final ArrayList<Integer> actions = new ArrayList<>();
@@ -349,7 +365,7 @@ public class ContentPreviewViewer {
                         icons.add(R.drawable.menu_sticker_add);
                         actions.add(0);
                     } else {
-                        if (delegate != null && delegate.canSendSticker()) {
+                        if (delegate.canSendSticker()) {
                             items.add(LocaleController.getString(R.string.SendStickerPreview));
                             icons.add(R.drawable.msg_send);
                             actions.add(0);
@@ -538,11 +554,6 @@ public class ContentPreviewViewer {
                         icons.add(R.drawable.msg_delete);
                         actions.add(5);
                     }
-                    if (currentStickerSet != null && !MessageObject.isAnimatedStickerDocument(currentDocument, true)) {
-                        items.add(LocaleController.getString(R.string.CG_SaveSticker));
-                        icons.add(R.drawable.msg_download);
-                        actions.add(1390);
-                    }
                 }
                 if (!MessageObject.isMaskDocument(currentDocument) && (inFavs || MediaDataController.getInstance(currentAccount).canAddStickerToFavorites() && MessageObject.isStickerHasSet(currentDocument))) {
                     items.add(inFavs ? LocaleController.getString(R.string.DeleteFromFavorites) : LocaleController.getString(R.string.AddToFavorites));
@@ -614,16 +625,6 @@ public class ContentPreviewViewer {
                             delegate.editSticker(currentDocument);
                         } else if (actions.get(which) == 8) {
                             delegate.deleteSticker(currentDocument);
-                        } else if (actions.get(which) == 1390) {
-                            ChatsHelper.getInstance(currentAccount).saveStickerToGallery(parentActivity, currentDocument, (uri) -> {
-                                if (parentActivity instanceof LaunchActivity activity) {
-                                    if (activity.getActionBarLayout() != null && activity.getActionBarLayout().getLastFragment() != null) {
-                                        if (BulletinFactory.canShowBulletin(activity.getActionBarLayout().getLastFragment())) {
-                                            BulletinFactory.of(activity.getActionBarLayout().getLastFragment()).createDownloadBulletin(BulletinFactory.FileType.STICKER, resourcesProvider).show();
-                                        }
-                                    }
-                                }
-                            });
                         }
                         dismissPopupWindow();
                     }
@@ -697,11 +698,9 @@ public class ContentPreviewViewer {
                 }
                 popupWindow.showAtLocation(containerView, 0, (int) ((containerView.getMeasuredWidth() - previewMenu.getMeasuredWidth()) / 2f), y);
 
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    try {
-                        containerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                    } catch (Exception ignored) {}
-                }
+                try {
+                    containerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                } catch (Exception ignored) {}
             } else if (currentContentType == CONTENT_TYPE_EMOJI && delegate != null) {
                 ArrayList<CharSequence> items = new ArrayList<>();
                 final ArrayList<Integer> actions = new ArrayList<>();
@@ -740,11 +739,6 @@ public class ContentPreviewViewer {
                     icons.add(inFavs ? R.drawable.msg_unfave : R.drawable.msg_fave);
                     actions.add(5);
                 }
-                if (currentDocument != null) {
-                    items.add(LocaleController.getString(R.string.CG_SaveSticker));
-                    icons.add(R.drawable.msg_download);
-                    actions.add(1390);
-                }
                 if (items.isEmpty()) {
                     return;
                 }
@@ -774,16 +768,6 @@ public class ContentPreviewViewer {
                         delegate.removeFromRecent(currentDocument);
                     } else if (action == 5) {
                         MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_FAVE, parentObject, currentDocument, (int) (System.currentTimeMillis() / 1000), inFavs);
-                    } else if (actions.get(which) == 1390) {
-                        ChatsHelper.getInstance(currentAccount).saveStickerToGallery(parentActivity, currentDocument, (uri) -> {
-                            if (parentActivity instanceof LaunchActivity activity) {
-                                if (activity.getActionBarLayout() != null && activity.getActionBarLayout().getLastFragment() != null) {
-                                    if (BulletinFactory.canShowBulletin(activity.getActionBarLayout().getLastFragment())) {
-                                        BulletinFactory.of(activity.getActionBarLayout().getLastFragment()).createDownloadBulletin(BulletinFactory.FileType.STICKER, resourcesProvider).show();
-                                    }
-                                }
-                            }
-                        });
                     }
                     dismissPopupWindow();
                 };
@@ -868,11 +852,6 @@ public class ContentPreviewViewer {
                     icons.add(R.drawable.input_notify_off);
                     actions.add(4);
                 }
-                if (delegate.needSend(currentContentType) && !delegate.isInScheduleMode()) {
-                    items.add(LocaleController.getString(R.string.EnablePhotoSpoiler));
-                    icons.add(R.drawable.msg_spoiler);
-                    actions.add(1391);
-                }
                 if (delegate.canSchedule()) {
                     items.add(LocaleController.getString(R.string.Schedule));
                     icons.add(R.drawable.msg_autodelete);
@@ -933,9 +912,6 @@ public class ContentPreviewViewer {
                         AlertsCreator.createScheduleDatePickerDialog(parentActivity, stickerPreviewViewerDelegate.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> stickerPreviewViewerDelegate.sendGif(document != null ? document : result, parent, notify, scheduleDate, scheduleRepeatPeriod), resourcesProvider);
                     } else if (actions.get(which) == 11) {
                         delegate.addCaptionToGif(currentDocument != null ? currentDocument : inlineResult, parentObject, true, 0, 0);
-                    } else if (actions.get(which) == 1391) {
-                        CherrygramMessagesConfig.INSTANCE.setGifSpoilers(true);
-                        delegate.sendGif(currentDocument != null ? currentDocument : inlineResult, parentObject, true, 0, 0);
                     }
                     dismissPopupWindow();
                 };
@@ -986,11 +962,9 @@ public class ContentPreviewViewer {
                 y += AndroidUtilities.dp(24) - moveY;
                 popupWindow.showAtLocation(containerView, 0, (int) ((containerView.getMeasuredWidth() - previewMenu.getMeasuredWidth()) / 2f), y);
 
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    try {
-                        containerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                    } catch (Exception ignored) {}
-                }
+                try {
+                    containerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                } catch (Exception ignored) {}
 
                 if (moveY != 0) {
                     if (finalMoveY == 0) {
@@ -1535,11 +1509,20 @@ public class ContentPreviewViewer {
                 }
                 return super.dispatchKeyEvent(event);
             }
+
+            @Override
+            protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+                super.onSizeChanged(w, h, oldw, oldh);
+                Blur3Utils.checkBitmapSourceMatrixScale(scrimBlur3SourceBitmap, windowView);
+                scrimBlur3Factory.invalidateAllLinkedViews();
+            }
         };
+        scrimBlur3Factory.setSourceRootView(new ViewPositionWatcher(windowView), windowView);
+        scrimBlur3Factory.setLinkedViewsRef(new ReferenceList<>());
         windowView.setFocusable(true);
         windowView.setFocusableInTouchMode(true);
         windowView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        windowView.setOnApplyWindowInsetsListener((v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(windowView, (v, insets) -> {
             lastInsets = insets;
             return insets;
         });
@@ -1893,11 +1876,10 @@ public class ContentPreviewViewer {
 
             if (blurProgress != 0 && blurrBitmap != null) {
                 paint.setAlpha((int) (blurProgress * 255));
-                canvas.save();
-                canvas.scale(12f, 12f);
-                canvas.drawColor(Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider), blurProgress));
-                canvas.drawBitmap(blurrBitmap, 0, 0, paint);
-                canvas.restore();
+                if (paint.getAlpha() != 255) {
+                    canvas.drawColor(Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider), blurProgress));
+                }
+                canvas.drawPaint(paint);
             }
         }
 
@@ -2048,14 +2030,28 @@ public class ContentPreviewViewer {
         }
         preparingBitmap = true;
         centerImage.setVisible(false, false);
-        AndroidUtilities.makeGlobalBlurBitmap(bitmap -> {
+        ScrimOptions.makeGlobalBlurBitmaps((bitmapBg, bitmapOptions) -> {
             centerImage.setVisible(true, false);
-            blurrBitmap = bitmap;
+            blurrBitmap = bitmapBg;
+            BitmapShader bitmapShader = new BitmapShader(bitmapBg, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+
+            Matrix m = new Matrix();
+            m.setScale(15, 15);
+            bitmapShader.setLocalMatrix(m);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bitmapShader.setFilterMode(BitmapShader.FILTER_MODE_LINEAR);
+            }
+            paint.setFilterBitmap(true);
+            paint.setShader(bitmapShader);
+
+            scrimBlur3SourceBitmap.setBitmap(bitmapOptions);
+            Blur3Utils.checkBitmapSourceMatrixScale(scrimBlur3SourceBitmap, windowView);
+            scrimBlur3Factory.invalidateAllLinkedViews();
             preparingBitmap = false;
             if (containerView != null) {
                 containerView.invalidate();
             }
-        }, 12);
+        });
     }
 
     public boolean showMenuFor(View view) {

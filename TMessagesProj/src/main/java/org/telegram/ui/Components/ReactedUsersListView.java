@@ -14,7 +14,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,8 +33,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-
-import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
 
 public class ReactedUsersListView extends FrameLayout {
 
@@ -119,17 +116,9 @@ public class ReactedUsersListView extends FrameLayout {
                         }
 
                         FrameLayout frameLayout = new FrameLayout(context);
-                        var getMessageMenuHelper = MessageMenuHelper.getInstance(currentAccount);
-                        if (getMessageMenuHelper.allowNewMessageMenu() && getMessageMenuHelper.showCustomDivider(false)) {
-                            // Don't remove the divider here cause of broken layout
-                            View gap = new View(context);
-                            gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider), getMessageMenuHelper.getMessageMenuAlpha(true)));
-                            frameLayout.addView(gap, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8));
-                        } else {
-                            View gap = new View(context);
-                            gap.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuSeparator, resourcesProvider));
-                            frameLayout.addView(gap, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8));
-                        }
+                        View gap = new View(context);
+                        gap.setBackgroundColor(Theme.multAlpha(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider), 0.06f));
+                        frameLayout.addView(gap, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8));
                         frameLayout.addView(messageContainsEmojiButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0, 0, 8, 0, 0));
 
                         view = frameLayout;
