@@ -379,11 +379,17 @@
     <string name="CP_Category_Camera">Camera</string>
     <string name="CP_CameraType">Camera Type</string>
     <string name="CP_Camera2Desc">All features that are hidden when Camera2 is turned on will not work with Camera2 enabled.</string>
-    <string name="CP_CameraStabilisation">Camera stabilisation</string>
     <string name="CP_CameraUW">Start from UW</string>
     <string name="CP_CameraUW_Desc">Recording of video messages will start from Ultra Wide camera (if your device\'s API supports it)</string>
     <string name="CP_CameraDualCamera">Dual camera</string>
     <string name="CP_CameraDualCamera_Desc">Captures video message on both cameras for faster switching between cameras while recording. Uses more battery.</string>
+    <string name="CP_CategoryEnhancements">Enhancements</string>
+    <string name="CP_EnhancementsNote">Some camera enhancements can improve video quality, but using multiple features at the same time may not always give the best result. Feel free to experiment and find what works best for your device.</string>
+    <string name="CP_OpticalStabilisation">Optical stabilisation (OIS)</string>
+    <string name="CP_VideoStabilisation">Video stabilisation (EIS)</string>
+    <string name="CP_ContinuousAutofocus">Continuous autofocus</string>
+    <string name="CP_NoiseReduction">Noise reduction</string>
+    <string name="CP_FaceDetection">Face detection</string>
     <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
     <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
     <string name="CP_CameraQuality">Camera Quality</string>
@@ -416,7 +422,6 @@
     <string name="EP_NavigationAnimationBezier">Classic</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
     <string name="CG_PredictiveBackAnimation">Predictive-Back navigation</string>
-    <string name="EP_PhotosSize">Send large photos (2560px)</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>
     <string name="EP_CustomChat_Desc">You can choose any other chat/group/channel to forward messages there (button in action bar, message menu, double tap or on message swipe)</string>
     <string name="EP_CustomChat_Selected_Title">instead of</string>
@@ -429,7 +434,6 @@
 
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">Privacy</string>
-    <string name="SP_NoProxyPromo">Don\'t show proxy sponsor</string>
     <string name="SP_GoogleAnalytics" translatable="false">Google Analytics</string>
     <string name="SP_GoogleAnalytics_Desc">By enabling this, all application crashes and statistics will be reported to \"console.firebase.google.com\" for further review by the developer.</string>
 
@@ -460,7 +464,6 @@
 
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Updates</string>
-    <string name="UP_TapToCheckUpdates">Tap here to get info about updates</string>
     <string name="UP_LastCheck">Last check</string>
     <string name="UP_CurrentVersion">Current version</string>
     <string name="UP_BuildType">Build type</string>
@@ -468,15 +471,9 @@
     <string name="UP_BTBeta">Beta</string>
     <string name="UP_InstallBetas">Install Beta Versions</string>
     <string name="UP_Auto_OTA">Check on launch</string>
-    <string name="UP_ClearUpdatesCache">Clear updates cache</string>
-    <string name="UP_ClearedUpdatesCache">Cleared %1$s of cache.</string>
-    <string name="UP_NothingToClear">Nothing to clear.</string>
     <string name="UP_CheckForUpdates">Check for updates</string>
-    <string name="UP_Not_Found">Cherrygram is up to date.</string>
     <string name="UP_UpdateAvailable">Update available!</string>
     <string name="UP_Version">Version</string>
-    <string name="UP_Changelog">Changelog:</string>
-    <string name="UP_ChangelogRead">Tap to read</string>
     <string name="UP_Download">Download</string>
     <!--Updates Preferences-->
 

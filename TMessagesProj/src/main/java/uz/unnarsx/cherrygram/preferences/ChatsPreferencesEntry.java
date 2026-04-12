@@ -63,11 +63,11 @@ public class ChatsPreferencesEntry extends UniversalFragment {
 
     private final int hideKbdSliderRow = 14;
 
-    private final int largePhotosRow = 15, playVideoOnVolumeBtnRow = 16, autoPauseVideoRow = 17;
+    private final int playVideoOnVolumeBtnRow = 15, autoPauseVideoRow = 16;
 
-    private final int videoSeekSliderRow = 18;
+    private final int videoSeekSliderRow = 17;
 
-    private final int notificationSoundRow = 19, vibrateInChatsRow = 20;
+    private final int notificationSoundRow = 18, vibrateInChatsRow = 19;
 
     @Override
     protected CharSequence getTitle() {
@@ -147,9 +147,6 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Record)));
-        items.add(SettingsHelper.asSwitchCG(largePhotosRow, getString(R.string.EP_PhotosSize))
-                .setChecked(CherrygramChatsConfig.INSTANCE.getLargePhotos())
-        );
         items.add(SettingsHelper.asSwitchCG(playVideoOnVolumeBtnRow, getString(R.string.CP_PlayVideo), getString(R.string.CP_PlayVideo_Desc))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume())
         );
@@ -222,11 +219,6 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         } else if (item.id == disableVibrationRow) {
             CherrygramChatsConfig.INSTANCE.setDisableVibration(!CherrygramChatsConfig.INSTANCE.getDisableVibration());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getDisableVibration());
-
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
-        } else if (item.id == largePhotosRow) {
-            CherrygramChatsConfig.INSTANCE.setLargePhotos(!CherrygramChatsConfig.INSTANCE.getLargePhotos());
-            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getLargePhotos());
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == playVideoOnVolumeBtnRow) {

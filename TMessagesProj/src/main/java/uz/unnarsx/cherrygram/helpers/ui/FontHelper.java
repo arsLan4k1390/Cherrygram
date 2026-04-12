@@ -13,11 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.fonts.Font;
-import android.graphics.fonts.SystemFonts;
 import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -28,11 +24,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
-import java.util.Set;
 
 public class FontHelper {
 
     public final static String TYPEFACE_GILROY_EXTRABOLD = "fonts/gilroy_extrabold.ttf";
+    private static final String EMOJI_FONT_AOSP = "NotoColorEmoji.ttf";
 
     private static final String TEST_TEXT;
     private static final int CANVAS_SIZE = 40;
@@ -46,8 +42,8 @@ public class FontHelper {
     private static Boolean mediumWeightSupported = null;
     private static Boolean italicSupported = null;
 
-    public static boolean loadSystemEmojiFailed = false;
     private static Typeface systemEmojiTypeface;
+    private static boolean loadSystemEmojiFailed = false;
 
     static {
         var lang = LocaleController.getInstance().getCurrentLocale().getLanguage();
@@ -65,40 +61,6 @@ public class FontHelper {
             TEST_TEXT = "Привет";
         } else {
             TEST_TEXT = "R";
-        }
-    }
-
-    public static Typeface createTypeface(String assetPath) {
-        return switch (assetPath) {
-            case AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM ->
-                    isMediumWeightSupported() ? Typeface.create("sans-serif-medium", Typeface.NORMAL) : Typeface.create("sans-serif", Typeface.BOLD);
-            case AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM_ITALIC ->
-                    isMediumWeightSupported() ? Typeface.create("sans-serif-medium", Typeface.ITALIC) : Typeface.create("sans-serif", Typeface.BOLD_ITALIC);
-            case AndroidUtilities.TYPEFACE_ROBOTO_CONDENSED_BOLD ->
-                    Typeface.create("sans-serif-condensed", Typeface.BOLD);
-            case AndroidUtilities.TYPEFACE_ROBOTO_ITALIC ->
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? Typeface.create(Typeface.SANS_SERIF, 400, true) : Typeface.create("sans-serif", Typeface.ITALIC);
-            case AndroidUtilities.TYPEFACE_ROBOTO_MONO ->
-                    Typeface.MONOSPACE;
-            default -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? Typeface.create(Typeface.SANS_SERIF, 400, false) : Typeface.create("sans-serif", Typeface.NORMAL);
-        };
-    }
-
-    public static Typeface createTypefaceFromAsset(String assetPath) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
-            if (assetPath.contains("rextrabold")) {
-                builder.setWeight(800);
-            }
-            if (assetPath.contains("medium") || assetPath.contains("rbold")) {
-                builder.setWeight(700);
-            }
-            if (assetPath.contains("italic")) {
-                builder.setItalic(true);
-            }
-            return builder.build();
-        } else {
-            return Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
         }
     }
 
@@ -145,80 +107,27 @@ public class FontHelper {
         }
     }
 
-    public static boolean isMediumWeightSupported() {
-        if (mediumWeightSupported == null) {
-            mediumWeightSupported = testTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-            FileLog.d("mediumWeightSupported = " + mediumWeightSupported);
+    public static Typeface getSystemEmojiTypeface() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return null;
         }
-        return mediumWeightSupported;
-    }
-
-    public static boolean isItalicSupported() {
-        if (italicSupported == null) {
-            italicSupported = testTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
-            FileLog.d("italicSupported = " + italicSupported);
-        }
-        return italicSupported;
-    }
-
-    private static boolean testTypeface(Typeface typeface) {
-        Canvas canvas = new Canvas();
-
-        Bitmap bitmap1 = Bitmap.createBitmap(CANVAS_SIZE * 2, CANVAS_SIZE, Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap1);
-        PAINT.setTypeface(null);
-        canvas.drawText(TEST_TEXT, 0, CANVAS_SIZE, PAINT);
-
-        Bitmap bitmap2 = Bitmap.createBitmap(CANVAS_SIZE * 2, CANVAS_SIZE, Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap2);
-        PAINT.setTypeface(typeface);
-        canvas.drawText(TEST_TEXT, 0, CANVAS_SIZE, PAINT);
-
-        boolean supported = !bitmap1.sameAs(bitmap2);
-        AndroidUtilities.recycleBitmaps(List.of(bitmap1, bitmap2));
-        return supported;
-    }
-
-    public static File getSystemEmojiFontPath() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            File fontFile = getSystemEmojiFontPathV29();
-            if (fontFile != null) {
-                FileLog.d("Emoji font found using SystemFonts API: " + fontFile.getAbsolutePath());
-                return fontFile;
+        if (!loadSystemEmojiFailed && systemEmojiTypeface == null) {
+            var font = getSystemEmojiFontPathLegacy();
+            if (font != null) {
+                try {
+                    systemEmojiTypeface = Typeface.createFromFile(font);
+                } catch (Exception e) {
+                    FileLog.e("Failed to load system emoji font: " + font.getAbsolutePath(), e);
+                }
             }
-            FileLog.d("SystemFonts API failed to find emoji font, falling back to legacy method.");
-        }
-        return getSystemEmojiFontPathLegacy();
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private static File getSystemEmojiFontPathV29() {
-        Paint paint = new Paint();
-        Set<Font> fonts = SystemFonts.getAvailableFonts();
-        for (Font font : fonts) {
-            if (font == null) {
-                continue;
-            }
-            File fontFile = font.getFile();
-            if (fontFile == null || !fontFile.exists()) {
-                continue;
-            }
-            String fontName = fontFile.getName().toLowerCase();
-            if (fontName.contains("samsungcoloremoji")) {
-                return fontFile;
-            }
-            if (fontName.contains("emoji")) {
-                return fontFile;
-            }
-            paint.setTypeface(new Typeface.Builder(fontFile).build());
-            if (paint.hasGlyph("\uD83D\uDE00")) {
-                return fontFile;
+            if (systemEmojiTypeface == null) {
+                loadSystemEmojiFailed = true;
             }
         }
-        return null;
+        return systemEmojiTypeface;
     }
 
-    public static File getSystemEmojiFontPathLegacy() {
+    private static File getSystemEmojiFontPathLegacy() {
         try (var br = new BufferedReader(new FileReader("/system/etc/fonts.xml"))) {
             String line;
             var ignored = false;
@@ -245,7 +154,7 @@ public class FontHelper {
             }
             br.close();
 
-            var fileAOSP = new File("/system/fonts/NotoColorEmoji.ttf");
+            var fileAOSP = new File("/system/fonts/" + EMOJI_FONT_AOSP);
             if (fileAOSP.exists()) {
                 return fileAOSP;
             }
@@ -255,17 +164,50 @@ public class FontHelper {
         return null;
     }
 
-    public static Typeface getSystemEmojiTypeface() {
-        if (!loadSystemEmojiFailed && systemEmojiTypeface == null) {
-            var font = getSystemEmojiFontPath();
-            if (font != null) {
-                systemEmojiTypeface = Typeface.createFromFile(font);
-            }
-            if (systemEmojiTypeface == null) {
-                loadSystemEmojiFailed = true;
-            }
+    public static Typeface createTypeface(int weight, boolean italic) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return Typeface.create(null, weight, italic);
         }
-        return systemEmojiTypeface;
+        var family = switch (weight) {
+            case 800 -> "sans-serif-black";
+            case 500 -> "sans-serif-medium";
+            default -> "sans-serif";
+        };
+        return Typeface.create(family, italic ? Typeface.ITALIC : Typeface.NORMAL);
     }
-}
 
+    public static boolean isMediumWeightSupported() {
+        if (mediumWeightSupported == null) {
+            mediumWeightSupported = testTypeface(createTypeface(500, false));
+            FileLog.d("mediumWeightSupported = " + mediumWeightSupported);
+        }
+        return mediumWeightSupported;
+    }
+
+    public static boolean isItalicSupported() {
+        if (italicSupported == null) {
+            italicSupported = testTypeface(createTypeface(400, true));
+            FileLog.d("italicSupported = " + italicSupported);
+        }
+        return italicSupported;
+    }
+
+    private static boolean testTypeface(Typeface typeface) {
+        Canvas canvas = new Canvas();
+
+        Bitmap bitmap1 = Bitmap.createBitmap(CANVAS_SIZE * 2, CANVAS_SIZE, Bitmap.Config.ARGB_8888);
+        canvas.setBitmap(bitmap1);
+        PAINT.setTypeface(null);
+        canvas.drawText(TEST_TEXT, 0, CANVAS_SIZE, PAINT);
+
+        Bitmap bitmap2 = Bitmap.createBitmap(CANVAS_SIZE * 2, CANVAS_SIZE, Bitmap.Config.ARGB_8888);
+        canvas.setBitmap(bitmap2);
+        PAINT.setTypeface(typeface);
+        canvas.drawText(TEST_TEXT, 0, CANVAS_SIZE, PAINT);
+
+        boolean supported = !bitmap1.sameAs(bitmap2);
+        AndroidUtilities.recycleBitmaps(List.of(bitmap1, bitmap2));
+        return supported;
+    }
+
+}

@@ -49,8 +49,6 @@ object FileIntegrityUtils {
             }
 
             if (!file.canRead() || !file.canWrite()) {
-                CherrygramCoreConfig.showNotifications = false
-
                 if (!isIntegrityRefreshRunning) {
                     isIntegrityRefreshRunning = true
                     try {

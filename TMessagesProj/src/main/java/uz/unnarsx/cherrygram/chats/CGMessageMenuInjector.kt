@@ -12,7 +12,6 @@ package uz.unnarsx.cherrygram.chats
 import android.text.TextUtils
 import android.view.View
 import android.widget.LinearLayout
-import androidx.core.graphics.ColorUtils
 import org.telegram.messenger.AndroidUtilities.dp
 import org.telegram.messenger.ChatObject
 import org.telegram.messenger.LocaleController
@@ -31,6 +30,7 @@ import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.ui.MessageMenuCompactView
+import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
@@ -77,7 +77,7 @@ object CGMessageMenuInjector {
                 linearLayout.addView(
                     ActionBarPopupWindow.GapView(
                         chatActivity.context,
-                        ColorUtils.setAlphaComponent(chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.messageMenuHelper.getMessageMenuAlpha(true)),
+                        MessageMenuHelper.getMessageMenuGapColor(),
                         Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
                     ),
                     LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
@@ -186,7 +186,7 @@ object CGMessageMenuInjector {
             val gap = if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider(true)) {
                 ActionBarPopupWindow.GapView(
                     chatActivity.context,
-                    ColorUtils.setAlphaComponent(chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.messageMenuHelper.getMessageMenuAlpha(true)),
+                    MessageMenuHelper.getMessageMenuGapColor(),
                     Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
                 )
             } else {
@@ -229,7 +229,7 @@ object CGMessageMenuInjector {
                 popupLayout.addView(
                     ActionBarPopupWindow.GapView(
                         chatActivity.context,
-                        ColorUtils.setAlphaComponent(chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.messageMenuHelper.getMessageMenuAlpha(true)),
+                        MessageMenuHelper.getMessageMenuGapColor(),
                         Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
                     ),
                     LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
@@ -403,7 +403,7 @@ object CGMessageMenuInjector {
 
         options.forEachIndexed { index, option ->
             val remove = when (option) {
-                ChatActivity.OPTION_REPLY -> MessageMenuCompactView.allowCompactStyle()
+                ChatActivity.OPTION_REPLY -> MessageMenuCompactView.allowCompactStyle() || !CherrygramMessagesConfig.showReply
 
                 ChatActivity.OPTION_SAVE_TO_GALLERY, ChatActivity.OPTION_SAVE_TO_GALLERY2 -> noforwardsOrPaidMedia || !CherrygramMessagesConfig.showSaveToGallery
                 ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC -> noforwardsOrPaidMedia || !CherrygramMessagesConfig.showSaveToDownloads

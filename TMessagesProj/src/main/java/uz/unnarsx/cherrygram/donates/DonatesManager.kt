@@ -210,7 +210,7 @@ object DonatesManager {
     private val FILE_NAME = decodeBase64Array(Extra.FILE_NAME_HASH)
     private val GITLAB_RAW_URL = decodeBase64Array(Extra.GITLAB_RAW_URL_HASH)
 
-    private val verifiedUserIds = mutableSetOf<Long>()
+    val verifiedUserIds = mutableSetOf<Long>()
 
     private suspend fun updateDonateList(context: Context) =
         updateList(context, GITLAB_RAW_URL, FILE_NAME, verifiedUserIds, ::loadLocalDonateList)
@@ -257,7 +257,7 @@ object DonatesManager {
     private val FILE_NAME_MARKETPLACE = decodeBase64Array(Extra.FILE_NAME_MARKETPLACE_HASH)
     private val GITLAB_RAW_URL_MARKETPLACE = decodeBase64Array(Extra.GITLAB_RAW_URL_MARKETPLACE_HASH)
 
-    private val verifiedUserIdsMarketplace = mutableSetOf<Long>()
+    val verifiedUserIdsMarketplace = mutableSetOf<Long>()
 
     private suspend fun updateDonateListMarketplace(context: Context) =
         updateList(context, GITLAB_RAW_URL_MARKETPLACE, FILE_NAME_MARKETPLACE, verifiedUserIdsMarketplace, ::loadLocalDonateListMarketplace)
@@ -274,7 +274,6 @@ object DonatesManager {
             if (userConfig != null && userConfig.isClientActivated && userId != 0L) {
                 if (didUserDonateForMarketplace(userId)) {
                     if (CherrygramCoreConfig.isDevBuild()) println("Account's ID is in the list: $userId")
-                    CherrygramCoreConfig.showNotifications = true
                     return true
                 } else {
                     if (CherrygramCoreConfig.isDevBuild()) println("Account's ID is not in the list: $userId")
@@ -493,7 +492,6 @@ object DonatesManager {
 
     private fun canAccess(file: File): Boolean {
         val can = file.canRead() && file.canWrite()
-        if (!can) CherrygramCoreConfig.showNotifications = false
         return can
     }
 

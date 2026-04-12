@@ -28,6 +28,11 @@ object Constants {
     var CG_APKS_CHANNEL_URL = "https://t.me/CherrygramAPKs"
 
     @JvmField
+    var CG_BETA_APKS_CHANNEL_USERNAME = "CherrygramBetaAPKs"
+    @JvmField
+    var CG_BETA_APKS_CHANNEL_URL = "https://t.me/CherrygramBetaAPKs"
+
+    @JvmField
     var CG_CHAT_USERNAME = "CherrygramSupport"
     @JvmField
     var CG_CHAT_URL = "https://t.me/CherrygramSupport"
@@ -85,8 +90,6 @@ object Constants {
     const val Videomessages_Resolution = "videomessages_resolution"
     const val Is_Donate_Screen_Available = "is_donate_screen_available"
     const val Re_Tg_Check = "re_tg_check"
-    const val is_new_updates_ui_available = "is_new_updates_ui_available"
-    const val is_new_updates_ui_available_v2 = "is_new_updates_ui_available_v2"
     const val allow_use_safestars = "allow_use_safestars"
     /** Firebase remote Config finish */
 

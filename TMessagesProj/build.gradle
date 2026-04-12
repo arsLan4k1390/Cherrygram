@@ -36,7 +36,7 @@ def getGitHash = { ->
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.core:core-ktx:1.18.0'
     implementation 'androidx.palette:palette-ktx:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.4.2' // Should be the same version as used for CameraX
     implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0' // Do not update - breaks animation
@@ -68,9 +68,9 @@ dependencies {
     //Cherrygram
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.2'
     implementation 'com.google.android.play:review:2.0.2'
-    implementation 'com.google.firebase:firebase-analytics:23.0.0'
+    implementation 'com.google.firebase:firebase-analytics:23.2.0'
     implementation 'com.google.firebase:firebase-crashlytics:20.0.4'
     implementation 'com.google.ai.client.generativeai:generativeai:0.9.0'
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
@@ -164,9 +164,11 @@ android {
 
         def cherryVersion = project.getProperty("APP_VERSION_NAME_CHERRY")
         def sourceCodeVersion = project.getProperty("APP_VERSION_CODE_SOURCE")
+        def currentCodeVersion = project.getProperty("APP_VERSION_CODE")
 
         buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"${cherryVersion}\""
         buildConfigField "String", "BUILD_SOURCE_CODE_VERSION", "\"${sourceCodeVersion}\""
+        buildConfigField "String", "BUILD_CODE_VERSION", "\"${currentCodeVersion}\""
         buildConfigField "String", "GIT_COMMIT_HASH", "\"${getGitHash()}\""
     }
 

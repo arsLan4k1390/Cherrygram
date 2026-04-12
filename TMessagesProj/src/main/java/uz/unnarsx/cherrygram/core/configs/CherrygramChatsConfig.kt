@@ -67,7 +67,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Actions finish */
 
     /** Media start */
-    var largePhotos by sharedPreferences.boolean("CP_LargePhotos", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
     var videoSeekDuration by sharedPreferences.int("CP_VideoSeekDuration", 10)

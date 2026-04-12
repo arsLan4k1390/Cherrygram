@@ -16,12 +16,12 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.FileLog
-import org.telegram.tgnet.TLRPC
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry
 
 object FirebaseAnalyticsHelper {
 
@@ -33,6 +33,9 @@ object FirebaseAnalyticsHelper {
         firebaseAnalytics = FirebaseAnalytics.getInstance(context).apply {
             val bundle = Bundle().apply {
                 putString("flavor", CGResourcesHelper.getBuildType())
+                putString("cg_version", CGResourcesHelper.getCherryVersion())
+                putString("camera", CameraPreferencesEntry.getCameraName())
+                putString("dualCamera", CherrygramCameraConfig.useDualCamera.toString())
             }
             setDefaultEventParameters(bundle)
 

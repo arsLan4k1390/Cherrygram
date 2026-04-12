@@ -8,8 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
-
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
@@ -18,6 +16,8 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.NotificationsController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
+
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseCrashlyticsHelper;
 
 public class StoryUploadingService extends Service implements NotificationCenter.NotificationCenterDelegate {
 
@@ -37,7 +37,7 @@ public class StoryUploadingService extends Service implements NotificationCenter
         try {
             stopForeground(true);
         } catch (Exception e) {
-            FirebaseCrashlytics.getInstance().recordException(e);
+            FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
         }
         NotificationManagerCompat.from(ApplicationLoader.applicationContext).cancel(33);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.uploadStoryEnd);
@@ -62,7 +62,7 @@ public class StoryUploadingService extends Service implements NotificationCenter
                 try {
                     NotificationManagerCompat.from(ApplicationLoader.applicationContext).notify(33, builder.build());
                 } catch (Throwable e) {
-                    FirebaseCrashlytics.getInstance().recordException(e);
+                    FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
                     FileLog.e(e);
                 }
             }
@@ -113,7 +113,7 @@ public class StoryUploadingService extends Service implements NotificationCenter
         try {
             NotificationManagerCompat.from(ApplicationLoader.applicationContext).notify(33, builder.build());
         } catch (Throwable e) {
-            FirebaseCrashlytics.getInstance().recordException(e);
+            FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
             FileLog.e(e);
         }
         return Service.START_NOT_STICKY;

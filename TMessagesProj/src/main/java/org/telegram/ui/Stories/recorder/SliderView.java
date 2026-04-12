@@ -263,14 +263,10 @@ public class SliderView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (currentType == TYPE_DIMMING) {
-            r = dpf2(8);
+        if (currentType == TYPE_WARMTH_CG || currentType == TYPE_BRIGHTNESS_CG) {
+            r = dp(50);
         } else {
-            if (currentType == TYPE_WARMTH_CG || currentType == TYPE_BRIGHTNESS_CG) {
-                r = dp(50);
-            } else {
-                r = dpf2(6.33f);
-            }
+            r = dp(12);
         }
         textPaint.setTextSize(dp(16));
         text.setTextSize(dp(15));

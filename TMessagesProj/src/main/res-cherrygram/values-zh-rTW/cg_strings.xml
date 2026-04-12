@@ -315,7 +315,6 @@
     <string name="CP_Category_Camera">相機</string>
     <string name="CP_CameraType">相機類型</string>
     <string name="CP_Camera2Desc">鏡頭開啟時隱藏的所有功能，在啟用第二個鏡頭時將無法使用。</string>
-    <string name="CP_CameraStabilisation">相機防震</string>
     <string name="CP_CameraUW">由超廣角鏡頭開始</string>
     <string name="CP_CameraUW_Desc">影片訊息的錄製將由超廣角鏡頭開始 (如果您的裝置的 API 支援的話)</string>
     <string name="CP_CameraDualCamera">雙鏡頭</string>
@@ -344,7 +343,6 @@
     <string name="EP_NavigationAnimation">程式動畫</string>
     <string name="EP_NavigationAnimationBezier">經典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
-    <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>
     <string name="EP_CustomChat_Desc">為來自另一個對話/群組/頻道的 ID 設定轉寄訊息 (操作列中的按鈕、訊息選單或按兩下)</string>
     <string name="EP_CustomChat_Selected_Title">代替</string>
@@ -356,7 +354,6 @@
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">隱私權</string>
-    <string name="SP_NoProxyPromo">移除代理伺服器廣告</string>
     <string name="SP_GoogleAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至「console.firebase.google.com」，以供開發人員分析和改善應用程式。</string>
     <string name="SP_AskBioToOpenChats">要求提供生物辨識以開啟對話</string>
     <string name="SP_AskBioToOpenChats_Desc">存取特定類型的對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。</string>
@@ -379,7 +376,6 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">更新</string>
-    <string name="UP_TapToCheckUpdates">按此檢視更新資訊</string>
     <string name="UP_LastCheck">上次檢查</string>
     <string name="UP_CurrentVersion">目前版本</string>
     <string name="UP_BuildType">組建類型</string>
@@ -387,15 +383,9 @@
     <string name="UP_BTBeta">測試版</string>
     <string name="UP_InstallBetas">安裝測試版本</string>
     <string name="UP_Auto_OTA">啟動時檢查更新</string>
-    <string name="UP_ClearUpdatesCache">清除更新快取</string>
-    <string name="UP_ClearedUpdatesCache">已清除 %1$s 快取</string>
-    <string name="UP_NothingToClear">暫無可清理內容</string>
     <string name="UP_CheckForUpdates">檢查更新</string>
-    <string name="UP_Not_Found">Cherrygram 已經是最新版本</string>
     <string name="UP_UpdateAvailable">有可用更新！</string>
     <string name="UP_Version">版本</string>
-    <string name="UP_Changelog">更新日誌：</string>
-    <string name="UP_ChangelogRead">按一下閱讀</string>
     <string name="UP_Download">下載</string>
     <!--Updates Preferences-->
     <!--Donations-->

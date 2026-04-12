@@ -403,7 +403,8 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
             unifiedScrollRow = rowCount++;
             autoScrollMessagesRow = rowCount++;
             fixedMessageHeightRow = rowCount++;
-            blurMessageMenuItemsRow = rowCount++;
+//            blurMessageMenuItemsRow = rowCount++;
+            blurMessageMenuItemsRow = -1;
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
                 useNativeBlurRow = -1;
             } else {

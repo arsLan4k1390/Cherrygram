@@ -6,17 +6,17 @@
 -keep class org.webrtc.* { *; }
 -keep class org.webrtc.audio.* { *; }
 -keep class org.webrtc.voiceengine.* { *; }
--keep class org.telegram.messenger.* { *; }
--keep class org.telegram.messenger.camera.* { *; }
--keep class org.telegram.messenger.secretmedia.* { *; }
--keep class org.telegram.messenger.support.* { *; }
--keep class org.telegram.messenger.support.* { *; }
--keep class org.telegram.messenger.time.* { *; }
--keep class org.telegram.messenger.video.* { *; }
--keep class org.telegram.messenger.voip.* { *; }
--keep class org.telegram.SQLite.** { *; }
--keep class org.telegram.tgnet.ConnectionsManager { *; }
--keep class org.telegram.tgnet.NativeByteBuffer { *; }
+#-keep class org.telegram.messenger.* { *; }
+#-keep class org.telegram.messenger.camera.* { *; }
+#-keep class org.telegram.messenger.secretmedia.* { *; }
+#-keep class org.telegram.messenger.support.* { *; }
+#-keep class org.telegram.messenger.support.* { *; }
+#-keep class org.telegram.messenger.time.* { *; }
+#-keep class org.telegram.messenger.video.* { *; }
+#-keep class org.telegram.messenger.voip.* { *; }
+#-keep class org.telegram.SQLite.** { *; }
+#-keep class org.telegram.tgnet.ConnectionsManager { *; }
+#-keep class org.telegram.tgnet.NativeByteBuffer { *; }
 -keep class org.telegram.tgnet.RequestTimeDelegate { *; }
 -keep class org.telegram.tgnet.RequestDelegate { *; }
 -keep class com.google.android.exoplayer2.ext.** { *; }
@@ -130,6 +130,7 @@
 -keep class org.telegram.SQLite.SQLiteException { <methods>; }
 -keep class org.telegram.tgnet.ConnectionsManager { <methods>; }
 -keep class org.telegram.tgnet.NativeByteBuffer { <methods>; }
+-keepnames class ** extends org.telegram.ui.ActionBar.BaseFragment
 -keepnames class org.telegram.tgnet.TLRPC$TL_* {}
 -keepclassmembernames,allowshrinking class org.telegram.ui.* { <fields>; }
 -keepclassmembernames,allowshrinking class org.telegram.ui.Cells.* { <fields>; }
@@ -142,6 +143,7 @@
     <fields>;
 }
 
+-keep class uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig { *; }
 -keepnames class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO.* { <fields>; }
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO.** {*;}
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$ErrorResponse {*;}
@@ -190,6 +192,9 @@
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 -dontoptimize
+-classobfuscationdictionary ../TMessagesProj_AppStandalone/build/tmp/dictionary/class_obfuscation_dictionary.txt
+-obfuscationdictionary ../TMessagesProj_AppStandalone/build/tmp/dictionary/field_obfuscation_dictionary.txt
+-packageobfuscationdictionary ../TMessagesProj_AppStandalone/build/tmp/dictionary/package_obfuscation_dictionary.txt
 
 -dontwarn com.google.j2objc.annotations.ReflectionSupport
 -dontwarn com.google.j2objc.annotations.RetainedWith

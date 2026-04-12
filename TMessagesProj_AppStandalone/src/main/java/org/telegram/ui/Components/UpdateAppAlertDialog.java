@@ -33,6 +33,8 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
 
+import uz.unnarsx.cherrygram.core.updater.TextViewEffects;
+
 public class UpdateAppAlertDialog extends BottomSheet {
 
     private TLRPC.TL_help_appUpdate appUpdate;
@@ -252,7 +254,7 @@ public class UpdateAppAlertDialog extends BottomSheet {
         textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         textView.setSingleLine(true);
         textView.setEllipsize(TextUtils.TruncateAt.END);
-        textView.setText(LocaleController.getString(R.string.AppUpdate));
+        textView.setText(LocaleController.getString(R.string.UpdateTelegram).replace("Telegram", LocaleController.getString(R.string.CG_AppName)));
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 23, 16, 23, 0));
 
         TextView messageTextView = new TextView(getContext());
@@ -264,7 +266,7 @@ public class UpdateAppAlertDialog extends BottomSheet {
         messageTextView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
         linearLayout.addView(messageTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 23, 0, 23, 5));
 
-        TextView changelogTextView = new TextView(getContext());
+        TextView changelogTextView = new TextViewEffects(getContext());
         changelogTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         changelogTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         changelogTextView.setMovementMethod(new AndroidUtilities.LinkMovementMethodMy());
@@ -273,7 +275,8 @@ public class UpdateAppAlertDialog extends BottomSheet {
             changelogTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.AppUpdateChangelogEmpty)));
         } else {
             SpannableStringBuilder builder = new SpannableStringBuilder(appUpdate.text);
-            MessageObject.addEntitiesToText(builder, update.entities, false, false, false, false);
+            MessageObject.addEntitiesToText(builder, update.entities, false, true, false, false);
+            MessageObject.replaceAnimatedEmoji(builder, update.entities, changelogTextView.getPaint().getFontMetricsInt());
             changelogTextView.setText(builder);
         }
         changelogTextView.setGravity(Gravity.LEFT | Gravity.TOP);

@@ -20,7 +20,7 @@ object CherrygramPrivacyConfig {
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
     /** Privacy start */
-    var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
+    var hideProxySponsor by sharedPreferences.boolean("SP_NoProxySponsor", true)
     var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics", ApplicationLoader.checkPlayServices())
     /** Privacy finish */
 

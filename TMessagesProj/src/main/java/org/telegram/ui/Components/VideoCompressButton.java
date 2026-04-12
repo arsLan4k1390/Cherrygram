@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 
 import org.telegram.messenger.AndroidUtilities;
 
+import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
+
 public class VideoCompressButton extends View {
 
     public static final int STATE_GIF = 0;
@@ -36,7 +38,7 @@ public class VideoCompressButton extends View {
 
         textDrawable = new AnimatedTextView.AnimatedTextDrawable(true, false, false);
         textDrawable.setAnimationProperties(.4f, 0, 360, CubicBezierInterpolator.EASE_OUT_QUINT);
-        textDrawable.setTypeface(AndroidUtilities.getTypeface("fonts/num.otf"));
+        textDrawable.setTypeface(FontHelper.createTypeface2(FontHelper.TYPEFACE_GILROY_EXTRABOLD)); // AndroidUtilities.getTypeface("fonts/num.otf")
         textDrawable.setTextColor(0xffffffff);
         textDrawable.setTextSize(dpf2(10.6f));
         textDrawable.setCallback(this);
@@ -44,7 +46,7 @@ public class VideoCompressButton extends View {
 
         sizeTextDrawable = new AnimatedTextView.AnimatedTextDrawable(true, false, false);
         sizeTextDrawable.setAnimationProperties(.2f, 0, 360, CubicBezierInterpolator.EASE_OUT_QUINT);
-        sizeTextDrawable.setTypeface(AndroidUtilities.getTypeface("fonts/num.otf"));
+        sizeTextDrawable.setTypeface(FontHelper.createTypeface2(FontHelper.TYPEFACE_GILROY_EXTRABOLD)); // AndroidUtilities.getTypeface("fonts/num.otf")
         sizeTextDrawable.setTextColor(0xffffffff);
         sizeTextDrawable.setTextSize(dpf2(8.6f));
         sizeTextDrawable.setCallback(this);

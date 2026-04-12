@@ -90,10 +90,10 @@ public class CameraXView extends BaseCameraView {
         @Override
         public void onDisplayChanged(int displayId) {
             if (getRootView().getDisplay() != null && getRootView().getDisplay().getDisplayId() == displayId) {
-                displayOrientation = getRootView().getDisplay().getRotation();
+                int rotation = getRootView().getDisplay().getRotation();
+
                 if (controller != null) {
-                    controller.setTargetOrientation(displayOrientation);
-                    controller.setWorldCaptureOrientation(displayOrientation);
+                    controller.setPreviewRotation(rotation);
                 }
             }
         }
@@ -116,11 +116,8 @@ public class CameraXView extends BaseCameraView {
                 rotation = Surface.ROTATION_0;
             }
 
-            worldOrientation = rotation;
-
             if (controller != null) {
-                controller.setTargetOrientation(rotation);
-                controller.setWorldCaptureOrientation(rotation);
+                controller.setCaptureRotation(rotation);
             }
         }
     };
@@ -154,8 +151,6 @@ public class CameraXView extends BaseCameraView {
         outerPaint.setStyle(Paint.Style.STROKE);
         outerPaint.setStrokeWidth(AndroidUtilities.dp(2));
         innerPaint.setColor(0x7fffffff);
-        ((DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE)).registerDisplayListener(displayOrientationListener, null);
-        worldOrientationListener.enable();
     }
 
     @Override
@@ -425,6 +420,14 @@ public class CameraXView extends BaseCameraView {
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        ((DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE)).registerDisplayListener(displayOrientationListener, null);
+        worldOrientationListener.enable();
+    }
+
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         if (lifecycle != null) {
@@ -475,7 +478,7 @@ public class CameraXView extends BaseCameraView {
     }
 
     public void focusToPoint(int x, int y) {
-        controller.focusToPoint(x, y);
+        controller.focusToPoint(x, y, true);
         focusProgress = 0.0f;
         innerAlpha = 1.0f;
         outerAlpha = 1.0f;

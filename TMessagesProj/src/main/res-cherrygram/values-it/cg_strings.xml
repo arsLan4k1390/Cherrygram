@@ -304,7 +304,6 @@
     <string name="CP_Category_Camera">Fotocamera</string>
     <string name="CP_CameraType">Tipo di fotocamera</string>
     <string name="CP_Camera2Desc">Tutte le funzioni che risultano nascoste quando Camera2 è accesa non saranno attive.</string>
-    <string name="CP_CameraStabilisation">Stabilizzazione</string>
     <string name="CP_CameraUW">Inizia da UW</string>
     <string name="CP_CameraUW_Desc">Per i messaggi video sarà utilizzata la fotocamera Ultra Wide (se l\'API del tuo dispositivo lo supporta)</string>
     <string name="CP_CameraDualCamera">Doppia fotocamera</string>
@@ -333,7 +332,6 @@
     <string name="EP_NavigationAnimation">Animazione navigazione</string>
     <string name="EP_NavigationAnimationBezier">Classico</string>
     <string name="EP_NavigationAnimationCrossfading">Effetto crossfading</string>
-    <string name="EP_PhotosSize">Invia foto grandi (2560px)</string>
     <string name="EP_CustomChat">Chat personalizzata per i Messaggi Salvati</string>
     <string name="EP_CustomChat_Desc">Imposta un ID di un\'altra chat/gruppo/canale per inoltrare qui i messaggi (tasto nella barra azioni, menù messaggi o facendo doppio tap)</string>
     <string name="EP_CustomChat_Selected_Title">invece di</string>
@@ -345,7 +343,6 @@
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">Privacy</string>
-    <string name="SP_NoProxyPromo">Non mostrare sponsor proxy</string>
     <string name="SP_GoogleAnalytics_Desc">Abilitando questo, tutti i crash dell\'applicazione e le statistiche verranno segnalati a \"console.firebase.google.com\" per futuri controlli dello sviluppatore.</string>
     <string name="SP_AskBioToOpenChats">Accesso biometrico per aprire le chat</string>
     <string name="SP_AskBioToOpenChats_Desc">Lo sblocco biometrico di sistema (impronta digitale, riconoscimento facciale, PIN o sequenza) sarà richiesta per accedere alle chat archiviate.</string>
@@ -368,7 +365,6 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Aggiornamenti</string>
-    <string name="UP_TapToCheckUpdates">Tocca qui per ottenere informazioni sugli aggiornamenti</string>
     <string name="UP_LastCheck">Ultimo controllo</string>
     <string name="UP_CurrentVersion">Versione attuale</string>
     <string name="UP_BuildType">Tipo di versione</string>
@@ -376,15 +372,9 @@
     <string name="UP_BTBeta">Beta</string>
     <string name="UP_InstallBetas">Installa versioni beta</string>
     <string name="UP_Auto_OTA">Controlla all\'avvio</string>
-    <string name="UP_ClearUpdatesCache">Cancella Aggiornamento Cache</string>
-    <string name="UP_ClearedUpdatesCache">Cancellati %1$s dalla cache.</string>
-    <string name="UP_NothingToClear">Niente da pulire.</string>
     <string name="UP_CheckForUpdates">Cerca aggiornamenti</string>
-    <string name="UP_Not_Found">Cherrygram è aggiornato.</string>
     <string name="UP_UpdateAvailable">Aggiornamento disponibile!</string>
     <string name="UP_Version">Versione</string>
-    <string name="UP_Changelog">Cangelog:</string>
-    <string name="UP_ChangelogRead">Tocca per leggere</string>
     <string name="UP_Download">Scarica</string>
     <!--Updates Preferences-->
     <!--Donations-->

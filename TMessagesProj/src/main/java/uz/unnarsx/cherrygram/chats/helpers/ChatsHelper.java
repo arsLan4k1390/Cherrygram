@@ -88,6 +88,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
@@ -381,7 +382,7 @@ public class ChatsHelper extends BaseController {
         if (buttonAvailable && getCustomReactionsCount(selectedObject) > 0) {
             if (chatActivity.getMessageMenuHelper().allowNewMessageMenu() && chatActivity.getMessageMenuHelper().showCustomDivider(false)) {
                 View gap = new FrameLayout(chatActivity.contentView.getContext());
-                gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, themeDelegate), chatActivity.getMessageMenuHelper().getMessageMenuAlpha(true)));
+                gap.setBackgroundColor(MessageMenuHelper.getMessageMenuBackgroundColor());
                 popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
             } else {
                 View gap = new FrameLayout(chatActivity.getContext());

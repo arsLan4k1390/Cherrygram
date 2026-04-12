@@ -135,7 +135,7 @@ ConnectionsManager::~ConnectionsManager() {
     pthread_mutex_destroy(&mutex);
 }
 
-ConnectionsManager& ConnectionsManager::getInstance(int32_t instanceNum) {
+/*ConnectionsManager& ConnectionsManager::getInstance(int32_t instanceNum) {
     switch (instanceNum) {
         case 0:
             static ConnectionsManager instance0(0);
@@ -150,25 +150,35 @@ ConnectionsManager& ConnectionsManager::getInstance(int32_t instanceNum) {
             static ConnectionsManager instance3(3);
             return instance3;
         case 4:
+        default:
             static ConnectionsManager instance4(4);
             return instance4;
-        case 5:
-            static ConnectionsManager instance5(5);
-            return instance5;
-        case 6:
-            static ConnectionsManager instance6(6);
-            return instance6;
-        case 7:
-            static ConnectionsManager instance7(7);
-            return instance7;
-        case 8:
-            static ConnectionsManager instance8(8);
-            return instance8;
-        case 9:
-        default:
-            static ConnectionsManager instance9(9);
-            return instance9;
     }
+}*/
+
+ConnectionsManager& ConnectionsManager::getInstance(int32_t instanceNum) {
+    static std::vector<std::unique_ptr<ConnectionsManager>> instances;
+    static std::mutex mutex;
+
+    std::lock_guard<std::mutex> lock(mutex);
+
+    if (instanceNum < 0) {
+        instanceNum = 0;
+    }
+
+    if (instanceNum >= MAX_ACCOUNT_COUNT) {
+        instanceNum = MAX_ACCOUNT_COUNT - 1;
+    }
+
+    if (instanceNum >= instances.size()) {
+        instances.resize(MAX_ACCOUNT_COUNT);
+    }
+
+    if (!instances[instanceNum]) {
+        instances[instanceNum] = std::make_unique<ConnectionsManager>(instanceNum);
+    }
+
+    return *instances[instanceNum];
 }
 
 int ConnectionsManager::callEvents(int64_t now) {

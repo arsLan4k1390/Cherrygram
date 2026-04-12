@@ -10,11 +10,9 @@
 package uz.unnarsx.cherrygram.core.helpers;
 
 import android.net.Uri;
-import android.os.Bundle;
 
 import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.Stars.StarsIntroActivity;
@@ -28,7 +26,7 @@ import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class DeeplinkHelper {
 
-    public static void processDeepLink(Uri uri, BaseFragment fragment, Callback callback, Runnable unknown, Browser.Progress progress) {
+    public static void processDeepLink(Uri uri, Boolean updateAlways, BaseFragment fragment, Callback callback, Runnable unknown, Browser.Progress progress) {
         if (fragment == null) {
             fragment = LaunchActivity.getSafeLastFragment();
         }
@@ -144,25 +142,16 @@ public class DeeplinkHelper {
                 case DeepLinksRepo.CG_Update, "cg_upgrade", "update", "upgrade" -> {
                     if (CherrygramCoreConfig.isPlayStoreBuild()) {
                         Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
-                        return;
-                    } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
-                        // Fuckoff :)
-                        unknown.run();
-                        return;
                     } else {
-                        LaunchActivity.instance.checkCgUpdates(fragment, progress, true);
-                        return;
+                        LaunchActivity.instance.checkAppUpdate(true, progress, updateAlways);
                     }
+                    return;
                 }
                 case DeepLinksRepo.CG_Updater_Bottom_Sheet, "updates" -> {
                     if (CherrygramCoreConfig.isPlayStoreBuild()) {
                         Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
-                    } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
-                        // Fuckoff :)
-                        unknown.run();
-                        return;
-                    } else if (!CherrygramCoreConfig.isStandalonePremiumBuild()) {
-                        LaunchActivity.instance.showCgUpdaterSettings(fragment);
+                    } else {
+                        LaunchActivity.instance.showUpdaterBottomSheet(fragment, false, null);
                     }
                     return;
                 }

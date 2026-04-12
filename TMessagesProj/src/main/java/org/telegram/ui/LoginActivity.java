@@ -213,6 +213,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.QrHelper;
 
 @SuppressLint("HardwareIds")
@@ -2465,11 +2466,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             SpannableStringBuilder sb = new SpannableStringBuilder();
             sb.append("+ ");
-            sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.shield_network_filled_solar)), 0, 1, 0);
-            sb.append(getString(R.string.Proxy));
+            sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), passkeysSupported() ? R.drawable.passkey_login_bold_solar : R.drawable.shield_network_filled_solar)), 0, 1, 0);
+            sb.append(getString(passkeysSupported() ? R.string.PasskeyUnknown : R.string.Proxy));
             proxyButton.setRound();
             proxyButton.setText(sb, false);
-            proxyButton.setOnClickListener(v -> presentFragment(new ProxyListActivity()));
+            proxyButton.setOnClickListener(v -> {
+                if (passkeysSupported()) {
+                    requestPasskey(true, true);
+                } else {
+                    presentFragment(new ProxyListActivity());
+                }
+            });
             buttonsBox.addView(proxyButton);
 
             ButtonWithCounterView qrButton = new ButtonWithCounterView(context, getResourceProvider()) {
@@ -2486,7 +2493,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             SpannableStringBuilder sb1 = new SpannableStringBuilder();
             sb1.append("+ ");
-            sb1.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.msg_qrcode_solar)), 0, 1, 0);
+            sb1.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.msg_qr_mini)), 0, 1, 0);
             sb1.append(getString(R.string.CG_QRLoginTitle));
             qrButton.setRound();
             qrButton.setText(sb1, false);
@@ -3462,7 +3469,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                 }
                 if (activityMode == MODE_LOGIN) {
-                    requestPasskey(false);
+//                    requestPasskey(false);
                 }
             }, SHOW_DELAY);
         }
@@ -3479,9 +3486,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private boolean requestedPasskey = false;
         private boolean requestingPasskey = false;
         private Runnable cancelRequestingPasskey;
-        private void requestPasskey(boolean clickedButton) {
+        private void requestPasskey(boolean clickedButton, boolean force) {
             if (activityMode != MODE_LOGIN) return;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P || !BuildVars.SUPPORTS_PASSKEYS) return;
+            if (force) {
+                if (cancelRequestingPasskey != null) {
+                    cancelRequestingPasskey.run();
+                    cancelRequestingPasskey = null;
+                }
+                requestingPasskey = false;
+                requestedPasskey = false;
+            }
             if (requestingPasskey || !clickedButton && requestedPasskey) return;
 
             requestingPasskey = true;
@@ -3492,11 +3507,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 if (err != null && ("EMPTY".equals(err) || "CANCELLED".equals(err))) {
                     if (subtitleView != null && "CANCELLED".equals(err)) {
                         subtitleView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.StartTextPasskey), () -> {
-                            requestPasskey(true);
+                            requestPasskey(true, false);
                         }), true));
                     }
                     if ("EMPTY".equals(err)) {
-                        BulletinFactory.of(LoginActivity.this).createSimpleBulletin(R.raw.info, getString(R.string.CG_PasskeyNoCredentialAvailable)).show();
+                        CGBulletinCreator.INSTANCE.createPasskeyBulletin(LoginActivity.this);
                     }
                     return;
                 }
@@ -10659,6 +10674,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     @Override
     public boolean isActionBarCrossfadeEnabled() {
         return false;
+    }
+
+    private boolean passkeysSupported() {
+        return BuildVars.SUPPORTS_PASSKEYS;
     }
     /** Cherrygram finish */
 

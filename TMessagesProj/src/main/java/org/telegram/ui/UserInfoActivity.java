@@ -180,19 +180,14 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
     private void updateAccounts() {
         accountNumbers.clear();
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
-            if (UserConfig.getInstance(a).isClientActivated() && currentAccount != a) {
+            if (UserConfig.getInstance(a).isClientActivated()/* && currentAccount != a*/) {
                 accountNumbers.add(a);
             }
         }
-        Collections.sort(accountNumbers, (o1, o2) -> {
+        accountNumbers.sort((o1, o2) -> {
             long l1 = UserConfig.getInstance(o1).loginTime;
             long l2 = UserConfig.getInstance(o2).loginTime;
-            if (l1 > l2) {
-                return 1;
-            } else if (l1 < l2) {
-                return -1;
-            }
-            return 0;
+            return Long.compare(l1, l2);
         });
     }
 
