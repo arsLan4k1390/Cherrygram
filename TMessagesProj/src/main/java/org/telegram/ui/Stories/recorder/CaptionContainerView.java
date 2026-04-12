@@ -87,6 +87,8 @@ import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundPro
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.Stories.DarkThemeResourceProvider;
 
+import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
+
 public class CaptionContainerView extends FrameLayout {
 
     protected Theme.ResourcesProvider resourcesProvider;
@@ -1442,12 +1444,12 @@ public class CaptionContainerView extends FrameLayout {
             strokePaint.setStrokeCap(Paint.Cap.ROUND);
 
             textDrawable.setAnimationProperties(.3f, 0, 250, CubicBezierInterpolator.EASE_OUT_QUINT);
-            textDrawable.setTypeface(AndroidUtilities.getTypeface("fonts/num.otf"));
+            textDrawable.setTypeface(FontHelper.createTypeface2(FontHelper.TYPEFACE_GILROY_EXTRABOLD)); // AndroidUtilities.getTypeface("fonts/num.otf")
             textDrawable.setTextSize(dpf2(12));
             textDrawable.setGravity(Gravity.CENTER);
 
             activeTextDrawable.setAnimationProperties(.3f, 0, 250, CubicBezierInterpolator.EASE_OUT_QUINT);
-            activeTextDrawable.setTypeface(AndroidUtilities.getTypeface("fonts/num.otf"));
+            activeTextDrawable.setTypeface(FontHelper.createTypeface2(FontHelper.TYPEFACE_GILROY_EXTRABOLD)); // AndroidUtilities.getTypeface("fonts/num.otf")
             activeTextDrawable.setTextSize(dpf2(12));
             activeTextDrawable.setGravity(Gravity.CENTER);
 

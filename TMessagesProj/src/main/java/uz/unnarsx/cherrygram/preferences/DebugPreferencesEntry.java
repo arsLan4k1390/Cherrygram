@@ -128,7 +128,6 @@ public class DebugPreferencesEntry extends UniversalFragment {
         items.add(SettingsHelper.asSwitchCG(hideTimestampRow, "Hide video timestamp *", "Saved progress for videos. Return exactly where you left off.")
                 .setChecked(CherrygramDebugConfig.INSTANCE.getHideVideoTimestamp())
         );
-
         items.add(UItem.asButton(resetDialogsRow, 0, getString(R.string.DebugMenuResetDialogs)));
         items.add(UItem.asButton(clearMediaCacheRow, 0, getString(R.string.DebugMenuClearMediaCache)));
         items.add(UItem.asButton(readAllDialogsRow, 0, getString(R.string.DebugMenuReadAllDialogs)));

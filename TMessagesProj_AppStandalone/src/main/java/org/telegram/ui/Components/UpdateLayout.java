@@ -4,18 +4,13 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Canvas;
-import android.text.TextUtils;
-import android.util.TypedValue;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -29,18 +24,13 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.IUpdateLayout;
 
 import java.io.File;
-import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
 
 public class UpdateLayout extends IUpdateLayout {
 
-    private LinearLayout updateLayout;
+    private FrameLayout updateLayout;
     private RadialProgress2 updateLayoutIcon;
-    private TextView[] updateTextViews;
-    private TextView updateSizeTextView;
-    private AnimatorSet updateTextAnimator;
+    private AnimatedTextView updateTextView;
+    private AnimatedTextView.AnimatedTextDrawable updateSizeTextView;
 
     private final Activity activity;
     private final ViewGroup sideMenuContainer;
@@ -52,8 +42,8 @@ public class UpdateLayout extends IUpdateLayout {
     }
 
     public void updateFileProgress(Object[] args) {
-        if (updateTextViews == null || args == null) return;
-        if (updateTextViews[0] != null && SharedConfig.isAppUpdateAvailable()) {
+        if (updateTextView == null || args == null) return;
+        if (SharedConfig.isAppUpdateAvailable()) {
             String location = (String) args[0];
             String fileName = FileLoader.getAttachFileName(SharedConfig.pendingAppUpdate.document);
             if (fileName != null && fileName.equals(location)) {
@@ -61,16 +51,8 @@ public class UpdateLayout extends IUpdateLayout {
                 Long totalSize = (Long) args[2];
                 float loadProgress = loadedSize / (float) totalSize;
                 updateLayoutIcon.setProgress(loadProgress, true);
-                updateTextViews[0].setText(LocaleController.formatString(R.string.AppUpdateDownloading, (int) (loadProgress * 100)));
+                updateTextView.setText(LocaleController.formatString(R.string.AppUpdateDownloading, (int) (loadProgress * 100)));
             }
-        }
-    }
-
-    public void updateFileProgress(float progress) {
-        if (updateTextViews == null || progress == 0) return;
-        if (updateTextViews[0] != null && CherrygramCoreConfig.INSTANCE.getUpdateAvailable()) {
-            updateLayoutIcon.setProgress(progress, true);
-            updateTextViews[0].setText(LocaleController.formatString(R.string.AppUpdateDownloading, (int) (progress)));
         }
     }
 
@@ -78,83 +60,86 @@ public class UpdateLayout extends IUpdateLayout {
         if (sideMenuContainer == null || updateLayout != null) {
             return;
         }
-        updateLayout = new LinearLayout(activity);
-        updateLayout.setOrientation(LinearLayout.HORIZONTAL);
-        updateLayout.setWillNotDraw(false);
+        updateLayout = new FrameLayout(activity);
         updateLayout.setVisibility(View.INVISIBLE);
         updateLayout.setTranslationY(dp(44));
         updateLayout.setBackground(Theme.getSelectorDrawable(0x40ffffff, false));
         sideMenuContainer.addView(updateLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.LEFT | Gravity.BOTTOM));
         updateLayout.setOnClickListener(v -> {
-            if (!CherrygramCoreConfig.INSTANCE.getUpdateAvailable()) {
+            if (!SharedConfig.isAppUpdateAvailable()) {
                 return;
             }
             if (updateLayoutIcon.getIcon() == MediaActionDrawable.ICON_DOWNLOAD) {
-                UpdaterUtils.downloadApk(updateLayout.getContext(), UpdaterUtils.downloadURL, "Cherrygram " + UpdaterUtils.version, null);
+                FileLoader.getInstance(currentAccount).loadFile(SharedConfig.pendingAppUpdate.document, "update", FileLoader.PRIORITY_NORMAL, 1);
                 updateAppUpdateViews(currentAccount,  true);
             } else if (updateLayoutIcon.getIcon() == MediaActionDrawable.ICON_CANCEL) {
-                UpdaterUtils.cancelDownload(updateLayout.getContext(), UpdaterUtils.id);
+                FileLoader.getInstance(currentAccount).cancelLoadFile(SharedConfig.pendingAppUpdate.document);
                 updateAppUpdateViews(currentAccount, true);
             } else {
-                UpdaterUtils.installApk(activity, UpdaterUtils.apkFile.getAbsolutePath());
+                AndroidUtilities.openForView(SharedConfig.pendingAppUpdate.document, true, activity);
             }
         });
 
-        View v = new View(activity) {
+        updateTextView = new AnimatedTextView(activity, true, true, true) {
             @Override
-            protected void onDraw(@NonNull Canvas canvas) {
+            protected void onDraw(Canvas canvas) {
+                updateSizeTextView.setBounds(0, 0, getMeasuredWidth() - dp(20), getMeasuredHeight());
+                updateSizeTextView.draw(canvas);
+
+                canvas.save();
+                canvas.translate(dp(15), 0);
                 super.onDraw(canvas);
+                canvas.translate((getMeasuredWidth() - width()) / 2f - dp(30), dp(11));
                 updateLayoutIcon.draw(canvas);
+                canvas.restore();
+            }
+
+            @Override
+            protected boolean verifyDrawable(@NonNull Drawable who) {
+                return super.verifyDrawable(who) || who == updateSizeTextView;
             }
         };
-        updateLayoutIcon = new RadialProgress2(v);
+        updateTextView.setTextSize(dp(15));
+        updateTextView.setTypeface(AndroidUtilities.bold());
+        updateTextView.setTextColor(0xffffffff);
+        updateTextView.setGravity(Gravity.CENTER);
+        updateLayout.addView(updateTextView, LayoutHelper.createFrameMatchParent());
+        updateTextView.setText(LocaleController.getString(R.string.AppUpdateBeta), false);
+
+        updateLayoutIcon = new RadialProgress2(updateTextView);
         updateLayoutIcon.setColors(0xffffffff, 0xffffffff, Theme.getColor(Theme.key_featuredStickers_addButton), Theme.getColor(Theme.key_featuredStickers_addButton));
         updateLayoutIcon.setProgressRect(0, 0, dp(22), dp(22));
         updateLayoutIcon.setCircleRadius(dp(11));
         updateLayoutIcon.setAsMini();
-        updateLayout.addView(v, LayoutHelper.createLinear(22, 22, Gravity.CENTER_VERTICAL));
 
-
-        FrameLayout updateTextViewsContainer = new FrameLayout(activity);
-        updateTextViews = new TextView[2];
-        for (int i = 0; i < 2; ++i) {
-            updateTextViews[i] = new TextView(activity);
-            updateTextViews[i].setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-            updateTextViews[i].setTypeface(AndroidUtilities.bold());
-            updateTextViews[i].setTextColor(0xffffffff);
-            updateTextViews[i].setGravity(Gravity.LEFT);
-            updateTextViewsContainer.addView(updateTextViews[i], LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
-        }
-        updateLayout.addView(updateTextViewsContainer, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 12, 0, 0, 0));
-        updateTextViews[0].setText(LocaleController.getString(R.string.AppUpdate).replace("Telegram", LocaleController.getString(R.string.CG_AppName)));
-        updateTextViews[1].setAlpha(0f);
-        updateTextViews[1].setVisibility(View.GONE);
-
-        updateSizeTextView = new TextView(activity);
-        updateSizeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        updateSizeTextView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
+        updateSizeTextView.setCallback(updateTextView);
+        updateSizeTextView.setTextSize(dp(14));
         updateSizeTextView.setTypeface(AndroidUtilities.bold());
-        updateSizeTextView.setGravity(Gravity.RIGHT);
-        updateSizeTextView.setTextColor(0xffffffff);
-        updateLayout.addView(updateSizeTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 12, 0, 0, 0));
+        updateSizeTextView.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        updateSizeTextView.setTextColor(0xccffffff);
     }
 
     public void updateAppUpdateViews(int currentAccount, boolean animated) {
         if (sideMenuContainer == null) {
             return;
         }
-        if (CherrygramCoreConfig.INSTANCE.getUpdateAvailable() && UpdaterUtils.downloadURL != null && UpdaterUtils.version != null || UpdaterUtils.updateFileExists()) {
+        if (SharedConfig.isAppUpdateAvailable()) {
             createUpdateUI(currentAccount);
-            updateSizeTextView.setText(CherrygramCoreConfig.INSTANCE.getUpdateSize());
+
+            String fileName = FileLoader.getAttachFileName(SharedConfig.pendingAppUpdate.document);
+            File path = FileLoader.getInstance(currentAccount).getPathToAttach(SharedConfig.pendingAppUpdate.document, true);
             boolean showSize;
-            if (UpdaterUtils.updateFileExists()) {
+            if (path.exists()) {
                 updateLayoutIcon.setIcon(MediaActionDrawable.ICON_UPDATE, true, animated);
                 setUpdateText(LocaleController.getString(R.string.AppUpdateNow), animated);
                 showSize = false;
             } else {
-                if (CherrygramCoreConfig.INSTANCE.getUpdateIsDownloading()) {
+                if (FileLoader.getInstance(currentAccount).isLoadingFile(fileName)) {
                     updateLayoutIcon.setIcon(MediaActionDrawable.ICON_CANCEL, true, animated);
                     updateLayoutIcon.setProgress(0, false);
-                    UpdaterUtils.trackDownloadProgress(sideMenuContainer.getContext(), null, updateTextViews[0], updateLayoutIcon);
+                    Float p = ImageLoader.getInstance().getFileProgress(fileName);
+                    setUpdateText(LocaleController.formatString(R.string.AppUpdateDownloading, (int) ((p != null ? p : 0.0f) * 100)), animated);
                     showSize = false;
                 } else {
                     updateLayoutIcon.setIcon(MediaActionDrawable.ICON_DOWNLOAD, true, animated);
@@ -162,29 +147,7 @@ public class UpdateLayout extends IUpdateLayout {
                     showSize = true;
                 }
             }
-            if (showSize) {
-                if (updateSizeTextView.getTag() != null) {
-                    if (animated) {
-                        updateSizeTextView.setTag(null);
-                        updateSizeTextView.animate().alpha(1.0f).scaleX(1.0f).scaleY(1.0f).setDuration(180).start();
-                    } else {
-                        updateSizeTextView.setAlpha(1.0f);
-                        updateSizeTextView.setScaleX(1.0f);
-                        updateSizeTextView.setScaleY(1.0f);
-                    }
-                }
-            } else {
-                if (updateSizeTextView.getTag() == null) {
-                    if (animated) {
-                        updateSizeTextView.setTag(1);
-                        updateSizeTextView.animate().alpha(0.0f).scaleX(0.0f).scaleY(0.0f).setDuration(180).start();
-                    } else {
-                        updateSizeTextView.setAlpha(0.0f);
-                        updateSizeTextView.setScaleX(0.0f);
-                        updateSizeTextView.setScaleY(0.0f);
-                    }
-                }
-            }
+            updateSizeTextView.setText(showSize ? AndroidUtilities.formatFileSize(SharedConfig.pendingAppUpdate.document.size) : null, animated);
             if (updateLayout.getTag() != null) {
                 return;
             }
@@ -205,58 +168,18 @@ public class UpdateLayout extends IUpdateLayout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         if (updateLayout.getTag() == null) {
-                            updateLayout.setVisibility(View.INVISIBLE);
+                            updateLayout.setVisibility(View.GONE);
                         }
                     }
                 }).setDuration(180).start();
             } else {
                 updateLayout.setTranslationY(dp(44));
-                updateLayout.setVisibility(View.INVISIBLE);
+                updateLayout.setVisibility(View.GONE);
             }
         }
     }
 
     private void setUpdateText(String text, boolean animate) {
-        if (TextUtils.equals(updateTextViews[0].getText(), text)) {
-            return;
-        }
-        if (updateTextAnimator != null) {
-            updateTextAnimator.cancel();
-            updateTextAnimator = null;
-        }
-
-        if (animate) {
-            updateTextViews[1].setText(updateTextViews[0].getText());
-            updateTextViews[0].setText(text);
-
-            updateTextViews[0].setAlpha(0);
-            updateTextViews[1].setAlpha(1);
-            updateTextViews[0].setVisibility(View.VISIBLE);
-            updateTextViews[1].setVisibility(View.VISIBLE);
-
-            ArrayList<Animator> arrayList = new ArrayList<>();
-            arrayList.add(ObjectAnimator.ofFloat(updateTextViews[1], View.ALPHA, 0));
-            arrayList.add(ObjectAnimator.ofFloat(updateTextViews[0], View.ALPHA, 1));
-
-            updateTextAnimator = new AnimatorSet();
-            updateTextAnimator.playTogether(arrayList);
-            updateTextAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    if (updateTextAnimator == animation) {
-                        updateTextViews[1].setVisibility(View.GONE);
-                        updateTextAnimator = null;
-                    }
-                }
-            });
-            updateTextAnimator.setDuration(320);
-            updateTextAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
-            updateTextAnimator.start();
-        } else {
-            updateTextViews[0].setText(text);
-            updateTextViews[0].setAlpha(1);
-            updateTextViews[0].setVisibility(View.VISIBLE);
-            updateTextViews[1].setVisibility(View.GONE);
-        }
+        updateTextView.setText(text, animate);
     }
 }

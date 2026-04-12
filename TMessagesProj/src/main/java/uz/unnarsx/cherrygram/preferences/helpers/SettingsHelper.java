@@ -81,6 +81,24 @@ public class SettingsHelper {
         return i;
     }
 
+    public static UItem asExpandableSwitch(int id, CharSequence text, CharSequence subText) {
+        UItem item = new UItem(UniversalAdapter.VIEW_TYPE_EXPANDABLE_SWITCH, false);
+        item.id = id;
+        item.text = text;
+        item.animatedText = subText;
+        return item;
+    }
+
+    public static UItem asExpandableSwitch(int id, int iconResId, CharSequence text, CharSequence subText) {
+        UItem item = new UItem(UniversalAdapter.VIEW_TYPE_EXPANDABLE_SWITCH, false);
+        item.id = id;
+        item.red = false;
+        item.iconResId = iconResId;
+        item.text = text;
+        item.animatedText = subText;
+        return item;
+    }
+
     public static void updateCheckState(View view, boolean isChecked) {
         if (view instanceof NotificationsCheckCell notificationsCheckCell) {
             notificationsCheckCell.setChecked(isChecked);

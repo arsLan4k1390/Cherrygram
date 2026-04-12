@@ -95,15 +95,15 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.camera.BaseCameraView;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 
 @SuppressLint("NewApi")
 public class CameraView extends BaseCameraView implements TextureView.SurfaceTextureListener, CameraController.ICameraView, CameraController.ErrorCallback  {
 
     public boolean WRITE_TO_FILE_IN_BACKGROUND = false;
-    private boolean largePhotos = CherrygramChatsConfig.INSTANCE.getLargePhotos();
+    private boolean largePhotos = CherrygramExtras.largePhotosSupported();
 
     public boolean isStory;
     public boolean recordHevc;

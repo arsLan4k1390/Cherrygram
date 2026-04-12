@@ -197,7 +197,6 @@
     <string name="CP_Category_Camera">Kamera</string>
     <string name="CP_CameraType">Kameratyp</string>
     <string name="CP_Camera2Desc">Alle Funktionen, die ausgeblendet werden, wenn Camera2 eingeschaltet ist, funktionieren nicht mit aktivierter Camera2.</string>
-    <string name="CP_CameraStabilisation">Kamerastabilisierung</string>
     <string name="CP_CameraUW">Start von UW</string>
     <string name="CP_CameraUW_Desc">Die Aufnahme von Videos wird von der Ultra-Wide Kamera gestartet (falls die API des Geräts es unterstützt)</string>
     <string name="CP_CameraDualCamera">Dual-Kamera</string>
@@ -223,7 +222,6 @@
     <string name="EP_NavigationAnimation">Navigations-Animation</string>
     <string name="EP_NavigationAnimationBezier">Klassisch</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading Effekt</string>
-    <string name="EP_PhotosSize">Sende große Fotos (2560px)</string>
     <string name="EP_CustomChat">Benutzerdefinierter Chat für gespeicherte Nachrichten</string>
     <string name="EP_CustomChat_Desc">Setze eine ID aus einem anderen Chat/Gruppe/Kanal um Nachrichten weiterzuleiten (Schaltfläche in Aktionsleiste, Nachrichtenmenü oder Doppeltipp)</string>
     <string name="EP_Network">Netzwerk</string>
@@ -234,7 +232,6 @@
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">Privatsphäre</string>
-    <string name="SP_NoProxyPromo">Proxy-Sponsor nicht anzeigen</string>
     <string name="SP_GoogleAnalytics_Desc">Wenn Sie dies aktivieren, werden alle Anwendungsabstürze und -statistiken an \"console.firebase.google.com\" gemeldet, um eine weitere Überprüfung durch den Entwickler zu erhalten.</string>
     <string name="SP_AskPinBeforeDelete">Fragen nach biometrischer Bestätigung, bevor Sie einen Chat löschen.</string>
     <string name="SP_AskPinBeforeDelete_Desc">Um einen Chat oder den Verlauf zu löschen wird eine biometrische Bestätigung benötigt. Zugangscode und biometrische Bestätigung im System müssen aktiviert sein.</string>
@@ -245,7 +242,6 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Updates</string>
-    <string name="UP_TapToCheckUpdates">Hier tippen, um Informationen über Updates zu erhalten</string>
     <string name="UP_LastCheck">Zuletzt geprüft</string>
     <string name="UP_CurrentVersion">Aktuelle Version</string>
     <string name="UP_BuildType">Build-Typ</string>
@@ -253,15 +249,9 @@
     <string name="UP_BTBeta">Beta</string>
     <string name="UP_InstallBetas">Beta-Versionen installieren</string>
     <string name="UP_Auto_OTA">Beim Start prüfen</string>
-    <string name="UP_ClearUpdatesCache">Update-Cache löschen</string>
-    <string name="UP_ClearedUpdatesCache">%1$s des Caches gelöscht.</string>
-    <string name="UP_NothingToClear">Nichts zu löschen.</string>
     <string name="UP_CheckForUpdates">Nach Updates suchen</string>
-    <string name="UP_Not_Found">Cherrygram ist auf dem neuesten Stand.</string>
     <string name="UP_UpdateAvailable">Update verfügbar!</string>
     <string name="UP_Version">Version</string>
-    <string name="UP_Changelog">Changelog:</string>
-    <string name="UP_ChangelogRead">Zum Lesen tippen</string>
     <string name="UP_Download">Download</string>
     <!--Updates Preferences-->
     <!--Donations-->

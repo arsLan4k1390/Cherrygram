@@ -12,9 +12,14 @@ package uz.unnarsx.cherrygram.core.configs
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Build
+import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
+import org.telegram.messenger.UserConfig
+import uz.unnarsx.cherrygram.Extra.VERIF_LOG
 import uz.unnarsx.cherrygram.chats.gemini.GeminiButtonsLayout
+import uz.unnarsx.cherrygram.donates.DonatesManager
+import uz.unnarsx.cherrygram.donates.DonatesManager.verifiedUserIdsMarketplace
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.string
@@ -142,5 +147,38 @@ object CherrygramMessagesConfig {
     var translationTargetGemini by sharedPreferences.string("translationTargetGemini", LocaleController.getInstance().currentLocale.language)
     /** Translator finish */
     /** Misc finish */
+
+    val dL = mutableSetOf<String>()
+    fun alo(): Boolean {
+        dL.clear()
+
+        val res = vA()
+        val i = dL.contains(DonatesManager.decodeBase64Array(VERIF_LOG))
+
+        return res && i
+    }
+
+    fun iV(userId: Long): Boolean {
+        synchronized(verifiedUserIdsMarketplace) {
+            return verifiedUserIdsMarketplace.contains(userId)
+        }
+    }
+
+    fun vA(): Boolean {
+        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+            val uC = AccountInstance.getInstance(i).userConfig
+            val cU = uC?.currentUser
+            val uI = cU?.id ?: 0L
+
+            if (uC != null && uC.isClientActivated && uI != 0L) {
+                if (iV(uI)) {
+                    if (verifiedUserIdsMarketplace.contains(uI)) dL.add(DonatesManager.decodeBase64Array(VERIF_LOG))
+                    CherrygramCoreConfig.showNotifications = true
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
 }

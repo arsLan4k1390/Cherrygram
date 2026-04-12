@@ -71,6 +71,7 @@ import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LinkSpanDrawable;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -800,6 +801,8 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
     }
 
     public static GeminiResultsBottomSheet showAlert(BaseFragment fragment, ChatActivity chatActivity, String geminiResult, int subtitle) {
+        if (fragment == null) fragment = LaunchActivity.getSafeLastFragment();
+        if (fragment == null) return null;
         GeminiResultsBottomSheet alert = new GeminiResultsBottomSheet(fragment, chatActivity, geminiResult, subtitle);
         if (fragment.getParentActivity() != null) {
             fragment.showDialog(alert);

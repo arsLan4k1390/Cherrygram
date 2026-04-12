@@ -75,6 +75,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 import me.vkryl.android.animator.ReplaceAnimator;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 
 public class ActionBar extends FrameLayout implements Theme.Colorable {
@@ -138,9 +139,10 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
     private boolean castShadows = true;
     private int shadowAlpha = 0xFF;
 
+    public boolean menuOccupyBack;
     protected boolean isSearchFieldVisible;
     public float searchFieldVisibleAlpha;
-    protected int itemsBackgroundColor;
+    public int itemsBackgroundColor;
     protected int itemsActionModeBackgroundColor;
     protected int itemsColor;
     protected int itemsActionModeColor;
@@ -175,8 +177,13 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
     }
 
     public ActionBar(Context context, Theme.ResourcesProvider resourcesProvider) {
+        this(context, resourcesProvider, CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+    }
+
+    public ActionBar(Context context, Theme.ResourcesProvider resourcesProvider, boolean centerTitle) {
         super(context);
         this.resourcesProvider = resourcesProvider;
+        this.isCenterTitle = centerTitle;
         setOnClickListener(v -> {
             if (isSearchFieldVisible()) {
                 return;
@@ -451,7 +458,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
         }
     }
 
-    private boolean isCenterTitle = CherrygramAppearanceConfig.INSTANCE.getCenterTitle();
+    private boolean isCenterTitle;
 
     public void centerTitle() {
         isCenterTitle = true;
@@ -1312,12 +1319,12 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
                 menuWidth = MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST);
                 menu.measure(menuWidth, actionBarHeightSpec);
                 int itemsWidth = menu.getItemsMeasuredWidth(true);
-                menuWidth = MeasureSpec.makeMeasureSpec(width - dp(AndroidUtilities.isTablet() ? 74 : 66) + menu.getItemsMeasuredWidth(true), MeasureSpec.EXACTLY);
+                menuWidth = MeasureSpec.makeMeasureSpec(width - dp(menuOccupyBack ? 0 : AndroidUtilities.isTablet() ? 74 : 66) + menu.getItemsMeasuredWidth(true), MeasureSpec.EXACTLY);
                 if (!isMenuOffsetSuppressed) {
                     menu.translateXItems(-itemsWidth);
                 }
             } else if (isSearchFieldVisible) {
-                menuWidth = MeasureSpec.makeMeasureSpec(width - dp(AndroidUtilities.isTablet() ? 74 : 66), MeasureSpec.EXACTLY);
+                menuWidth = MeasureSpec.makeMeasureSpec(width - dp(menuOccupyBack ? 0 : AndroidUtilities.isTablet() ? 74 : 66), MeasureSpec.EXACTLY);
                 if (!isMenuOffsetSuppressed) {
                     menu.translateXItems(0);
                 }
@@ -1418,7 +1425,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
         }
 
         if (menu != null && menu.getVisibility() != GONE) {
-            int menuLeft = menu.searchFieldVisible() ? dp(AndroidUtilities.isTablet() ? 74 : 66) : (right - left) - menu.getMeasuredWidth();
+            int menuLeft = menu.searchFieldVisible() ? dp(menuOccupyBack ? 0 : AndroidUtilities.isTablet() ? 74 : 66) : (right - left) - menu.getMeasuredWidth();
             menu.layout(menuLeft, additionalTop, menuLeft + menu.getMeasuredWidth(), additionalTop + menu.getMeasuredHeight());
         }
 
@@ -1573,7 +1580,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
 
         if (additionalSubTitleOverlayContainer != null) {
             final CharSequence textToSet;
-            if (titleId == R.string.ConnectingToProxyWithDots) {
+            if (titleId == R.string.ConnectingToProxyWithDots && !CherrygramCoreConfig.INSTANCE.getCheckContent()) {
                 textToSet = AndroidUtilities.replaceArrows(getString(R.string.TitleSetupProxy), true, dp(8f / 3f), dp(2));
             } else {
                 textToSet = null;

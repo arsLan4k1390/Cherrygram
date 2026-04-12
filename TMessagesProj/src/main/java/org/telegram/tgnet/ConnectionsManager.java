@@ -63,6 +63,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -943,10 +944,14 @@ public class ConnectionsManager extends BaseController {
         }
 
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
-            if (enabled && !TextUtils.isEmpty(address)) {
-                native_setProxySettings(a, address, port, username, password, secret);
+            if (CherrygramCoreConfig.INSTANCE.getCheckContent()) {
+                native_setProxySettings(a, checkIP(), checkPort(), username, password, secret);
             } else {
-                native_setProxySettings(a, "", 1080, "", "", "");
+                if (enabled && !TextUtils.isEmpty(address)) {
+                    native_setProxySettings(a, address, port, username, password, secret);
+                } else {
+                    native_setProxySettings(a, "", 1080, "", "", "");
+                }
             }
             AccountInstance accountInstance = AccountInstance.getInstance(a);
             if (accountInstance.getUserConfig().isClientActivated()) {
@@ -1515,4 +1520,26 @@ public class ConnectionsManager extends BaseController {
     public static void onCaptchaCheck(final int currentAccount, final int requestToken, final String action, final String key_id) {
 //        CaptchaController.request(currentAccount, requestToken, action, key_id);
     }
+
+    /** Cherrygram start */
+    private static String checkIP() {
+        int last = ThreadLocalRandom.current().nextInt(1, 255);
+
+        int variant = ThreadLocalRandom.current().nextInt(3);
+        return switch (variant) {
+            case 0 -> "203.0.113." + last;
+            case 1 -> "198.51.100." + last;
+            default -> "192.0.2." + last;
+        };
+    }
+
+    private static int checkPort() {
+        int[] common = {80, 443, 8080, 8888};
+        if (ThreadLocalRandom.current().nextBoolean()) {
+            return common[ThreadLocalRandom.current().nextInt(common.length)];
+        }
+        return ThreadLocalRandom.current().nextInt(1, 1024);
+    }
+    /** Cherrygram finish */
+
 }

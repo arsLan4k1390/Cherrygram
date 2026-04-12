@@ -201,7 +201,6 @@
     <string name="CP_Category_Camera">Kamera</string>
     <string name="CP_CameraType">Typ kamery</string>
     <string name="CP_Camera2Desc">Усе функцыі, што схаваны пры ўключэнні Camera2, не будуць працаваць з ёй.</string>
-    <string name="CP_CameraStabilisation">Стабілізацыя</string>
     <string name="CP_CameraUW">Пачынаць з УШ</string>
     <string name="CP_CameraUW_Desc">Запісваць відэапаведамленні з ультрашырокай камеры (калі API вашай прылады падтрымлівае)</string>
     <string name="CP_CameraDualCamera">Двайная камера</string>
@@ -228,7 +227,6 @@
     <string name="EP_NavigationAnimation">Навігацыйная анімацыя</string>
     <string name="EP_NavigationAnimationBezier">Класічны</string>
     <string name="EP_NavigationAnimationCrossfading">Эфект плаўнага згасання</string>
-    <string name="EP_PhotosSize">Адпраўляць вялікія фота (2560px)</string>
     <string name="EP_CustomChat">Карыстацкі чат для Захаванага</string>
     <string name="EP_CustomChat_Desc">Усталюйце ID іншага чату/групы/канала, каб перасылаць туды паведамленні (праз кнопку ў панэлі дзеянняў, у меню паведамлення ці пры падвойным націску)</string>
     <string name="EP_Network">Сетка</string>
@@ -239,7 +237,6 @@
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">Прыватнасць</string>
-    <string name="SP_NoProxyPromo">Не паказваць спонсара проксі</string>
     <string name="SP_GoogleAnalytics_Desc">Уключыўшы гэта, усе збоі дадаткаў (вылеты) і статыстыка будуць адпраўлены ў \"console.firebase.google.com\" для далейшага вывучэння распрацоўнікам.</string>
     <string name="SP_AskPinBeforeDelete">Пацвярждаць выдаленне біяметрыкай.</string>
     <string name="SP_AskPinBeforeDelete_Desc">Калі вы захаціце выдаліць чат ці гісторыю, будзе патрабавацца пацверджане біяметрыяй. Код і біяметрыка ў сістэме павінны быць уключаны.</string>
@@ -250,7 +247,6 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Абнаўленне</string>
-    <string name="UP_TapToCheckUpdates">Націсніце тут, каб атрымаць інфармацыю пра абнаўленні</string>
     <string name="UP_LastCheck">Апошняя праверка</string>
     <string name="UP_CurrentVersion">Бягучая версія</string>
     <string name="UP_BuildType">Тып зборкі</string>
@@ -258,15 +254,9 @@
     <string name="UP_BTBeta">Бэта</string>
     <string name="UP_InstallBetas">Усталёўваць бэта-версіі</string>
     <string name="UP_Auto_OTA">Праверка пры запуску</string>
-    <string name="UP_ClearUpdatesCache">Ачысціць кэш абнаўленняў</string>
-    <string name="UP_ClearedUpdatesCache">Вычышчана %1$s кэша.</string>
-    <string name="UP_NothingToClear">Няма чаго чысціць.</string>
     <string name="UP_CheckForUpdates">Праверыць абнаўленні</string>
-    <string name="UP_Not_Found">Выкарыстоўваецца апошняя версія Cherrygram.</string>
     <string name="UP_UpdateAvailable">Даступна абнаўленне!</string>
     <string name="UP_Version">Версія</string>
-    <string name="UP_Changelog">Спіс змен:</string>
-    <string name="UP_ChangelogRead">Тыкніце, каб прачытаць</string>
     <string name="UP_Download">Спампаваць</string>
     <!--Updates Preferences-->
     <!--Donations-->

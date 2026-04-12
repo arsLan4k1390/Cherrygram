@@ -9,10 +9,13 @@
 
 package uz.unnarsx.cherrygram.core.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ContactsController
 import org.telegram.messenger.LocaleController.formatString
 import org.telegram.messenger.LocaleController.getString
+import org.telegram.messenger.PasskeysController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLObject
@@ -75,6 +78,17 @@ object CGBulletinCreator {
                 accs.clear()
             }, 200)
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun createPasskeyBulletin(fragment: BaseFragment) {
+        BulletinFactory.of(fragment).createSimpleBulletin(
+            R.raw.passkey,
+            getString(R.string.CG_PasskeyNoCredentialAvailable),
+            getString(R.string.Settings)
+        ) {
+            PasskeysController.openSettings(fragment.getParentActivity());
+        }.show()
     }
 
 }

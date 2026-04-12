@@ -1861,11 +1861,15 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 });
                 if (CameraXUtils.isCurrentCameraNotCameraX()) {
                     createCamera(a, cameraSurface[a]);
+                } else {
+                    if (!CherrygramCameraConfig.INSTANCE.getUseDualCamera()) {
+                        videoMessagesHelper.createSingleCameraX(InstantCameraView.this, cameraSurface[0]);
+                    }
                 }
             }
 
-            if (CameraXUtils.isCurrentCameraCameraX()) {
-                videoMessagesHelper.createCameraX(InstantCameraView.this, cameraSurface);
+            if (CameraXUtils.isCurrentCameraCameraX() && CherrygramCameraConfig.INSTANCE.getUseDualCamera()) {
+                videoMessagesHelper.createDualCameraX(InstantCameraView.this, cameraSurface);
             }
 
             if (BuildVars.LOGS_ENABLED) {
@@ -2108,7 +2112,11 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     if (CameraXUtils.isCurrentCameraNotCameraX()) {
                         createCamera(0, cameraSurface[0]);
                     } else {
-                        videoMessagesHelper.createCameraX(InstantCameraView.this, cameraSurface);
+                        if (CherrygramCameraConfig.INSTANCE.getUseDualCamera()) {
+                            videoMessagesHelper.createDualCameraX(InstantCameraView.this, cameraSurface);
+                        } else {
+                            videoMessagesHelper.createSingleCameraX(InstantCameraView.this, cameraSurface[0]);
+                        }
                     }
 
                     updateScale();
@@ -4001,16 +4009,22 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             isInPinchToZoomTouchMode = false;
             finishZoom();
         }
-        if (CameraXUtils.isCurrentCameraCameraX() && evControlView != null && recording && videoMessagesHelper.cameraXController != null) {
+        if (CameraXUtils.isCurrentCameraCameraX()
+                && ev.getAction() == MotionEvent.ACTION_UP
+                && !isInPinchToZoomTouchMode
+                && evControlView != null
+                && videoMessagesHelper.cameraXController != null
+        ) {
             evControlView.setVisibility(View.VISIBLE);
             videoMessagesHelper.showExposureControls(this, true);
-            if (!isInPinchToZoomTouchMode) {
-//                videoMessagesHelper.cameraXController.focusToPoint((int) ev.getX(), (int) ev.getY());
-                cameraContainer.getLocationOnScreen(position);
-                float viewX = ev.getRawX() - position[0];
-                float viewY = ev.getRawY() - position[1];
-                videoMessagesHelper.cameraXController.focusToPoint((int) viewX, (int) viewY);
-            }
+
+            if (CherrygramCameraConfig.INSTANCE.getContinuousAutofocus()) return false;
+
+            cameraContainer.getLocationOnScreen(position);
+            float viewX = ev.getRawX() - position[0];
+            float viewY = ev.getRawY() - position[1];
+
+            videoMessagesHelper.cameraXController.focusToPoint((int) viewX, (int) viewY, true);
         }
         return true;
     }

@@ -28,11 +28,13 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.BackupImageView
+import org.telegram.ui.Components.IconBackgroundColors
 import org.telegram.ui.Components.ImageUpdater
 import org.telegram.ui.Components.ItemOptions
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS
 import org.telegram.ui.Components.UItem
+import org.telegram.ui.Components.UniversalAdapter
 import org.telegram.ui.Components.UniversalRecyclerView
 import org.telegram.ui.Gifts.GiftSheet
 import org.telegram.ui.LoginActivity
@@ -277,7 +279,7 @@ class TelegramSettingsHelper(
 
     }
 
-    fun injectAccounts(items: MutableList<UItem>, accountNumbers: ArrayList<Int>, user: TLRPC.User?) {
+    fun injectAccounts(adapter: UniversalAdapter, items: MutableList<UItem>, accountNumbers: ArrayList<Int>, user: TLRPC.User?) {
         items.add(UItem.asHeader(getString(R.string.SettingsAccounts)))
 
         val addAccountItem = SettingsActivity.SettingCell.Factory.of(
@@ -288,6 +290,14 @@ class TelegramSettingsHelper(
             getString(R.string.AddAccount)
         )
 
+        /*val addAccountItem = UserInfoActivity.InfoCell.Factory.of(
+            1392,
+            R.drawable.outline_add_account,
+            getString(R.string.AddAccount),
+            null,
+            0
+        ).accent()*/
+
         if (accountNumbers.size >= 1) {
             addAccountItem.`object` = Runnable {
                 CherrygramAppearanceConfig.showAccounts = !CherrygramAppearanceConfig.showAccounts
@@ -296,14 +306,27 @@ class TelegramSettingsHelper(
 
         items.add(addAccountItem)
 
-        for (i in accountNumbers.indices) {
-            if (CherrygramAppearanceConfig.showAccounts) {
-                items.add(SettingsActivity.AccountCell.Factory.of(i, accountNumbers[i]))
+        if (CherrygramAppearanceConfig.showAccounts/* && accountNumbers.isNotEmpty()*/) {
+            adapter.reorderSectionStart()
+            for (i in accountNumbers.indices) {
+                items.add(SettingsActivity.AccountCell.Factory.of(accountNumbers[i]))
             }
+            adapter.reorderSectionEnd()
+
+            val space = SettingsHelper.asSpaceCG(dp(8f))
+            space.id = -1
+            space.transparent = true
+            items.add(space)
+        } else {
+            injectMyProfile(items, user)
         }
 
-        var colorTop = 0xFF1CA5ED.toInt()
-        var colorBottom = 0xFF1488E1.toInt()
+        items.add(UItem.asShadow(null))
+    }
+
+    fun injectMyProfile(items: MutableList<UItem>, user: TLRPC.User?) {
+        var colorTop = IconBackgroundColors.BLUE.top
+        var colorBottom = IconBackgroundColors.BLUE.bottom
 
         if (showMyProfile() && user != null) {
             if (user.color is TL_peerColorCollectible) {
@@ -343,18 +366,21 @@ class TelegramSettingsHelper(
         items.add(
             SettingsActivity.SettingCell.Factory.of(
                 1,
-                colorTop,
-                colorBottom,
+                if (Theme.isCurrentThemeDay()) colorBottom else colorTop,
+                if (Theme.isCurrentThemeDay()) colorTop else colorBottom,
                 R.drawable.settings_account,
                 if (showMyProfile()) getString(R.string.MyProfile) else getString(R.string.SettingsAccount),
                 getString(R.string.SettingsAccountInfo)
             )
         )
-
-        items.add(UItem.asShadow(null))
     }
 
-    fun injectCherryItems(items: MutableList<UItem>) {
+    fun injectCherryItems(items: MutableList<UItem>, user: TLRPC.User?) {
+
+        if (CherrygramAppearanceConfig.showAccounts) {
+            injectMyProfile(items, user)
+        }
+
         if (!CherrygramPrivacyConfig.hideArchiveFromChatsList && fragment.messagesController.getDialogs(1).isNotEmpty()) {
             val archiveItem = SettingsActivity.SettingCell.Factory.of(
                 1395,

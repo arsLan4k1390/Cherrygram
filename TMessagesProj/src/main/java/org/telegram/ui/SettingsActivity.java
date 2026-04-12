@@ -34,6 +34,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.os.Build;
@@ -43,6 +44,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
@@ -56,6 +58,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -101,6 +104,7 @@ import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FloatingDebug.FloatingDebugController;
 import org.telegram.ui.Components.FragmentFloatingButton;
+import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.ImageUpdater;
 import org.telegram.ui.Components.InstantCameraView;
 import org.telegram.ui.Components.ItemOptions;
@@ -369,6 +373,27 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 }
             }
         });
+        listView.allowReorder(accountNumbers != null && accountNumbers.size() > 1);
+        listView.listenReorder((id, newItems) -> {
+            ArrayList<Integer> newOrder = new ArrayList<>();
+
+            for (UItem item : newItems) {
+                if (item.object instanceof Integer) {
+                    newOrder.add((Integer) item.object);
+                }
+            }
+
+            if (newOrder.size() != accountNumbers.size()) return;
+
+            for (int i = 0; i < newOrder.size(); i++) {
+                UserConfig config = UserConfig.getInstance(newOrder.get(i));
+                config.loginTime = i;
+                config.saveConfig(false);
+            }
+
+            accountNumbers.clear();
+            accountNumbers.addAll(newOrder);
+        });
         iBlur3Capture = new ViewGroupPartRenderer(listView, contentView, listView::drawChild);
         listView.addEdgeEffectListener(() -> listView.postOnAnimation(this::blur3_InvalidateBlur));
         contentView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
@@ -556,13 +581,15 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         avatarView.setForUserOrChat(user, avatarDrawable, true);
         titleView.setText(UserObject.getUserName(user));
         final StringBuilder sb = new StringBuilder();
-        if (hidePhoneNumber) {
-            sb.append(getChatsPasswordHelper().replaceStringToSpoilers(
-                    PhoneFormat.getInstance().format("+ " + user.phone),
-                    true
-            ));
-        } else {
-            sb.append(PhoneFormat.getInstance().format("+" + user.phone));
+        if (user != null) {
+            if (hidePhoneNumber) {
+                sb.append(getChatsPasswordHelper().replaceStringToSpoilers(
+                        PhoneFormat.getInstance().format("+ " + user.phone),
+                        true
+                ));
+            } else {
+                sb.append(PhoneFormat.getInstance().format("+" + user.phone));
+            }
         }
         final String username = UserObject.getPublicUsername(user);
         if (username != null) {
@@ -649,21 +676,26 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
         items.add(UItem.asCustomShadow(topView, 200 - 12));
 
+        int activeAccounts = 0;
         accountNumbers.clear();
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
-            if (UserConfig.getInstance(a).isClientActivated() && currentAccount != a) {
-                accountNumbers.add(a);
+            if (UserConfig.getInstance(a).isClientActivated()) {
+                activeAccounts++;
             }
         }
-        Collections.sort(accountNumbers, (o1, o2) -> {
+
+        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+            if (UserConfig.getInstance(a).isClientActivated()) {
+                if (activeAccounts >= 3 || currentAccount != a) {
+                    accountNumbers.add(a);
+                }
+            }
+        }
+
+        accountNumbers.sort((o1, o2) -> {
             long l1 = UserConfig.getInstance(o1).loginTime;
             long l2 = UserConfig.getInstance(o2).loginTime;
-            if (l1 > l2) {
-                return 1;
-            } else if (l1 < l2) {
-                return -1;
-            }
-            return 0;
+            return Long.compare(l1, l2);
         });
 
         final Set<String> suggestions = getMessagesController().pendingSuggestions;
@@ -719,17 +751,17 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }*/
 
         telegramSettingsHelper.injectChannelAdvice(items);
-        telegramSettingsHelper.injectAccounts(items, accountNumbers, getUserConfig().getCurrentUser());
-        telegramSettingsHelper.injectCherryItems(items);
+        telegramSettingsHelper.injectAccounts(adapter, items, accountNumbers, getUserConfig().getCurrentUser());
+        telegramSettingsHelper.injectCherryItems(items, getUserConfig().getCurrentUser());
 
-        items.add(SettingCell.Factory.of(2, 0xFFF09F1B, 0xFFE18A11, R.drawable.settings_chat, getString(R.string.SettingsChat), getString(R.string.SettingsChatInfo)));
-        items.add(SettingCell.Factory.of(3, 0xFF55CA47, 0xFF27B434, R.drawable.settings_privacy, getString(R.string.SettingsPrivacySecurity), getString(R.string.SettingsPrivacySecurityInfo)));
-        items.add(SettingCell.Factory.of(5, 0xFFF45255, 0xFFDF3955, R.drawable.settings_sounds, getString(R.string.SettingsNotifications), getString(R.string.SettingsNotificationsInfo)));
-        items.add(SettingCell.Factory.of(6, 0xFF4F85F6, 0xFF3568E8, R.drawable.settings_data, getString(R.string.SettingsData), getString(R.string.SettingsDataInfo)));
-        items.add(SettingCell.Factory.of(7, 0xFF1CA5ED, 0xFF1387E1, R.drawable.settings_folders, getString(R.string.SettingsFolders), getString(R.string.SettingsFoldersInfo)));
-        items.add(SettingCell.Factory.of(8, 0xFF32C0CE, 0xFF1D9CC6, R.drawable.settings_devices, getString(R.string.SettingsDevices), getString(R.string.SettingsDevicesInfo)));
-        items.add(SettingCell.Factory.of(9, 0xFFF28B31, 0xFFE26314, R.drawable.settings_power, getString(R.string.SettingsPowerSaving), getString(R.string.SettingsPowerSavingInfo)));
-        items.add(SettingCell.Factory.of(10, 0xFFC46EF4, 0xFF9F55DF, R.drawable.settings_language, getString(R.string.SettingsLanguage), LocaleController.getCurrentLanguageName()));
+        items.add(SettingCell.Factory.of(2, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom, R.drawable.settings_chat, getString(R.string.SettingsChat), getString(R.string.SettingsChatInfo)));
+        items.add(SettingCell.Factory.of(3, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_privacy, getString(R.string.SettingsPrivacySecurity), getString(R.string.SettingsPrivacySecurityInfo)));
+        items.add(SettingCell.Factory.of(5, IconBackgroundColors.RED.top, IconBackgroundColors.RED.bottom, R.drawable.settings_sounds, getString(R.string.SettingsNotifications), getString(R.string.SettingsNotificationsInfo)));
+        items.add(SettingCell.Factory.of(6, IconBackgroundColors.BLUE_DEEP.top, IconBackgroundColors.BLUE_DEEP.bottom, R.drawable.settings_data, getString(R.string.SettingsData), getString(R.string.SettingsDataInfo)));
+        items.add(SettingCell.Factory.of(7, IconBackgroundColors.BLUE_ALT.top, IconBackgroundColors.BLUE_ALT.bottom, R.drawable.settings_folders, getString(R.string.SettingsFolders), getString(R.string.SettingsFoldersInfo)));
+        items.add(SettingCell.Factory.of(8, IconBackgroundColors.CYAN.top, IconBackgroundColors.CYAN.bottom, R.drawable.settings_devices, getString(R.string.SettingsDevices), getString(R.string.SettingsDevicesInfo)));
+        items.add(SettingCell.Factory.of(9, IconBackgroundColors.ORANGE_DEEP.top, IconBackgroundColors.ORANGE_DEEP.bottom, R.drawable.settings_power, getString(R.string.SettingsPowerSaving), getString(R.string.SettingsPowerSavingInfo)));
+        items.add(SettingCell.Factory.of(10, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, getString(R.string.SettingsLanguage), LocaleController.getCurrentLanguageName()));
 
         items.add(UItem.asShadow(null));
 
@@ -771,10 +803,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.SettingsHelp)));
-        items.add(SettingCell.Factory.of(17, 0xFFF09F1B, 0xFFE18A11, R.drawable.settings_ask, getString(R.string.AskAQuestion)));
-        items.add(SettingCell.Factory.of(18, 0xFF1BA4ED, 0xFF1488E1, R.drawable.settings_faq, getString(R.string.TelegramFAQ)));
-        items.add(SettingCell.Factory.of(23, 0xFFC46EF4, 0xFF9F55DF, R.drawable.settings_features, getString(R.string.TelegramFeatures)));
-        items.add(SettingCell.Factory.of(19, 0xFF55CA47, 0xFF27B434, R.drawable.settings_policy, getString(R.string.PrivacyPolicy)));
+        items.add(SettingCell.Factory.of(17, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom, R.drawable.settings_ask, getString(R.string.AskAQuestion)));
+        items.add(SettingCell.Factory.of(18, IconBackgroundColors.BLUE_LIGHT.top, IconBackgroundColors.BLUE_LIGHT.bottom, R.drawable.settings_faq, getString(R.string.TelegramFAQ)));
+        items.add(SettingCell.Factory.of(23, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_features, getString(R.string.TelegramFeatures)));
+        items.add(SettingCell.Factory.of(19, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_policy, getString(R.string.PrivacyPolicy)));
 
         if (BuildVars.LOGS_ENABLED || BuildVars.DEBUG_PRIVATE_VERSION) {
             items.add(UItem.asShadow(null));
@@ -809,6 +841,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
         if (item.instanceOf(AccountCell.Factory.class)) {
             final int account = item.intValue;
+            if (account == UserConfig.selectedAccount) return;
             if (LaunchActivity.instance != null) {
                 LaunchActivity.instance.switchToAccount(account, true);
                 CGBulletinCreator.INSTANCE.createSwitchAccountBulletin(account);
@@ -1079,6 +1112,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
         public void set(int account) {
             final TLRPC.User user = UserConfig.getInstance(account).getCurrentUser();
+            boolean isSelected = account == UserConfig.selectedAccount;
 
             avatarDrawable.setInfo(account, user);
             avatarView.getImageReceiver().setCurrentAccount(account);
@@ -1112,6 +1146,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             int counter = MessagesStorage.getInstance(account).getMainUnreadCount();
             counterView.setVisibility(counter > 0 ? View.VISIBLE : View.GONE);
             counterView.setText(LocaleController.formatNumber(counter, ','));
+
+            updateContainer(isSelected);
         }
 
         @Override
@@ -1142,9 +1178,17 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 return item;
             }
 
+            public static UItem of(int account) {
+                final UItem item = UItem.ofFactory(AccountCell.Factory.class);
+                item.intValue = account;
+                item.object = account;
+
+                return item;
+            }
+
             @Override
             public boolean equals(UItem a, UItem b) {
-                return a.id == b.id;
+                return a.intValue == b.intValue;
             }
 
             @Override
@@ -1153,6 +1197,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             }
         }
 
+        /** Cherrygram start */
         private void checkCherrygramBadge(TLRPC.User user) {
             if (user == null) return;
 
@@ -1182,6 +1227,44 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 textView.setRightDrawableInside(true);
             }
         }
+
+        private void updateContainer(boolean isSelected) {
+            int radius = dp(14);
+
+            if (isSelected) {
+                int containerColor = Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider);
+
+                GradientDrawable drawable = new GradientDrawable();
+                drawable.setCornerRadius(radius);
+                drawable.setColor(ColorUtils.setAlphaComponent(containerColor, 40));
+                drawable.setStroke(dp(1), ColorUtils.setAlphaComponent(containerColor, 120));
+
+                InsetDrawable insetDrawable = new InsetDrawable(
+                        drawable,
+                        dp(10), dp(2), dp(10), dp(2)
+                );
+
+                setBackground(insetDrawable);
+                setPadding(dp(6), dp(2), dp(6), dp(2));
+            } else {
+                setBackground(null);
+                setPadding(0, 0, 0, 0);
+            }
+
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) counterView.getLayoutParams();
+            if (isSelected) {
+                lp.setMarginEnd(-dp(18));
+                arrowView.setImageResource(0);
+            } else {
+                lp.setMarginEnd(0);
+                arrowView.setImageResource(R.drawable.msg_arrowright);
+            }
+            counterView.setLayoutParams(lp);
+
+            updateColors();
+        }
+        /** Cherrygram finish */
+
     }
 
     @Override
@@ -1495,7 +1578,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 starsBadgeView.setImageDrawable(null);
                 starsBadgeView.setVisibility(View.GONE);
                 for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
-                    if (a == UserConfig.selectedAccount || !UserConfig.getInstance(a).isClientActivated()) {
+                    if (/*a == UserConfig.selectedAccount ||*/ !UserConfig.getInstance(a).isClientActivated()) {
                         continue;
                     }
                     totalCounter += MessagesStorage.getInstance(a).getMainUnreadCount();
@@ -1669,7 +1752,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 "Make Memory Dump",
                 BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.fastWallpaperDisabled ? "enable wallpaper shader" : "disable wallpaper shader") : null,
                 (SharedConfig.frameMetricsEnabled ? "hide frame metrics" : "show frame metrics"),
-                BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.shadowsInSections ? "disable shadows in settings" : "enable shadows in settings") : null
+                BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.shadowsInSections ? "disable shadows in settings" : "enable shadows in settings") : null,
+                BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.debugViewMetrics ? "disable debug view metrics" : "enable debug view metrics") : null,
         };
 
         builder.setItems(items, (dialog, which) -> {
@@ -1702,7 +1786,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 getMessagesStorage().clearSentMedia();
                 SharedConfig.setNoSoundHintShowed(false);
                 SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
-                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("searchpostsnew").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("voicepausehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("groupEmojiPackHintShown").remove("newppsms").remove("monetizationadshint").remove("seekSpeedHintShowed").remove("unsupport_video/av01").remove("channelgifthint").remove("statusgiftpage").remove("multistorieshint").remove("channelsuggesthint").remove("trimvoicehint").remove("taptostoryhighlighthint").remove("proxycheckstatusip").remove("callmiconstart").remove("showchattagsinfo").apply();
+                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("searchpostsnew").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("voicepausehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("groupEmojiPackHintShown").remove("newppsms").remove("monetizationadshint").remove("seekSpeedHintShowed").remove("unsupport_video/av01").remove("channelgifthint").remove("statusgiftpage").remove("multistorieshint").remove("channelsuggesthint").remove("trimvoicehint").remove("taptostoryhighlighthint").remove("proxycheckstatusip").remove("callmiconstart").remove("showchattagsinfo").remove("language_showed2").remove("aihintshown").apply();
                 MessagesController.getEmojiSettings(currentAccount).edit().remove("featured_hidden").remove("emoji_featured_hidden").commit();
                 MessagesController.getGlobalNotificationsSettings().edit().remove("disable_sharing_learn").apply();
                 SharedConfig.textSelectionHintShows = 0;
@@ -1975,6 +2059,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             } else if (which == 40) {
                 final SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                 prefs.edit().putBoolean("shadowsInSections", SharedConfig.shadowsInSections = !SharedConfig.shadowsInSections).apply();
+            } else if (which == 41) {
+                final SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                prefs.edit().putBoolean("debugViewMetrics", SharedConfig.debugViewMetrics = !SharedConfig.debugViewMetrics).apply();
             }
         });
         builder.setNegativeButton(getString(R.string.Cancel), null);

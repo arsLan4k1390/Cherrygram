@@ -66,6 +66,12 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.SharedPhotoVideoCell2;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.UserCell;
+import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
+import org.telegram.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
+import org.telegram.ui.Components.blur3.drawable.color.BlurredBackgroundProvider;
+import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
+import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceBitmap;
+import org.telegram.ui.Components.blur3.utils.Blur3Utils;
 import org.telegram.ui.ContactsActivity;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.Gifts.GiftSheet;
@@ -139,6 +145,7 @@ public class ItemOptions {
     }
 
     public ActionBarPopupWindow actionBarPopupWindow;
+    private BlurredBackgroundSourceBitmap scrimBlur3SourceBitmap;
     private final float[] point = new float[2];
 
     private Runnable dismissListener;
@@ -148,9 +155,17 @@ public class ItemOptions {
     private boolean drawScrim = true;
 
     private boolean blur;
+    private boolean blurForMenu;
+
+    public ItemOptions setBlur(boolean blur, boolean blurForMenu) {
+        this.blur = blur;
+        this.blurForMenu = blurForMenu;
+        return this;
+    }
 
     public ItemOptions setBlur(boolean b) {
         this.blur = b;
+        this.blurForMenu = b;
         return this;
     }
 
@@ -328,6 +343,10 @@ public class ItemOptions {
 
     public ItemOptions add(int iconResId, CharSequence text, Runnable onClickListener) {
         return add(iconResId, text, false, null, onClickListener);
+    }
+
+    public ItemOptions add(Drawable icon, CharSequence text, Runnable onClickListener) {
+        return add(0, icon, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, null, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, Runnable onLongClickListener, Runnable onClickListener) {
@@ -510,11 +529,10 @@ public class ItemOptions {
 
         TLRPC.TL_attachMenuBotIcon botIcon = MediaDataController.getSideAttachMenuBotIcon(bot);
         if (botIcon != null) {
-            Drawable svgThumb = DocumentObject.getSvgThumb(botIcon.icon.thumbs,  Theme.key_emptyListPlaceholder, 0.2f);
-            if (svgThumb == null) {
-                svgThumb = getContext().getResources().getDrawable(R.drawable.msg_bot).mutate();
+            Drawable svgThumb = DocumentObject.getSvgThumb(botIcon.icon,  Theme.key_emptyListPlaceholder, 1);
+            if (svgThumb != null) {
+                svgThumb.setColorFilter(new PorterDuffColorFilter(iconColor != null ? iconColor : Theme.getColor(iconColorKey, resourcesProvider), PorterDuff.Mode.SRC_IN));
             }
-            svgThumb.setColorFilter(new PorterDuffColorFilter(iconColor != null ? iconColor : Theme.getColor(iconColorKey, resourcesProvider), PorterDuff.Mode.SRC_IN));
             subItem.setTextAndIcon(text, ImageLocation.getForDocument(botIcon.icon), "24_24", svgThumb, bot);
             subItem.setImageSize(24, 24);
         } else {
@@ -772,22 +790,6 @@ public class ItemOptions {
         return this;
     }
 
-    public ItemOptions addSpaceGap() {
-        if (!(layout instanceof LinearLayout)) {
-            layout = new LinearLayout(context);
-            ((LinearLayout) layout).setOrientation(LinearLayout.VERTICAL);
-            layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-        }
-        lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, resourcesProvider);
-        lastLayout.setDispatchKeyEventListener(keyEvent -> {
-            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && actionBarPopupWindow != null && actionBarPopupWindow.isShowing()) {
-                dismiss();
-            }
-        });
-        layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, -8, 0, 0));
-        return this;
-    }
-
     public ItemOptions addView(View view) {
         if (view == null) {
             return this;
@@ -876,6 +878,34 @@ public class ItemOptions {
         return this;
     }
 
+    public ItemOptions addProfileCustom(TLObject obj, CharSequence text, Runnable onClickListener) {
+        final FrameLayout userButton = new FrameLayout(context);
+        userButton.setBackground(Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 0, 12));
+
+        final BackupImageView imageView = new BackupImageView(context);
+        imageView.setRoundRadius(dp(17));
+        AvatarDrawable avatarDrawable = new AvatarDrawable();
+        avatarDrawable.setInfo(obj);
+        imageView.setForUserOrChat(obj, avatarDrawable);
+        userButton.addView(imageView, LayoutHelper.createFrame(34, 34, Gravity.LEFT | Gravity.TOP, 13, 11, 0, 11));
+
+        final TextView titleText = new TextView(context);
+        titleText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        titleText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        titleText.setText(text);
+        titleText.setMaxWidth(dp(150));
+        titleText.setLineSpacing(dp(3), 1);
+        userButton.addView(titleText, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.TOP, 59, 8, 16, 0));
+        userButton.setOnClickListener(v -> {
+            dismiss();
+            if (onClickListener != null) {
+                onClickListener.run();
+            }
+        });
+        addView(userButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        return this;
+    }
 
     public ItemOptions addText(CharSequence text, int textSizeDp) {
         return addText(text, textSizeDp, -1);
@@ -1045,8 +1075,27 @@ public class ItemOptions {
         return layout;
     }
 
+    public ItemOptions setBlurBackgroundForSwipeback(BlurredBackgroundDrawableViewFactory factory, BlurredBackgroundProvider colorProvider, boolean multiwindow) {
+        if (linearLayout != null) {
+            linearLayout.setBackground(factory.create(linearLayout, multiwindow)
+                .setColorProvider(colorProvider));
+        }
+        return this;
+    }
+
+    public ItemOptions setBlurBackground(BlurredBackgroundDrawableViewFactory factory, BlurredBackgroundProvider colorProvider, boolean multiwindow) {
+        if (layout instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
+            layout.setBackground(factory.create(layout, multiwindow)
+                .setColorProvider(colorProvider)
+                .setPadding(dp(8))
+                .setHasPadding(true)
+                .setRadius(dp(12)));
+        }
+        return this;
+    }
+
     public ItemOptions setBlurBackground(BlurringShader.BlurManager blurManager, float ox, float oy) {
-        Drawable baseDrawable = context.getResources().getDrawable(R.drawable.popup_fixed_alert2).mutate();
+        Drawable baseDrawable = context.getResources().getDrawable(R.drawable.popup_fixed_alert4).mutate();
         if (layout instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
             layout.setBackground(
                 new BlurringShader.StoryBlurDrawer(blurManager, layout, BlurringShader.StoryBlurDrawer.BLUR_TYPE_MENU_BACKGROUND)
@@ -1133,6 +1182,11 @@ public class ItemOptions {
             }
         }
     }
+    private boolean offsetByContainer;
+    public ItemOptions offsetByContainer() {
+        this.offsetByContainer = true;
+        return this;
+    }
     public ItemOptions show() {
         if (actionBarPopupWindow != null || linearLayout != null) {
             return this;
@@ -1167,6 +1221,10 @@ public class ItemOptions {
             }
         }
 
+        if (blur && scrimBlur3SourceBitmap == null) {
+            scrimBlur3SourceBitmap = new BlurredBackgroundSourceBitmap();
+        }
+
         ViewGroup container = pointContainer = this.container == null ? fragment.getParentLayout().getOverlayContainerView() : this.container;
 
         if (context == null || container == null) {
@@ -1179,6 +1237,12 @@ public class ItemOptions {
             getPointOnScreen(scrimView, container, point);
             y = point[1];
             x = point[0];
+            if (offsetByContainer) {
+                int[] p = new int[2];
+                container.getLocationOnScreen(p);
+                x += p[0];
+                y += p[1];
+            }
         }
         RectF scrimViewBounds = new RectF();
         if (scrimView instanceof ScrimView) {
@@ -1364,6 +1428,19 @@ public class ItemOptions {
             container.dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
         }
 
+        if (blurForMenu && scrimBlur3SourceBitmap != null) {
+            setGapBackgroundColor(Theme.multAlpha(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider), 0.06f));
+            BlurredBackgroundDrawable bg = new BlurredBackgroundDrawableViewFactory(scrimBlur3SourceBitmap)
+                .create(layout, true)
+                .setColorProvider(BlurredBackgroundProviderImpl.scrimMenuBackground(resourcesProvider))
+                .setPadding(dp(8))
+                .setHasPadding(true)
+                .setRadius(dp(12));
+
+            bg.setSourceOffset(X + this.translateX, Y + this.translateY);
+            layout.setBackground(bg);
+        }
+
         actionBarPopupWindow.setScaleOut(scaleOut);
         actionBarPopupWindow.showAtLocation(
             container,
@@ -1394,18 +1471,20 @@ public class ItemOptions {
     private Integer gapBackgroundColor;
     public ItemOptions setGapBackgroundColor(int color) {
         gapBackgroundColor = color;
-        for (int j = 0; j < layout.getChildCount(); ++j) {
-            View child = j == layout.getChildCount() - 1 ? lastLayout : layout.getChildAt(j);
-            if (child instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
-                ActionBarPopupWindow.ActionBarPopupWindowLayout l = (ActionBarPopupWindow.ActionBarPopupWindowLayout) child;
-                for (int i = 0; i < l.getItemsCount(); ++i) {
-                    View child2 = l.getItemAt(i);
-                    if (child2 instanceof ActionBarPopupWindow.GapView) {
-                        ((ActionBarPopupWindow.GapView) child2).setColor(color);
+        if (layout != null) {
+            for (int j = 0; j < layout.getChildCount(); ++j) {
+                View child = j == layout.getChildCount() - 1 ? lastLayout : layout.getChildAt(j);
+                if (child instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
+                    ActionBarPopupWindow.ActionBarPopupWindowLayout l = (ActionBarPopupWindow.ActionBarPopupWindowLayout) child;
+                    for (int i = 0; i < l.getItemsCount(); ++i) {
+                        View child2 = l.getItemAt(i);
+                        if (child2 instanceof ActionBarPopupWindow.GapView) {
+                            ((ActionBarPopupWindow.GapView) child2).setColor(color);
+                        }
                     }
+                } else if (child instanceof ActionBarPopupWindow.GapView) {
+                    ((ActionBarPopupWindow.GapView) child).setColor(color);
                 }
-            } else if (child instanceof ActionBarPopupWindow.GapView) {
-                ((ActionBarPopupWindow.GapView) child).setColor(color);
             }
         }
         return this;
@@ -1613,14 +1692,29 @@ public class ItemOptions {
             if (blur) {
                 blurPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
                 scrimView.setAlpha(0.0f);
-                AndroidUtilities.makeGlobalBlurBitmap(b -> {
+                ScrimOptions.makeGlobalBlurBitmaps((bitmapBg, bitmapOptions) -> {
                     scrimView.setAlpha(1.0f);
-                    blurBitmap = b;
-                }, 12.0f);
-
+                    blurBitmap = bitmapBg;
+                    if (scrimBlur3SourceBitmap != null) {
+                        scrimBlur3SourceBitmap.setBitmap(bitmapOptions);
+                        Blur3Utils.checkBitmapSourceMatrixScale(scrimBlur3SourceBitmap, DimView.this);
+                        if (layout != null) {
+                            layout.invalidate();
+                        }
+                    }
+                });
                 if (fragment != null && fragment.getParentActivity() != null && fragment.getParentActivity().getWindow() != null) {
                     WindowBlurHelper.hideStatusBar(fragment.getParentActivity().getWindow(), true);
                 }
+            }
+        }
+
+        @Override
+        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+            super.onSizeChanged(w, h, oldw, oldh);
+            Blur3Utils.checkBitmapSourceMatrixScale(scrimBlur3SourceBitmap, DimView.this);
+            if (layout != null) {
+                layout.invalidate();
             }
         }
 
@@ -2029,6 +2123,26 @@ public class ItemOptions {
             addView(subItem, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
         }
 
+        return this;
+    }
+
+    public ItemOptions addSpaceGap() {
+        return addSpaceGap(true);
+    }
+
+    public ItemOptions addSpaceGap(boolean vertical) {
+        if (!(layout instanceof LinearLayout)) {
+            layout = new LinearLayout(context);
+            ((LinearLayout) layout).setOrientation(vertical ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+            layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, maxHeight > 0 ? maxHeight / AndroidUtilities.density : LayoutHelper.WRAP_CONTENT, Gravity.TOP));
+        }
+        lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert4, resourcesProvider, !vertical ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_DONT_USE_SCROLLVIEW : 0);
+        lastLayout.setDispatchKeyEventListener(keyEvent -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && actionBarPopupWindow != null && actionBarPopupWindow.isShowing()) {
+                dismiss();
+            }
+        });
+        layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, !vertical ? -8 : 0, vertical ? -8 : 0, 0, 0));
         return this;
     }
     /** Cherrygram finish */

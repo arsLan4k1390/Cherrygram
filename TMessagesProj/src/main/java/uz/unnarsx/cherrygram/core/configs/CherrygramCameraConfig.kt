@@ -39,7 +39,7 @@ object CherrygramCameraConfig {
     const val Camera4to3 = 1
     const val Camera1to1 = 2
     const val CameraAspectDefault = 3
-    var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", Camera4to3)
+    var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", CameraAspectDefault)
     /** Camera finish */
 
     /** Videomessages start */
@@ -56,7 +56,12 @@ object CherrygramCameraConfig {
         if (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE) CameraXFpsRange25to30 else CameraXFpsRangeDefault)
     /** CameraX FPS finish */
 
-    var cameraStabilisation by sharedPreferences.boolean("CP_CameraStabilisation", false)
+    var videoStabilisation by sharedPreferences.boolean("CP_VideoStabilisation", false)
+    var opticalStabilisation by sharedPreferences.boolean("CP_OpticalStabilisation", false)
+    var continuousAutofocus by sharedPreferences.boolean("CP_ContinuousAutofocus", false)
+    var noiceReduction by sharedPreferences.boolean("CP_NoiceReduction", false)
+    var faceDetection by sharedPreferences.boolean("CP_FaceDetection", false)
+
     var centerCameraControlButtons by sharedPreferences.boolean("CP_CenterCameraControlButtons", true)
 
     const val EXPOSURE_SLIDER_NONE = 0

@@ -26,9 +26,6 @@ import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Supplier;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
@@ -48,14 +45,18 @@ public class GeneralPreferencesEntry extends UniversalFragment {
 
     private final int hideStoriesRow = 7;
     private final int archiveStoriesRow = 8;
+    private final int archiveStoriesUsersRow = 9;
+    private final int archiveStoriesChannelsRow = 10;
 
-    private final int useSystemEmojiRow = 9;
-    private final int useSystemFontsRow = 10;
-    private final int tabledModeRow = 11;
+    private final int useSystemEmojiRow = 11;
+    private final int useSystemFontsRow = 12;
+    private final int tabledModeRow = 13;
 
-    private final int downloadSpeedBoostRow = 12;
-    private final int uploadSpeedBoostRow = 13;
-    private final int slowNetworkMode = 14;
+    private final int downloadSpeedBoostRow = 14;
+    private final int uploadSpeedBoostRow = 15;
+    private final int slowNetworkMode = 16;
+
+    private boolean expandedArchiveStoriesSection = false;
 
     @Override
     protected CharSequence getTitle() {
@@ -103,8 +104,38 @@ public class GeneralPreferencesEntry extends UniversalFragment {
         items.add(SettingsHelper.asSwitchCG(hideStoriesRow, getString(R.string.CP_HideStories), getString(R.string.CP_HideStories_Desc))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getHideStories())
         );
-        items.add(SettingsHelper.asTextDetail(archiveStoriesRow, R.drawable.msg_archive, getString(R.string.CP_ArchiveStories), getString(R.string.CP_ArchiveStories_Desc)));
-        items.add(UItem.asShadow(null));
+
+        items.add(
+                SettingsHelper.asExpandableSwitch(
+                        archiveStoriesRow,
+                        R.drawable.msg_archive,
+                        getString(R.string.CP_ArchiveStories),
+                        getArchiveStoriesCountText()
+                )
+                .setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers() || CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels())
+                .setCollapsed(!expandedArchiveStoriesSection)
+                .setClickCallback(v -> {
+                    boolean newValue = !(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers() || CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
+
+                    CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromUsers(newValue);
+                    CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(newValue);
+
+                    listView.adapter.update(true);
+                })
+        );
+        if (expandedArchiveStoriesSection) {
+            items.add(UItem.asRoundCheckbox(archiveStoriesUsersRow, getString(R.string.FilterContacts))
+                    .setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers())
+                    .setPad(1)
+            );
+
+            items.add(UItem.asRoundCheckbox(archiveStoriesChannelsRow, getString(R.string.FilterChannels))
+                    .setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels())
+                    .setPad(1)
+            );
+        }
+
+        items.add(UItem.asShadow(getString(R.string.CP_ArchiveStories_Desc)));
 
         items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
         items.add(SettingsHelper.asSwitchCG(useSystemEmojiRow, getString(R.string.AP_SystemEmoji))
@@ -188,7 +219,20 @@ public class GeneralPreferencesEntry extends UniversalFragment {
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == archiveStoriesRow) {
-            showStoriesArchiveConfigurator();
+            expandedArchiveStoriesSection = !expandedArchiveStoriesSection;
+            item.collapsed = !item.collapsed;
+
+            listView.adapter.update(true);
+        } else if (item.id == archiveStoriesUsersRow) {
+            CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromUsers(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
+            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
+
+            listView.adapter.update(true);
+        } else if (item.id == archiveStoriesChannelsRow) {
+            CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
+            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
+
+            listView.adapter.update(true);
         } else if (item.id == useSystemEmojiRow) {
             CherrygramCoreConfig.INSTANCE.setSystemEmoji(!CherrygramCoreConfig.INSTANCE.getSystemEmoji());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getSystemEmoji());
@@ -250,6 +294,15 @@ public class GeneralPreferencesEntry extends UniversalFragment {
         };
     }
 
+    private String getArchiveStoriesCountText() {
+        int count = 0;
+
+        if (CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers()) count++;
+        if (CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels()) count++;
+
+        return count + "/2";
+    }
+
     private String getDownloadSpeedBoostText()  {
         return switch (CherrygramCoreConfig.INSTANCE.getDownloadSpeedBoost()) {
             case CherrygramCoreConfig.BOOST_NONE -> getString(R.string.LiteBatteryDisabled);
@@ -283,62 +336,6 @@ public class GeneralPreferencesEntry extends UniversalFragment {
             case CherrygramCoreConfig.TABLET_MODE_DISABLE -> getString(R.string.LiteBatteryDisabled);
             default -> getString(R.string.QualityAuto);
         };
-    }
-
-    private void showStoriesArchiveConfigurator() {
-        List<MenuItemConfig> menuItems = Arrays.asList(
-                new MenuItemConfig(
-                        getString(R.string.FilterContacts),
-                        R.drawable.msg_contacts,
-                        CherrygramCoreConfig.INSTANCE::getArchiveStoriesFromUsers,
-                        () -> CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromUsers(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers()),
-                        false
-                ),
-                new MenuItemConfig(
-                        getString(R.string.FilterChannels),
-                        R.drawable.msg_channel,
-                        CherrygramCoreConfig.INSTANCE::getArchiveStoriesFromChannels,
-                        () -> CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels()),
-                        false
-                )
-        );
-
-        ArrayList<String> prefTitle = new ArrayList<>();
-        ArrayList<Integer> prefIcon = new ArrayList<>();
-        ArrayList<Boolean> prefCheck = new ArrayList<>();
-        ArrayList<Boolean> prefDivider = new ArrayList<>();
-        ArrayList<Runnable> clickListener = new ArrayList<>();
-
-        for (MenuItemConfig item : menuItems) {
-            prefTitle.add(item.titleRes());
-            prefIcon.add(item.iconRes());
-            prefCheck.add(item.isChecked().get());
-            prefDivider.add(item.divider());
-            clickListener.add(item.toggle());
-        }
-
-        PopupHelper.showSwitchAlert(
-                getString(R.string.CP_ArchiveStories),
-                GeneralPreferencesEntry.this,
-                prefTitle,
-                prefIcon,
-                prefCheck,
-                null,
-                null,
-                prefDivider,
-                clickListener,
-                null
-        );
-    }
-
-    private record MenuItemConfig(
-            String titleRes,
-            int iconRes,
-            Supplier<Boolean> isChecked,
-            Runnable toggle,
-            boolean divider
-    ) {
-
     }
 
 }

@@ -16,7 +16,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.FileLog
+import org.telegram.messenger.KotlinFragmentsManager
+import org.telegram.messenger.MessageObject
 import org.telegram.messenger.SharedConfig
+import org.telegram.messenger.UserConfig
+import uz.unnarsx.cherrygram.Extra
+import uz.unnarsx.cherrygram.core.helpers.MessageLoader
+import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.helpers.network.StickersManager
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
@@ -67,7 +74,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Actions finish */
 
     /** Media start */
-    var largePhotos by sharedPreferences.boolean("CP_LargePhotos", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
     var videoSeekDuration by sharedPreferences.int("CP_VideoSeekDuration", 10)
@@ -123,6 +129,18 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
         launch(Dispatchers.IO) {
             StickersManager.startAutoRefresh(ApplicationLoader.applicationContext)
             StickersManager.copyStickerFromAssets()
+
+            MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+                override fun onLoaded(message: MessageObject?) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        KotlinFragmentsManager.iooewwfueuewu121(message)
+                    }
+                }
+
+                override fun onError(error: String?) {
+                    if (CherrygramCoreConfig.isDevBuild()) FileLog.e("MessageLoader: $error")
+                }
+            })
         }
     }
     

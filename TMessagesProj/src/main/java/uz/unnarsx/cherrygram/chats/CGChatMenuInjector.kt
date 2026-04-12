@@ -341,7 +341,7 @@ object CGChatMenuInjector {
         io.addGapIf(available)
         io.addIf(
             available,
-            R.drawable.shield_network_filled_solar,
+            R.drawable.shield_network_solar,
             getString(R.string.ProxySettings)
         ) {
             fragment.presentFragment(ProxyListActivity())

@@ -1189,7 +1189,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                         presentFragment(fragment);
                     }
                     return;
-                } else if (position > permissionsSectionRow && position <= Math.max(manageTopicsRow, changeInfoRow)) {
+                } else if (position > permissionsSectionRow && position <= Math.max(manageTopicsRow, changeInfoRow) && view instanceof TextCheckCell2) {
                     TextCheckCell2 checkCell = (TextCheckCell2) view;
                     if (position != sendMediaRow && !checkCell.isEnabled()) {
                         return;

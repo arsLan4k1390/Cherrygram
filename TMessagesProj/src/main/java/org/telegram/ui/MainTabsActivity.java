@@ -10,10 +10,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,11 +33,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.ContactsController;
+import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
@@ -43,13 +49,16 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
+import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CubicBezierInterpolator;
+import org.telegram.ui.Components.FolderDrawable;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
@@ -73,12 +82,13 @@ import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 import uz.unnarsx.cherrygram.chats.CGChatMenuInjector;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
+import uz.unnarsx.cherrygram.preferences.folders.helpers.FolderIconHelper;
 
 public class MainTabsActivity extends ViewPagerActivity implements NotificationCenter.NotificationCenterDelegate, FactorAnimator.Target {
     public static final int TABS_COUNT = 4;
@@ -109,6 +119,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     private boolean dropCallsFragmentAfterPageScroll;
 
     private UpdateLayoutWrapper updateLayoutWrapper;
+    private FrameLayout tabsViewWrapper;
     private MainTabsLayout tabsView;
     private BlurredBackgroundDrawable tabsViewBackground;
     private View fadeView;
@@ -379,9 +390,6 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             updateLayout.updateAppUpdateViews(currentAccount, false);
         }
 
-        //AndroidUtilities.cancelRunOnUIThread(justForTestR);
-        //AndroidUtilities.runOnUIThread(justForTestR, 2000);
-
         checkUnreadCount(false);
         return contentView;
     }
@@ -422,15 +430,10 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                 accountNumbers.add(a);
             }
         }
-        Collections.sort(accountNumbers, (o1, o2) -> {
+        accountNumbers.sort((o1, o2) -> {
             long l1 = UserConfig.getInstance(o1).loginTime;
             long l2 = UserConfig.getInstance(o2).loginTime;
-            if (l1 > l2) {
-                return 1;
-            } else if (l1 < l2) {
-                return -1;
-            }
-            return 0;
+            return Long.compare(l1, l2);
         });
 
         ItemOptions o = ItemOptions.makeOptions(this, button);
@@ -456,6 +459,11 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                 }
             });
         }
+
+        if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+            o.add(R.drawable.menu_download_round, "Dump Canvas", () -> AndroidUtilities.runOnUIThread(this::dumpCanvas, 1000));
+        }
+
         if (accountNumbers.size() > 0) {
             if (o.getItemsCount() > 0) o.addGap();
             for (int acc : accountNumbers) {
@@ -476,8 +484,6 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         o.addGap();
         o.add(R.drawable.tabs_reorder, getString(R.string.CP_MainTabs_Header), () -> CherrygramPreferencesNavigator.INSTANCE.createTabs(this));
 
-        // o.addGap();
-        // o.add(R.drawable.msg_leave, getString(R.string.LogOut), true, () -> presentFragment(new LogoutActivity()));
         o.setBlur(true);
         o.translate(0, -dp(4));
         final ShapeDrawable bg = Theme.createRoundRectDrawable(dp(28), getThemedColor(Theme.key_windowBackgroundWhite));
@@ -772,6 +778,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             }
         }
 
+//        tabsViewWrapper.setPadding(0, 0, 0, navigationBarHeight);
+
         final WindowInsetsCompat consumed = isUpdateLayoutVisible ?
             insets.inset(0, 0, 0, navigationBarHeight) : insets;
 
@@ -808,7 +816,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             }
         } else if (id == NotificationCenter.fileLoadProgressChanged) {
             if (updateLayout != null) {
-                updateLayout.updateFileProgress(CherrygramCoreConfig.INSTANCE.getUpdateDownloadingProgress());
+                updateLayout.updateFileProgress(args);
             }
         } else if (id == NotificationCenter.appUpdateAvailable) {
             if (updateLayout != null) {
@@ -844,19 +852,6 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             openChatsTab(false);
         }
     }
-
-    /* Just For Test */
-
-    //private final Runnable justForTestR = this::justForTest;
-
-    //private void justForTest() {
-    //    getUserConfig().setShowCallsTab(!getUserConfig().showCallsTab);
-    //    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.callTabsVisibleToggled);
-    //    AndroidUtilities.cancelRunOnUIThread(justForTestR);
-    //    AndroidUtilities.runOnUIThread(justForTestR, 3000);
-    //}
-
-
 
     @Override
     public boolean onFragmentCreate() {
@@ -955,7 +950,6 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         ArrayList<ThemeDescription> themeDescriptions = super.getThemeDescriptions();
 
         ThemeDescription.ThemeDescriptionDelegate cellDelegate = this::blur3_updateColors;
-        themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(null, 0, null, null, null, cellDelegate, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(null, 0, null, null, null, cellDelegate, Theme.key_dialogBackground));
 
@@ -1288,22 +1282,31 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     }
 
     private void switchToNextAccount() {
-        int currentAccount = UserConfig.selectedAccount;
-        int nextAccount = -1;
+        final ArrayList<Integer> accountNumbers = new ArrayList<>();
 
-        for (int i = 1; i < UserConfig.MAX_ACCOUNT_COUNT; i++) {
-            int checkAccount = (currentAccount + i) % UserConfig.MAX_ACCOUNT_COUNT;
-            if (UserConfig.getInstance(checkAccount).isClientActivated()) {
-                nextAccount = checkAccount;
-                break;
+        for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+            if (UserConfig.getInstance(a).isClientActivated()) {
+                accountNumbers.add(a);
             }
         }
 
-        if (nextAccount != -1 && nextAccount != currentAccount) {
-            if (LaunchActivity.instance != null) {
-                LaunchActivity.instance.switchToAccount(nextAccount, true);
-                CGBulletinCreator.INSTANCE.createSwitchAccountBulletin(nextAccount);
-            }
+        accountNumbers.sort((o1, o2) -> {
+            long l1 = UserConfig.getInstance(o1).loginTime;
+            long l2 = UserConfig.getInstance(o2).loginTime;
+            return Long.compare(l1, l2);
+        });
+
+        if (accountNumbers.size() <= 1) return;
+
+        int index = accountNumbers.indexOf(UserConfig.selectedAccount);
+        if (index == -1) return;
+
+        int nextIndex = (index + 1) % accountNumbers.size();
+        int nextAccount = accountNumbers.get(nextIndex);
+
+        if (LaunchActivity.instance != null) {
+            LaunchActivity.instance.switchToAccount(nextAccount, true);
+            CGBulletinCreator.INSTANCE.createSwitchAccountBulletin(nextAccount);
         }
     }
 
@@ -1360,6 +1363,126 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
     public void processLongClick(View button) {
         ItemOptions o = ItemOptions.makeOptions(this, button);
+
+        boolean showFolders = getMessagesController() != null && getMessagesController().dialogFilters != null && getMessagesController().dialogFilters.size() > 1;
+
+        if (showFolders) {
+            ActionBarMenuSubItem selectedItemView = null;
+
+            o.add(R.drawable.msg2_folder, getString(R.string.FilterEditAll), () -> {
+                presentFragment(new FiltersSetupActivity());
+            });
+            o.addSpaceGap();
+
+            LinearLayout container = new LinearLayout(getParentActivity());
+            container.setOrientation(LinearLayout.VERTICAL);
+
+            ArrayList<MessagesController.DialogFilter> folders = new ArrayList<>();
+
+            for (MessagesController.DialogFilter f : getMessagesController().dialogFilters) {
+                if (CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() && (f.isDefault() || f.id == 0)) {
+                    continue;
+                }
+                folders.add(f);
+            }
+
+            final int foldersCount = folders.size();
+            for (int i = 0; i < foldersCount; ++i) {
+                MessagesController.DialogFilter folder = folders.get(i);
+
+                CharSequence title = folder.isDefault() ? getString(R.string.AllChats) : folder.name;
+
+                final String tabTitle = title.toString();
+                final String tabTitle2 = dialogsActivity.getFilterTabsView().getSelectedTabTitle();
+                boolean selectedFolder = !TextUtils.isEmpty(tabTitle) && !TextUtils.isEmpty(tabTitle2) && TextUtils.equals(tabTitle, tabTitle2);
+
+                ActionBarMenuSubItem folderItem = new ActionBarMenuSubItem(getParentActivity(), 2, false, false, null);
+                folderItem.setChecked(selectedFolder);
+                title = Emoji.replaceEmoji(title, folderItem.getTextView().getPaint().getFontMetricsInt(), false);
+                title = MessageObject.replaceAnimatedEmoji(title, folder.entities, folderItem.getTextView().getPaint().getFontMetricsInt());
+                folderItem.setEmojiCacheType(folder.title_noanimate ? AnimatedEmojiDrawable.CACHE_TYPE_NOANIMATE_FOLDER : AnimatedEmojiDrawable.CACHE_TYPE_MESSAGES);
+                folderItem.setTextAndIcon(
+                        title,
+                        0,
+                        new FolderDrawable(getContext(), FolderIconHelper.getTabIcon(folder.emoticon), folder.color)
+                );
+                folderItem.getTextView().setEmojiColor(getThemedColor(Theme.key_featuredStickers_addButton));
+                folderItem.setOnClickListener(e -> {
+                    o.dismiss();
+                    if (selectedFolder) {
+                        return;
+                    }
+                    AndroidUtilities.runOnUIThread(() -> dialogsActivity.scrollToFolder(folder.id), 100);
+                });
+
+                if (selectedFolder) {
+                    selectedItemView = folderItem;
+                }
+
+                Drawable background;
+                Drawable foreground;
+
+                boolean isFirst = i == 0;
+                boolean isLast = i == foldersCount - 1;
+
+                if (isFirst && isLast) {
+                    background = Theme.createRadSelectorDrawable(getThemedColor(Theme.key_actionBarDefaultSubmenuBackground), 12, 12);
+                    foreground = Theme.createRadSelectorDrawable(getThemedColor(Theme.key_listSelector), 12, 12);
+                } else if (isFirst) {
+                    background = Theme.createRadSelectorDrawable(getThemedColor(Theme.key_actionBarDefaultSubmenuBackground), 12, 0);
+                    foreground = Theme.createRadSelectorDrawable(getThemedColor(Theme.key_listSelector), 12, 0);
+                } else if (isLast) {
+                    background = Theme.createRadSelectorDrawable(getThemedColor(Theme.key_actionBarDefaultSubmenuBackground), 0, 12);
+                    foreground = Theme.createRadSelectorDrawable(getThemedColor(Theme.key_listSelector), 0, 12);
+                } else {
+                    background = Theme.createRadSelectorDrawable(getThemedColor(Theme.key_actionBarDefaultSubmenuBackground), 0, 0);
+                    foreground = Theme.createRadSelectorDrawable(getThemedColor(Theme.key_listSelector), 0, 0);
+                }
+                folderItem.setBackground(background);
+                folderItem.setForeground(foreground);
+
+                container.addView(folderItem);
+            }
+            ActionBarMenuSubItem finalSelectedItemView = selectedItemView;
+
+            ScrollView scrollView = new ScrollView(getParentActivity());
+            scrollView.setFillViewport(true);
+            scrollView.setVerticalScrollBarEnabled(false);
+            scrollView.addView(container);
+
+            scrollView.post(() -> {
+                if (finalSelectedItemView != null) {
+                    int top = finalSelectedItemView.getTop();
+                    int bottom = finalSelectedItemView.getBottom();
+
+                    int scrollY = scrollView.getScrollY();
+                    int height = scrollView.getHeight();
+
+                    if (top < scrollY) { // если элемент выше видимой области
+                        scrollView.smoothScrollTo(0, top);
+                    } else if (bottom > scrollY + height) { // если ниже
+                        scrollView.smoothScrollTo(0, bottom - height);
+                    }
+                }
+            });
+
+            FrameLayout foldersWrapper = new FrameLayout(getParentActivity()) {
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    int maxHeight = (int) (AndroidUtilities.displaySize.y * 0.55f);
+
+                    int newHeightSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST);
+                    super.onMeasure(widthMeasureSpec, newHeightSpec);
+                }
+            };
+            foldersWrapper.addView(scrollView);
+
+            o.addView(foldersWrapper);
+            o.addGap();
+            o.setBackgroundColor(MessageMenuHelper.getMessageMenuBackgroundColor());
+            o.setGapBackgroundColor(MessageMenuHelper.getMessageMenuGapColor());
+        }
+
         o.addIf(
                 !CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList(),
                 R.drawable.msg_archive,
@@ -1369,10 +1492,12 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
         o.add(R.drawable.msg_saved, getString(R.string.SavedMessages), () -> presentFragment(ChatActivity.of(ChatsHelper2.INSTANCE.getCustomChatID())));
 
-        o.addGap();
-        o.add(R.drawable.tabs_reorder, getString(R.string.CP_MainTabs_Header), () -> CherrygramPreferencesNavigator.INSTANCE.createTabs(this));
+        o.setBlur(true, false);
+        if (!showFolders) {
+            o.addGap();
+            o.add(R.drawable.tabs_reorder, getString(R.string.CP_MainTabs_Header), () -> CherrygramPreferencesNavigator.INSTANCE.createTabs(this));
+        }
 
-        o.setBlur(true);
         o.translate(0, -dp(4));
         final ShapeDrawable bg = Theme.createRoundRectDrawable(dp(28), getThemedColor(Theme.key_windowBackgroundWhite));
         bg.getPaint().setShadowLayer(dp(6), 0, dp(1), Theme.multAlpha(0xFF000000, 0.15f));

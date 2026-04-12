@@ -301,7 +301,6 @@
     <string name="CP_Category_Camera">カメラ</string>
     <string name="CP_CameraType">カメラの種類</string>
     <string name="CP_Camera2Desc">Camera2をONにすると非表示になるすべての機能は、Camera2が有効化されていると動作しなくなります。</string>
-    <string name="CP_CameraStabilisation">カメラの手ぶれ補正</string>
     <string name="CP_CameraUW">超広角レンズで開始する</string>
     <string name="CP_CameraUW_Desc">ビデオメッセージの録画を超広角レンズで開始します (使用しているデバイスのAPIがサポートしている場合)。</string>
     <string name="CP_CameraDualCamera">デュアルカメラ</string>
@@ -330,7 +329,6 @@
     <string name="EP_NavigationAnimation">ナビゲーションのアニメーション</string>
     <string name="EP_NavigationAnimationBezier">クラシック</string>
     <string name="EP_NavigationAnimationCrossfading">クロスフェード効果</string>
-    <string name="EP_PhotosSize">大きな写真を送信 (2560px)</string>
     <string name="EP_CustomChat">保存されたメッセージのチャット</string>
     <string name="EP_CustomChat_Desc">他のチャット、グループ、チャンネルでIDを設定してメッセージを転送します (アクションバーのボタン、メッセージメニューまたはダブルタップ)。</string>
     <string name="EP_CustomChat_Selected_Title">代わり</string>
@@ -342,7 +340,6 @@
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">プライバシー</string>
-    <string name="SP_NoProxyPromo">プロキシスポンサーを表示しない</string>
     <string name="SP_GoogleAnalytics_Desc">これを有効化することですべてのアプリのクラッシュや統計情報が、｢console.firebase.google.com｣に送信されます。開発者が問題の修正などを効率良く行えるようになります。</string>
     <string name="SP_AskBioToOpenChats">チャットを開くときに生体認証を要求</string>
     <string name="SP_AskBioToOpenChats_Desc">選択した種類のチャットにアクセスするには、システムパスワードを要求します (指紋、顔認証、PIN、パターン)。</string>
@@ -365,7 +362,6 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">更新</string>
-    <string name="UP_TapToCheckUpdates">ここをタップして更新に関する情報を取得</string>
     <string name="UP_LastCheck">最終確認</string>
     <string name="UP_CurrentVersion">現在のバージョン</string>
     <string name="UP_BuildType">ビルドタイプ</string>
@@ -373,15 +369,9 @@
     <string name="UP_BTBeta">Beta</string>
     <string name="UP_InstallBetas">Betaバージョンをインストール</string>
     <string name="UP_Auto_OTA">起動時に確認する</string>
-    <string name="UP_ClearUpdatesCache">更新のキャッシュを消去</string>
-    <string name="UP_ClearedUpdatesCache">キャッシュの%1$sを消去しました。</string>
-    <string name="UP_NothingToClear">消去する物はありません。</string>
     <string name="UP_CheckForUpdates">更新を確認</string>
-    <string name="UP_Not_Found">Cherrygramは最新です。</string>
     <string name="UP_UpdateAvailable">更新があります!</string>
     <string name="UP_Version">バージョン</string>
-    <string name="UP_Changelog">更新履歴:</string>
-    <string name="UP_ChangelogRead">タップで読む</string>
     <string name="UP_Download">ダウンロード</string>
     <!--Updates Preferences-->
     <!--Donations-->

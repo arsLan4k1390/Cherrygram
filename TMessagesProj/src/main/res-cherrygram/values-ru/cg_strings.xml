@@ -372,11 +372,17 @@
     <string name="CP_Category_Camera">Камера</string>
     <string name="CP_CameraType">Тип камеры</string>
     <string name="CP_Camera2Desc">С Camera2 не будут работать все функции, которые скрываются при включении Camera2.</string>
-    <string name="CP_CameraStabilisation">Стабилизация камеры</string>
     <string name="CP_CameraUW">Начинать с ширика</string>
     <string name="CP_CameraUW_Desc">Запись видеосообщений начнется со сверхширокоугольного объектива (если это поддерживает API вашего устройства)</string>
     <string name="CP_CameraDualCamera">Двойная камера</string>
     <string name="CP_CameraDualCamera_Desc">Записывает видеосообщение на обеих камерах для более быстрого переключения между камерами во время записи. Использует больше батареи.</string>
+    <string name="CP_CategoryEnhancements">Улучшения</string>
+    <string name="CP_EnhancementsNote">Некоторые улучшения камеры могут повысить качество съемки, но одновременное включение нескольких функций не всегда даёт лучший результат. Попробуйте разные комбинации и выберите оптимальную для вашего устройства.</string>
+    <string name="CP_OpticalStabilisation">Оптическая стабилизация (OIS)</string>
+    <string name="CP_VideoStabilisation">Видео стабилизация (EIS)</string>
+    <string name="CP_ContinuousAutofocus">Непрерывная автофокусировка</string>
+    <string name="CP_NoiseReduction">Шумоподавление</string>
+    <string name="CP_FaceDetection">Обнаружение лиц</string>
     <string name="CP_DefaultCameraDesc">Встроенная камера Telegram.</string>
     <string name="CP_CameraXDesc">CameraX поддерживается только на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">выбранных устройствах</a>]]>, эффекты и линзы зависят от Вашего производителя.</string>
     <string name="CP_CameraQuality">Качество камеры</string>
@@ -408,7 +414,6 @@
     <string name="EP_NavigationAnimationBezier">Обычная</string>
     <string name="EP_NavigationAnimationCrossfading">Эффект плавного затухания</string>
     <string name="CG_PredictiveBackAnimation">Predictive-Back навигация</string>
-    <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
     <string name="EP_CustomChat">Пользовательский чат для Избранного</string>
     <string name="EP_CustomChat_Desc">Вы можете выбрать любой чат/группу/канал, чтобы пересылать туда сообщения (через кнопку в панели действий, в меню сообщения, при двойном тапе или при свайпе по сообщению)</string>
     <string name="EP_CustomChat_Selected_Title">вместо</string>
@@ -421,7 +426,6 @@
 
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">Приватность</string>
-    <string name="SP_NoProxyPromo">Не показывать спонсора прокси</string>
     <string name="SP_GoogleAnalytics_Desc">Включив это, все сбои приложений (вылеты) и статистика будут отправлены в \"console.firebase.google.com\" для дальнейшего изучения разработчиком.</string>
 
     <string name="SP_AskBioToOpenChats">Запрос биометрии для открытия чатов</string>
@@ -451,7 +455,6 @@
 
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Обновления</string>
-    <string name="UP_TapToCheckUpdates">Нажмите здесь, чтобы получить информацию об обновлениях</string>
     <string name="UP_LastCheck">Последняя проверка</string>
     <string name="UP_CurrentVersion">Текущая версия</string>
     <string name="UP_BuildType">Тип сборки</string>
@@ -459,15 +462,9 @@
     <string name="UP_BTBeta">Бета</string>
     <string name="UP_InstallBetas">Устанавливать бета-версии</string>
     <string name="UP_Auto_OTA">Проверять при запуске</string>
-    <string name="UP_ClearUpdatesCache">Очистить кэш обновлений</string>
-    <string name="UP_ClearedUpdatesCache">Очищено %1$s кэша.</string>
-    <string name="UP_NothingToClear">Нечего очищать.</string>
     <string name="UP_CheckForUpdates">Проверить обновления</string>
-    <string name="UP_Not_Found">Используется последняя версия Cherrygram.</string>
     <string name="UP_UpdateAvailable">Доступно обновление!</string>
     <string name="UP_Version">Версия</string>
-    <string name="UP_Changelog">Список изменений:</string>
-    <string name="UP_ChangelogRead">Прочитать</string>
     <string name="UP_Download">Загрузить</string>
     <!--Updates Preferences-->
 

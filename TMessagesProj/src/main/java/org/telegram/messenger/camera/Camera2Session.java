@@ -34,6 +34,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 
@@ -48,6 +49,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.camera.VideoMessagesHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class Camera2Session {
@@ -494,6 +496,41 @@ public class Camera2Session {
             if (recordingVideo) {
                 captureRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, VideoMessagesHelper.getCameraXFpsRange());
                 captureRequestBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT, CaptureRequest.CONTROL_CAPTURE_INTENT_VIDEO_RECORD);
+
+                if (CherrygramCameraConfig.INSTANCE.getOpticalStabilisation()) {
+                    captureRequestBuilder.set(
+                            CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE,
+                            CameraMetadata.LENS_OPTICAL_STABILIZATION_MODE_ON
+                    );
+                }
+
+                if (CherrygramCameraConfig.INSTANCE.getVideoStabilisation()) {
+                    captureRequestBuilder.set(
+                            CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE,
+                            CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON
+                    );
+                }
+
+                if (CherrygramCameraConfig.INSTANCE.getContinuousAutofocus()) {
+                    captureRequestBuilder.set(
+                            CaptureRequest.CONTROL_AF_MODE,
+                            CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_VIDEO
+                    );
+                }
+
+                if (CherrygramCameraConfig.INSTANCE.getNoiceReduction()) {
+                    captureRequestBuilder.set(
+                            CaptureRequest.NOISE_REDUCTION_MODE,
+                            CameraMetadata.NOISE_REDUCTION_MODE_FAST // NOISE_REDUCTION_MODE_HIGH_QUALITY
+                    );
+                }
+
+                if (CherrygramCameraConfig.INSTANCE.getFaceDetection()) {
+                    captureRequestBuilder.set(
+                            CaptureRequest.STATISTICS_FACE_DETECT_MODE,
+                            SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE && isFront ? CaptureRequest.STATISTICS_FACE_DETECT_MODE_FULL : CaptureRequest.STATISTICS_FACE_DETECT_MODE_SIMPLE
+                    );
+                }
             }
 
             if (sensorSize != null && Math.abs(currentZoom - 1f) >= 0.01f) {

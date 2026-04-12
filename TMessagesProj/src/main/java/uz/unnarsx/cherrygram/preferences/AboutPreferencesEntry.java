@@ -19,6 +19,7 @@ import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Components.Bulletin;
@@ -90,7 +91,7 @@ public class AboutPreferencesEntry extends UniversalFragment {
             } else {
                 value = "commit " + BuildConfig.GIT_COMMIT_HASH.substring(0, 8);
             }
-            items.add(UItem.asButton(githubRow, R.drawable.github_logo_white, getString(R.string.CGP_Source), value));
+            items.add(UItem.asButton(githubRow, R.drawable.github_cat, getString(R.string.CGP_Source), value));
         }
 
         items.add(UItem.asButton(crowdinRow, R.drawable.msg_translate_solar, getString(R.string.CGP_Crowdin), "Crowdin"));
@@ -104,14 +105,12 @@ public class AboutPreferencesEntry extends UniversalFragment {
             Browser.openUrl(getContext(), Constants.CG_GITHUB_URL + "#readme");
         } else if (item.id == updatesRow) {
             if (CherrygramCoreConfig.isPlayStoreBuild()) {
-                CherrygramCoreConfig.INSTANCE.setLastUpdateCheckTime(System.currentTimeMillis());
+                SharedConfig.lastUpdateCheckTime = System.currentTimeMillis();
                 ((TextDetailSettingsCell) view).setValue(getLastCheckUpdateTime());
 
                 Browser.openUrl(getContext(), Constants.UPDATE_APP_URL);
-            } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
-                // Fuckoff :)
             } else {
-                LaunchActivity.instance.showCgUpdaterSettings(this);
+                LaunchActivity.instance.showUpdaterBottomSheet(this, false, null);
             }
         } else if (item.id == bugReportRow) {
             AndroidUtilities.addToClipboard(Crashlytics.getReportMessage() + "\n\n#bug");
@@ -165,7 +164,7 @@ public class AboutPreferencesEntry extends UniversalFragment {
     }
 
     private String getLastCheckUpdateTime() {
-        return getString(R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramCoreConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true);
+        return getString(R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(SharedConfig.lastUpdateCheckTime / 1000, true);
     }
 
 }

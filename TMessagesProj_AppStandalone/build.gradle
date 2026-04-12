@@ -1,3 +1,5 @@
+import io.github.valacuz.proguard.dictionary.DictionaryGeneratorPluginExtension
+import io.github.valacuz.proguard.dictionary.tasks.generate.strategy.ObfuscationStrategy
 import okhttp3.*
 
 import java.nio.file.Files
@@ -10,6 +12,7 @@ import java.util.concurrent.TimeUnit
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
+apply plugin: 'io.github.valacuz.proguard-dictionary-generator'
 
 /*repositories {
     mavenCentral()
@@ -28,11 +31,20 @@ configurations.configureEach {
 dependencies {
     implementation project(':TMessagesProj')
     implementation 'androidx.fragment:fragment-ktx:1.8.9'
-    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.core:core-ktx:1.18.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
 
-    implementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:17.0.0'
+    implementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:18.0.4'
+}
+
+proguardDictGenerator {
+    createConfigFile = true
+    configFilePath = DictionaryGeneratorPluginExtension.DEFAULT_CONFIG_FILE_PATH
+    fieldMethodObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
+    classObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
+    packageObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
+    variantNameFilter = null // Regex pattern
 }
 
 android {

@@ -56,7 +56,6 @@ object FirebaseRemoteConfigHelper {
                     setRoundVideoResolution(it.getLong(Constants.Videomessages_Resolution))
                 }
                 toggleReTgCheck(it.getBoolean(Constants.Re_Tg_Check))
-                toggleNewUpdatesUI(it.getBoolean(Constants.is_new_updates_ui_available_v2))
                 toggleSafeStars(it.getBoolean(Constants.allow_use_safestars))
 
                 if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {
@@ -104,22 +103,6 @@ object FirebaseRemoteConfigHelper {
 
         if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
             FileLog.d("New reTg value:" + CherrygramPrivacyConfig.reTgCheck)
-        }
-    }
-
-    private fun toggleNewUpdatesUI(enable: Boolean) {
-        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
-            FileLog.d("Old updates value:" + CherrygramCoreConfig.updatesNewUI)
-        }
-
-        if (CherrygramCoreConfig.isDevBuild()) {
-            CherrygramCoreConfig.updatesNewUI = true
-        } else {
-            CherrygramCoreConfig.updatesNewUI = enable
-        }
-
-        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
-            FileLog.d("New updates value:" + CherrygramCoreConfig.updatesNewUI)
         }
     }
 

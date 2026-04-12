@@ -34,6 +34,7 @@ import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.MessagesStorage
 import org.telegram.messenger.R
+import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.UserConfig
 import org.telegram.messenger.browser.Browser
 import org.telegram.tgnet.ConnectionsManager
@@ -328,6 +329,11 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
     fun checkDeviceBrand(brand: String) : Boolean {
         return Build.MANUFACTURER.contains(brand, ignoreCase = true) || Build.BRAND.contains(brand, ignoreCase = true)
+    }
+
+    @JvmStatic
+    fun largePhotosSupported(): Boolean {
+        return SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE
     }
 
 }

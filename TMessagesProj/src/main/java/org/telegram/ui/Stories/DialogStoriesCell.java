@@ -94,6 +94,7 @@ import java.util.Objects;
 import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 import me.vkryl.android.animator.ReplaceAnimator;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 
 @SuppressLint("ViewConstructor")
@@ -1228,7 +1229,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
 
     public void setTitleOverlayText(String titleOverlayText, int textId) {
         final CharSequence subtitleToSet;
-        if (textId == R.string.ConnectingToProxyWithDots) {
+        if (textId == R.string.ConnectingToProxyWithDots && !CherrygramCoreConfig.INSTANCE.getCheckContent()) {
             subtitleToSet = AndroidUtilities.replaceArrows(getString(R.string.TitleSetupProxy), true, dp(8f / 3f), dp(2));
         } else {
             subtitleToSet = null;
@@ -1782,7 +1783,9 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                     }
                     textAlpha = params.globalState == StoriesUtilities.STATE_READ ? 0.7f : 1f;//AndroidUtilities.lerp(1f, 0.7f, p);
                 }
-                textViewContainer.setAlpha(textAlphaTransition * textAlpha);
+                final float alpha = textAlphaTransition * textAlpha;
+                textViewContainer.setAlpha(alpha);
+                textViewContainer.setVisibility(alpha > 0 ? View.VISIBLE : View.INVISIBLE);
             }
             super.dispatchDraw(canvas);
         }
@@ -1927,7 +1930,9 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 recyclerListView.invalidate();
             }
             textAlphaTransition = mini ? 0 : 1f - Utilities.clamp(collapsedProgress / K, 1f, 0);
-            textViewContainer.setAlpha(textAlphaTransition * textAlpha);
+            final float alpha = textAlphaTransition * textAlpha;
+            textViewContainer.setAlpha(alpha);
+            textViewContainer.setVisibility(alpha > 0 ? View.VISIBLE : View.INVISIBLE);
         }
 
         public void setCrossfadeTo(long dialogId) {

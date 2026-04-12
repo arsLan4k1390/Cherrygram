@@ -11,8 +11,18 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.FileLog
+import org.telegram.messenger.MessageObject
+import org.telegram.messenger.SamsungDatastore
+import org.telegram.messenger.UserConfig
+import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.helpers.MessageLoader
+import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.preferences.boolean
 
 object CherrygramPrivacyConfig {
@@ -20,7 +30,7 @@ object CherrygramPrivacyConfig {
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
     /** Privacy start */
-    var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
+    var hideProxySponsor by sharedPreferences.boolean("SP_NoProxySponsor", true)
     var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics", ApplicationLoader.checkPlayServices())
     /** Privacy finish */
 
@@ -41,6 +51,18 @@ object CherrygramPrivacyConfig {
     fun init() {
         FirebaseAnalyticsHelper.init(ApplicationLoader.applicationContext)
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("cg_start")
+
+        MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+            override fun onLoaded(message: MessageObject?) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    SamsungDatastore.vpwogjigjjur232(message)
+                }
+            }
+
+            override fun onError(error: String?) {
+                if (CherrygramCoreConfig.isDevBuild()) FileLog.e("MessageLoader: $error")
+            }
+        })
     }
 
 }

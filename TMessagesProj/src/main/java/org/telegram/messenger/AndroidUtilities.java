@@ -40,12 +40,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.Xfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -148,9 +152,11 @@ import com.google.android.gms.tasks.Task;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.utils.CustomHtml;
+import org.telegram.messenger.utils.DebugRecordingCanvas;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_stars;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
@@ -178,6 +184,7 @@ import org.telegram.ui.Components.TypefaceSpan;
 import org.telegram.ui.Components.URLSpanReplacement;
 import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.Components.spoilers.SpoilersTextView;
+import org.telegram.ui.DebugRecordingCanvasReplayFragment;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.Stories.PeerStoriesView;
 import org.telegram.ui.Stories.StoryMediaAreasView;
@@ -233,7 +240,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
@@ -241,6 +247,7 @@ import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 import me.vkryl.core.BitwiseUtils;
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 
 public class AndroidUtilities {
     public final static int LIGHT_STATUS_BAR_OVERLAY = 0x0f000000, DARK_STATUS_BAR_OVERLAY = 0x33000000;
@@ -779,6 +786,7 @@ public class AndroidUtilities {
                     @Override
                     public void updateDrawState(@NonNull TextPaint ds) {
                         ds.setUnderlineText(false);
+                        ds.setTypeface(AndroidUtilities.bold());
                         ds.setColor(color);
                     }
                 }, index, index + len, 0);
@@ -2403,17 +2411,68 @@ public class AndroidUtilities {
     }
 
     public static Typeface getTypeface(String assetPath) {
-        return typefaceCache.computeIfAbsent(assetPath, path -> {
-            try {
-                if (CherrygramCoreConfig.INSTANCE.getSystemFonts()) {
-                    return FontHelper.createTypeface(path);
+        synchronized (typefaceCache) {
+            if (!typefaceCache.containsKey(assetPath)) {
+                try {
+                    Typeface t;
+                    switch (assetPath) {
+                        case TYPEFACE_ROBOTO_MEDIUM:
+                            if (FontHelper.isMediumWeightSupported()) {
+                                t = FontHelper.createTypeface(500, false);
+                            } else {
+                                t = Typeface.create("sans-serif", Typeface.BOLD);
+                            }
+                            break;
+                        case "fonts/ritalic.ttf":
+                            t = FontHelper.createTypeface(400, true);
+                            break;
+                        case TYPEFACE_ROBOTO_MEDIUM_ITALIC:
+                            if (FontHelper.isMediumWeightSupported()) {
+                                t = FontHelper.createTypeface(500, true);
+                            } else {
+                                t = Typeface.create("sans-serif", Typeface.BOLD_ITALIC);
+                            }
+                            break;
+                        case TYPEFACE_ROBOTO_MONO:
+                            t = Typeface.MONOSPACE;
+                            break;
+                        case "fonts/rcondensedbold.ttf":
+                            t = Typeface.create("sans-serif-condensed", Typeface.BOLD);
+                            break;
+                        case TYPEFACE_ROBOTO_EXTRA_BOLD:
+                            if (FontHelper.isMediumWeightSupported()) {
+                                t = FontHelper.createTypeface(800, false);
+                            } else {
+                                t = Typeface.create("sans-serif", Typeface.BOLD);
+                            }
+                            break;
+                        default:
+                            if (Build.VERSION.SDK_INT >= 26) {
+                                Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
+                                if (assetPath.contains("rextrabold")) {
+                                    builder.setWeight(800);
+                                }
+                                if (assetPath.contains("medium") || assetPath.contains("rbold")) {
+                                    builder.setWeight(700);
+                                }
+                                if (assetPath.contains("italic")) {
+                                    builder.setItalic(true);
+                                }
+                                t = builder.build();
+                            } else {
+                                t = Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
+                            }
+                    }
+                    typefaceCache.put(assetPath, t);
+                } catch (Exception e) {
+                    if (BuildVars.LOGS_ENABLED) {
+                        FileLog.e("Could not get typeface '" + assetPath + "' because " + e.getMessage());
+                    }
+                    return null;
                 }
-                return FontHelper.createTypefaceFromAsset(path);
-            } catch (Exception e) {
-                FileLog.e("Could not get typeface '" + assetPath + "' because " + e.getMessage());
-                return null;
             }
-        });
+            return typefaceCache.get(assetPath);
+        }
     }
 
     public static boolean isWaitingForSms() {
@@ -2444,9 +2503,7 @@ public class AndroidUtilities {
     }
 
     public static int getShadowHeight() {
-        if (CherrygramAppearanceConfig.INSTANCE.getDisableDividers()) {
-            return 0;
-        } else if (density >= 4.0f) {
+        if (density >= 4.0f) {
             return 3;
         } else if (density >= 2.0f) {
             return 2;
@@ -3011,7 +3068,7 @@ public class AndroidUtilities {
     }
 
     public static int getPhotoSize(boolean highQuality) {
-        if (CherrygramChatsConfig.INSTANCE.getLargePhotos() || highQuality) {
+        if (CherrygramExtras.largePhotosSupported() || highQuality) {
             if (highQualityPhotoSize == null) {
                 highQualityPhotoSize = 2560;
             }
@@ -4694,7 +4751,8 @@ public class AndroidUtilities {
         statusTextView[0].setDisablePaddingsOffsetY(true);
         statusTextView[0].setPadding(dp(12.66f), dp(9.33f), dp(12.66f), dp(9.33f));
         final boolean[] checking = new boolean[1];
-        statusTextView[0].setText(replaceSingleLink(getString(R.string.ProxyBottomSheetCheckStatus), Theme.getColor(Theme.key_chat_messageLinkIn), () -> {
+
+        final Runnable checkProxyRunnable = () -> {
             if (checking[0]) return;
 
             final Runnable check = () -> {
@@ -4733,7 +4791,10 @@ public class AndroidUtilities {
                     .setNegativeButton(getString(R.string.Cancel), null)
                     .show();
             }
-        }));
+        };
+
+        statusTextView[0].setText(replaceSingleLink(getString(R.string.ProxyBottomSheetCheckStatus), Theme.getColor(Theme.key_chat_messageLinkIn), checkProxyRunnable));
+
         if (!TextUtils.isEmpty(secret)) {
             final TableView.TableRowFullContent tableRow = tableView.addFullRow(getString(R.string.UseProxyTelegramInfo2));
             tableRow.setFilled(true);
@@ -4799,6 +4860,8 @@ public class AndroidUtilities {
         linearLayout.addView(buttonView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.FILL_HORIZONTAL, 14, 18, 14, 14));
 
         builder.show();
+
+        AndroidUtilities.runOnUIThread(checkProxyRunnable, 50);
     }
 
     @SuppressLint("PrivateApi")
@@ -6523,6 +6586,7 @@ public class AndroidUtilities {
     }
 
     public static void vibrateCursor(View view) {
+        if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) return;
         try {
             if (view == null || view.getContext() == null) return;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
@@ -6532,6 +6596,7 @@ public class AndroidUtilities {
     }
 
     public static void vibrate(View view) {
+        if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) return;
         try {
             if (view == null || view.getContext() == null) return;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
@@ -6923,6 +6988,16 @@ public class AndroidUtilities {
         return true;
     }
 
+    public static Bitmap applyColorMatrix(Bitmap bitmap, ColorMatrix matrix) {
+        final Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(matrix));
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+
+        final Bitmap result = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(result);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return result;
+    }
 
     public static int applyColorMatrix(int argb, ColorMatrix matrix) {
         float[] m = matrix.getArray();
@@ -6986,5 +7061,30 @@ public class AndroidUtilities {
         } catch (Throwable e) {
             FileLog.e(e);
         }
+    }
+
+    public static void dumpCanvas(View v) {
+        if (!BuildConfig.DEBUG_PRIVATE_VERSION) {
+            return;
+        }
+
+        final Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        final DebugRecordingCanvas c = new DebugRecordingCanvas(b);
+        v.draw(c);
+        c.logCommands();
+
+        LaunchActivity.instance.presentFragment(new DebugRecordingCanvasReplayFragment(c));
+    }
+
+    public static <A, B> B find(ArrayList<A> array, Class<B> clazz) {
+        if (array == null) {
+            return null;
+        }
+        for (A obj : array) {
+            if (clazz.isInstance(obj)) {
+                return clazz.cast(obj);
+            }
+        }
+        return null;
     }
 }

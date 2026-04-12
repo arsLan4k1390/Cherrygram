@@ -287,7 +287,7 @@ public class FlashViews {
                 float alpha = intensityValue() * invert;
                 int blended = ColorUtils.blendARGB(
                         0x1a000000,
-                        ColorUtils.setAlphaComponent(color, (int) (255 * alpha / 1.6f)),
+                        ColorUtils.setAlphaComponent(color, (int) (255 * alpha / 1.7f)),
                         1f
                 );
                 canvas.drawColor(blended);

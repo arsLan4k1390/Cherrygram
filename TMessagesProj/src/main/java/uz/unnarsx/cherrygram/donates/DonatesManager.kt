@@ -210,7 +210,7 @@ object DonatesManager {
     private val FILE_NAME = decodeBase64Array(Extra.FILE_NAME_HASH)
     private val GITLAB_RAW_URL = decodeBase64Array(Extra.GITLAB_RAW_URL_HASH)
 
-    private val verifiedUserIds = mutableSetOf<Long>()
+    val verifiedUserIds = mutableSetOf<Long>()
 
     private suspend fun updateDonateList(context: Context) =
         updateList(context, GITLAB_RAW_URL, FILE_NAME, verifiedUserIds, ::loadLocalDonateList)
@@ -257,7 +257,7 @@ object DonatesManager {
     private val FILE_NAME_MARKETPLACE = decodeBase64Array(Extra.FILE_NAME_MARKETPLACE_HASH)
     private val GITLAB_RAW_URL_MARKETPLACE = decodeBase64Array(Extra.GITLAB_RAW_URL_MARKETPLACE_HASH)
 
-    private val verifiedUserIdsMarketplace = mutableSetOf<Long>()
+    val verifiedUserIdsMarketplace = mutableSetOf<Long>()
 
     private suspend fun updateDonateListMarketplace(context: Context) =
         updateList(context, GITLAB_RAW_URL_MARKETPLACE, FILE_NAME_MARKETPLACE, verifiedUserIdsMarketplace, ::loadLocalDonateListMarketplace)

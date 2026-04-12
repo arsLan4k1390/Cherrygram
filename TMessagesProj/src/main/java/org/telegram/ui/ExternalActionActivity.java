@@ -508,7 +508,7 @@ public class ExternalActionActivity extends Activity implements INavigationLayou
     protected void onPause() {
         super.onPause();
         actionBarLayout.onPause();
-        if (AndroidUtilities.isTablet()) {
+        if (AndroidUtilities.isTablet() && layersActionBarLayout != null) {
             layersActionBarLayout.onPause();
         }
         ApplicationLoader.externalInterfacePaused = true;

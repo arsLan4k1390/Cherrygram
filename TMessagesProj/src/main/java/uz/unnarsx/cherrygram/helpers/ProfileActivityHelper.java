@@ -99,10 +99,10 @@ public class ProfileActivityHelper extends BaseController {
     public final static int OPTION_USER_INFO = 1004;
 
     public void injectCherryFeats(ActionBarMenuItem otherItem, TLRPC.User user, TLRPC.EncryptedChat currentEncryptedChat, boolean isBot) {
-        otherItem.addColoredGap();
-
         long emojiDocumentId = UserObject.getProfileEmojiId(user);
-        if (!UserObject.isUserSelf(user) && currentEncryptedChat == null && !isBot) {
+        if (!UserObject.isUserSelf(user) && currentEncryptedChat == null && !isBot && MessagesController.PeerColor.fromCollectible(user.emoji_status) == null) {
+            otherItem.addColoredGap();
+
             if (emojiDocumentId != 0
                     && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji()
             ) {
@@ -178,7 +178,7 @@ public class ProfileActivityHelper extends BaseController {
     }
 
     public void getProfileBackground(BaseFragment fragment, long dialogID) {
-        if (fragment == null || fragment.getContext() == null || fragment.getResourceProvider() == null) {
+        if (fragment == null || fragment.getContext() == null) {
             return;
         }
 
@@ -187,7 +187,7 @@ public class ProfileActivityHelper extends BaseController {
         AnimatedEmojiDrawable.getDocumentFetcher(currentAccount).fetchDocument(emojiDocumentId, document -> AndroidUtilities.runOnUIThread(() -> {
             ArrayList<TLRPC.InputStickerSet> inputSets = new ArrayList<>(1);
             inputSets.add(MessageObject.getInputStickerSet(document));
-            EmojiPacksAlert alert = new EmojiPacksAlert(fragment, fragment.getContext(), fragment.getResourceProvider(), inputSets);
+            EmojiPacksAlert alert = new EmojiPacksAlert(fragment, fragment.getContext(), null, inputSets);
             alert.show();
         }));
     }

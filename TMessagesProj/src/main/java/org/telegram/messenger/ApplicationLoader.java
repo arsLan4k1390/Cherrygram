@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.json.JSONObject;
 import org.telegram.messenger.browser.Browser;
@@ -56,6 +55,7 @@ import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseCrashlyticsHelper;
 
 public class ApplicationLoader extends Application {
 
@@ -349,7 +349,7 @@ public class ApplicationLoader extends Application {
         try {
             ConnectionsManager.native_setJava(false);
         } catch (UnsatisfiedLinkError error) {
-            FirebaseCrashlytics.getInstance().recordException(error);
+            FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(error);
 //            throw new RuntimeException("can't load native libraries " +  Build.CPU_ABI + " lookup folder " + NativeLoader.getAbiFolder());
         }
         new ForegroundDetector(this) {
@@ -736,16 +736,7 @@ public class ApplicationLoader extends Application {
         return null;
     }
 
-
-    public boolean checkCgUpdates(BaseFragment fragment) {
-        return false;
-    }
-
-    public boolean checkCgUpdatesManually(BaseFragment fragment, LaunchActivity launchActivity, Browser.Progress progress) {
-        return false;
-    }
-
-    public boolean showUpdaterSettings(BaseFragment fragment) {
+    public boolean showUpdaterBottomSheet(BaseFragment fragment, boolean available, TLRPC.TL_help_appUpdate update) {
         return false;
     }
 

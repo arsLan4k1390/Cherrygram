@@ -550,9 +550,9 @@ public class ButtonWithCounterView extends FrameLayout implements Loadable {
             float width = textWidth + lightningWidth + calculateCounterWidth((dp(5.66f + 5 + 5) + countText.getCurrentWidth()), countAlpha);
             AndroidUtilities.rectTmp2.set(
                     (int) ((getMeasuredWidth() - width - getWidth()) / 2f),
-                    (int) ((getMeasuredHeight() - text.getHeight()) / 2f - dp(1)),
+                    (int) ((getMeasuredHeight() - text.getHeight()) / 2f - dp(0)),
                     (int) ((getMeasuredWidth() - width + getWidth()) / 2f + textWidth),
-                    (int) ((getMeasuredHeight() + text.getHeight()) / 2f - dp(1))
+                    (int) ((getMeasuredHeight() + text.getHeight()) / 2f - dp(0))
             );
             AndroidUtilities.rectTmp2.offset(0, (int) (-dp(7) * subTextT));
             text.setAlpha((int) (globalAlpha * (1f - loadingT) * AndroidUtilities.lerp(.5f, 1f, enabledT)));
@@ -564,9 +564,9 @@ public class ButtonWithCounterView extends FrameLayout implements Loadable {
                 width = subTextWidth;
                 AndroidUtilities.rectTmp2.set(
                         (int) ((getMeasuredWidth() - width - getWidth()) / 2f),
-                        (int) ((getMeasuredHeight() - subText.getHeight()) / 2f - dp(1)),
+                        (int) ((getMeasuredHeight() - subText.getHeight()) / 2f - dp(0)),
                         (int) ((getMeasuredWidth() - width + getWidth()) / 2f + subTextWidth),
-                        (int) ((getMeasuredHeight() + subText.getHeight()) / 2f - dp(1))
+                        (int) ((getMeasuredHeight() + subText.getHeight()) / 2f - dp(0))
                 );
                 AndroidUtilities.rectTmp2.offset(0, dp(11));
                 canvas.save();
@@ -694,4 +694,5 @@ public class ButtonWithCounterView extends FrameLayout implements Loadable {
     /** Cherrygram start */
     public boolean useStroke;
     /** Cherrygram finish */
+
 }

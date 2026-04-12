@@ -11,11 +11,16 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
+import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.SharedConfig
+import org.telegram.messenger.UserConfig
+import uz.unnarsx.cherrygram.Extra.VERIF_LOG
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.SolarIconReplace
+import uz.unnarsx.cherrygram.donates.DonatesManager
+import uz.unnarsx.cherrygram.donates.DonatesManager.verifiedUserIds
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.string
@@ -92,5 +97,38 @@ object CherrygramAppearanceConfig {
     var showAccounts by sharedPreferences.boolean("AP_ShowAccounts", true)
     var marketPlaceDrawerButton by sharedPreferences.boolean("AP_MarketplaceDrawerButton", true)
     /** Drawer items finish */
+
+    val lD = mutableSetOf<String>()
+    fun ola(): Boolean {
+        lD.clear()
+
+        val res = aV()
+        val intact = lD.contains(DonatesManager.decodeBase64Array(VERIF_LOG))
+
+        return res && intact
+    }
+
+    fun vI(userId: Long): Boolean {
+        synchronized(verifiedUserIds) {
+            return verifiedUserIds.contains(userId)
+        }
+    }
+
+    fun aV(): Boolean {
+        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+            val cU = AccountInstance.getInstance(i).userConfig
+            val usC = cU?.currentUser
+            val uID = usC?.id ?: 0L
+
+            if (cU != null && cU.isClientActivated && uID != 0L) {
+                if (vI(uID)) {
+                    if (verifiedUserIds.contains(uID)) lD.add(DonatesManager.decodeBase64Array(VERIF_LOG))
+                    CherrygramCoreConfig.showNotifications = true
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
 }

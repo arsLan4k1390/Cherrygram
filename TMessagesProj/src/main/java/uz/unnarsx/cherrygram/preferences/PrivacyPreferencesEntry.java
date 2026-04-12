@@ -31,11 +31,8 @@ import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.UsersSelectActivity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
@@ -43,24 +40,28 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
-import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class PrivacyPreferencesEntry extends UniversalFragment {
 
-    private final int proxySponsorRow = 1;
-    private final int googleAnalyticsRow = 2;
-    private final int deleteAccountRow = 3;
 
-    private final int hideArchiveFromChatsListRow = 4;
-    private final int askBiometricsToOpenChatsRow = 5;
+    private final int hideArchiveFromChatsListRow = 1;
+    private final int askBiometricsToOpenDialogsRow = 2;
+    private final int askBiometricsToOpenChatsRow = 3;
+    private final int askBiometricsToOpenSecretChatsRow = 4;
+    private final int askBiometricsToOpenArchivedChatsRow = 5;
 
     private final int lockedChatsRow = 6;
     private final int requireBiometricsToDeleteChatsRow = 7;
     private final int allowSystemPinRow = 8;
     private final int testFingerprintRow = 9;
 
+    private final int googleAnalyticsRow = 10;
+    private final int deleteAccountRow = 11;
+
     private final int hideArchivedStoriesRow = 1390;
+
+    private boolean expandedBiometricSection = false;
 
     @Override
     protected CharSequence getTitle() {
@@ -76,10 +77,73 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
 
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
-        items.add(UItem.asHeader(getString(R.string.SP_Header_Privacy)));
-        items.add(SettingsHelper.asSwitchCG(proxySponsorRow, getString(R.string.SP_NoProxyPromo))
-                .setChecked(CherrygramPrivacyConfig.INSTANCE.getHideProxySponsor())
+        items.add(UItem.asHeader(getString(R.string.FilterChats)));
+        if ((CherrygramCoreConfig.isStandalonePremiumBuild() || CherrygramCoreConfig.isDevBuild()) && (getUserConfig().clientUserId == 6578415824L || getUserConfig().clientUserId == 282287840L)) {
+            items.add(SettingsHelper.asSwitchCG(hideArchivedStoriesRow, "Скрыть архивированные истории", "Скрывает раздел архивированных историй в профиле")
+                    .setChecked(CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories())
+            );
+        }
+        items.add(SettingsHelper.asSwitchCG(hideArchiveFromChatsListRow, getString(R.string.SP_HideArchive), getString(R.string.SP_HideArchive_Desc))
+                .setChecked(CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList())
         );
+        if (getChatsPasswordHelper().checkBiometricAvailable()) {
+            items.add(UItem.asShadow(null));
+            items.add(
+                    SettingsHelper.asExpandableSwitch(
+                            askBiometricsToOpenDialogsRow,
+                            R.drawable.msg_pin_code,
+                            getString(R.string.Passcode),
+                            getBiometricCountText()
+                    )
+                    .setChecked(
+                            CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() ||
+                            CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted() ||
+                            CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()
+                    )
+                    .setCollapsed(!expandedBiometricSection)
+                    .setClickCallback(v -> CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                        boolean newValue = !(
+                                CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() ||
+                                CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted() ||
+                                CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()
+                        );
+
+                        CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenChat(newValue);
+                        CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenEncrypted(newValue);
+                        CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(newValue);
+
+                        listView.adapter.update(true);
+                    }))
+            );
+            if (expandedBiometricSection) {
+                items.add(UItem.asRoundCheckbox(askBiometricsToOpenChatsRow, getString(R.string.FilterChats))
+                        .setChecked(CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat())
+                        .setPad(1)
+                );
+
+                items.add(UItem.asRoundCheckbox(askBiometricsToOpenSecretChatsRow, getString(R.string.SecretChat))
+                        .setChecked(CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())
+                        .setPad(1)
+                );
+
+                items.add(UItem.asRoundCheckbox(askBiometricsToOpenArchivedChatsRow, getString(R.string.ArchivedChats))
+                        .setChecked(CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive())
+                        .setPad(1)
+                );
+            }
+
+            items.add(UItem.asShadow(getString(R.string.SP_AskBioToOpenChats_Desc)));
+
+            if (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
+                items.add(UItem.asButton(lockedChatsRow, R.drawable.msg_discussion, getString(R.string.SP_LockedChats), String.valueOf(getChatsPasswordHelper().getLockedChatsCount())));
+            }
+            items.add(SettingsHelper.asSwitchCG(requireBiometricsToDeleteChatsRow, getString(R.string.SP_AskPinBeforeDelete), getString(R.string.SP_AskPinBeforeDelete_Desc)));
+            items.add(SettingsHelper.asSwitchCG(allowSystemPinRow, getString(R.string.SP_AllowUseSystemPasscode), getString(R.string.SP_AllowUseSystemPasscode_Desc)));
+        }
+        items.add(UItem.asButton(testFingerprintRow, R.drawable.fingerprint, getString(R.string.SP_TestFingerprint)));
+        items.add(UItem.asShadow(getString(R.string.SP_TestFingerprint_Desc)));
+
+        items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
         items.add(SettingsHelper.asSwitchCG(googleAnalyticsRow, getString(R.string.SP_GoogleAnalytics), getString(R.string.SP_GoogleAnalytics_Desc))
                 .setChecked(CherrygramPrivacyConfig.INSTANCE.getGoogleAnalytics())
         );
@@ -92,37 +156,54 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
         deleteAccountButton.red = true;
         items.add(deleteAccountButton);
         items.add(UItem.asShadow(null));
-
-        items.add(UItem.asHeader(getString(R.string.FilterChats)));
-        if ((CherrygramCoreConfig.isStandalonePremiumBuild() || CherrygramCoreConfig.isDevBuild()) && (getUserConfig().clientUserId == 6578415824L || getUserConfig().clientUserId == 282287840L)) {
-            items.add(SettingsHelper.asSwitchCG(hideArchivedStoriesRow, "Скрыть архивированные истории", "Скрывает раздел архивированных историй в профиле")
-                    .setChecked(CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories())
-            );
-        }
-        items.add(SettingsHelper.asSwitchCG(hideArchiveFromChatsListRow, getString(R.string.SP_HideArchive), getString(R.string.SP_HideArchive_Desc))
-                .setChecked(CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList())
-        );
-        if (getChatsPasswordHelper().checkBiometricAvailable()) {
-            items.add(UItem.asButton(askBiometricsToOpenChatsRow, R.drawable.msg_pin_code, getString(R.string.SP_AskBioToOpenChats)));
-            items.add(UItem.asShadow(getString(R.string.SP_AskBioToOpenChats_Desc)));
-            if (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
-                items.add(UItem.asButton(lockedChatsRow, R.drawable.msg_discussion, getString(R.string.SP_LockedChats), String.valueOf(getChatsPasswordHelper().getLockedChatsCount())));
-            }
-            items.add(SettingsHelper.asSwitchCG(requireBiometricsToDeleteChatsRow, getString(R.string.SP_AskPinBeforeDelete), getString(R.string.SP_AskPinBeforeDelete_Desc)));
-            items.add(SettingsHelper.asSwitchCG(allowSystemPinRow, getString(R.string.SP_AllowUseSystemPasscode), getString(R.string.SP_AllowUseSystemPasscode_Desc)));
-        }
-        items.add(UItem.asButton(testFingerprintRow, R.drawable.fingerprint, getString(R.string.SP_TestFingerprint)));
-        items.add(UItem.asShadow(getString(R.string.SP_TestFingerprint_Desc)));
-        items.add(UItem.asShadow(null));
     }
 
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == proxySponsorRow) {
-            CherrygramPrivacyConfig.INSTANCE.setHideProxySponsor(!CherrygramPrivacyConfig.INSTANCE.getHideProxySponsor());
-            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideProxySponsor());
+        if (item.id == hideArchivedStoriesRow) {
+            CherrygramPrivacyConfig.INSTANCE.setHideArchivedStories(!CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories());
+            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories());
 
-            getMessagesController().checkPromoInfo(true);
+            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+        } else if (item.id == hideArchiveFromChatsListRow) {
+            CherrygramPrivacyConfig.INSTANCE.setHideArchiveFromChatsList(!CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
+            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
+        } else if (item.id == askBiometricsToOpenDialogsRow) {
+            expandedBiometricSection = !expandedBiometricSection;
+            item.collapsed = !item.collapsed;
+
+            listView.adapter.update(true);
+        } else if (item.id == askBiometricsToOpenChatsRow) {
+            CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenChat(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat());
+                SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat());
+
+                listView.adapter.update(true);
+            });
+        } else if (item.id == askBiometricsToOpenSecretChatsRow) {
+            CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenEncrypted(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted());
+                SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted());
+
+                listView.adapter.update(true);
+            });
+        } else if (item.id == askBiometricsToOpenArchivedChatsRow) {
+            CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive());
+                SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive());
+
+                listView.adapter.update(true);
+            });
+        } else if (item.id == lockedChatsRow) {
+            CGBiometricPrompt.prompt(getParentActivity(), () -> createUsersSelectActivity(view));
+        } else if (item.id == requireBiometricsToDeleteChatsRow) {
+            CherrygramPrivacyConfig.INSTANCE.setAskPasscodeBeforeDelete(!CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete());
+            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete());
+        } else if (item.id == allowSystemPinRow) {
+            CherrygramPrivacyConfig.INSTANCE.setAllowSystemPasscode(!CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode());
+            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode());
+        } else if (item.id == testFingerprintRow) {
+            testFingerprint();
         } else if (item.id == googleAnalyticsRow) {
             CherrygramPrivacyConfig.INSTANCE.setGoogleAnalytics(!CherrygramPrivacyConfig.INSTANCE.getGoogleAnalytics());
             SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getGoogleAnalytics());
@@ -134,32 +215,22 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
             } else {
                 DeleteAccountDialog.showDeleteAccountDialog(this);
             }
-        } else if (item.id == hideArchivedStoriesRow) {
-            CherrygramPrivacyConfig.INSTANCE.setHideArchivedStories(!CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories());
-            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories());
-
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
-        } else if (item.id == hideArchiveFromChatsListRow) {
-            CherrygramPrivacyConfig.INSTANCE.setHideArchiveFromChatsList(!CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
-            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
-        } else if (item.id == askBiometricsToOpenChatsRow) {
-            CGBiometricPrompt.prompt(getParentActivity(), this::showPasscodeItemsSelector);
-        } else if (item.id == lockedChatsRow) {
-            CGBiometricPrompt.prompt(getParentActivity(), () -> createUsersSelectActivity(view));
-        } else if (item.id == requireBiometricsToDeleteChatsRow) {
-            CherrygramPrivacyConfig.INSTANCE.setAskPasscodeBeforeDelete(!CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete());
-            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete());
-        } else if (item.id == allowSystemPinRow) {
-            CherrygramPrivacyConfig.INSTANCE.setAllowSystemPasscode(!CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode());
-            SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode());
-        } else if (item.id == testFingerprintRow) {
-            testFingerprint();
         }
     }
 
     @Override
     protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
         return false;
+    }
+
+    private String getBiometricCountText() {
+        int count = 0;
+
+        if (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) count++;
+        if (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted()) count++;
+        if (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()) count++;
+
+        return count + "/3";
     }
 
     private void createUsersSelectActivity(View view) {
@@ -299,72 +370,6 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
                 }
             }
         });
-    }
-
-    private void showPasscodeItemsSelector() {
-        List<MenuItemConfig> menuItems = Arrays.asList(
-                new MenuItemConfig(
-                        getString(R.string.FilterChats),
-                        0,
-                        CherrygramPrivacyConfig.INSTANCE::getAskBiometricsToOpenChat,
-                        () -> {
-                            CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenChat(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat());
-                            if (listView != null && listView.adapter != null) listView.adapter.update(true);
-                        }
-                ),
-                new MenuItemConfig(
-                        getString(R.string.SecretChat),
-                        0,
-                        CherrygramPrivacyConfig.INSTANCE::getAskBiometricsToOpenEncrypted,
-                        () -> CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenEncrypted(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())
-                ),
-                new MenuItemConfig(
-                        getString(R.string.ArchivedChats),
-                        0,
-                        CherrygramPrivacyConfig.INSTANCE::getAskBiometricsToOpenArchive,
-                        () -> CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()),
-                        false
-                )
-        );
-
-        ArrayList<String> prefTitle = new ArrayList<>();
-        ArrayList<Integer> prefIcon = new ArrayList<>();
-        ArrayList<Boolean> prefCheck = new ArrayList<>();
-        ArrayList<Boolean> prefDivider = new ArrayList<>();
-        ArrayList<Runnable> clickListener = new ArrayList<>();
-
-        for (MenuItemConfig item : menuItems) {
-            prefTitle.add(item.title());
-            prefIcon.add(item.icon());
-            prefCheck.add(item.isChecked().get());
-            prefDivider.add(item.divider());
-            clickListener.add(item.toggle());
-        }
-
-        PopupHelper.showSwitchAlert(
-                getString(R.string.SelectChats),
-                this,
-                prefTitle,
-                prefIcon,
-                prefCheck,
-                null,
-                null,
-                prefDivider,
-                clickListener,
-                null
-        );
-    }
-
-    public record MenuItemConfig(
-            String title,
-            int icon,
-            Supplier<Boolean> isChecked,
-            Runnable toggle,
-            boolean divider
-    ) {
-        public MenuItemConfig(String title, int icon, Supplier<Boolean> isChecked, Runnable toggle) {
-            this(title, icon, isChecked, toggle, true);
-        }
     }
 
 }

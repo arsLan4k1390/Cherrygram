@@ -123,11 +123,11 @@ public class ReactedUsersListView extends FrameLayout {
                         if (getMessageMenuHelper.allowNewMessageMenu() && getMessageMenuHelper.showCustomDivider(false)) {
                             // Don't remove the divider here cause of broken layout
                             View gap = new View(context);
-                            gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider), getMessageMenuHelper.getMessageMenuAlpha(true)));
+                            gap.setBackgroundColor(MessageMenuHelper.getMessageMenuGapColor());
                             frameLayout.addView(gap, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8));
                         } else {
                             View gap = new View(context);
-                            gap.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuSeparator, resourcesProvider));
+                            gap.setBackgroundColor(Theme.multAlpha(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider), 0.06f));
                             frameLayout.addView(gap, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8));
                         }
                         frameLayout.addView(messageContainsEmojiButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0, 0, 8, 0, 0));

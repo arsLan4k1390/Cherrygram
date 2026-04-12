@@ -44,28 +44,37 @@ object BackupHelper {
 
     const val FILE_TYPE_CG_BACKUP = 1390
 
-    fun backupSettings(fragment: BaseFragment) {
+    fun backupSettings(fragment: BaseFragment?) {
+        if (fragment == null || fragment.parentActivity == null || fragment.context == null) return
+
         if (!PermissionsUtils.isStoragePermissionGranted()) {
             PermissionsUtils.requestStoragePermission(fragment.parentActivity)
             return
         }
+
+        val context = fragment.context ?: return
 
         try {
             val formattedDate = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
             val fileName = "$formattedDate-settings.cherry"
-            val file = File(fragment.context.getExternalFilesDir(null), fileName)
-            writeUtf8String(backupSettingsJson(fragment.context), file)
-            shareFile(fragment.context, file)
-        } catch (e: JSONException) {
-            handleError(fragment.context, e)
+            val dir = context.getExternalFilesDir(null) ?: context.filesDir
+            val file = File(dir, fileName)
+            writeUtf8String(backupSettingsJson(context), file)
+            shareFile(context, file)
+        } catch (e: Exception) {
+            handleError(context, e)
         }
     }
 
-    fun importSettings(fragment: BaseFragment) {
+    fun importSettings(fragment: BaseFragment?) {
+        if (fragment == null || fragment.parentActivity == null || fragment.context == null) return
+
         if (!PermissionsUtils.isStoragePermissionGranted()) {
             PermissionsUtils.requestStoragePermission(fragment.parentActivity)
             return
         }
+
+        val context = fragment.context ?: return
 
         val importActivity = BackupFileImportActivity().apply {
             setMaxSelectedFiles(1)
@@ -78,7 +87,8 @@ object BackupHelper {
                     scheduleDate: Int
                 ) {
                     activity.finishFragment()
-                    importSettings(File(files.first()), fragment.context)
+                    if (files.isEmpty()) return
+                    importSettings(File(files.first()), context)
                 }
 
                 override fun didSelectPhotos(
@@ -95,6 +105,11 @@ object BackupHelper {
     }
 
     fun importSettings(file: File, context: Context) {
+        if (!file.exists() || !file.canRead()) {
+            handleError(context, Exception("File not accessible"))
+            return
+        }
+
         AlertDialog.Builder(context).apply {
             setTitle(getString(R.string.CG_ImportSettings))
             setMessage(getString(R.string.CG_ImportSettingsAlert))
@@ -103,8 +118,8 @@ object BackupHelper {
                 importSettingsConfirmed(file, context)
             }
             val dialog = show()
-            val button = dialog.getButton(DialogInterface.BUTTON_POSITIVE) as TextView
-            button.setTextColor(Theme.getColor(Theme.key_text_RedBold))
+            val button = dialog.getButton(DialogInterface.BUTTON_POSITIVE) as? TextView
+            button?.setTextColor(Theme.getColor(Theme.key_text_RedBold))
         }
     }
 
@@ -126,31 +141,41 @@ object BackupHelper {
     }
 
     private fun shareFile(context: Context, fileToShare: File, caption: String = "") {
-        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(context, "${ApplicationLoader.getApplicationId()}.provider", fileToShare)
-        } else {
-            Uri.fromFile(fileToShare)
-        }
+        try {
+            if (!fileToShare.exists()) return
 
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "message/rfc822"
-            putExtra(Intent.EXTRA_EMAIL, "")
-            putExtra(Intent.EXTRA_STREAM, uri)
-            if (caption.isNotBlank()) {
-                putExtra(Intent.EXTRA_SUBJECT, caption)
+            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                FileProvider.getUriForFile(context, "${ApplicationLoader.getApplicationId()}.provider", fileToShare)
+            } else {
+                Uri.fromFile(fileToShare)
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            }
-            setClass(context, LaunchActivity::class.java)
-        }
 
-        context.startActivity(intent)
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, "")
+                putExtra(Intent.EXTRA_STREAM, uri)
+                if (caption.isNotBlank()) {
+                    putExtra(Intent.EXTRA_SUBJECT, caption)
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                setClass(context, LaunchActivity::class.java)
+            }
+
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            handleError(context, e)
+        }
     }
 
     private fun writeUtf8String(text: String, file: File) {
-        file.parentFile?.let { initDir(it) }
-        file.writeText(text)
+        try {
+            file.parentFile?.let { initDir(it) }
+            file.writeText(text, Charsets.UTF_8)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     private fun readJsonObjectWithGson(file: File): JsonObject {
@@ -165,7 +190,7 @@ object BackupHelper {
         for ((spName, data) in json.entrySet()) {
             val prefs = context.getSharedPreferences(spName, Activity.MODE_PRIVATE)
             prefs.edit {
-                for ((keyRaw, valueElement) in (data.asJsonObject.entrySet())) {
+                for ((keyRaw, valueElement) in data.asJsonObject.entrySet()) {
                     var key = keyRaw
                     val value = valueElement.asJsonPrimitive
                     when {
@@ -176,16 +201,13 @@ object BackupHelper {
                                     key = key.removeSuffix("_long")
                                     putLong(key, value.asLong)
                                 }
-
                                 key.endsWith("_float") -> {
                                     key = key.removeSuffix("_float")
                                     putFloat(key, value.asFloat)
                                 }
-
                                 else -> putInt(key, value.asInt)
                             }
                         }
-
                         else -> putString(key, value.asString)
                     }
                 }
@@ -194,15 +216,21 @@ object BackupHelper {
     }
 
     private fun initDir(dir: File) {
-        if (dir.exists() && dir.isFile) {
-            dir.delete()
-        }
-        dir.mkdirs()
+        try {
+            if (dir.exists() && dir.isFile) {
+                dir.delete()
+            }
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+        } catch (_: Exception) {}
     }
 
     private fun handleError(context: Context, e: Exception) {
-        AndroidUtilities.addToClipboard(e.toString())
-        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+        try {
+            AndroidUtilities.addToClipboard(e.toString())
+            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+        } catch (_: Exception) {}
     }
 
     private fun backupSettingsJson(context: Context): String {
@@ -240,16 +268,17 @@ object BackupHelper {
             "CP_MsgFiltersHideAll", "CP_MsgFiltersCollapseAutomatically", "CP_MsgFilterTransparentMsg",
             "CP_AutoQuoteReplies", "CP_TimeOnStick", "CP_ForwardMsgDate", "AP_PencilIcon",
             "CP_LeftBottomButtonAction", "CP_DoubleTapAction", "CP_MessageSlideAction", "CP_DeleteForAll",
-            "CP_LargePhotos", "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration",
+            "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration",
             "CP_VideoSeekDuration", "CP_Notification_Sound", "CP_VibrationInChats", "CP_SilenceNonContacts", "CG_UnarchiveOnSwipe",
 
             // Camera
             "CP_CameraType", "CP_DisableAttachCam", "CP_UseDualCamera", "CP_CameraAspectRatio",
-            "CP_StartFromUltraWideCam", /* "CP_CameraXFpsRange", */ "CP_CameraStabilisation",
+            "CP_StartFromUltraWideCam", /* "CP_CameraXFpsRangeValueF", */
+            "CP_VideoStabilisation", "CP_OpticalStabilisation", "CP_ContinuousAutofocus", "CP_NoiceReduction", "CP_FaceDetection",
             "CP_CenterCameraControlButtons", "CP_ExposureSlider", "CP_RearCam",
 
             // Privacy
-            "SP_NoProxyPromo", /* "SP_GoogleAnalytics", */ "SP_HideArchiveFromChatsList",
+            /* "SP_GoogleAnalytics", */ "SP_HideArchiveFromChatsList",
             // "SP_AskBiometricsToOpenArchive", "SP_AskBiometricsToOpenChat", "SP_AskPinBeforeDelete", "SP_AllowSystemPasscode",
 
             // Experimental

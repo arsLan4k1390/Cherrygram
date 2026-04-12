@@ -324,6 +324,8 @@ public class SharedConfig {
     public static int dayNightThemeSwitchHintCount;
     public static int callEncryptionHintDisplayedCount;
     public static boolean shadowsInSections;
+    public static boolean debugViewMetrics;
+    public static boolean photoHighQualityDefault;
 
     public static TLRPC.TL_help_appUpdate pendingAppUpdate;
     public static int pendingAppUpdateBuildVersion;
@@ -348,8 +350,6 @@ public class SharedConfig {
     public static int fastScrollHintCount = 3;
     public static boolean dontAskManageStorage;
     public static boolean multipleReactionsPromoShowed;
-
-    public static boolean translateChats = true;
 
     public static boolean isFloatingDebugActive;
     public static LiteMode liteMode;
@@ -676,6 +676,8 @@ public class SharedConfig {
             callEncryptionHintDisplayedCount = preferences.getInt("callEncryptionHintDisplayedCount", 0);
             debugVideoQualities = preferences.getBoolean("debugVideoQualities", false);
             shadowsInSections = preferences.getBoolean("shadowsInSections", false);
+            debugViewMetrics = preferences.getBoolean("debugViewMetrics", false);
+            photoHighQualityDefault = preferences.getBoolean("photoHighQualityDefault", true);
 
             loadDebugConfig(preferences);
 
@@ -769,7 +771,7 @@ public class SharedConfig {
     }
 
     public static boolean isAppUpdateAvailable() {
-        /*if (pendingAppUpdate == null || pendingAppUpdate.document == null || !ApplicationLoader.isStandaloneBuild()) {
+        if (pendingAppUpdate == null || pendingAppUpdate.document == null || !ApplicationLoader.isStandaloneBuild()) {
             return false;
         }
         int currentVersion;
@@ -780,29 +782,28 @@ public class SharedConfig {
             FileLog.e(e);
             currentVersion = buildVersion();
         }
-        return pendingAppUpdateBuildVersion == currentVersion;*/
-        return false;
+        return pendingAppUpdateBuildVersion == currentVersion;
     }
 
     public static boolean setNewAppVersionAvailable(TLRPC.TL_help_appUpdate update) {
-        String updateVersionString = null;
+//        String updateVersionString = null;
         int versionCode = 0;
         try {
             PackageInfo packageInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
             versionCode = packageInfo.versionCode;
-            updateVersionString = packageInfo.versionName;
+//            updateVersionString = packageInfo.versionName;
         } catch (Exception e) {
             FileLog.e(e);
         }
         if (versionCode == 0) {
             versionCode = buildVersion();
         }
-        if (updateVersionString == null) {
+        /*if (updateVersionString == null) {
             updateVersionString = BuildVars.BUILD_VERSION_STRING;
         }
         if (update.version == null || versionBiggerOrEqual(updateVersionString, update.version)) {
             return false;
-        }
+        }*/
         pendingAppUpdate = update;
         pendingAppUpdateBuildVersion = versionCode;
         saveConfig();
