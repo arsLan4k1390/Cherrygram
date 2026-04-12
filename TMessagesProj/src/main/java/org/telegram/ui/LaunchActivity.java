@@ -6028,7 +6028,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         /*if (!force && Math.abs(System.currentTimeMillis() - SharedConfig.lastUpdateCheckTime) < MessagesController.getInstance(0).updateCheckDelay * 1000) {
             return;
         }*/
-        if (!force) {
+        if (!force && !CherrygramCoreConfig.INSTANCE.getForceFound()) {
             if (!CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
                 return;
             }
@@ -9072,7 +9072,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
     private void processFeats() {
         if (!CherrygramCoreConfig.isPlayStoreBuild()) {
-            checkAppUpdate(CherrygramCoreConfig.INSTANCE.getForceFound(), null);
+            checkAppUpdate(false, null);
             CherrygramExtras.INSTANCE.checkChannelFollow(this, currentAccount);
         }
         CherrygramChatsConfig.INSTANCE.init();
