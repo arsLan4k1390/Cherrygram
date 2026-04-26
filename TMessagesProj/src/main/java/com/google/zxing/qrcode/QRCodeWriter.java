@@ -25,7 +25,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+
+import androidx.core.content.ContextCompat;
 
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -35,6 +38,7 @@ import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SvgHelper;
 
@@ -188,7 +192,17 @@ public final class QRCodeWriter {
       }
     }
 
-    Bitmap icon = SvgHelper.getBitmap(readRes(R.raw.qr_logo), imageSize, imageSize, false);
+    Drawable drawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.cg_logo_notch);
+    Bitmap icon;
+    if (drawable != null) {
+        icon = Bitmap.createBitmap(imageSize, imageSize, Bitmap.Config.ARGB_8888);
+        Canvas bmpCanvas = new Canvas(icon);
+
+        drawable.setBounds(0, 0, imageSize, imageSize);
+        drawable.draw(bmpCanvas);
+    } else {
+        icon = SvgHelper.getBitmap(readRes(R.raw.qr_logo), imageSize, imageSize, false);
+    }
     canvas.drawBitmap(icon, imageX, imageX, null);
     icon.recycle();
 

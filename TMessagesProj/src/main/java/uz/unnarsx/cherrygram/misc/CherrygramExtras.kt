@@ -51,6 +51,7 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.math.sqrt
 
 object CherrygramExtras : CoroutineScope by MainScope() {
 
@@ -58,6 +59,13 @@ object CherrygramExtras : CoroutineScope by MainScope() {
         try {
             Thread.sleep((seconds * 1000).toLong())
         } catch (_: InterruptedException) { }
+    }
+
+    fun cpuFreeze(seconds: Double) {
+        val end = System.currentTimeMillis() + (seconds * 1000).toLong()
+        while (System.currentTimeMillis() < end) {
+            sqrt(Math.random())
+        }
     }
 
     private val channelUsername = Constants.CG_CHANNEL_USERNAME

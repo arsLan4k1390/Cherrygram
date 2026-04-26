@@ -247,6 +247,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
@@ -6668,16 +6669,16 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         if (!checkPermissionsResult(requestCode, permissions, grantResults)) return;
         if (ApplicationLoader.applicationLoaderInstance != null && ApplicationLoader.applicationLoaderInstance.checkRequestPermissionResult(requestCode, permissions, grantResults)) return;
 
-        if (actionBarLayout.getFragmentStack().size() != 0) {
+        if (actionBarLayout != null && actionBarLayout.getFragmentStack() != null && actionBarLayout.getFragmentStack().size() != 0) {
             BaseFragment fragment = actionBarLayout.getFragmentStack().get(actionBarLayout.getFragmentStack().size() - 1);
             fragment.onRequestPermissionsResultFragment(requestCode, permissions, grantResults);
         }
         if (AndroidUtilities.isTablet()) {
-            if (rightActionBarLayout.getFragmentStack().size() != 0) {
+            if (rightActionBarLayout != null && rightActionBarLayout.getFragmentStack() != null && rightActionBarLayout.getFragmentStack().size() != 0) {
                 BaseFragment fragment = rightActionBarLayout.getFragmentStack().get(rightActionBarLayout.getFragmentStack().size() - 1);
                 fragment.onRequestPermissionsResultFragment(requestCode, permissions, grantResults);
             }
-            if (layersActionBarLayout.getFragmentStack().size() != 0) {
+            if (layersActionBarLayout != null && layersActionBarLayout.getFragmentStack() != null &&  layersActionBarLayout.getFragmentStack().size() != 0) {
                 BaseFragment fragment = layersActionBarLayout.getFragmentStack().get(layersActionBarLayout.getFragmentStack().size() - 1);
                 fragment.onRequestPermissionsResultFragment(requestCode, permissions, grantResults);
             }
@@ -9078,6 +9079,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         CherrygramChatsConfig.INSTANCE.init();
         CherrygramCoreConfig.INSTANCE.init();
         CherrygramPrivacyConfig.INSTANCE.init();
+        CameraXUtils.loadCameraXSizes();
     }
     /** Cherrygram finish */
 

@@ -235,7 +235,7 @@ object StickersManager {
                 }
 
                 AndroidUtilities.runOnUIThread {
-                    ChatsHelper.getInstance(UserConfig.selectedAccount).addFileToClipboard(file, callback)
+                    ChatsHelper.addFileToClipboard(file, callback)
                 }
             } catch (e: Exception) {
                 FileLog.e(e)

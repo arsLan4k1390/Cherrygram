@@ -261,7 +261,7 @@ object BackupHelper {
             "CP_StickersDrawShareButton", "CP_ShowSaveForNotifications", "CP_ShowGemini", "CP_ShowReply",
             "CP_ShowSaveToGallery", "CP_ShowCopyPhoto", "CP_ShowCopyPhotoAsSticker", "CP_ShowSaveToDownloads", "CP_ShowShare",
             "CP_ShowClearFromCache", "CP_ShowForward", "CP_ShowForward_WO_Authorship", "CP_ShowViewHistory", "CP_ShowSaveMessage",
-            "CP_ShowReport", "CP_ShowJSON", "CP_JacksonJSON_Provider",
+            "CP_ShowReport", "CP_OpenInExternalApp", "CP_ShowJSON", "CP_JacksonJSON_Provider",
             "CP_LargerVoiceMessagesLayout", "CP_Slider_MediaAmplifier", "CP_Slider_StickerAmplifier", "CP_Slider_GifsAmplifier",
             "CP_EnableMsgFilter", "CP_MsgFiltersElements", "CP_MsgFiltersDetectTranslit",
             "CP_MsgFiltersMatchExactWord", "CP_MsgFiltersDetectEntities", "CP_MsgFiltersHideFromBlocked1",

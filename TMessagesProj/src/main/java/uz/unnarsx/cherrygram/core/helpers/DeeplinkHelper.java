@@ -11,10 +11,12 @@ package uz.unnarsx.cherrygram.core.helpers;
 
 import android.net.Uri;
 
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.LaunchActivity;
+import org.telegram.ui.ProxyListActivity;
 import org.telegram.ui.Stars.StarsIntroActivity;
 
 import java.util.Locale;
@@ -127,6 +129,11 @@ public class DeeplinkHelper {
                     CherrygramPreferencesNavigator.INSTANCE.createPrivacy(fragment);
                     return;
                 }
+                case DeepLinksRepo.CG_Proxy -> {
+                    fragment.presentFragment(new ProxyListActivity());
+                    AndroidUtilities.scrollToFragmentRow(fragment.getParentLayout(), "safeSurfRow");
+                    return;
+                }
                 case DeepLinksRepo.CG_Restart, "cg_reboot", "restart", "reboot" -> {
                     CGBulletinCreator.INSTANCE.createRestartBulletin(fragment);
                     return;
@@ -173,6 +180,8 @@ public class DeeplinkHelper {
     }
 
     public static class DeepLinksRepo {
+
+        public static final String CG_Proxy = "cg_proxy";
 
         public static final String CG_Settings = "cg_settings";
 

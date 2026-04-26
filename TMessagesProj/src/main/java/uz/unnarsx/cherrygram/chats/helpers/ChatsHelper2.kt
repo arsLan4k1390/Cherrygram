@@ -14,8 +14,11 @@ import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
+import androidx.core.view.isVisible
 import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.AndroidUtilities.dp
 import org.telegram.messenger.ChatObject
+import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController.formatJoined
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessageObject
@@ -34,11 +37,9 @@ import org.telegram.ui.Components.TranslateAlert2
 import org.telegram.ui.Components.UndoView
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
-import androidx.core.view.isVisible
-import org.telegram.messenger.AndroidUtilities.dp
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.helpers.ProfileActivityHelper
 
 object ChatsHelper2 {
@@ -326,8 +327,26 @@ object ChatsHelper2 {
                 13
             )
 
+            .addGapIf(messageObject.document != null && sa.fragment != null && sa.fragment.parentActivity != null)
+            .addIf(
+                messageObject.document != null && sa.fragment != null && sa.fragment.parentActivity != null,
+                R.drawable.msg_openin,
+                getString(R.string.OpenInExternalApp)
+            ) {
+                try {
+                    AndroidUtilities.openForView(
+                        messageObject,
+                        sa.fragment.parentActivity,
+                        null,
+                        false
+                    )
+                } catch (e: Exception) {
+                    FileLog.e(e)
+                }
+            }
+
             .setDimAlpha(100)
-            .translate(-AndroidUtilities.dp(15f).toFloat(), 0f)
+            .translate(-dp(15f).toFloat(), 0f)
             .show()
     }
     /** JSON menu finish */

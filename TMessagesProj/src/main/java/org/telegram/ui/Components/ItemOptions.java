@@ -203,7 +203,7 @@ public class ItemOptions {
     }
 
     private ItemOptions(BaseFragment fragment, View scrimView, boolean swipeback, boolean useScrollView, boolean shownFromBottom) {
-        if (fragment == null && fragment.getContext() == null) {
+        if (fragment == null || fragment.getContext() == null) {
             return;
         }
         fragment = downFragment(fragment);

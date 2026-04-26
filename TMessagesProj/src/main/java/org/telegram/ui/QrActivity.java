@@ -417,7 +417,7 @@ public class QrActivity extends BaseFragment {
                     }
                     @Override
                     public void onError(TLRPC.TL_error error) {
-                        Toast.makeText(getParentActivity(), error.text, Toast.LENGTH_SHORT).show();
+                        if (getParentActivity() != null) Toast.makeText(getParentActivity(), error.text, Toast.LENGTH_SHORT).show();
                     }
                 }, true);
             } else {

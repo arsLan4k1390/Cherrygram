@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.FirebaseApp;
 
 import org.json.JSONObject;
 import org.telegram.messenger.browser.Browser;
@@ -53,9 +54,9 @@ import java.util.Locale;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
-import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseCrashlyticsHelper;
+import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper;
 
 public class ApplicationLoader extends Application {
 
@@ -255,7 +256,9 @@ public class ApplicationLoader extends Application {
 
         SharedConfig.loadConfig();
         hasPlayServices = checkPlayServices();
-        CameraXUtils.loadCameraXSizes();
+        if (hasPlayServices) {
+            checkFirebase();
+        }
         SharedPrefsHelper.init(applicationContext);
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
             UserConfig.getInstance(a).loadConfig();
@@ -724,5 +727,12 @@ public class ApplicationLoader extends Application {
     public boolean showUpdaterBottomSheet(BaseFragment fragment, boolean available, TLRPC.TL_help_appUpdate update) {
         return false;
     }
+
+    /** Cherrygram start */
+    private static void checkFirebase() {
+        FirebaseApp.initializeApp(applicationContext);
+        FirebaseRemoteConfigHelper.INSTANCE.init();
+    }
+    /** Cherrygram finish */
 
 }

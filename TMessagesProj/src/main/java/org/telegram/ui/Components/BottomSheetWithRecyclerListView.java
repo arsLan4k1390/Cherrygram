@@ -31,6 +31,8 @@ import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.LaunchActivity;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
 
     public enum ActionBarType {
@@ -361,7 +363,7 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
         } else {
             resetAdapter(context);
             this.containerView = containerView;
-            actionBar = new ActionBar(context, null, false) {
+            actionBar = new ActionBar(context) {
                 @Override
                 public void setAlpha(float alpha) {
                     if (getAlpha() != alpha) {
@@ -735,7 +737,14 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
     }
 
     protected void onPreDraw(Canvas canvas, int top, float progressToFullView) {
-
+        if (!CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
+            return;
+        }
+        final SimpleTextView titleTextView = actionBar.getTitleTextView();
+        if (titleTextView == null) {
+            return;
+        }
+        titleTextView.setTranslationX((actionBar.getMeasuredWidth() - titleTextView.getMeasuredWidth()) / 2f - titleTextView.getLeft());
     }
 
     @Override

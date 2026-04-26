@@ -15,7 +15,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -227,7 +226,13 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         Bulletin.Delegate delegate = new Bulletin.Delegate() {
             @Override
             public int getBottomOffset(int tag) {
-                return navigationBarHeight + dp(DialogsActivity.MAIN_TABS_HEIGHT + DialogsActivity.MAIN_TABS_MARGIN);
+                int offset = navigationBarHeight + dp(DialogsActivity.MAIN_TABS_HEIGHT + DialogsActivity.MAIN_TABS_MARGIN);
+
+                if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()) {
+                    offset += dp(DialogsActivity.SEARCH_FIELD_HEIGHT);
+                }
+
+                return offset;
             }
         };
 
@@ -252,11 +257,11 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
         int contactsPos = MainTabsManager.INSTANCE.getPosition(MainTabsManager.TabType.CONTACTS);
         if (contactsPos != -1 && tabsView != null && tabs.length > contactsPos && tabs[contactsPos] != null) {
-            final boolean hasPermission = Build.VERSION.SDK_INT >= 23 && ContactsController.hasContactsPermission();
+            final boolean hasPermission = ContactsController.hasContactsPermission();
             if (hasPermission) {
                 MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts2", true).apply();
             }
-            if (Build.VERSION.SDK_INT >= 23 && UserConfig.getInstance(currentAccount).syncContacts && !ContactsController.hasContactsPermission()) {
+            if (UserConfig.getInstance(currentAccount).syncContacts && !ContactsController.hasContactsPermission()) {
                 tabs[contactsPos].setCounter("!", true, true);
             } else {
                 tabs[contactsPos].setCounter(null, true, true);
@@ -379,7 +384,11 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             contentView.addView(tabsContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS, Gravity.BOTTOM));
             tabsContainer.setPadding(dp(2), dp(2), dp(2), dp(2));
         } else {
-            contentView.addView(tabsView, LayoutHelper.createFrame(328 + DialogsActivity.MAIN_TABS_MARGIN * 2, DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
+            tabsViewWrapper = new FrameLayout(context);
+            tabsViewWrapper.setOnClickListener(v -> {});
+            tabsViewWrapper.addView(tabsView, LayoutHelper.createFrame(328 + DialogsActivity.MAIN_TABS_MARGIN * 2, DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
+            tabsViewWrapper.setClipToPadding(false);
+            contentView.addView(tabsViewWrapper, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM));
         }
 
         updateLayoutWrapper = new UpdateLayoutWrapper(context);
@@ -778,7 +787,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             }
         }
 
-//        tabsViewWrapper.setPadding(0, 0, 0, navigationBarHeight);
+        if (tabsViewWrapper != null) tabsViewWrapper.setPadding(0, 0, 0, navigationBarHeight);
 
         final WindowInsetsCompat consumed = isUpdateLayoutVisible ?
             insets.inset(0, 0, 0, navigationBarHeight) : insets;
@@ -929,13 +938,18 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         final float factor = animatorTabsVisible.getFloatValue();
         final float scale = lerp(0.85f, 1f, factor);
 
-        finalTabsView.setTranslationY(lerp(hiddenY, normalY, factor));
-        finalTabsView.setScaleX(scale);
-        finalTabsView.setScaleY(scale);
-        finalTabsView.setClickable(factor > 1);
-        finalTabsView.setEnabled(factor > 1);
-        finalTabsView.setAlpha(factor);
-        finalTabsView.setVisibility(factor > 0 ? View.VISIBLE : View.GONE);
+        View target = tabsViewWrapper != null ? tabsViewWrapper : finalTabsView;
+
+        target.setTranslationY(lerp(hiddenY, normalY, factor));
+        target.setScaleX(scale);
+        target.setScaleY(scale);
+        target.setClickable(factor > 1);
+        target.setEnabled(factor > 1);
+        target.setAlpha(factor);
+        target.setVisibility(factor > 0 ? View.VISIBLE : View.GONE);
+
+        tabsView.setScaleX(scale);
+        tabsView.setScaleY(scale);
     }
 
     private void checkUi_callTabVisible(boolean callTabsVisible, boolean animated) {

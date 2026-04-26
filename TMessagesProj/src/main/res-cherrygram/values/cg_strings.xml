@@ -113,7 +113,8 @@
     <string name="CG_SafeStars_Desc">Multi-chain &amp; No KYC</string>
     <string name="CG_SafeStars_BuyPremiumButton">Check on the website</string>
     <string name="CG_SafeStars_buy_Telegram">Buy Stars via Telegram</string>
-    <string name="CG_Stats_TOS">By proceeding, you automatically agree to the **Telegram Terms and Conditions** and the **Cherrygram Terms of Service**.</string>
+    <string name="CG_Stars_TOS">By proceeding, you automatically agree to the **Telegram Terms and Conditions** and the **Cherrygram Terms of Service**.</string>
+    <string name="CG_SafeSurf_TOS">By proceeding, you automatically agree to the **Cherrygram Terms of Service**.</string>
 
     <string name="CG_SortByDate">Sort by message date</string>
     <string name="CG_SortByUnread">Sort by unread first</string>
@@ -151,6 +152,13 @@
     <string name="CG_Sleep_Timer">Sleep timer is set to **%s**</string>
     <string name="CG_Sleep_Disabled">Sleep timer is disabled</string>
     <string name="CG_Sleep_Permission">Please allow Cherrygram to schedule exact alarms so that the sleep timer can work properly.</string>
+
+    <string name="CG_QR_Hint">This is a digital copy of the scanned QR code. Tap to copy it to the clipboard, or press and hold to save it to your gallery.</string>
+    <string name="CG_WifiConnect">Connect</string>
+    <string name="CG_WifiSuccess">Successfully connected to Wi-Fi.</string>
+    <string name="CG_WifiFailed">Failed to connect to Wi-Fi.</string>
+    <string name="CG_WifiDisabled">Wi-Fi is disabled.</string>
+    <string name="CG_AreYouSureToLogin">Are you sure you want to log in to this account on another device?</string>
     <!--Misc-->
     <!--Telegram screens-->
 

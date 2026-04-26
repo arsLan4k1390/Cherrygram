@@ -226,18 +226,18 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             } else if (position == alfaRow) {
                 copyNumberAndMakeToast(CardsRepo.Card_Kapital_Visa_USD, true);
             } else if (position == vtbRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Humo, true);
+                copyNumberAndMakeToast(CardsRepo.Card_T_Bank, true); // Card_Humo
             } else if (position == sberRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard, true);
+                copyNumberAndMakeToast(CardsRepo.Card_T_Bank, true); // Card_Anor_UzCard
             } else if (position == yooMoneyMirRow) {
                 copyNumberAndMakeToast(CardsRepo.Card_Yoomoney_MIR, true);
             } else if (position == tinkoffRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Humo, true);
+                copyNumberAndMakeToast(CardsRepo.Card_T_Bank, true);
 //                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard_Kids, true);
             } else if (position == yooMoneyRow) {
                 copyNumberAndMakeToast(CardsRepo.Card_Yoomoney_Account, false);
             } else if (position == humoRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Humo, true);
+                copyNumberAndMakeToast(CardsRepo.Card_Humo, true);
             } else if (position == uzCardRow) {
                 copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard_Kids, true);
             } else if (position == uzCardMirRow) {
@@ -885,14 +885,19 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
     private static class CardsRepo {
 
+        public static String Card_Anor_Humo = "9860600408892476";
+        public static String Card_Anor_UzCard = "5614683516520707";
+        public static String Card_Anor_UzCard_Kids = "5614683588301333";
+
+        public static String Card_Humo = CherrygramCoreConfig.INSTANCE.getHumoCardNumber();
+
         public static String Card_Kapital_Humo = "9860100124370345";
         public static String Card_Kapital_Visa_USD = "4278310028377794";
         public static String Card_Kapital_Master_UZS = "5397170005511325";
 
-        public static String Card_Tenge_Master_UZS = "5181000156329583";
+        public static String Card_T_Bank = CherrygramCoreConfig.INSTANCE.getTbankCardNumber();
 
-        public static String Card_Anor_UzCard = "5614683516520707";
-        public static String Card_Anor_UzCard_Kids = "5614683588301333";
+        public static String Card_TBC_Humo = "9860350143344678";
 
         public static String Card_Yoomoney_MIR = "2204120134366927";
         public static String Card_Yoomoney_Account = "4100116983696293";

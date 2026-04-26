@@ -152,6 +152,10 @@ public class GeminiPreferencesEntry extends UniversalFragment {
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
         if (item.id == geminiModelsListButton) {
+            CherrygramMessagesConfig.INSTANCE.setGeminiApiKey(
+                    geminiApiKeyField.getEditText().getText().toString()
+            );
+
             ApiClient.fetchModels(
                     getContext(),
                     getResourceProvider(),

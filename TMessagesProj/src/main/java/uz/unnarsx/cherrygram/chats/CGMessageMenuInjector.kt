@@ -243,6 +243,20 @@ object CGMessageMenuInjector {
         }
     }
 
+    fun injectOpenInExternal(
+        noforwardsOrPaidMedia: Boolean,
+        message: MessageObject?,
+        items: ArrayList<CharSequence?>,
+        options: ArrayList<Int?>,
+        icons: ArrayList<Int?>
+    ) {
+        if (CherrygramMessagesConfig.openInExternalApp && message != null && message.document != null && !noforwardsOrPaidMedia) {
+            items.add(getString(R.string.OpenInExternalApp))
+            options.add(ChatActivityHelper.OPTION_OPEN_IN)
+            icons.add(R.drawable.msg_openin)
+        }
+    }
+
     fun injectCopyPhoto(
         items: ArrayList<CharSequence?>,
         options: ArrayList<Int?>,
@@ -456,6 +470,12 @@ object CGMessageMenuInjector {
                 true
             ),
             MenuItemConfig(
+                getString(R.string.OpenInExternalApp),
+                R.drawable.msg_openin,
+                { CherrygramMessagesConfig.openInExternalApp },
+                { CherrygramMessagesConfig.openInExternalApp = !CherrygramMessagesConfig.openInExternalApp }
+            ),
+            MenuItemConfig(
                 getString(R.string.Reply),
                 R.drawable.menu_reply,
                 { CherrygramMessagesConfig.showReply },
@@ -529,7 +549,7 @@ object CGMessageMenuInjector {
             ),
             MenuItemConfig(
                 "JSON",
-                R.drawable.msg_info,
+                R.drawable.icon_json_solar,
                 { CherrygramMessagesConfig.showJSON },
                 { CherrygramMessagesConfig.showJSON = !CherrygramMessagesConfig.showJSON }
             )

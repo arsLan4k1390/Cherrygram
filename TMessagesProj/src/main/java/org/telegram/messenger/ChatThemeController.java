@@ -370,21 +370,21 @@ public class ChatThemeController extends BaseController {
     }
 
     public TLRPC.WallPaper getDialogWallpaper(long dialogId) {
+        if (!CherrygramChatsConfig.INSTANCE.getCustomWallpapers()) {
+            return null;
+        }
         if (dialogId >= 0) {
             TLRPC.UserFull userFull = getMessagesController().getUserFull(dialogId);
-            if (userFull != null && userFull.wallpaper != null) {
-                if (CherrygramChatsConfig.INSTANCE.getCustomWallpapers() || userFull.wallpaper.creator) {
-                    return userFull.wallpaper;
-                }
+            if (userFull != null) {
+                return userFull.wallpaper;
             }
         } else {
             TLRPC.ChatFull chatFull = getMessagesController().getChatFull(-dialogId);
-            if (chatFull != null && CherrygramChatsConfig.INSTANCE.getCustomWallpapers()) {
+            if (chatFull != null) {
                 return chatFull.wallpaper;
             }
         }
-        String wallpaperString = CherrygramChatsConfig.INSTANCE.getCustomWallpapers() ?
-                getEmojiSharedPreferences().getString("chatWallpaper_" + currentAccount + "_" + dialogId, null) : Theme.getActiveTheme().pathToWallpaper;
+        String wallpaperString = getEmojiSharedPreferences().getString("chatWallpaper_" + currentAccount + "_" + dialogId, null);
         if (wallpaperString != null) {
             SerializedData serializedData = new SerializedData(Utilities.hexToBytes(wallpaperString));
             try {

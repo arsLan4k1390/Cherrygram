@@ -40,6 +40,13 @@
     <string name="CP_NewTabs_NoCounter">Приховати лічильник на вкладках</string>
     <string name="CG_SwipeToUnarchive">Проведіть вліво для розархівування</string>
     <!--Telegram Folders Settings-->
+    <!--Telegram Passkeys Settings-->
+    <string name="CG_PasskeyLogin">Вхід з Паролем</string>
+    <string name="CG_PasskeyInfo2">Ця функція працює лише з менеджерами паролів, які дозволяють користувачеві керувати налаштуваннями довіри для привілейованих додатків, таких як **Bitwarden** та **KeePassDX**.</string>
+    <string name="CG_PasskeyUnsupportedTitle">Непідтримуваний менеджер паролів</string>
+    <string name="CG_PasskeyUnsupportedMessage">Спробуйте інші менеджери паролів, такі як **Bitwarden** або **KeePassDX**.</string>
+    <string name="CG_PasskeyNoCredentialAvailable">Відсутні доступні облікові дані.</string>
+    <!--Telegram Passkeys Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">До початку</string>
     <string name="CG_DeleteAllFromSelf">Видалити мої повідомлення</string>
@@ -84,9 +91,12 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
-    <string name="CG_SafeStars_buy">Купити Зірки (мультичейн та без KYC)</string>
+    <string name="CG_SafeStars_buy">Купити через SafeStars</string>
+    <string name="CG_SafeStars_Desc">Багатоланцюговий &amp; Немає KYC</string>
+    <string name="CG_SafeStars_BuyPremiumButton">Перевірте на вебсайті</string>
     <string name="CG_SafeStars_buy_Telegram">Придбати Зірки через Telegram</string>
-    <string name="CG_Stats_TOS">Продовжуючи, ви автоматично погоджуєтеся з Умовами надання послуг Telegram та Умовами використання Cherrygram.</string>
+    <string name="CG_Stars_TOS">Продовжуючи, ви автоматично погоджуєтеся з **Умови та положення Telegram** та **Умовами надання послуг Cherrygram**.</string>
+    <string name="CG_SafeSurf_TOS">Продовжуючи, ви автоматично погоджуєтеся з **Умовами надання послуг Cherrygram**.</string>
     <string name="CG_SortByDate">Сортувати повідомлення за датою</string>
     <string name="CG_SortByUnread">Сортувати перше непрочитані</string>
     <string name="CG_UnknownCherrySettingsOption">Немає такого параметра Cherry.</string>
@@ -120,6 +130,12 @@
     <string name="CG_Sleep_Timer">Таймер сну встановлено на **%s**</string>
     <string name="CG_Sleep_Disabled">Таймер сну вимкнено</string>
     <string name="CG_Sleep_Permission">Будь ласка, дозвольте Cherrygram встановлювати точні будильники, щоб таймер сну працював належним чином.</string>
+    <string name="CG_QR_Hint">This is a digital copy of the scanned QR code. Tap to copy it to the clipboard, or press and hold to save it to your gallery.</string>
+    <string name="CG_WifiConnect">Connect</string>
+    <string name="CG_WifiSuccess">Successfully connected to Wi-Fi.</string>
+    <string name="CG_WifiFailed">Failed to connect to Wi-Fi.</string>
+    <string name="CG_WifiDisabled">Wi-Fi is disabled.</string>
+    <string name="CG_AreYouSureToLogin">Are you sure you want to log in to this account on another device?</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -141,7 +157,8 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Зовнішній вигляд</string>
-    <string name="AP_IconReplacements">Заміна іконок</string>
+    <string name="AP_Header">Заголовок</string>
+    <string name="AP_IconReplacements">Набір іконок</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка повідомлень (Telegram)</string>
     <string name="AP_Tablet_Mode">Режим планшета</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новий Рік</string>
@@ -154,11 +171,12 @@
     <string name="AP_ChangeIcon_Sunrise">Світанок</string>
     <string name="AP_IconReplacement_Solar">Solar Icons від @Design480</string>
     <string name="AP_OneUI_Switch_Style">Вигляд інтерфейсу OneUI</string>
-    <string name="AP_SystemEmoji">Використовувати системні емодзі</string>
+    <string name="AP_SystemEmoji">Системні емодзі</string>
     <string name="AP_ShowPencilIcon">Значок олівця для відредагованих повідомлень</string>
-    <string name="AP_CenterTitle">Центрувати заголовок в панелі дій</string>
+    <string name="AP_CenterTitle">Заголовок по центру</string>
+    <string name="AP_HideSearchBar">Приховати панель пошуку в чатах</string>
     <string name="AP_DisableDividers">Вимкнути роздільники</string>
-    <string name="AP_SystemFonts">Використовувати системний шрифт</string>
+    <string name="AP_SystemFonts">Системні шрифти</string>
     <string name="CP_Snowflakes_Header">Сніжинки</string>
     <string name="CP_ProfileReplyBackground">Повідомлення та профіль</string>
     <string name="CP_CustomizeProfile">Кастомізувати профіль</string>
@@ -188,6 +206,7 @@
     <string name="CP_DisablePremStickAutoPlay">Вимкнути анімацію преміум наліпок</string>
     <string name="CP_DisablePremStickAutoPlay_Desc">Преміум наліпки не відтворюються автоматично (функція не працюватиме, якщо ви вимкнули дотик на преміум наліпках)</string>
     <string name="CP_Filters_Header">Папки</string>
+    <string name="AP_FoldersAtBottom">Показувати теки знизу</string>
     <string name="AP_FolderNameInHeader">Назва папки замість \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Ця опція змінить назву \"Cherrygram\" на назву вашої папки в панелі дій (корисно, якщо замість назв папок у вас лише іконки)</string>
     <string name="CP_NewTabs_RemoveAllChats">Приховати вкладку \"Всі чати\"</string>
@@ -202,6 +221,8 @@
     <string name="CP_MainTabs_DoubleTap_Desc">Подвійний тап по вкладці чатів відкриває «Збережене».
 Подвійний тап по вкладці профілю (або «Налаштування», якщо вкладка профілю прихована) перемикає акаунти.</string>
     <string name="CP_MainTabs_ShowTabsTitle">Відображати назви вкладок</string>
+    <string name="CP_MainTabs_ForceOpenChats">Завжди шукати в чатах</string>
+    <string name="CP_MainTabs_ForceOpenChats_Desc">Коли увімкнено, кнопка пошуку завжди відкриває пошук у чаті. When disabled, it opens context search for the current screen (наприклад, Налаштування або Контакти).</string>
     <string name="AP_HideUserPhone_Show">Торкніться щоб показати</string>
     <string name="AP_HideUserPhone_Copy">Затисніть щоб копіювати</string>
     <string name="AP_MutualContacts_Description">Цей контакт є взаємним.</string>
@@ -283,6 +304,7 @@
     <string name="CP_Message_Filtering_EntitiesDesc">Коли увімкнено, ця опція поширює фільтрацію на посилання (сутності), що містяться в повідомленнях. Система скануватиме URL-адреси на наявність будь-яких ключових слів з вашого фільтра.
 Якщо збіг знайдено всередині посилання, все повідомлення буде автоматично приховано під спойлером, незалежно від того, чи з’являється ключове слово у видимому тексті.
 \n\nЦе допомагає захиститися від замаскованого спаму, прихованої реклами або фішингових доменів, які інакше могли б обійти звичайну фільтрацію на основі тексту    </string>
+    <string name="CP_Message_Filtering_FilterBlocked">Фільтрувати повідомлення від заблокованих користувачів</string>
     <string name="CP_Message_Filtering_HideBlocked">Приховати повідомлення від заблокованих користувачів</string>
     <string name="CP_Message_Filtering_HideBlockedDesc">Коли цю опцію увімкнено, всі повідомлення та переслані повідомлення від заблокованих користувачів будуть автоматично приховані під спойлером.</string>
     <string name="CP_Message_Filtering_HideAll">Спойлер усього повідомлення</string>
@@ -314,6 +336,13 @@
     <string name="CP_CameraUW_Desc">Запис відеоповідомлення почнеться з Ультра Широкої камери (якщо API Вашого пристрою це підтримує)</string>
     <string name="CP_CameraDualCamera">Подвійна камера</string>
     <string name="CP_CameraDualCamera_Desc">Захоплює відеоповідомлення на обох камерах, щоб швидше переходити між камерами під час запису. Використовує більше батареї.</string>
+    <string name="CP_CategoryEnhancements">Покращення</string>
+    <string name="CP_EnhancementsNote">Деякі покращення камери можуть покращити якість відео, але одночасне використання кількох функцій не завжди може дати найкращий результат. Сміливо експериментуйте та знаходьте те, що найкраще підходить для вашого пристрою.</string>
+    <string name="CP_OpticalStabilisation">Оптична стабілізація (OIS)</string>
+    <string name="CP_VideoStabilisation">Відео стабілізація (EIS)</string>
+    <string name="CP_ContinuousAutofocus">Безперервне автофокусування</string>
+    <string name="CP_NoiseReduction">Зменшення шуму</string>
+    <string name="CP_FaceDetection">Розпізнавання обличчя</string>
     <string name="CP_DefaultCameraDesc">Влаштована камера Telegram.</string>
     <string name="CP_CameraXDesc">CameraX підтримується тільки на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">вибраних пристроях</a>]]>, ефекти та лінзи залежать від вашого виробника.</string>
     <string name="CP_CameraQuality">Якість камери</string>
@@ -332,12 +361,16 @@
     <string name="CP_ZoomSliderPosition_Right">Праворуч</string>
     <string name="CP_ZoomSliderPosition_Left">Ліворуч</string>
     <string name="CP_Exposure">Експозиція</string>
+    <string name="CP_Brightness">Яскравість</string>
+    <string name="CP_Flash_Hint">Утримуйте кнопку спалаху, щоб налаштувати колір та яскравість спалаху.</string>
+    <string name="CP_Flash_Hint_Rear">Утримуйте кнопку спалаху, щоб відрегулювати яскравість спалаху.</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Експериментальні</string>
     <string name="EP_NavigationAnimation">Анімація навігації</string>
     <string name="EP_NavigationAnimationBezier">Класична</string>
     <string name="EP_NavigationAnimationCrossfading">Ефект перехресного затухання</string>
+    <string name="CG_PredictiveBackAnimation">Прогнозована навігація Назад</string>
     <string name="EP_CustomChat">Власний чат для збереження повідомлень</string>
     <string name="EP_CustomChat_Desc">Ви можете обрати будь-який інший чат/групу/канал, щоб переслати туди повідомлення (кнопка на панелі дій, меню повідомлень, подвійне натискання або свайп по повідомленню)</string>
     <string name="EP_CustomChat_Selected_Title">замість</string>
@@ -392,6 +425,7 @@
     <string name="DP_Donate_Desc">При пожертвуванні від $2 ви також отримаєте бонусні подарунки:</string>
     <string name="DP_Donate_Badge_desc">**Значок Cherrygram** поруч з вашим ім\'ям.</string>
     <string name="DP_Donate_MsgMenuCompactView_Desc">Компактний вигляд елементів **меню повідомлення**.</string>
+    <string name="DP_Donate_FoldersAtBottom_Desc">3. **Панель тек** в нижній частині екрана.</string>
     <string name="DP_Donate_EpicBadge_desc">1. **Епічний значок Cherrygram** поруч з вашим ім\'ям.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. Кнопка \"**Магазин подарунків**\" у боковому меню.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. Функція \"**Фільтр повідомлень**\".</string>

@@ -264,9 +264,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import kotlin.coroutines.Continuation;
-import kotlin.coroutines.CoroutineContext;
-import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.chats.CGChatMenuInjector;
 import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
@@ -3219,7 +3216,15 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             ((SelectAnimatedEmojiDialog) selectAnimatedEmojiDialog.getContentView()).setScrimDrawable(textView != null && textView.getRightDrawable() == statusDrawable ? statusDrawable : null, textView);
         }
         if (dialogStoriesCell != null) {
-            dialogStoriesCell.setTitleOverlayText(title, titleId);
+            if (filterTabsView != null && CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader()) {
+                if (filterTabsView.currentTabIsDefault()) {
+                    dialogStoriesCell.setTitleOverlayText(title, titleId);
+                } else {
+                    dialogStoriesCell.setTitleOverlayText(filterTabsView.currentTabIsDefault() ? actionBarDefaultTitle : filterTabsView.getSelectedTabTitle(), filterTabsView.currentTabIsDefault() && statusDrawable != null);
+                }
+            } else {
+                dialogStoriesCell.setTitleOverlayText(title, titleId);
+            }
         }
     }
 
@@ -5678,21 +5683,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         checkUi_searchFieldStyle();
 
         ViewCompat.setOnApplyWindowInsetsListener(fragmentView, this::onApplyWindowInsets);
-
-        if (Build.VERSION.SDK_INT >= 24 && CherrygramPrivacyConfig.INSTANCE.getReTgCheck()) {
-            Continuation<Object> suspendResult = new Continuation<>() {
-                @NonNull
-                @Override
-                public CoroutineContext getContext() {
-                    return EmptyCoroutineContext.INSTANCE;
-                }
-
-                @Override
-                public void resumeWith(@NonNull Object o) {
-
-                }
-            };
-        }
 
         return fragmentView;
     }

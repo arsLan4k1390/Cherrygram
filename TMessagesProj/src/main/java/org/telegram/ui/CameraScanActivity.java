@@ -2,6 +2,7 @@ package org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -12,6 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -94,8 +96,6 @@ import org.telegram.ui.Components.URLSpanNoUnderline;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 @TargetApi(18)
 public class CameraScanActivity extends BaseFragment {
@@ -507,7 +507,7 @@ public class CameraScanActivity extends BaseFragment {
             viewGroup.addView(actionBar);
         }
 
-        if (currentType == TYPE_QR_LOGIN || currentType == TYPE_QR_WEB_BOT) {
+        if (currentType == TYPE_QR_LOGIN || currentType == TYPE_QR_WEB_BOT || currentType == TYPE_QR_UNIVERSAL) {
             actionBar.setTitle(LocaleController.getString(R.string.AuthAnotherClientScan));
         }
 
@@ -621,6 +621,8 @@ public class CameraScanActivity extends BaseFragment {
             } else {
                 if (currentType == TYPE_QR || currentType == TYPE_QR_WEB_BOT) {
                     titleTextView.setText(LocaleController.getString(R.string.AuthAnotherClientScan));
+                } else if (currentType == TYPE_QR_UNIVERSAL) {
+                    titleTextView.setText("");
                 } else {
                     String text = LocaleController.getString(R.string.AuthAnotherClientInfo5);
                     SpannableStringBuilder spanned = new SpannableStringBuilder(text);
@@ -678,9 +680,15 @@ public class CameraScanActivity extends BaseFragment {
                     if (getParentActivity() == null) {
                         return;
                     }
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        if (!PermissionsUtils.isImagesAndVideoPermissionGranted()) {
-                            PermissionsUtils.requestImagesAndVideoPermission(getParentActivity());
+                    final Activity activity = getParentActivity();
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        if (activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                            activity.requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+                            return;
+                        }
+                    } else if (Build.VERSION.SDK_INT >= 23) {
+                        if (activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
                             return;
                         }
                     }
@@ -1404,7 +1412,7 @@ public class CameraScanActivity extends BaseFragment {
 
 
     private boolean isQr() {
-        return currentType == TYPE_QR || currentType == TYPE_QR_LOGIN || currentType == TYPE_QR_WEB_BOT;
+        return currentType == TYPE_QR || currentType == TYPE_QR_LOGIN || currentType == TYPE_QR_WEB_BOT || currentType == TYPE_QR_UNIVERSAL;
     }
 
     @Override
@@ -1425,4 +1433,9 @@ public class CameraScanActivity extends BaseFragment {
 
         return themeDescriptions;
     }
+
+    /** Cherrygram start */
+    public static final int TYPE_QR_UNIVERSAL = 1390;
+    /** Cherrygram finish */
+
 }

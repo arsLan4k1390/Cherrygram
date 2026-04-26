@@ -13,7 +13,6 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Build
 import androidx.core.content.edit
-import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,6 +26,7 @@ import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
+import uz.unnarsx.cherrygram.preferences.string
 
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Default
@@ -104,8 +104,11 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Misc start */
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
+    var humoCardNumber by sharedPreferences.string("CP_Humo_Card_Number", "9860600408892476")
+    var tbankCardNumber by sharedPreferences.string("CP_TBank_Card_Number", "9860350143344678")
     var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
     var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", true)
+    var allowSafeSurf by sharedPreferences.boolean("CG_AllowSafeSurfUI", true)
     /** Misc finish */
 
     /** Cherrygram build types start */
@@ -151,8 +154,10 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     fun init() {
         launch {
             if (ApplicationLoader.checkPlayServices()) {
-                FirebaseApp.initializeApp(ApplicationLoader.applicationContext)
-                FirebaseRemoteConfigHelper.initRemoteConfig()
+                val success = FirebaseRemoteConfigHelper.fetchAndActivate()
+                if (success) {
+                    FirebaseRemoteConfigHelper.applyConfig()
+                }
             }
 
             DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)

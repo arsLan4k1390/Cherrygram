@@ -45,6 +45,7 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.ProxyRotationController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
@@ -56,6 +57,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
+import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
@@ -69,6 +71,9 @@ import org.telegram.ui.Components.SlideChooseView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.misc.Constants;
 
 public class ProxyListActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private final static boolean IS_PROXY_ROTATION_AVAILABLE = true;
@@ -521,6 +526,8 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                 if (button != null) {
                     button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
                 }
+            } else if (position == safeSurfRow) {
+                Browser.openAsInternalIntent(getContext(), Constants.CG_SAFESURF_BOT);
             }
         });
         listView.setOnItemLongClickListener((view, position) -> {
@@ -623,6 +630,10 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
 
     private void updateRows(boolean notify) {
         rowCount = 0;
+        if (CherrygramCoreConfig.INSTANCE.getAllowSafeSurf()) {
+            safeSurfRow = rowCount++;
+            safeSurfShadowRow = rowCount++;
+        }
         useProxyRow = rowCount++;
         if (useProxySettings && SharedConfig.currentProxy != null && SharedConfig.proxyList.size() > 1 && IS_PROXY_ROTATION_AVAILABLE) {
             rotationRow = rowCount++;
@@ -822,7 +833,8 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
             VIEW_TYPE_TEXT_CHECK = 3,
             VIEW_TYPE_INFO = 4,
             VIEW_TYPE_PROXY_DETAIL = 5,
-            VIEW_TYPE_SLIDE_CHOOSER = 6;
+            VIEW_TYPE_SLIDE_CHOOSER = 6,
+            VIEW_TYPE_TEXT_CELL = 7;
 
         public static final int PAYLOAD_CHECKED_CHANGED = 0;
         public static final int PAYLOAD_SELECTION_CHANGED = 1;
@@ -917,6 +929,13 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                         cell.setText(LocaleController.getString(R.string.UseProxyForCallsInfo));
                     } else if (position == rotationTimeoutInfoRow) {
                         cell.setText(LocaleController.getString(R.string.ProxyRotationTimeoutInfo));
+                    } else if (position == safeSurfShadowRow) {
+                        CharSequence tosInfoText = AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.CG_SafeSurf_TOS),
+                                Theme.key_windowBackgroundWhiteLinkText,
+                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                                () -> Browser.openUrl(getContext(), Constants.CG_DONATIONS_AND_TERMS_URL)
+                        );
+                        cell.setText(tosInfoText);
                     }
                     break;
                 }
@@ -942,6 +961,15 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                             SharedConfig.saveConfig();
                         });
                         chooseView.setOptions(SharedConfig.proxyRotationTimeout, values);
+                    }
+                    break;
+                }
+                case VIEW_TYPE_TEXT_CELL: {
+                    TextCell textCell = (TextCell) holder.itemView;
+
+                    if (position == safeSurfRow) {
+                        textCell.getImageView().clearColorFilter();
+                        textCell.setTextAndIcon("SafeSurf VPN", R.drawable.safesurf_logo, false);
                     }
                     break;
                 }
@@ -992,7 +1020,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int position = holder.getAdapterPosition();
-            return position == useProxyRow || position == rotationRow || position == callsRow || position == proxyAddRow || position == deleteAllRow || position >= proxyStartRow && position < proxyEndRow;
+            return position == useProxyRow || position == rotationRow || position == callsRow || position == proxyAddRow || position == deleteAllRow || position >= proxyStartRow && position < proxyEndRow || position == safeSurfRow;
         }
 
         @Override
@@ -1019,6 +1047,10 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                     break;
                 case VIEW_TYPE_SLIDE_CHOOSER:
                     view = new SlideChooseView(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_TEXT_CELL:
+                    view = new TextCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_PROXY_DETAIL:
@@ -1056,6 +1088,10 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                 return -11;
             } else if (position >= proxyStartRow && position < proxyEndRow) {
                 return proxyList.get(position - proxyStartRow).hashCode();
+            } else if (position == safeSurfRow) {
+                return -1390;
+            } else if (position == safeSurfShadowRow) {
+                return -1391;
             } else {
                 return -7;
             }
@@ -1075,6 +1111,8 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                 return VIEW_TYPE_SLIDE_CHOOSER;
             } else if (position >= proxyStartRow && position < proxyEndRow) {
                 return VIEW_TYPE_PROXY_DETAIL;
+            } else if (position == safeSurfRow) {
+                return VIEW_TYPE_TEXT_CELL;
             } else {
                 return VIEW_TYPE_INFO;
             }
@@ -1120,4 +1158,10 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
 
         return themeDescriptions;
     }
+
+    /** Cherrygram start */
+    private int safeSurfRow;
+    private int safeSurfShadowRow;
+    /** Cherrygram finish */
+
 }

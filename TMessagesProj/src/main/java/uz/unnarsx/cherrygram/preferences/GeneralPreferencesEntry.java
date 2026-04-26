@@ -16,14 +16,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.view.View;
 
-import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.NotificationsService;
 import org.telegram.messenger.R;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
-import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 
@@ -244,11 +242,7 @@ public class GeneralPreferencesEntry extends UniversalFragment {
         } else if (item.id == tabledModeRow) {
             showTabletModeSelector(() -> {
                 SettingsHelper.updateButtonValue(view, getTabletModeValue());
-
-                AndroidUtilities.resetTabletFlag();
-                if (getParentActivity() instanceof LaunchActivity launchActivity) {
-                    launchActivity.invalidateTabletMode();
-                }
+                CGBulletinCreator.INSTANCE.createRestartBulletin(this);
             });
         } else if (item.id == downloadSpeedBoostRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
