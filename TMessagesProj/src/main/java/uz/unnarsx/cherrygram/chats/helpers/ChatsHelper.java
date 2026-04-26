@@ -235,7 +235,7 @@ public class ChatsHelper extends BaseController {
         return path;
     }
 
-    public void addFileToClipboard(File file, Runnable callback) {
+    public static void addFileToClipboard(File file, Runnable callback) {
         try {
             Context context = ApplicationLoader.applicationContext;
             ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -408,6 +408,8 @@ public class ChatsHelper extends BaseController {
     }
 
     public int getCustomReactionsCount(MessageObject selectedObject) {
+        if (selectedObject == null || selectedObject.messageOwner == null || selectedObject.messageOwner.reactions == null) return 0;
+
         ArrayList<ReactionsLayoutInBubble.VisibleReaction> visibleCustomReactions = new ArrayList<>(selectedObject.getCustomReactions());
         ArrayList<TLRPC.InputStickerSet> customEmojiStickerSets = new ArrayList<>();
 
@@ -451,12 +453,12 @@ public class ChatsHelper extends BaseController {
                 Browser.openUrl(chatActivity.getParentActivity(), "https://my.click.uz/app/clickp2p/");
                 Toast.makeText(ApplicationLoader.applicationContext, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
             });
-            options.add(R.drawable.msg_payment_card, "Humans P2P", () -> {
+            /*options.add(R.drawable.msg_payment_card, "Humans P2P", () -> {
                 dialog.dismiss();
                 AndroidUtilities.addToClipboard(card);
                 Browser.openUrl(chatActivity.getParentActivity(), "https://apps.humans.uz/auth/send");
                 Toast.makeText(ApplicationLoader.applicationContext, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
-            });
+            });*/
             options.add(R.drawable.msg_payment_card, "Uzum Bank P2P", () -> {
                 dialog.dismiss();
                 AndroidUtilities.addToClipboard(card);

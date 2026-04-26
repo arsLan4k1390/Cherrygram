@@ -213,7 +213,7 @@ public class UpdaterBottomSheet extends BottomSheet implements NotificationCente
             downloadButton.setOnClickListener(v -> {
                 if (SharedConfig.pendingAppUpdate != null && SharedConfig.pendingAppUpdate.document != null) {
                     File path = FileLoader.getInstance(currentAccount).getPathToAttach(SharedConfig.pendingAppUpdate.document, true);
-                    if (path.exists()) {
+                    if (path != null && path.exists() && fragment != null && fragment.getParentActivity() != null) {
                         AndroidUtilities.openForView(SharedConfig.pendingAppUpdate.document, true, fragment.getParentActivity());
                     } else {
                         downloadButton.setClickable(false);
@@ -275,6 +275,7 @@ public class UpdaterBottomSheet extends BottomSheet implements NotificationCente
                 sb.append("+ ");
                 sb.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.msg_retry_solar))), 0, 1, 0);
                 checkUpdatesButton.setText(sb, true);
+                SharedConfig.lastUpdateCheckTime = System.currentTimeMillis();
 
                 if (fragment.getParentActivity() instanceof LaunchActivity launchActivity) {
                     launchActivity.checkAppUpdate(true, new Browser.Progress() {
@@ -282,7 +283,6 @@ public class UpdaterBottomSheet extends BottomSheet implements NotificationCente
                         public void end() {
                             checkUpdatesButton.setText(getString(R.string.UP_CheckForUpdates), true);
                             if (SharedConfig.isAppUpdateAvailable()) {
-                                SharedConfig.lastUpdateCheckTime = System.currentTimeMillis();
                                 dismiss();
                             } else {
                                 BulletinFactory.of(getContainer(), resourcesProvider).createErrorBulletin(getString(R.string.YourVersionIsLatest)).show();
@@ -344,8 +344,12 @@ public class UpdaterBottomSheet extends BottomSheet implements NotificationCente
             scheduleButton.setFilled(false);
             scheduleButton.setText(getString(R.string.AppUpdateRemindMeLater), false);
             scheduleButton.setOnClickListener(v -> {
-                SharedConfig.lastUpdateCheckTime = System.currentTimeMillis();
                 dismiss();
+
+                SharedConfig.lastUpdateCheckTime = System.currentTimeMillis();
+                SharedConfig.pendingAppUpdate = null;
+                SharedConfig.saveConfig();
+                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
             });
             linearLayout.addView(scheduleButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 0, 16, 0));
         }

@@ -72,7 +72,7 @@ object CGBulletinCreator {
                 )
 
                 BulletinFactory.global().createChatsBulletin(accs, text, null)
-                    .setDuration(Bulletin.DURATION_LONG)
+                    .setDuration(Bulletin.DURATION_SHORT)
                     .show()
 
                 accs.clear()
@@ -87,7 +87,7 @@ object CGBulletinCreator {
             getString(R.string.CG_PasskeyNoCredentialAvailable),
             getString(R.string.Settings)
         ) {
-            PasskeysController.openSettings(fragment.getParentActivity());
+            PasskeysController.openSettings(fragment.getParentActivity())
         }.show()
     }
 

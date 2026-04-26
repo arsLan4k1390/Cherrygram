@@ -9,13 +9,10 @@
 
 package uz.unnarsx.cherrygram.helpers.ui;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
 
-import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
@@ -31,7 +28,6 @@ public class FontHelper {
     private static final String EMOJI_FONT_AOSP = "NotoColorEmoji.ttf";
 
     private static final String TEST_TEXT;
-    private static final int CANVAS_SIZE = 40;
     private static final Paint PAINT = new Paint() {{
         setTextSize(20);
         setAntiAlias(false);
@@ -178,7 +174,10 @@ public class FontHelper {
 
     public static boolean isMediumWeightSupported() {
         if (mediumWeightSupported == null) {
-            mediumWeightSupported = testTypeface(createTypeface(500, false));
+            Typeface normal = createTypeface(400, false);
+            Typeface medium = createTypeface(500, false);
+
+            mediumWeightSupported = isDifferentTypeface(normal, medium);
             FileLog.d("mediumWeightSupported = " + mediumWeightSupported);
         }
         return mediumWeightSupported;
@@ -186,28 +185,26 @@ public class FontHelper {
 
     public static boolean isItalicSupported() {
         if (italicSupported == null) {
-            italicSupported = testTypeface(createTypeface(400, true));
+            Typeface tf = createTypeface(400, true);
+            italicSupported = PAINT.hasGlyph(TEST_TEXT) && tf.isItalic();
             FileLog.d("italicSupported = " + italicSupported);
         }
         return italicSupported;
     }
 
     private static boolean testTypeface(Typeface typeface) {
-        Canvas canvas = new Canvas();
-
-        Bitmap bitmap1 = Bitmap.createBitmap(CANVAS_SIZE * 2, CANVAS_SIZE, Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap1);
-        PAINT.setTypeface(null);
-        canvas.drawText(TEST_TEXT, 0, CANVAS_SIZE, PAINT);
-
-        Bitmap bitmap2 = Bitmap.createBitmap(CANVAS_SIZE * 2, CANVAS_SIZE, Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap2);
         PAINT.setTypeface(typeface);
-        canvas.drawText(TEST_TEXT, 0, CANVAS_SIZE, PAINT);
+        return PAINT.hasGlyph(TEST_TEXT);
+    }
 
-        boolean supported = !bitmap1.sameAs(bitmap2);
-        AndroidUtilities.recycleBitmaps(List.of(bitmap1, bitmap2));
-        return supported;
+    private static boolean isDifferentTypeface(Typeface a, Typeface b) {
+        PAINT.setTypeface(a);
+        float widthA = PAINT.measureText(TEST_TEXT);
+
+        PAINT.setTypeface(b);
+        float widthB = PAINT.measureText(TEST_TEXT);
+
+        return Math.abs(widthA - widthB) > 0.5f;
     }
 
 }

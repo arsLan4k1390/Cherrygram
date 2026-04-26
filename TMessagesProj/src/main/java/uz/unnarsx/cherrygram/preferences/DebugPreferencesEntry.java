@@ -46,18 +46,19 @@ public class DebugPreferencesEntry extends UniversalFragment {
     private final int toastRpcRow = 1;
     private final int oldTimeStyleRow = 2;
     private final int safeStarsRow = 3;
-    private final int performanceClassRow = 4;
-    private final int fixCallsNotifRow = 5;
+    private final int safeSurfRow = 4;
+    private final int performanceClassRow = 5;
+    private final int fixCallsNotifRow = 6;
 
-    private final int newBlurRow = 6;
+    private final int newBlurRow = 7;
 
-    private final int forceForumTabsRow = 7;
-    private final int replacePunctuationRow = 8;
-    private final int editTextFixRow = 9;
-    private final int audioSourceRow = 10;
-    private final int sendMaxQualityRow = 11;
-    private final int playGifAsVideoRow = 12;
-    private final int hideTimestampRow = 13;
+    private final int forceForumTabsRow = 8;
+    private final int replacePunctuationRow = 9;
+    private final int editTextFixRow = 10;
+    private final int audioSourceRow = 11;
+    private final int sendMaxQualityRow = 12;
+    private final int playGifAsVideoRow = 13;
+    private final int hideTimestampRow = 14;
     private final int resetDialogsRow = 15;
     private final int clearMediaCacheRow = 16;
     private final int readAllDialogsRow = 17;
@@ -91,6 +92,9 @@ public class DebugPreferencesEntry extends UniversalFragment {
         );
         items.add(SettingsHelper.asSwitchCG(safeStarsRow, "Use SafeStars *")
                 .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeStars())
+        );
+        items.add(SettingsHelper.asSwitchCG(safeSurfRow, "Use SafeSurf *")
+                .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeSurf())
         );
         items.add(UItem.asButton(performanceClassRow, "Force performance class", SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass())));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -154,6 +158,9 @@ public class DebugPreferencesEntry extends UniversalFragment {
         } else if (item.id == safeStarsRow) {
             CherrygramCoreConfig.INSTANCE.setAllowSafeStars(!CherrygramCoreConfig.INSTANCE.getAllowSafeStars());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getAllowSafeStars());
+        } else if (item.id == safeSurfRow) {
+            CherrygramCoreConfig.INSTANCE.setAllowSafeSurf(!CherrygramCoreConfig.INSTANCE.getAllowSafeSurf());
+            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getAllowSafeSurf());
         } else if (item.id == performanceClassRow) {
             showPerformanceClassDialog(view);
         } else if (item.id == fixCallsNotifRow) {

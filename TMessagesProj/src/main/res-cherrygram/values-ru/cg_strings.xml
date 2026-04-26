@@ -112,7 +112,8 @@
     <string name="CG_SafeStars_Desc">Мультичейн и без KYC</string>
     <string name="CG_SafeStars_BuyPremiumButton">Проверить на сайте</string>
     <string name="CG_SafeStars_buy_Telegram">Купить звезды через Telegram</string>
-    <string name="CG_Stats_TOS">Продолжая, вы автоматически принимаете **Условия покупки Telegram** и **Пользовательское соглашение Cherrygram**.</string>
+    <string name="CG_Stars_TOS">Продолжая, вы автоматически принимаете **Условия покупки Telegram** и **Пользовательское соглашение Cherrygram**.</string>
+    <string name="CG_SafeSurf_TOS">Продолжая, вы автоматически принимаете **Пользовательское соглашение Cherrygram**.</string>
 
     <string name="CG_SortByDate">Сортировка по дате сообщения</string>
     <string name="CG_SortByUnread">Сортировка по непрочитанным</string>
@@ -150,6 +151,13 @@
     <string name="CG_Sleep_Timer">Таймер сна установлен на **%s**</string>
     <string name="CG_Sleep_Disabled">Таймер сна отключен</string>
     <string name="CG_Sleep_Permission">Разрешите Cherrygram устанавливать точные будильники, чтобы таймер сна работал корректно.</string>
+
+    <string name="CG_QR_Hint">Это цифровая копия отсканированного QR-кода. Нажмите, чтобы скопировать его в буфер обмена, или удерживайте, чтобы сохранить в галерею.</string>
+    <string name="CG_WifiConnect">Подключиться</string>
+    <string name="CG_WifiSuccess">Успешно подключено к сети Wi-Fi.</string>
+    <string name="CG_WifiFailed">Не удалось подключиться к сети Wi-Fi.</string>
+    <string name="CG_WifiDisabled">Wi-Fi выключен.</string>
+    <string name="CG_AreYouSureToLogin">Вы уверены, что хотите войти в этот аккаунт на другом устройстве?</string>
     <!--Misc-->
     <!--Telegram screens-->
 

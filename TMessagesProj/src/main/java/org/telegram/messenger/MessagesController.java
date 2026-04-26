@@ -7458,6 +7458,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 }
             }
         }
+        if (array == null || uid == 0) return null;
         return array.get(uid);
     }
 
@@ -7475,6 +7476,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 }
             }
         }
+        if (array == null || uid == 0) return false;
         final TLRPC.ChannelParticipant participant = array.get(uid);
         return participant instanceof TLRPC.TL_channelParticipantAdmin || participant instanceof TLRPC.TL_channelParticipantCreator;
     }

@@ -62,6 +62,7 @@ object CherrygramMessagesConfig {
     var showViewHistory by sharedPreferences.boolean("CP_ShowViewHistory", true)
     var showSaveMessage by sharedPreferences.boolean("CP_ShowSaveMessage", false)
     var showReport by sharedPreferences.boolean("CP_ShowReport", true)
+    var openInExternalApp by sharedPreferences.boolean("CP_OpenInExternalApp", true)
 
     var showJSON by sharedPreferences.boolean("CP_ShowJSON", false)
     var jacksonJSON_Provider by sharedPreferences.boolean("CP_JacksonJSON_Provider", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)

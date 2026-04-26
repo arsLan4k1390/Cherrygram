@@ -268,7 +268,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourceProvider));
         footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourceProvider));
 
-        SpannableStringBuilder text = AndroidUtilities.replaceTags(getString(R.string.CG_Stats_TOS), AndroidUtilities.FLAG_TAG_BOLD);
+        SpannableStringBuilder text = AndroidUtilities.replaceTags(getString(R.string.CG_Stars_TOS), AndroidUtilities.FLAG_TAG_BOLD);
 
         Object[] spans = text.getSpans(0, text.length(), TypefaceSpan.class);
         if (spans != null && spans.length >= 2) {

@@ -135,19 +135,20 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_FORWARD_WO_CAPTION = 2018;
     public final static int OPTION_GET_CUSTOM_REACTIONS = 2019;
     public final static int OPTION_IMPORT_SETTINGS = 2020;
-    public final static int OPTION_DETAILS = 2021;
-    public final static int OPTION_TRANSLATE_DOUBLE_TAP = 2022;
-    public final static int OPTION_TEXT_CODE = 2023;
-    public final static int OPTION_GO_TO_SAVED = 2024;
-    public final static int OPTION_ASK_PASSCODE = 2025;
-    public final static int OPTION_DO_NOT_ASK_PASSCODE = 2026;
-    public final static int OPTION_OPEN_TELEGRAM_BROWSER = 2027;
-    public final static int OPTION_REPLY_GEMINI = 2028;
-    public final static int OPTION_TRANSLATE_GEMINI = 2029;
-    public final static int OPTION_TRANSCRIBE_GEMINI = 2030;
-    public final static int OPTION_EXPLANATION_GEMINI = 2031;
-    public final static int OPTION_SUMMARIZE_GEMINI = 2032;
-    public final static int OPTION_ADVANCED_SEARCH = 2033;
+    public final static int OPTION_OPEN_IN = 2021;
+    public final static int OPTION_DETAILS = 2022;
+    public final static int OPTION_TRANSLATE_DOUBLE_TAP = 2023;
+    public final static int OPTION_TEXT_CODE = 2024;
+    public final static int OPTION_GO_TO_SAVED = 2025;
+    public final static int OPTION_ASK_PASSCODE = 2026;
+    public final static int OPTION_DO_NOT_ASK_PASSCODE = 2027;
+    public final static int OPTION_OPEN_TELEGRAM_BROWSER = 2028;
+    public final static int OPTION_REPLY_GEMINI = 2029;
+    public final static int OPTION_TRANSLATE_GEMINI = 2030;
+    public final static int OPTION_TRANSCRIBE_GEMINI = 2031;
+    public final static int OPTION_EXPLANATION_GEMINI = 2032;
+    public final static int OPTION_SUMMARIZE_GEMINI = 2033;
+    public final static int OPTION_ADVANCED_SEARCH = 2034;
     /** Cherrygram chat options constant id's finish */
 
     /** ActionBar options start*/
@@ -483,6 +484,17 @@ public class ChatActivityHelper extends BaseController {
                 }
                 if (locFile != null) {
                     BackupHelper.INSTANCE.importSettings(locFile, chatActivity.getContext());
+                }
+                break;
+            }
+            case OPTION_OPEN_IN: {
+                if (selectedObject != null) {
+                    try {
+                        AndroidUtilities.openForView(selectedObject, chatActivity.getParentActivity(), chatActivity.getResourceProvider(), false);
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                        chatActivity.alertUserOpenError(selectedObject);
+                    }
                 }
                 break;
             }

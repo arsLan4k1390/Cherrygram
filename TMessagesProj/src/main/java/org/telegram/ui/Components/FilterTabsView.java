@@ -2179,8 +2179,16 @@ public class FilterTabsView extends FrameLayout {
     }
 
     public String getSelectedTabTitle() {
-        int fix = CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() ? 1 : 0;
-        return tabs.get(selectedTabId - fix).realTitle.toString();
+        for (Tab tab : tabs) {
+            if (CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() && tab.isDefault) {
+                continue;
+            }
+
+            if (tab.id == selectedTabId) {
+                return tab.realTitle.toString();
+            }
+        }
+        return "";
     }
     /** Cherrygram finish */
 

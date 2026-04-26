@@ -5,7 +5,7 @@
     <string name="CG_FollowChannelInfo">加入頻道，隨時掌握 Cherrygram 的最新資訊和功能！</string>
     <string name="CG_DoNotRemindAgain">下次不要顯示</string>
     <!--Telegram screens-->
-    <string name="CG_SwitchedToAccount">Switched to **%1$s**</string>
+    <string name="CG_SwitchedToAccount">已切換至 **%1$s**</string>
     <string name="CG_JoinedDate">您加入了 **%1$s** **%2$s**</string>
     <string name="CG_CreatedDate">**%1$s** 已建立 **%2$s**</string>
     <string name="CG_RegistrationDate">註冊日期：</string>
@@ -40,6 +40,13 @@
     <string name="CP_NewTabs_NoCounter">隱藏Tab列數字</string>
     <string name="CG_SwipeToUnarchive">向左滑動以取消封存</string>
     <!--Telegram Folders Settings-->
+    <!--Telegram Passkeys Settings-->
+    <string name="CG_PasskeyLogin">Passkey 登入</string>
+    <string name="CG_PasskeyInfo2">此功能僅適用於允許使用者管理特權應用的信任設定的密碼管理器，例如 **Bitwarden** 和 **KeePassDX**。</string>
+    <string name="CG_PasskeyUnsupportedTitle">不支援的密碼管理器</string>
+    <string name="CG_PasskeyUnsupportedMessage">請嘗試使用其他密碼管理器，例如 **Bitwarden** 或 **KeePassDX**。</string>
+    <string name="CG_PasskeyNoCredentialAvailable">沒有可用的有效憑證。</string>
+    <!--Telegram Passkeys Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">回到頂端</string>
     <string name="CG_DeleteAllFromSelf">刪除自己的訊息</string>
@@ -84,9 +91,12 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
-    <string name="CG_SafeStars_buy">購買星幣（Multi-chain 且無需KYC實名驗證）</string>
+    <string name="CG_SafeStars_buy">透過 SafeStars 購買</string>
+    <string name="CG_SafeStars_Desc">多鏈及無 KYC（實名認證）</string>
+    <string name="CG_SafeStars_BuyPremiumButton">請查閱網站</string>
     <string name="CG_SafeStars_buy_Telegram">透過 Telegram 購買星幣</string>
-    <string name="CG_Stats_TOS">繼續操作即表示您自動同意**Telegram使用條款**及**Cherrygram服務條款**。</string>
+    <string name="CG_Stars_TOS">By proceeding, you automatically agree to the **Telegram Terms and Conditions** and the **Cherrygram Terms of Service**.</string>
+    <string name="CG_SafeSurf_TOS">By proceeding, you automatically agree to the **Cherrygram Terms of Service**.</string>
     <string name="CG_SortByDate">Sort by message date</string>
     <string name="CG_SortByUnread">Sort by unread first</string>
     <string name="CG_UnknownCherrySettingsOption">沒有這樣的 Cherry 設定選項</string>
@@ -120,6 +130,12 @@
     <string name="CG_Sleep_Timer">睡眠計時器已設定為 **%s**</string>
     <string name="CG_Sleep_Disabled">睡眠計時器已停用</string>
     <string name="CG_Sleep_Permission">請允許 Cherrygram 「排定精確鬧鐘」的權限，以便睡眠計時器能夠正常執行。</string>
+    <string name="CG_QR_Hint">This is a digital copy of the scanned QR code. Tap to copy it to the clipboard, or press and hold to save it to your gallery.</string>
+    <string name="CG_WifiConnect">Connect</string>
+    <string name="CG_WifiSuccess">Successfully connected to Wi-Fi.</string>
+    <string name="CG_WifiFailed">Failed to connect to Wi-Fi.</string>
+    <string name="CG_WifiDisabled">Wi-Fi is disabled.</string>
+    <string name="CG_AreYouSureToLogin">Are you sure you want to log in to this account on another device?</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -141,7 +157,8 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">主題</string>
-    <string name="AP_IconReplacements">替換圖示</string>
+    <string name="AP_Header">標題</string>
+    <string name="AP_IconReplacements">圖示包</string>
     <string name="AP_Old_Notification_Icon">預設通知圖示 (Telegram)</string>
     <string name="AP_Tablet_Mode">平板模式</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
@@ -154,11 +171,12 @@
     <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_Solar">由 @Design480 設計的 Solar 圖示</string>
     <string name="AP_OneUI_Switch_Style">OneUI 開關風格</string>
-    <string name="AP_SystemEmoji">使用系統 Emoji</string>
+    <string name="AP_SystemEmoji">系統表情符號</string>
     <string name="AP_ShowPencilIcon">將訊息底部的「已編輯」替換為鉛筆圖示</string>
-    <string name="AP_CenterTitle">在操作列中置中標題</string>
+    <string name="AP_CenterTitle">置中標題文字</string>
+    <string name="AP_HideSearchBar">隱藏對話中的搜尋列</string>
     <string name="AP_DisableDividers">停用分隔線</string>
-    <string name="AP_SystemFonts">使用系統字型</string>
+    <string name="AP_SystemFonts">系統字型</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
     <string name="CP_ProfileReplyBackground">訊息和個人檔案</string>
     <string name="CP_CustomizeProfile">自訂個人檔案</string>
@@ -188,19 +206,22 @@
     <string name="CP_DisablePremStickAutoPlay">禁止自動播放 Premium 動態貼圖</string>
     <string name="CP_DisablePremStickAutoPlay_Desc">Premium 動態貼圖不會自動播放 (開啟禁止點擊 Premium 功能時，此功能為無效)</string>
     <string name="CP_Filters_Header">資料夾</string>
+    <string name="AP_FoldersAtBottom">在底部顯示資料夾</string>
     <string name="AP_FolderNameInHeader">使用資料夾名稱而非「Cherrygram」</string>
     <string name="AP_FolderNameInHeader_Desc">這會將操作列中的「Cherrygram」變更為資料夾名稱 (開啟僅顯示圖示時效果為最佳)</string>
     <string name="CP_NewTabs_RemoveAllChats">隱藏所有對話 Tab</string>
     <string name="AP_Tab_Style">Tab 樣式</string>
     <string name="AP_Tab_Style_Stroke">新增筆畫</string>
-    <string name="CP_MainTabs_Header">Bottom tabs organizer</string>
-    <string name="CP_MainTabs_Layout">Tabs</string>
-    <string name="CP_MainTabs_ShowTabs">Show tabs</string>
-    <string name="CP_MainTabs_OpenSettings">Open settings by swipe</string>
-    <string name="CP_MainTabs_OpenSettings_Desc">Swipe from left to right on the tabs to open the settings, similar to a drawer when tabs are disabled.</string>
-    <string name="CP_MainTabs_Layout_Desc">Tap to enable/disable, hold and drag to reorder.</string>
-    <string name="CP_MainTabs_DoubleTap_Desc">Double-tap a chat tab to open \"Saved Messages\". Double-tap the profile tab (or Settings if the profile tab is hidden) to switch accounts.</string>
-    <string name="CP_MainTabs_ShowTabsTitle">Show tabs titles</string>
+    <string name="CP_MainTabs_Header">底部分頁整理器</string>
+    <string name="CP_MainTabs_Layout">分頁</string>
+    <string name="CP_MainTabs_ShowTabs">顯示分頁</string>
+    <string name="CP_MainTabs_OpenSettings">滑動以開啟設定</string>
+    <string name="CP_MainTabs_OpenSettings_Desc">當分頁停用時，在分頁上由左向右滑動即可開啟設定，類似於抽屜式選單。</string>
+    <string name="CP_MainTabs_Layout_Desc">按一下以啟用/停用，長按並拖曳以重新排序。</string>
+    <string name="CP_MainTabs_DoubleTap_Desc">按兩下聊天分頁即可開啟「已儲存訊息」。按兩下個人檔案分頁（如個人檔案標籤頁被隱藏，則按兩下「設定」）即可切換帳號。</string>
+    <string name="CP_MainTabs_ShowTabsTitle">顯示分頁標題</string>
+    <string name="CP_MainTabs_ForceOpenChats">始終開啟對話搜尋</string>
+    <string name="CP_MainTabs_ForceOpenChats_Desc">啟用後，搜尋按鈕將始終開啟對話搜尋。停用後，則會開啟目前畫面（例如「設定」或「聯絡人」）的上下文搜尋。</string>
     <string name="AP_HideUserPhone_Show">按一下顯示</string>
     <string name="AP_HideUserPhone_Copy">長按複製</string>
     <string name="AP_MutualContacts_Description">該帳戶為相互聯絡人，對方同時也新增您為聯絡人</string>
@@ -288,6 +309,7 @@
         如在連結內發現匹配內容，整則訊息將自動隱藏於劇透標籤下，無論關鍵字是否出現在可見文字中。
         \n\n此機制有助防範偽裝垃圾訊息、隱藏廣告或釣魚網域，避免其繞過一般文字過濾機制。
     </string>
+    <string name="CP_Message_Filtering_FilterBlocked">篩選來自被封鎖使用者的訊息</string>
     <string name="CP_Message_Filtering_HideBlocked">隱藏被封鎖使用者在群組中的訊息</string>
     <string name="CP_Message_Filtering_HideBlockedDesc">啟用功能後，所有來自被封鎖用戶的訊息和轉寄的訊息將自動隱藏在劇透標籤下。</string>
     <string name="CP_Message_Filtering_HideAll">完整訊息劇透隱藏</string>
@@ -319,6 +341,13 @@
     <string name="CP_CameraUW_Desc">影片訊息的錄製將由超廣角鏡頭開始 (如果您的裝置的 API 支援的話)</string>
     <string name="CP_CameraDualCamera">雙鏡頭</string>
     <string name="CP_CameraDualCamera_Desc">在兩個鏡頭同時上錄製影片訊息，以便在錄製時快速轉換另一個鏡頭。啟用此功能可能消耗更多電量。</string>
+    <string name="CP_CategoryEnhancements">Enhancements</string>
+    <string name="CP_EnhancementsNote">Some camera enhancements can improve video quality, but using multiple features at the same time may not always give the best result. Feel free to experiment and find what works best for your device.</string>
+    <string name="CP_OpticalStabilisation">Optical stabilisation (OIS)</string>
+    <string name="CP_VideoStabilisation">Video stabilisation (EIS)</string>
+    <string name="CP_ContinuousAutofocus">Continuous autofocus</string>
+    <string name="CP_NoiseReduction">Noise reduction</string>
+    <string name="CP_FaceDetection">Face detection</string>
     <string name="CP_DefaultCameraDesc">使用 Telegram 內建相機</string>
     <string name="CP_CameraXDesc">CameraX 僅支援 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下列裝置</a>]]>，效果和鏡頭支援取決於您的硬體</string>
     <string name="CP_CameraQuality">相機品質</string>
@@ -337,12 +366,16 @@
     <string name="CP_ZoomSliderPosition_Right">右</string>
     <string name="CP_ZoomSliderPosition_Left">左</string>
     <string name="CP_Exposure">曝光</string>
+    <string name="CP_Brightness">亮度</string>
+    <string name="CP_Flash_Hint">長按閃光燈按鈕可調整閃光燈的顏色與亮度。</string>
+    <string name="CP_Flash_Hint_Rear">長按閃光燈按鈕可調整閃光燈的亮度。</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
     <string name="EP_NavigationAnimation">程式動畫</string>
     <string name="EP_NavigationAnimationBezier">經典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
+    <string name="CG_PredictiveBackAnimation">預測返回導覽</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>
     <string name="EP_CustomChat_Desc">為來自另一個對話/群組/頻道的 ID 設定轉寄訊息 (操作列中的按鈕、訊息選單或按兩下)</string>
     <string name="EP_CustomChat_Selected_Title">代替</string>
@@ -397,6 +430,7 @@
     <string name="DP_Donate_Desc">當您捐款達2美元或以上時，您還將獲得額外贈品：</string>
     <string name="DP_Donate_Badge_desc">1. 在使用者名稱旁顯示 **Cherrygram 徽章**。</string>
     <string name="DP_Donate_MsgMenuCompactView_Desc">2. **訊息選單** 使用緊湊型風格。</string>
+    <string name="DP_Donate_FoldersAtBottom_Desc">3. 螢幕底部的**資料夾面板**。</string>
     <string name="DP_Donate_EpicBadge_desc">1. **史詩級 Cherrygram 徽章** 顯示於您的姓名旁。</string>
     <string name="DP_Donate_GiftMarket_Desc">2. 側邊選單中的「**禮物市集**」按鈕。</string>
     <string name="DP_Donate_MessageFilter_Desc">3. 「**訊息過濾器**」功能。</string>

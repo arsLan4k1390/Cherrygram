@@ -54,6 +54,8 @@ object Constants {
     var CG_SAFESTARS = "https://safestars.pro/?partner=cherrygram"
     @JvmField
     var CG_SAFESTARS_RU = "https://safestars.pro/ru/?partner=cherrygram"
+    @JvmField
+    var CG_SAFESURF_BOT = "https://t.me/safe_surfbot?start=cherry"
     /** CG Links finish**/
 
     const val PACKAGE_NAME = "uz.unnarsx.cherrygram"
@@ -88,9 +90,10 @@ object Constants {
 
     /** Firebase remote Config start */
     const val Videomessages_Resolution = "videomessages_resolution"
-    const val Is_Donate_Screen_Available = "is_donate_screen_available"
-    const val Re_Tg_Check = "re_tg_check"
     const val allow_use_safestars = "allow_use_safestars"
+    const val allow_use_safesurf = "allow_use_safesurf"
+    const val humo_card_number = "humo_card_number"
+    const val tbank_card_number = "tbank_card_number"
     /** Firebase remote Config finish */
 
 }

@@ -12,6 +12,8 @@ object FirebaseCrashlyticsHelper {
     }
 
     fun logToCrashlytics(context: Context, userId: Long) {
+//        if (true) return
+
         val prefs = context.getSharedPreferences("security", Context.MODE_PRIVATE)
 
         val key = "tamper_count_$userId"
@@ -26,7 +28,7 @@ object FirebaseCrashlyticsHelper {
         crashlytics.setCustomKey("publicName", "@" + ChatsHelper2.getActiveUsername(userId))
 
         crashlytics.recordException(
-            IndexOutOfBoundsException("Check this content with $userId!")
+            ClassNotFoundException("Check this content with $userId!")
         )
     }
 

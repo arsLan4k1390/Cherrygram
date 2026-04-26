@@ -110,6 +110,7 @@ public class AboutPreferencesEntry extends UniversalFragment {
 
                 Browser.openUrl(getContext(), Constants.UPDATE_APP_URL);
             } else {
+                if (LaunchActivity.instance == null) return;
                 LaunchActivity.instance.showUpdaterBottomSheet(this, false, null);
             }
         } else if (item.id == bugReportRow) {

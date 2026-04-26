@@ -3254,7 +3254,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                             if (videoEditedInfo.endTime > 0) {
                                 videoEditedInfo.endTime *= 1000;
                             }
-                            FileLoader.getInstance(currentAccount).cancelFileUpload(cameraFile.getAbsolutePath(), false);
+                            if (cameraFile != null) FileLoader.getInstance(currentAccount).cancelFileUpload(cameraFile.getAbsolutePath(), false);
                         } else {
                             videoEditedInfo.estimatedSize = Math.max(1, size);
                         }

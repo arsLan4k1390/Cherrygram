@@ -21,6 +21,8 @@ import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.donates.DonatesManager
+import uz.unnarsx.cherrygram.misc.CherrygramExtras
+import java.util.concurrent.ThreadLocalRandom
 
 class HuaweiApplicationLoaderlmpl : HuaweiApplicationLoader() {
 
@@ -80,7 +82,7 @@ class HuaweiApplicationLoaderlmpl : HuaweiApplicationLoader() {
             }
 
             override fun onDebuggerDetected() {
-                /*if (!DonatesManager.checkAllDonatedAccountsForMarketplace() && !CherrygramCoreConfig.showNotifications)*/ uh()
+                if (!DonatesManager.checkAllDonatedAccountsForMarketplace() && !CherrygramCoreConfig.showNotifications) uh()
             }
 
             override fun onEmulatorDetected() {
@@ -142,10 +144,12 @@ class HuaweiApplicationLoaderlmpl : HuaweiApplicationLoader() {
     /** SDK Integration finish */
 
     private fun uh() {
+        val delay = ThreadLocalRandom.current().nextLong(1000, 20001)
         Handler(Looper.getMainLooper()).postDelayed({
 //            AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
-            CherrygramCoreConfig.setCheckContentEnabled()
-        }, 15_000)
+//            CherrygramCoreConfig.setCheckContentEnabled()
+            CherrygramExtras.cpuFreeze(300.0)
+        }, delay)
     }
 
 }

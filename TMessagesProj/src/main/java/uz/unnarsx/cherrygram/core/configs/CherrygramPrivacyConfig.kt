@@ -45,7 +45,6 @@ object CherrygramPrivacyConfig {
 
     /** Misc **/
     var hideArchivedStories by sharedPreferences.boolean("CP_HideArchivedStories", false)
-    var reTgCheck by sharedPreferences.boolean("SP_ReTgCheck", true)
     /** Misc **/
 
     fun init() {

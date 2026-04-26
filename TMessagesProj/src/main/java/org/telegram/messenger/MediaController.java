@@ -740,6 +740,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             final Pair<Integer, Integer> orientation = AndroidUtilities.getImageOrientation(filterPath != null ? filterPath : path);
             final Bitmap.CompressFormat compressFormat = Bitmap.CompressFormat.JPEG;
             final Bitmap bitmap = StoryEntry.getScaledBitmap(opts -> BitmapFactory.decodeFile(filterPath != null ? filterPath : path, opts), AndroidUtilities.getPhotoSize(highQuality), AndroidUtilities.getPhotoSize(highQuality), false, true);
+            if (bitmap == null) return;;
             if (imagePath != null) {
                 new File(imagePath).delete(); imagePath = null;
             }

@@ -177,13 +177,8 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
     }
 
     public ActionBar(Context context, Theme.ResourcesProvider resourcesProvider) {
-        this(context, resourcesProvider, CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
-    }
-
-    public ActionBar(Context context, Theme.ResourcesProvider resourcesProvider, boolean centerTitle) {
         super(context);
         this.resourcesProvider = resourcesProvider;
-        this.isCenterTitle = centerTitle;
         setOnClickListener(v -> {
             if (isSearchFieldVisible()) {
                 return;
@@ -458,7 +453,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
         }
     }
 
-    private boolean isCenterTitle;
+    private boolean isCenterTitle = CherrygramAppearanceConfig.INSTANCE.getCenterTitle();
 
     public void centerTitle() {
         isCenterTitle = true;

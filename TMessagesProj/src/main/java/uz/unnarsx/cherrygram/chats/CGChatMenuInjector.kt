@@ -15,46 +15,43 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Base64
+import androidx.core.content.edit
+import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.BuildVars
 import org.telegram.messenger.ChatObject
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
+import org.telegram.ui.ActionBar.ActionBarMenu
 import org.telegram.ui.ActionBar.ActionBarMenuItem
+import org.telegram.ui.ActionBar.ActionBarMenuSubItem
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.INavigationLayout
+import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.ActionIntroActivity
+import org.telegram.ui.CallLogActivity
 import org.telegram.ui.CameraScanActivity
 import org.telegram.ui.ChannelCreateActivity
 import org.telegram.ui.ChatActivity
-import org.telegram.ui.Components.AlertsCreator
+import org.telegram.ui.Components.ChatActivityEnterView
+import org.telegram.ui.Components.ChatAttachAlert
 import org.telegram.ui.Components.ItemOptions
 import org.telegram.ui.DialogsActivity
 import org.telegram.ui.Gifts.GiftSheet
 import org.telegram.ui.LaunchActivity
-import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
-import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
-import uz.unnarsx.cherrygram.donates.DonatesManager
-import uz.unnarsx.cherrygram.misc.Constants
-import kotlin.math.abs
-import androidx.core.content.edit
-import org.telegram.messenger.AccountInstance
-import org.telegram.ui.ActionBar.ActionBarMenu
-import org.telegram.ui.ActionBar.ActionBarMenuSubItem
-import org.telegram.ui.ActionBar.Theme
-import org.telegram.ui.CallLogActivity
-import org.telegram.ui.Components.ChatActivityEnterView
-import org.telegram.ui.Components.ChatAttachAlert
 import org.telegram.ui.ProxyListActivity
+import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager
+import uz.unnarsx.cherrygram.donates.DonatesManager
+import uz.unnarsx.cherrygram.helpers.QRCodeSheet
+import uz.unnarsx.cherrygram.misc.Constants
+import kotlin.math.abs
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
@@ -295,14 +292,14 @@ object CGChatMenuInjector {
         }
     }
 
-    fun injectScanQR(io: ItemOptions, fragment: BaseFragment) {
+    fun injectScanQR(io: ItemOptions, fragment: BaseFragment?) {
         io.add(
             R.drawable.msg_qrcode,
             getString(R.string.AuthAnotherClient)
         ) {
-            val activity = fragment.parentActivity
+            val activity = fragment?.parentActivity
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && activity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && activity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 activity.requestPermissions(
                     arrayOf(Manifest.permission.CAMERA),
                     ActionIntroActivity.CAMERA_PERMISSION_REQUEST_CODE
@@ -311,7 +308,7 @@ object CGChatMenuInjector {
             }
 
             if (activity is LaunchActivity) {
-                openCameraScanActivity(fragment, activity.actionBarLayout)
+                openCameraScanActivity(fragment)
 
                 if (AndroidUtilities.isTablet() && activity.actionBarLayout != null && activity.rightActionBarLayout != null) {
                     activity.actionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST)
@@ -348,42 +345,15 @@ object CGChatMenuInjector {
         }
     }
 
-    private fun openCameraScanActivity(fragment: BaseFragment, actionBarLayout: INavigationLayout) {
-        CameraScanActivity.showAsSheet(fragment, false, CameraScanActivity.TYPE_QR_LOGIN, object : CameraScanActivity.CameraScanActivityDelegate {
-            override fun processQr(link: String, onLoadEnd: Runnable): Boolean {
+    private fun openCameraScanActivity(fragment: BaseFragment) {
+        CameraScanActivity.showAsSheet(fragment, false, CameraScanActivity.TYPE_QR_UNIVERSAL, object : CameraScanActivity.CameraScanActivityDelegate {
+            override fun processQr(text: String, action: Runnable): Boolean {
                 AndroidUtilities.runOnUIThread({
-                    try {
-                        val code = link.removePrefix("tg://login?token=")
-                            .replace("/", "_")
-                            .replace("+", "-")
-
-                        val token = Base64.decode(code, Base64.URL_SAFE)
-
-                        val req = TLRPC.TL_auth_acceptLoginToken().apply {
-                            this.token = token
-                        }
-
-                        ConnectionsManager.getInstance(UserConfig.selectedAccount)
-                            .sendRequest(req) { _, _ ->
-                                AndroidUtilities.runOnUIThread(onLoadEnd)
-                            }
-                    } catch (e: Exception) {
-                        FileLog.e("Failed to pass qr code auth", e)
-
-                        val fragmentStack = actionBarLayout.fragmentStack
-                        if (fragmentStack.isNotEmpty()) {
-                            val fragment = fragmentStack[0]
-                            AndroidUtilities.runOnUIThread {
-                                AlertsCreator.showSimpleAlert(
-                                    fragment,
-                                    getString(R.string.AuthAnotherClient),
-                                    getString(R.string.ErrorOccurred)
-                                )
-                            }
-                        }
-                        onLoadEnd.run()
-                    }
-                }, 750)
+                    action.run()
+                    AndroidUtilities.runOnUIThread({
+                        QRCodeSheet(fragment, text).show()
+                    }, 150L)
+                }, 600L)
                 return true
             }
         })

@@ -6771,6 +6771,7 @@ public class ChatActivity extends BaseFragment implements
 
             @Override
             public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
+                if (chatListView == null) return 0;
                 if (!CherrygramChatsConfig.INSTANCE.getDisableSwipeToNext() && dy < 0 && pullingDownOffset != 0) {
                     pullingDownOffset += dy;
                     if (pullingDownOffset < 0) {
@@ -11144,7 +11145,9 @@ public class ChatActivity extends BaseFragment implements
                 dismiss(true);
                 replyingMessageObject = null;
                 replyingQuote = null;
-                messagePreviewParams.updateReply(null, null, dialog_id, null);
+                if (messagePreviewParams != null) {
+                    messagePreviewParams.updateReply(null, null, dialog_id, null);
+                }
                 fallbackFieldPanel();
             }
 
@@ -19120,7 +19123,8 @@ public class ChatActivity extends BaseFragment implements
 
     private void addToSelectedMessages(MessageObject messageObject, boolean outside, boolean last) {
         int prevCantForwardCount = cantForwardMessagesCount;
-        if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.action == null) {
+        if (messageObject == null || messageObject.messageOwner == null) return;
+        if (messageObject.messageOwner.action == null || messageObject.messageOwner.action.call_id != 0) {
             if (threadMessageObjects != null && threadMessageObjects.contains(messageObject) && !isThreadChat()) {
                 return;
             }
@@ -32096,12 +32100,10 @@ public class ChatActivity extends BaseFragment implements
             int additionalPaddingForCompact = MessageMenuCompactView.allowCompactStyle() ? dp(20) : 0;
             int totalHeight = contentView.getHeight() - additionalPaddingForCompact;
             int height = scrimPopupContainerLayout.getMeasuredHeight() + AndroidUtilities.dp(48);
-            if (!getMessageMenuHelper().allowNewMessageMenu(message)) {
-                int keyboardHeight = contentView.measureKeyboardHeight();
-                if (keyboardHeight > AndroidUtilities.dp(20)) {
-                    totalHeight += keyboardHeight;
-                }
-            }
+            /*int keyboardHeight = contentView.measureKeyboardHeight();
+            if (keyboardHeight > AndroidUtilities.dp(20)) {
+                totalHeight += keyboardHeight;
+            }*/
             int popupY;
             int minY = (int) (chatListView.getY() + dp(24));
             int maxY = totalHeight - height - dp(8);
@@ -39867,12 +39869,10 @@ public class ChatActivity extends BaseFragment implements
 
             int totalHeight = contentView.getHeight();
             int height = scrimPopupContainerLayout.getMeasuredHeight();
-            if (!getMessageMenuHelper().allowNewMessageMenu()) {
-                int keyboardHeight = contentView.measureKeyboardHeight();
-                if (keyboardHeight > dp(20)) {
-                    totalHeight += keyboardHeight;
-                }
-            }
+            /*int keyboardHeight = contentView.measureKeyboardHeight();
+            if (keyboardHeight > dp(20)) {
+                totalHeight += keyboardHeight;
+            }*/
 
             int popupX = (int) (left + dp(4));
             popupX = Math.max(dp(6), Math.min(chatListView.getMeasuredWidth() - dp(6) - scrimPopupContainerLayout.getMeasuredWidth(), popupX));
@@ -44792,12 +44792,10 @@ public class ChatActivity extends BaseFragment implements
 
             int totalHeight = contentView.getHeight();
             int height = scrimPopupContainerLayout.getMeasuredHeight();
-            if (!getMessageMenuHelper().allowNewMessageMenu()) {
-                int keyboardHeight = contentView.measureKeyboardHeight();
-                if (keyboardHeight > AndroidUtilities.dp(20)) {
-                    totalHeight += keyboardHeight;
-                }
-            }
+            /*int keyboardHeight = contentView.measureKeyboardHeight();
+            if (keyboardHeight > AndroidUtilities.dp(20)) {
+                totalHeight += keyboardHeight;
+            }*/
 
             int popupX = (int) (left - AndroidUtilities.dp(28));
             popupX = Math.max(AndroidUtilities.dp(6), Math.min(chatListView.getMeasuredWidth() - AndroidUtilities.dp(6) - scrimPopupContainerLayout.getMeasuredWidth(), popupX));
@@ -45117,6 +45115,8 @@ public class ChatActivity extends BaseFragment implements
         } else {
             deleteIconRes = R.drawable.msg_delete;
         }
+
+        CGMessageMenuInjector.INSTANCE.injectOpenInExternal(noforwardsOrPaidMedia, message, items, options, icons);
 
         if (type == -1) {
             if ((selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.isAnimatedEmoji() || selectedObject.isAnimatedEmojiStickers() || getMessageCaption(selectedObject, selectedObjectGroup) != null) && !noforwardsOrPaidMedia && !message.isExpiredStory()) {

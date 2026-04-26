@@ -9980,7 +9980,7 @@ public class MessageObject {
         if (emojiAnimatedSticker != null) {
             return emojiAnimatedSticker;
         }
-        if (hasVideoQualities() && highestQuality != null) {
+        if (hasVideoQualities() && highestQuality != null && highestQuality.document != null) {
             return highestQuality.document;
         }
         return getDocument(messageOwner);

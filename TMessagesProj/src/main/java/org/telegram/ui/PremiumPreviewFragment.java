@@ -2641,7 +2641,7 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
 
     /** Cherrygram start */
     private SpannableStringBuilder getPremiumTextCG() {
-        SpannableStringBuilder text = AndroidUtilities.replaceTags(getString(R.string.CG_Stats_TOS), AndroidUtilities.FLAG_TAG_BOLD);
+        SpannableStringBuilder text = AndroidUtilities.replaceTags(getString(R.string.CG_Stars_TOS), AndroidUtilities.FLAG_TAG_BOLD);
 
         Object[] spans = text.getSpans(0, text.length(), TypefaceSpan.class);
         if (spans != null && spans.length >= 2) {

@@ -131,6 +131,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.helpers.SleepHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
@@ -2089,7 +2090,12 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             final View titleTextView = actionBar.getTitleTextView();
             final View backButton = actionBar.getBackButton();
 
-            titleTextView.setTranslationX(dp(-52) * (1.0f - value));
+            if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
+                titleTextView.setTranslationX(0);
+            } else {
+                titleTextView.setTranslationX(dp(-52) * (1.0f - value));
+            }
+
             backButton.setTranslationX(dp(-52) * (1.0f - value));
             if (searchItem != null && searchItem.getSearchContainer() != null) {
                 searchItem.getSearchContainer().setClipChildren(false);
