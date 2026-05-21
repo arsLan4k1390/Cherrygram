@@ -147,13 +147,6 @@ public class CaptionPhotoViewer extends CaptionContainerView {
         });
     }
 
-//    private final AnimatedFloat aboveAnimated = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
-//
-//    @Override
-//    protected float forceRound() {
-//        return aboveAnimated.set(isAtTop());
-//    }
-
     private final AnimatedFloat moveButtonAnimated = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private final AnimatedFloat moveButtonExpandedAnimated = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private boolean moveButtonVisible;
@@ -224,9 +217,6 @@ public class CaptionPhotoViewer extends CaptionContainerView {
                 AndroidUtilities.rectTmp2.inset(-dp(5), -dp(5));
                 backgroundForCaptionButton.setBounds(AndroidUtilities.rectTmp2);
                 backgroundForCaptionButton.draw(canvas);
-
-                // backgroundPaint.setAlpha(lerp(0, 0x40, moveButtonAlpha));
-                // canvas.drawRoundRect(moveButtonBounds, r, r, backgroundPaint);
             }
             moveButtonIcon.setBounds((int) (moveButtonBounds.left + dp(9)), (int) (moveButtonBounds.centerY() - dp(10)), (int) (moveButtonBounds.left + dp(9 + 20)), (int) (moveButtonBounds.centerY() + dp(10)));
             moveButtonIcon.draw(canvas);

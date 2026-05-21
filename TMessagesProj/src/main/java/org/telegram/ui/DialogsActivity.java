@@ -57,6 +57,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.Property;
 import android.util.StateSet;
@@ -185,6 +186,7 @@ import org.telegram.ui.Components.FragmentFloatingButton;
 import org.telegram.ui.Components.FragmentSearchField;
 import org.telegram.ui.Components.ImageUpdater;
 import org.telegram.ui.Components.PermissionRequest;
+import org.telegram.ui.Components.ShareAlert;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.blur3.Blur3HashImpl;
 import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
@@ -2761,6 +2763,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
 
+    private NotificationCenter.ObserversGroup observersGroup;
+    private NotificationCenter.ObserversGroup globalObserversGroup;
+
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
@@ -2814,63 +2819,67 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             SharedConfig.loadProxyList();
         }
 
+        observersGroup = getNotificationCenter().createObserversGroup(this);
+        globalObserversGroup = NotificationCenter.getGlobalInstance().createObserversGroup(this);
+
         if (searchString == null) {
             currentConnectionState = getConnectionsManager().getConnectionState();
 
-            getNotificationCenter().addObserver(this, NotificationCenter.dialogsNeedReload);
-            NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
+            globalObserversGroup.add(NotificationCenter.emojiLoaded);
             if (!onlySelect) {
-                NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.closeSearchByActiveAction);
-                NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.proxySettingsChanged);
-                getNotificationCenter().addObserver(this, NotificationCenter.filterSettingsUpdated);
-                getNotificationCenter().addObserver(this, NotificationCenter.dialogFiltersUpdated);
-                getNotificationCenter().addObserver(this, NotificationCenter.dialogsUnreadCounterChanged);
+                globalObserversGroup.add(NotificationCenter.closeSearchByActiveAction);
+                globalObserversGroup.add(NotificationCenter.proxySettingsChanged);
+                observersGroup.add(NotificationCenter.filterSettingsUpdated);
+                observersGroup.add(NotificationCenter.dialogsUnreadCounterChanged);
             }
-            getNotificationCenter().addObserver(this, NotificationCenter.updateInterfaces);
-            getNotificationCenter().addObserver(this, NotificationCenter.encryptedChatUpdated);
-            getNotificationCenter().addObserver(this, NotificationCenter.contactsDidLoad);
-            getNotificationCenter().addObserver(this, NotificationCenter.appDidLogout);
-            getNotificationCenter().addObserver(this, NotificationCenter.openedChatChanged);
-            getNotificationCenter().addObserver(this, NotificationCenter.notificationsSettingsUpdated);
-            getNotificationCenter().addObserver(this, NotificationCenter.messageReceivedByAck);
-            getNotificationCenter().addObserver(this, NotificationCenter.messageReceivedByServer);
-            getNotificationCenter().addObserver(this, NotificationCenter.messageSendError);
-            getNotificationCenter().addObserver(this, NotificationCenter.needReloadRecentDialogsSearch);
-            getNotificationCenter().addObserver(this, NotificationCenter.replyMessagesDidLoad);
-            getNotificationCenter().addObserver(this, NotificationCenter.topicsDidLoaded);
-            getNotificationCenter().addObserver(this, NotificationCenter.reloadHints);
-            getNotificationCenter().addObserver(this, NotificationCenter.didUpdateConnectionState);
-            getNotificationCenter().addObserver(this, NotificationCenter.onDownloadingFilesChanged);
-            getNotificationCenter().addObserver(this, NotificationCenter.needDeleteDialog);
-            getNotificationCenter().addObserver(this, NotificationCenter.folderBecomeEmpty);
-            getNotificationCenter().addObserver(this, NotificationCenter.newSuggestionsAvailable);
-            getNotificationCenter().addObserver(this, NotificationCenter.dialogsUnreadReactionsCounterChanged);
-            getNotificationCenter().addObserver(this, NotificationCenter.dialogsUnreadPollVotesCounterChanged);
-            getNotificationCenter().addObserver(this, NotificationCenter.forceImportContactsStart);
-            getNotificationCenter().addObserver(this, NotificationCenter.userEmojiStatusUpdated);
-            getNotificationCenter().addObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
+            observersGroup
+                .add(NotificationCenter.dialogsNeedReload)
+                .add(NotificationCenter.dialogFiltersUpdated)
+                .add(NotificationCenter.updateInterfaces)
+                .add(NotificationCenter.encryptedChatUpdated)
+                .add(NotificationCenter.contactsDidLoad)
+                .add(NotificationCenter.appDidLogout)
+                .add(NotificationCenter.openedChatChanged)
+                .add(NotificationCenter.notificationsSettingsUpdated)
+                .add(NotificationCenter.messageReceivedByAck)
+                .add(NotificationCenter.messageReceivedByServer)
+                .add(NotificationCenter.messageSendError)
+                .add(NotificationCenter.needReloadRecentDialogsSearch)
+                .add(NotificationCenter.replyMessagesDidLoad)
+                .add(NotificationCenter.topicsDidLoaded)
+                .add(NotificationCenter.reloadHints)
+                .add(NotificationCenter.didUpdateConnectionState)
+                .add(NotificationCenter.onDownloadingFilesChanged)
+                .add(NotificationCenter.needDeleteDialog)
+                .add(NotificationCenter.folderBecomeEmpty)
+                .add(NotificationCenter.newSuggestionsAvailable)
+                .add(NotificationCenter.dialogsUnreadReactionsCounterChanged)
+                .add(NotificationCenter.dialogsUnreadPollVotesCounterChanged)
+                .add(NotificationCenter.forceImportContactsStart)
+                .add(NotificationCenter.userEmojiStatusUpdated)
+                .add(NotificationCenter.currentUserPremiumStatusChanged);
 
-            NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.didSetPasscode);
+            globalObserversGroup.add(NotificationCenter.didSetPasscode);
         }
-        getNotificationCenter().addObserver(this, NotificationCenter.messagesDeleted);
-
-        getNotificationCenter().addObserver(this, NotificationCenter.onDatabaseMigration);
-        getNotificationCenter().addObserver(this, NotificationCenter.onDatabaseOpened);
-        getNotificationCenter().addObserver(this, NotificationCenter.didClearDatabase);
-        getNotificationCenter().addObserver(this, NotificationCenter.onDatabaseReset);
-        getNotificationCenter().addObserver(this, NotificationCenter.storiesUpdated);
-        getNotificationCenter().addObserver(this, NotificationCenter.storiesEnabledUpdate);
-        getNotificationCenter().addObserver(this, NotificationCenter.unconfirmedAuthUpdate);
-        getNotificationCenter().addObserver(this, NotificationCenter.premiumPromoUpdated);
+        observersGroup
+            .add(NotificationCenter.messagesDeleted)
+            .add(NotificationCenter.onDatabaseMigration)
+            .add(NotificationCenter.onDatabaseOpened)
+            .add(NotificationCenter.didClearDatabase)
+            .add(NotificationCenter.onDatabaseReset)
+            .add(NotificationCenter.storiesUpdated)
+            .add(NotificationCenter.storiesEnabledUpdate)
+            .add(NotificationCenter.unconfirmedAuthUpdate)
+            .add(NotificationCenter.premiumPromoUpdated)
+            .add(NotificationCenter.starBalanceUpdated)
+            .add(NotificationCenter.starSubscriptionsLoaded)
+            .add(NotificationCenter.appConfigUpdated)
+            .add(NotificationCenter.activeAuctionsUpdated);
 
         if (initialDialogsType == DIALOGS_TYPE_DEFAULT) {
-            getNotificationCenter().addObserver(this, NotificationCenter.chatlistFolderUpdate);
-            getNotificationCenter().addObserver(this, NotificationCenter.dialogTranslate);
+            observersGroup.add(NotificationCenter.chatlistFolderUpdate);
+            observersGroup.add(NotificationCenter.dialogTranslate);
         }
-        getNotificationCenter().addObserver(this, NotificationCenter.starBalanceUpdated);
-        getNotificationCenter().addObserver(this, NotificationCenter.starSubscriptionsLoaded);
-        getNotificationCenter().addObserver(this, NotificationCenter.appConfigUpdated);
-        getNotificationCenter().addObserver(this, NotificationCenter.activeAuctionsUpdated);
 
         loadDialogs(getAccountInstance());
         getMessagesController().getStoriesController().loadAllStories();
@@ -2987,61 +2996,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        if (searchString == null) {
-            getNotificationCenter().removeObserver(this, NotificationCenter.dialogsNeedReload);
-            NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
-            if (!onlySelect) {
-                NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.closeSearchByActiveAction);
-                NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.proxySettingsChanged);
-                getNotificationCenter().removeObserver(this, NotificationCenter.filterSettingsUpdated);
-                getNotificationCenter().removeObserver(this, NotificationCenter.dialogFiltersUpdated);
-                getNotificationCenter().removeObserver(this, NotificationCenter.dialogsUnreadCounterChanged);
-            }
-            getNotificationCenter().removeObserver(this, NotificationCenter.updateInterfaces);
-            getNotificationCenter().removeObserver(this, NotificationCenter.encryptedChatUpdated);
-            getNotificationCenter().removeObserver(this, NotificationCenter.contactsDidLoad);
-            getNotificationCenter().removeObserver(this, NotificationCenter.appDidLogout);
-            getNotificationCenter().removeObserver(this, NotificationCenter.openedChatChanged);
-            getNotificationCenter().removeObserver(this, NotificationCenter.notificationsSettingsUpdated);
-            getNotificationCenter().removeObserver(this, NotificationCenter.messageReceivedByAck);
-            getNotificationCenter().removeObserver(this, NotificationCenter.messageReceivedByServer);
-            getNotificationCenter().removeObserver(this, NotificationCenter.messageSendError);
-            getNotificationCenter().removeObserver(this, NotificationCenter.needReloadRecentDialogsSearch);
-            getNotificationCenter().removeObserver(this, NotificationCenter.replyMessagesDidLoad);
-            getNotificationCenter().removeObserver(this, NotificationCenter.topicsDidLoaded);
-            getNotificationCenter().removeObserver(this, NotificationCenter.reloadHints);
-            getNotificationCenter().removeObserver(this, NotificationCenter.didUpdateConnectionState);
-            getNotificationCenter().removeObserver(this, NotificationCenter.onDownloadingFilesChanged);
-            getNotificationCenter().removeObserver(this, NotificationCenter.needDeleteDialog);
-            getNotificationCenter().removeObserver(this, NotificationCenter.folderBecomeEmpty);
-            getNotificationCenter().removeObserver(this, NotificationCenter.newSuggestionsAvailable);
-            getNotificationCenter().removeObserver(this, NotificationCenter.dialogsUnreadReactionsCounterChanged);
-            getNotificationCenter().removeObserver(this, NotificationCenter.dialogsUnreadPollVotesCounterChanged);
-            getNotificationCenter().removeObserver(this, NotificationCenter.forceImportContactsStart);
-            getNotificationCenter().removeObserver(this, NotificationCenter.userEmojiStatusUpdated);
-            getNotificationCenter().removeObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
-
-            NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.didSetPasscode);
+        if (observersGroup != null) {
+            observersGroup.removeAllObservers();
+            observersGroup = null;
         }
-        getNotificationCenter().removeObserver(this, NotificationCenter.messagesDeleted);
-
-        getNotificationCenter().removeObserver(this, NotificationCenter.onDatabaseMigration);
-        getNotificationCenter().removeObserver(this, NotificationCenter.onDatabaseOpened);
-        getNotificationCenter().removeObserver(this, NotificationCenter.didClearDatabase);
-        getNotificationCenter().removeObserver(this, NotificationCenter.onDatabaseReset);
-        getNotificationCenter().removeObserver(this, NotificationCenter.storiesUpdated);
-        getNotificationCenter().removeObserver(this, NotificationCenter.storiesEnabledUpdate);
-        getNotificationCenter().removeObserver(this, NotificationCenter.unconfirmedAuthUpdate);
-        getNotificationCenter().removeObserver(this, NotificationCenter.premiumPromoUpdated);
-
-        if (initialDialogsType == DIALOGS_TYPE_DEFAULT) {
-            getNotificationCenter().removeObserver(this, NotificationCenter.chatlistFolderUpdate);
-            getNotificationCenter().removeObserver(this, NotificationCenter.dialogTranslate);
+        if (globalObserversGroup != null) {
+            globalObserversGroup.removeAllObservers();
+            globalObserversGroup = null;
         }
-        getNotificationCenter().removeObserver(this, NotificationCenter.starBalanceUpdated);
-        getNotificationCenter().removeObserver(this, NotificationCenter.starSubscriptionsLoaded);
-        getNotificationCenter().removeObserver(this, NotificationCenter.appConfigUpdated);
-        getNotificationCenter().removeObserver(this, NotificationCenter.activeAuctionsUpdated);
 
         if (commentView != null) {
             commentView.onDestroy();
@@ -3239,7 +3201,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         fragmentSearchField = new FragmentSearchField(context, resourceProvider) {
             @Override
             public boolean dispatchTouchEvent(MotionEvent ev) {
-                if (ev.getAction() == MotionEvent.ACTION_DOWN && getAlpha() < 1) {
+                if (ev.getAction() == MotionEvent.ACTION_DOWN && getAlpha() < 0.25f) {
                     return false;
                 }
                 return super.dispatchTouchEvent(ev);
@@ -3398,6 +3360,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         if (initialDialogsType == DIALOGS_TYPE_DEFAULT) {
             optionsItem = menu.addItem(4, R.drawable.ic_ab_other);
+            optionsItem.setContentDescription(LocaleController.getString(R.string.AccDescrMoreOptions));
             optionsItem.setOnClickListener(v -> {
                 getContactsController().loadGlobalPrivacySetting();
                 showItemOptions();
@@ -3801,7 +3764,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             avatarDrawable.setInfo(currentAccount, user);
             imageView.getImageReceiver().setCurrentAccount(currentAccount);
             Drawable thumb = user != null && user.photo != null && user.photo.strippedBitmap != null ? user.photo.strippedBitmap : avatarDrawable;
-            imageView.setImage(ImageLocation.getForUserOrChat(user, ImageLocation.TYPE_SMALL), "50_50", ImageLocation.getForUserOrChat(user, ImageLocation.TYPE_STRIPPED), "50_50", thumb, user);
+            imageView.setImage(ImageLocation.getForUserOrChat(currentAccount, user, ImageLocation.TYPE_SMALL), "50_50", ImageLocation.getForUserOrChat(user, ImageLocation.TYPE_STRIPPED), "50_50", thumb, user);
 
             for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
                 TLRPC.User u = AccountInstance.getInstance(a).getUserConfig().getCurrentUser();
@@ -4136,24 +4099,25 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         }
                     }
                     int measuredDy = dy;
-                    if (dy > 0 && storiesOverscroll != 0) {
+                    if (dy > 0 && storiesOverscroll != 0 && !(actionBar != null && actionBar.isActionModeShowed())) {
                         float newOverscroll = storiesOverscroll - dy;
                         if (newOverscroll < 0) {
                             measuredDy = (int) -newOverscroll;
                             newOverscroll = 0;
                         } else {
-                           measuredDy = 0;
+                            measuredDy = 0;
                         }
                         setStoriesOvercroll(viewPage, newOverscroll);
                         return super.scrollVerticallyBy(measuredDy, recycler, state);
                     }
+                    final boolean hasStories = DialogsActivity.this.hasStories && !(actionBar != null && actionBar.isActionModeShowed());
                     int pTop = viewPage.listView.getPaddingTop();
                     int realTopPadding = pTop;
                     if (hasStories && !rightSlidingDialogContainer.hasFragment() && !fixScrollYAfterArchiveOpened) {
                         pTop -= dp(DialogStoriesCell.HEIGHT_IN_DP);
                     }
-                    boolean hasHidenArchive = !fixScrollYAfterArchiveOpened && viewPage.dialogsType == DIALOGS_TYPE_DEFAULT && !onlySelect && folderId == 0 && getMessagesController().hasHiddenArchive() && viewPage.archivePullViewState == ARCHIVE_ITEM_STATE_HIDDEN;
-                    if ((hasHidenArchive || (hasStories && !rightSlidingDialogContainer.hasFragment())) && dy < 0) {
+                    boolean hasHiddenArchive = !fixScrollYAfterArchiveOpened && viewPage.dialogsType == DIALOGS_TYPE_DEFAULT && !onlySelect && folderId == 0 && getMessagesController().hasHiddenArchive() && viewPage.archivePullViewState == ARCHIVE_ITEM_STATE_HIDDEN;
+                    if ((hasHiddenArchive || (hasStories && !rightSlidingDialogContainer.hasFragment())) && dy < 0) {
                         viewPage.listView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                         int currentPosition = viewPage.layoutManager.findFirstVisibleItemPosition();
                         if (currentPosition == 0) {
@@ -4166,17 +4130,17 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             View view = viewPage.layoutManager.findViewByPosition(currentPosition);
                             if (view != null && currentPosition < 10) {
                                 int viewsH = 0;
-                                for (int i = hasHidenArchive ? 1 : 0; i < currentPosition; i++) {
+                                for (int i = hasHiddenArchive ? 1 : 0; i < currentPosition; i++) {
                                     viewsH += viewPage.dialogsAdapter.getItemHeight(i);
                                 }
                                 int canScrollDy = -(view.getTop() - pTop) + viewsH;
-                                if (!rightSlidingDialogContainer.hasFragment()) {
+                                if (!rightSlidingDialogContainer.hasFragment() && !(actionBar != null && actionBar.isActionModeShowed())) {
                                     canScrollDy -= dp(SEARCH_FIELD_HEIGHT);
                                 }
                                 if (hasStories && (viewPage.scroller.isRunning() || dialogStoriesCell.isExpanded()) && !rightSlidingDialogContainer.hasFragment() && !fixScrollYAfterArchiveOpened) {
                                     canScrollDy += dp(DialogStoriesCell.HEIGHT_IN_DP);
                                 }
-                                if ((viewPage.scroller.isRunning() || dialogStoriesCell.isExpanded()) && !rightSlidingDialogContainer.hasFragment() && !fixScrollYAfterArchiveOpened) {
+                                if ((viewPage.scroller.isRunning() || dialogStoriesCell.isExpanded()) && !rightSlidingDialogContainer.hasFragment() && !fixScrollYAfterArchiveOpened && !(actionBar != null && actionBar.isActionModeShowed())) {
                                     canScrollDy += dp(SEARCH_FIELD_HEIGHT);
                                 }
                                 int positiveDy = Math.abs(dy);
@@ -4184,7 +4148,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                     measuredDy = -canScrollDy;
                                 }
                             }
-                        } else if (currentPosition == 0 && hasHidenArchive) {
+                        } else if (currentPosition == 0 && hasHiddenArchive) {
                             View v = viewPage.layoutManager.findViewByPosition(currentPosition);
                             float k = 1f + ((v.getTop() - realTopPadding) / (float) v.getMeasuredHeight());
                             if (k > 1f) {
@@ -4198,7 +4162,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             if (undoView[0] != null && undoView[0].getVisibility() == View.VISIBLE) {
                                 undoView[0].hide(true, 1);
                             }
-                        } else if (((currentPosition == 1 && hasHidenArchive) || currentPosition == 0) && hasStories && isDragging && !rightSlidingDialogContainer.hasFragment()) {
+                        } else if (((currentPosition == 1 && hasHiddenArchive) || currentPosition == 0) && hasStories && isDragging && !rightSlidingDialogContainer.hasFragment()) {
                             if (scrollYOffset == 0) {
                                 viewPage.listView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
                             } else {
@@ -4695,6 +4659,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         searchTabsAndFiltersLayout.addView(filtersView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP));
 
         floatingButtonStories = new FragmentFloatingButton(context, resourceProvider, true);
+        floatingButtonStories.setContentDescription(getString(R.string.StoryPrivacyButtonPost));
         floatingButtonStories.setImageResource(R.drawable.outline_fab_story_24);
         floatingButtonStories.setOnClickListener(v -> openStoriesRecorder());
         contentView.addView(floatingButtonStories, FragmentFloatingButton.createSubButtonLayoutParams());
@@ -5102,10 +5067,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 filterOptions = ItemOptions.makeOptions(DialogsActivity.this, view)
                     .setViewAdditionalOffsets(0, dp(8), 0, 0)
                     .setScrimViewBackground(Theme.createRoundRectDrawable(
-                        dp(6),
-                        canShowFilterTabsView ? dp(6) : 0,
+                        dp(12), dp(12),
                         getThemedColor(Theme.key_windowBackgroundWhite)
-                    ));
+                    ))
+                    .translate(0, dp(8));
                 if (UserObject.isService(dialogId)) {
                     BotWebViewVibrationEffect.APP_ERROR.vibrate();
                     return;
@@ -5745,11 +5710,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private void clearCacheHintVisible() {
         MessagesController.getGlobalMainSettings().edit().remove("cache_hint_showafter").remove("cache_hint_period").apply();
     }
-
-//    @Override
-//    public ActionBar getActionBar() {
-//        return rightSlidingDialogContainer != null && rightSlidingDialogContainer.currentActionBarView != null && rightSlidingDialogContainer.isOpenned ? rightSlidingDialogContainer.currentActionBarView : super.getActionBar();
-//    }
 
     public void showSelectStatusDialog() {
         if (selectAnimatedEmojiDialog != null || SharedConfig.appLocked || (hasStories && !dialogStoriesCell.isExpanded())) {
@@ -6743,7 +6703,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             filterOptions.dismiss();
             filterOptions = null;
         }
-        ArrayList<MessagesController.DialogFilter> filters = getMessagesController().getDialogFilters();
+        final ArrayList<MessagesController.DialogFilter> filters = getMessagesController().getDialogFilters();
         if (filters.size() > 1) {
             if (force || filterTabsView.getVisibility() != View.VISIBLE) {
                 boolean animatedUpdateItems = animated;
@@ -6986,10 +6946,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (getParentActivity() == null) {
                 return;
             }
-            if (MessagesController.getGlobalNotificationsSettings().getBoolean("askedAboutMiuiLockscreen", false)) {
-                return;
-            }
-            showDialog(new AlertDialog.Builder(getParentActivity())
+            if (!MessagesController.getGlobalNotificationsSettings().getBoolean("askedAboutMiuiLockscreen", false)) {
+                showDialog(new AlertDialog.Builder(getParentActivity())
                     .setTopAnimation(R.raw.permission_request_apk, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, getThemedColor(Theme.key_dialogTopBackground))
                     .setMessage(getString(R.string.PermissionXiaomiLockscreen))
                     .setPositiveButton(getString(R.string.PermissionOpenSettings), (dialog, which) -> {
@@ -7010,29 +6968,29 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     })
                     .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), (dialog, which) -> MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askedAboutMiuiLockscreen", true).commit())
                     .create());
+            }
         } else if (folderId == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && !notificationManager.canUseFullScreenIntent()) {
             if (getParentActivity() == null) {
                 return;
             }
-            if (MessagesController.getGlobalNotificationsSettings().getBoolean("askedAboutFSILockscreen", false)) {
-                return;
-            }
-            showDialog(new AlertDialog.Builder(getParentActivity())
-                .setTopAnimation(R.raw.permission_request_apk, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, getThemedColor(Theme.key_dialogTopBackground))
-                .setMessage(getString(R.string.PermissionFSILockscreen))
-                .setPositiveButton(getString(R.string.PermissionOpenSettings), (dialog, which) -> {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT);
-                    intent.setData(Uri.parse("package:" + ApplicationLoader.applicationContext.getPackageName()));
-                    if (intent != null) {
-                        try {
-                            getParentActivity().startActivity(intent);
-                        } catch (Exception x) {
-                            FileLog.e(x);
+            if (!MessagesController.getGlobalNotificationsSettings().getBoolean("askedAboutFSILockscreen", false)) {
+                showDialog(new AlertDialog.Builder(getParentActivity())
+                    .setTopAnimation(R.raw.permission_request_apk, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, getThemedColor(Theme.key_dialogTopBackground))
+                    .setMessage(getString(R.string.PermissionFSILockscreen))
+                    .setPositiveButton(getString(R.string.PermissionOpenSettings), (dialog, which) -> {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT);
+                        intent.setData(Uri.parse("package:" + ApplicationLoader.applicationContext.getPackageName()));
+                        if (intent != null) {
+                            try {
+                                getParentActivity().startActivity(intent);
+                            } catch (Exception x) {
+                                FileLog.e(x);
+                            }
                         }
-                    }
-                })
-                .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), (dialog, which) -> MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askedAboutFSILockscreen", true).commit())
-                .create());
+                    })
+                    .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), (dialog, which) -> MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askedAboutFSILockscreen", true).commit())
+                    .create());
+            }
         }
         showFiltersHint();
         if (viewPages != null) {
@@ -7878,7 +7836,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (!validateSlowModeDialog(dialogId)) {
                 return;
             }
-            if (!getMessagesController().isForum(dialogId) && (!selectedDialogs.isEmpty() || (initialDialogsType == DIALOGS_TYPE_FORWARD && selectAlertString != null))) {
+            if ((!getMessagesController().isForum(dialogId) || isBotForumWithEmptyTopics(dialogId)) && (!selectedDialogs.isEmpty() || (initialDialogsType == DIALOGS_TYPE_FORWARD && selectAlertString != null))) {
                 if (!selectedDialogs.contains(dialogId) && !checkCanWrite(dialogId)) {
                     return;
                 }
@@ -7889,7 +7847,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
                 updateSelectedCount();
             } else {
-                if (canSelectTopics && (getMessagesController().isForum(dialogId) || getMessagesController().isMonoForumWithManageRights(dialogId))) {
+                if (canSelectTopics && (getMessagesController().isForum(dialogId) && !isBotForumWithEmptyTopics(dialogId) || getMessagesController().isMonoForumWithManageRights(dialogId))) {
                     Bundle bundle = new Bundle();
                     bundle.putLong("chat_id", -dialogId);
                     bundle.putBoolean("for_select", true);
@@ -8051,6 +8009,22 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             }
         }
+    }
+
+    private boolean isBotForumWithEmptyTopics(long dialogId) {
+        if (dialogId < 0) {
+            return false;
+        }
+        final TLRPC.User user = getMessagesController().getUser(dialogId);
+        if (!UserObject.isBotForum(user)) {
+            return false;
+        }
+
+        final ArrayList<TLRPC.TL_forumTopic> topics = MessagesController.getInstance(currentAccount)
+                .getTopicsController().getTopics(-user.id);
+
+        return (topics == null || topics.isEmpty())
+            && MessagesController.getInstance(currentAccount).getTopicsController().endIsReached(-user.id);
     }
 
     public static ChatActivity highlightFoundQuote(ChatActivity chatActivity, MessageObject message) {
@@ -10006,7 +9980,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         boolean proxyEnabled = preferences.getBoolean("proxy_enabled", false);
         final boolean connected = currentConnectionState == ConnectionsManager.ConnectionStateConnected || currentConnectionState == ConnectionsManager.ConnectionStateUpdating;
-        proxyMenuSubItem.setSubtext(getString(connected ? R.string.MenuProxyConnected : R.string.MenuProxyConnecting));
+        proxyMenuSubItem.setSubtext(getString(proxyEnabled ? (connected ? R.string.MenuProxyConnected : R.string.MenuProxyConnecting) : R.string.MenuProxyDisabled));
         proxyDrawable.setConnected(proxyEnabled, connected, animated);
     }
 
@@ -12909,7 +12883,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                         src.renameTo(destFile);
                                         final String oldKey = avatar.volume_id + "_" + avatar.local_id + "@50_50";
                                         final String newKey = small.location.volume_id + "_" + small.location.local_id + "@50_50";
-                                        ImageLoader.getInstance().replaceImageInCache(oldKey, newKey, ImageLocation.getForUserOrChat(user, ImageLocation.TYPE_SMALL), false);
+                                        ImageLoader.getInstance().replaceImageInCache(oldKey, newKey, ImageLocation.getForUserOrChat(currentAccount, user, ImageLocation.TYPE_SMALL), false);
                                     }
 
                                     if (videoSize != null && videoPath != null) {

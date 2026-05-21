@@ -11,27 +11,17 @@ package org.telegram.ui.Cells;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
-import android.graphics.RecordingCanvas;
-import android.graphics.RenderNode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
-import android.os.Build;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
 
 public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLayout.IViewWithInvalidateCallback {
@@ -53,11 +43,9 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
             if (checkingForLongPress && getParent() != null && currentPressCount == pressCount) {
                 checkingForLongPress = false;
                 if (onLongPress()) {
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                        } catch (Exception ignore) {}
-                    }
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                    } catch (Exception ignore) {}
                     MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 0, 0);
                     onTouchEvent(event);
                     event.recycle();
@@ -75,7 +63,7 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
         super(context);
         setWillNotDraw(false);
         setFocusable(true);
-        setHapticFeedbackEnabled(!CherrygramChatsConfig.INSTANCE.getDisableVibration());
+        setHapticFeedbackEnabled(true);
     }
 
     public static void setDrawableBounds(Drawable drawable, int x, int y) {
@@ -159,76 +147,9 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
         super.invalidate();
     }
 
-    private boolean cachingTop, cachingBottom;
-    private RenderNode renderNode;
-    public void setCaching(boolean top, boolean caching) {
-        if (top) {
-            this.cachingTop = SharedConfig.useNewBlur && caching;
-        } else {
-            this.cachingBottom = SharedConfig.useNewBlur && caching;
-        }
-    }
-
-    private boolean forceNotCacheNextFrame;
-    public void forceNotCacheNextFrame() {
-        forceNotCacheNextFrame = true;
-    }
-
-    protected boolean updatedContent;
-    public void drawCached(Canvas canvas) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && renderNode != null && renderNode.hasDisplayList() && canvas.isHardwareAccelerated() && !updatedContent) {
-            canvas.drawRenderNode(renderNode);
-        } else {
-            draw(canvas);
-        }
-    }
-
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        final boolean cache = (cachingTop || cachingBottom || SharedConfig.useNewBlur) && allowCaching();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && cache != (renderNode != null)) {
-            if (cache) {
-                renderNode = new RenderNode("basecell");
-                renderNode.setClipToBounds(false);
-                updatedContent = true;
-            } else {
-                renderNode = null;
-            }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && renderNode != null && !forceNotCacheNextFrame && canvas.isHardwareAccelerated() && isAttachedToWindow()) {
-            renderNode.setPosition(0, 0, getWidth(), getHeight());
-            RecordingCanvas recordingCanvas = renderNode.beginRecording();
-            try {
-                super.draw(recordingCanvas);
-            } finally {
-                renderNode.endRecording();
-            }
-            canvas.drawRenderNode(renderNode);
-        } else {
-            super.draw(canvas);
-        }
-        forceNotCacheNextFrame = false;
-        updatedContent = false;
-    }
-
-    protected boolean allowCaching() {
-        return true;
-    }
-
     public static class RippleDrawableSafe extends RippleDrawable {
         public RippleDrawableSafe(@NonNull ColorStateList color, @Nullable Drawable content, @Nullable Drawable mask) {
             super(color, content, mask);
-        }
-
-        @Override
-        public boolean setState(@NonNull int[] stateSet) {
-            if (getCallback() instanceof BaseCell cell) {
-                if (!cell.isAttachedToWindow()) {
-                    return false;
-                }
-                cell.forceNotCacheNextFrame();
-            }
-            return super.setState(stateSet);
         }
 
         @Override
@@ -243,43 +164,4 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
             }
         }
     }
-
-    /** Cherrygram start */
-    private void applyRippleIfNeeded() { // Huawei tablets crash, tnx to ChatGPT for help || java.lang.IllegalStateException: Cannot start this animator on a detached view!
-        Drawable background = getBackground();
-        if (!(background instanceof RippleDrawableSafe)) {
-            ShapeDrawable shape = new ShapeDrawable(new RectShape());
-            shape.getPaint().setColor(0x00000000);
-
-            final RippleDrawableSafe ripple = new RippleDrawableSafe(
-                    ColorStateList.valueOf(0x22000000),
-                    shape,
-                    null
-            );
-            ripple.setCallback(this);
-
-            if (isAttachedToWindow()) {
-                setBackground(ripple);
-            } else {
-                addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
-                    @Override
-                    public void onViewAttachedToWindow(View v) {
-                        setBackground(ripple);
-                        removeOnAttachStateChangeListener(this);
-                    }
-
-                    @Override
-                    public void onViewDetachedFromWindow(View v) {}
-                });
-            }
-        }
-    }
-
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (AndroidUtilities.isTablet()) applyRippleIfNeeded();
-    }
-    /** Cherrygram finish */
-
 }

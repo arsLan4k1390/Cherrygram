@@ -9,7 +9,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Editable;
@@ -30,6 +29,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -47,35 +47,27 @@ import java.util.ArrayList;
 import me.vkryl.android.AnimatorUtils;
 import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 
 @SuppressLint("ViewConstructor")
 public class FragmentSearchField extends FrameLayout implements FactorAnimator.Target, Theme.Colorable {
     private static final int ANIMATOR_ID_CLOSE_BUTTON_VISIBLE = 0;
     private static final int ANIMATOR_ID_SEARCH_ICON_VISIBLE = 1;
     private static final int ANIMATOR_ID_SEARCH_FILTERS_WIDTH = 2;
-    private static final int ANIMATOR_ID_MENU_BUTTON_VISIBLE = 3;
 
     private final BoolAnimator animatorCloseIconVisible = new BoolAnimator(ANIMATOR_ID_CLOSE_BUTTON_VISIBLE, this, CubicBezierInterpolator.EASE_OUT_QUINT, 380, false);
     private final BoolAnimator animatorSearchIconVisible = new BoolAnimator(ANIMATOR_ID_SEARCH_ICON_VISIBLE, this, CubicBezierInterpolator.EASE_OUT_QUINT, 380, true);
     private final FactorAnimator animatorSearchFiltersWidth = new FactorAnimator(ANIMATOR_ID_SEARCH_FILTERS_WIDTH, this, AnimatorUtils.DECELERATE_INTERPOLATOR, 280);
-    private final BoolAnimator animatorMenuIconVisible = new BoolAnimator(ANIMATOR_ID_MENU_BUTTON_VISIBLE, this, CubicBezierInterpolator.EASE_OUT_QUINT, 380, false);
 
     private final Theme.ResourcesProvider resourcesProvider;
 
     private final ImageView searchIcon;
     private final ImageView closeIcon;
-    private final ImageView menuIconImageView;
     private final LinearLayout additionalIconsLayout;
     private boolean closeButtonForcedVisible;
     public final EditTextBoldCursor editText;
     private BlurredBackgroundDrawable blurredBackgroundDrawable;
 
     public FragmentSearchField(Context context, Theme.ResourcesProvider resourcesProvider) {
-        this(context, false, null, resourcesProvider);
-    }
-
-    public FragmentSearchField(Context context, boolean showMenu, ShareAlert shareAlert, Theme.ResourcesProvider resourcesProvider) {
         super(context);
         this.resourcesProvider = resourcesProvider;
 
@@ -104,27 +96,20 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
         };
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         editText.setCursorWidth(1.5f);
-//        editText.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        editText.setInputType(editText.getInputType() | InputType.TYPE_TEXT_VARIATION_FILTER);
         editText.setSingleLine(true);
         editText.setBackground(null);
         editText.setVerticalScrollBarEnabled(false);
         editText.setHorizontalScrollBarEnabled(false);
         editText.setPadding(dp(48), 0, dp(48), 0);
         editText.setClipToPadding(true);
-        editText.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        editText.setImeOptions(EditorInfo.IME_ACTION_SEARCH | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         editText.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
                 if (!currentSearchFilters.isEmpty()) {
@@ -134,7 +119,6 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
                     }
                 }
                 checkCloseButtonVisible();
-                checkMenuButtonVisible(showMenu);
             }
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
@@ -173,16 +157,6 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
             }
         });
         addView(closeIcon, LayoutHelper.createFrame(24, 24, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT), 12, 0, 12, 0));
-
-        menuIconImageView = new ImageView(context);
-        menuIconImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector), 1));
-        menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
-        menuIconImageView.setImageResource(R.drawable.ic_ab_other);
-        menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon), PorterDuff.Mode.MULTIPLY));
-        menuIconImageView.setOnClickListener((v) -> ChatsHelper2.INSTANCE.showForwardMenu(shareAlert, menuIconImageView));
-        menuIconImageView.setVisibility(GONE);
-        addView(menuIconImageView, LayoutHelper.createFrame(24, 24, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT), 12, 0, 12, 0));
-        checkMenuButtonVisible(showMenu);
 
         searchFilterLayout = new LinearLayout(getContext()) {
             @Override
@@ -295,8 +269,6 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
         searchIcon.setColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteBlackText, 0.6f), PorterDuff.Mode.MULTIPLY);
         closeIcon.setColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteBlackText, 0.6f), PorterDuff.Mode.MULTIPLY);
         closeIcon.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector), 1, dp(17)));
-        menuIconImageView.setColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteBlackText, 0.6f), PorterDuff.Mode.MULTIPLY);
-        menuIconImageView.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector), 1, dp(17)));
         editText.setHintTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText, 0.5f));
         editText.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
         editText.setCursorColor(getThemedColor(Theme.key_groupcreate_cursor));
@@ -341,15 +313,10 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
     public void setCloseButtonVisible(boolean visible) {
         closeButtonForcedVisible = visible;
         checkCloseButtonVisible();
-        checkMenuButtonVisible(false);
     }
 
     private void checkCloseButtonVisible() {
         animatorCloseIconVisible.setValue(closeButtonForcedVisible || editText.length() > 0, true);
-    }
-
-    private void checkMenuButtonVisible(boolean showMenuIcon) {
-        animatorMenuIconVisible.setValue(showMenuIcon && editText.length() <= 0, true);
     }
 
     @Override
@@ -361,8 +328,6 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
             FragmentFloatingButton.setAnimatedVisibility(searchIcon, factor);
         } else if (id == ANIMATOR_ID_SEARCH_FILTERS_WIDTH) {
             checkUi_editTextPaddings();
-        } else if (id == ANIMATOR_ID_MENU_BUTTON_VISIBLE) {
-            FragmentFloatingButton.setAnimatedVisibility(menuIconImageView, factor);
         }
     }
 

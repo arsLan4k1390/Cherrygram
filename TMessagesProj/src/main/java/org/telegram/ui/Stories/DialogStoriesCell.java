@@ -13,10 +13,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
@@ -30,6 +34,8 @@ import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -49,6 +55,7 @@ import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.Emoji;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
@@ -94,7 +101,6 @@ import java.util.Objects;
 import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 import me.vkryl.android.animator.ReplaceAnimator;
-import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 
 @SuppressLint("ViewConstructor")
 public class DialogStoriesCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, FactorAnimator.Target {
@@ -319,17 +325,21 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         titleView = new AnimatedTextView(getContext(), true, true, false);
         titleView.setGravity(Gravity.LEFT);
         titleView.setTextColor(getTextLogoColor());
-        titleView.setEllipsizeByGradient(true);
-        titleView.setTypeface(FontHelper.createTypeface2(FontHelper.TYPEFACE_GILROY_EXTRABOLD)); // AndroidUtilities.bold()
+        titleView.setTypeface(AndroidUtilities.bold());
         titleView.setPadding(0, dp(8), 0, dp(8));
         titleView.setTextSize(dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20));
+        titleView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        titleView.setFocusableInTouchMode(true);
         addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
         telegramLogoView = new ImageView(context);
+        telegramLogoView.setContentDescription(getString(R.string.AppName));
         telegramLogoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         telegramLogoView.setImageResource(R.drawable.telegram_logo_2);
         telegramLogoView.setColorFilter(getTextLogoColor(), PorterDuff.Mode.MULTIPLY);
-        addView(telegramLogoView, LayoutHelper.createFrame(110, 25));
+        telegramLogoView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+        telegramLogoView.setFocusableInTouchMode(true);
+        addView(telegramLogoView, LayoutHelper.createFrame(90, 22));
 
         statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
         statusDrawable.center = true;
@@ -907,6 +917,17 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         }
 
         float progress = Math.min(collapsedProgress, collapsedProgress2);
+
+        final float clipRightPadding = actionBar.menu.getVisibleItemsMeasuredWidthWithAlpha() * progress - dp(6);
+        final boolean needSaveLayer = progress != 0 && clipRightPadding > 0;
+        if (needSaveLayer) {
+            final float clipWidth = getWidth() - clipRightPadding;
+            final float layerWidth = getWidth(); // - clipRightPadding;
+            canvas.saveLayer(0, 0, layerWidth, getHeight(), null);
+            canvas.save();
+            canvas.clipRect(0, 0, clipWidth, getHeight());
+        }
+
         if (progress != 0) {
             final float translationOffset = subtitleOverlayContainer.getTotalVisibility() * -dp(10);
 
@@ -941,8 +962,30 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 canvas.restore();
             }
         }
+
+        if (needSaveLayer) {
+            final float w = AndroidUtilities.dp(16);
+            if (ellipsizeGradient == null) {
+                ellipsizeGradient = new LinearGradient(0, 0, w, 0, new int[] {0x00ff0000, 0xffff0000}, new float[] {0, 1}, Shader.TileMode.CLAMP);
+                ellipsizeGradientMatrix = new Matrix();
+                ellipsizePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                ellipsizePaint.setShader(ellipsizeGradient);
+                ellipsizePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+            }
+            ellipsizeGradientMatrix.reset();
+            ellipsizeGradientMatrix.postTranslate(getWidth() - clipRightPadding - w, 0);
+            ellipsizeGradient.setLocalMatrix(ellipsizeGradientMatrix);
+            canvas.drawRect(getWidth() - clipRightPadding - w, 0, getWidth() - clipRightPadding + AndroidUtilities.dp(1), getHeight(), ellipsizePaint);
+            canvas.restore();
+            canvas.restore();
+        }
+
         canvas.restore();
     }
+
+    private LinearGradient ellipsizeGradient;
+    private Matrix ellipsizeGradientMatrix;
+    private Paint ellipsizePaint;
 
     @Override
     protected void onAttachedToWindow() {
@@ -1242,15 +1285,15 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 overlayTextId = textId;
                 String title = LocaleController.getString(titleOverlayText, textId);
                 CharSequence textToSet = title;
-                if (!TextUtils.isEmpty(title)) {
-                    int index = TextUtils.indexOf(textToSet, "...");
-                    if (index >= 0) {
-                        SpannableString spannableString = SpannableString.valueOf(textToSet);
-                        ellipsizeSpanAnimator.wrap(spannableString, index);
-                        hasEllipsizedText = true;
-                        textToSet = spannableString;
-                    }
-                }
+//                if (!TextUtils.isEmpty(title)) {
+//                    int index = TextUtils.indexOf(textToSet, "...");
+//                    if (index >= 0) {
+//                        SpannableString spannableString = SpannableString.valueOf(textToSet);
+//                        ellipsizeSpanAnimator.wrap(spannableString, index);
+//                        hasEllipsizedText = true;
+//                        textToSet = spannableString;
+//                    }
+//                }
                 titleView.setText(textToSet, !LocaleController.isRTL);
             }
         } else {
@@ -2186,30 +2229,4 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             subtitleOverlayContainer.setVisibility(progress > 0 ? VISIBLE : GONE);
         }
     }
-
-    /** Cherrygram start */
-    public void setTitleOverlayText(CharSequence titleOverlayText, boolean showEmojiStatus) {
-        if (titleOverlayText != null) {
-            hasOverlayText = true;
-
-            titleView.setText(titleOverlayText, !LocaleController.isRTL);
-            ellipsizeSpanAnimator.addView(titleView);
-            ellipsizeSpanAnimator.addView(telegramLogoView);
-
-            if (emojiStatusView != null) {
-                emojiStatusView.setAlpha(showEmojiStatus && collapsed ? 1f : 0f);
-                emojiStatusView.setVisibility(showEmojiStatus && collapsed ? VISIBLE : GONE);
-            }
-        } else {
-            hasOverlayText = false;
-            overlayTextId = 0;
-
-            titleView.setText(currentTitle, !LocaleController.isRTL);
-            ellipsizeSpanAnimator.removeView(titleView);
-        }
-
-        animatorHasTitleText.setValue(hasOverlayText, true);
-    }
-    /** Cherrygram finish */
-
 }

@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
@@ -1613,7 +1614,7 @@ public class ItemOptions {
         while (v != finalContainer) {
             y += v.getY();
             x += v.getX();
-            if (v instanceof ScrollView) {
+            if (v instanceof ScrollView || v instanceof HorizontalScrollView) {
                 x -= v.getScrollX();
                 y -= v.getScrollY();
             }

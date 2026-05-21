@@ -2589,6 +2589,9 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                     if (currentPlayerScope != null) {
                         currentPlayerScope.invalidate();
                     }
+                    if (surfaceView != null) {
+                        surfaceView.setVisibility(View.INVISIBLE);
+                    }
                     release();
                     try {
                         AndroidUtilities.runOnUIThread(() -> {
@@ -2617,10 +2620,8 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                 }
             });
-            openCloseAnimator.setDuration(400);
+            openCloseAnimator.setDuration(320);
             openCloseAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
-//            openCloseAnimator.setDuration(2000);
-//            openCloseAnimator.setInterpolator(CubicBezierInterpolator.DEFAULT);
             openCloseAnimator.start();
         }, 16);
     }

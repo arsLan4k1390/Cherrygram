@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
@@ -50,6 +52,7 @@ import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CubicBezierInterpolator;
+import org.telegram.ui.Components.HintsController;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
@@ -245,7 +248,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     public View createView(Context context) {
         super.createView(context);
 
-        tabsView = new MainTabsLayout(context);
+        tabsView = new MainTabsLayout(context, resourceProvider);
         tabsView.setClipChildren(false);
         tabsView.setPadding(dp(DialogsActivity.MAIN_TABS_MARGIN + 4), dp(DialogsActivity.MAIN_TABS_MARGIN + 4), dp(DialogsActivity.MAIN_TABS_MARGIN + 4), dp(DialogsActivity.MAIN_TABS_MARGIN + 4));
 
@@ -259,6 +262,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             openAccountSelector(v);
             return true;
         });
+
+        tabsView.addTabToIgnoreClick(tabs[INDEX_PROFILE]);
 
         for (int index = 0; index < tabs.length; index++) {
             final GlassTabView view = tabs[index];
@@ -416,9 +421,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         o.setScrimViewBackground(bg);
         o.show();
 
-        MessagesController.getGlobalMainSettings().edit()
-            .putInt("accountswitchhint", 3)
-            .apply();
+        HintsController.Hint.AccountSwitchHint.doNotShowAgain();
     }
 
     public LinearLayout accountView(int account, boolean selected) {
@@ -713,8 +716,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                 updateLayout.updateFileProgress(args);
             }
         } else if (id == NotificationCenter.appUpdateAvailable) {
-            if (updateLayout != null) {
-                updateLayout.updateAppUpdateViews(currentAccount, LaunchActivity.getMainFragmentsStackSize() == 1);
+            if (updateLayout != null && LaunchActivity.instance != null) {
+                updateLayout.updateAppUpdateViews(currentAccount, LaunchActivity.instance.getMainFragmentsStackSize() == 1);
             }
         } else if (id == NotificationCenter.needSetDayNightTheme) {
             clearAllHiddenFragments();
@@ -737,37 +740,40 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         }
     }
 
+    private NotificationCenter.ObserversGroup observersGroup;
+    private NotificationCenter.ObserversGroup globalObserversGroup;
+
+
     @Override
     public boolean onFragmentCreate() {
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileLoadProgressChanged);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileLoadFailed);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.notificationsCountUpdated);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.updateInterfaces);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.callTabsVisibleToggled);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.mainUserInfoChanged);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.contactsPermissionBadgeCheck);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.appUpdateAvailable);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.appUpdateLoading);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.needSetDayNightTheme);
+        observersGroup = NotificationCenter.getInstance(currentAccount).createObserversGroup(this)
+            .add(NotificationCenter.fileLoaded)
+            .add(NotificationCenter.fileLoadProgressChanged)
+            .add(NotificationCenter.fileLoadFailed)
+            .add(NotificationCenter.notificationsCountUpdated)
+            .add(NotificationCenter.updateInterfaces)
+            .add(NotificationCenter.callTabsVisibleToggled)
+            .add(NotificationCenter.mainUserInfoChanged)
+            .add(NotificationCenter.contactsPermissionBadgeCheck);
+
+        globalObserversGroup = NotificationCenter.getGlobalInstance().createObserversGroup(this)
+            .add(NotificationCenter.appUpdateAvailable)
+            .add(NotificationCenter.appUpdateLoading)
+            .add(NotificationCenter.needSetDayNightTheme);
 
         return super.onFragmentCreate();
     }
 
     @Override
     public void onFragmentDestroy() {
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileLoaded);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileLoadProgressChanged);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileLoadFailed);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.notificationsCountUpdated);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.updateInterfaces);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.callTabsVisibleToggled);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.mainUserInfoChanged);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.contactsPermissionBadgeCheck);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.appUpdateAvailable);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.appUpdateLoading);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.needSetDayNightTheme);
-
+        if (observersGroup != null) {
+            observersGroup.removeAllObservers();
+            observersGroup = null;
+        }
+        if (globalObserversGroup != null) {
+            globalObserversGroup.removeAllObservers();
+            globalObserversGroup = null;
+        }
         super.onFragmentDestroy();
     }
 
@@ -804,8 +810,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         final float scale = lerp(0.85f, 1f, factor);
 
         tabsViewWrapper.setTranslationY(lerp(hiddenY, normalY, factor));
-        tabsView.setScaleX(scale);
-        tabsView.setScaleY(scale);
+        //tabsView.setScaleX(scale);
+        //tabsView.setScaleY(scale);
         tabsView.setClickable(factor > 1);
         tabsView.setEnabled(factor > 1);
         tabsView.setAlpha(factor);
@@ -886,7 +892,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     private void showAccountChangeHint() {
         if (accountSwitchHintShown) return;
 
-        if (accountSwitchHint == null && MessagesController.getGlobalMainSettings().getInt("accountswitchhint", 0) < 2) {
+        if (accountSwitchHint == null && HintsController.Hint.AccountSwitchHint.show()) {
             AndroidUtilities.runOnUIThread(() -> {
                 if (getContext() == null || tabs == null) return;
 
@@ -904,12 +910,9 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                 accountSwitchHint.setOnHiddenListener(() -> AndroidUtilities.removeFromParent(accountSwitchHint));
                 accountSwitchHint.setDuration(8000);
                 accountSwitchHint.show();
-            }, 1500);
 
-            MessagesController.getGlobalMainSettings().edit()
-                .putInt("accountswitchhint", MessagesController.getGlobalMainSettings()
-                .getInt("channelgifthint", 0) + 1)
-                .apply();
+                HintsController.Hint.AccountSwitchHint.increment();
+            }, 1500);
         }
 
         accountSwitchHintShown = true;

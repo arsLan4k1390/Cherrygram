@@ -5156,13 +5156,13 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         infoView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
         linearLayout.addView(infoView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 14, 3, 14, 24));
 
-        ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider);
+        ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider).setRound();
         button.setText(getString(stars > 0 ? R.string.PaidContentUpdateButton : R.string.PaidContentButton), false);
         linearLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
 
         final ButtonWithCounterView clearButton;
         if (stars > 0 && allowClear) {
-            clearButton = new ButtonWithCounterView(context, false, resourcesProvider);
+            clearButton = new ButtonWithCounterView(context, false, resourcesProvider).setRound();
             clearButton.setText(getString(R.string.PaidContentClearButton), false, false);
             linearLayout.addView(clearButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 0, 4, 0, 0));
         } else {

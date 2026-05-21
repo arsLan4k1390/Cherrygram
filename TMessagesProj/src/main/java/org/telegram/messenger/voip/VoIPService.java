@@ -165,8 +165,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-
 @SuppressLint("NewApi")
 public class VoIPService extends Service implements SensorEventListener, AudioManager.OnAudioFocusChangeListener, VoIPController.ConnectionStateListener, NotificationCenter.NotificationCenterDelegate, VoIPServiceState {
 
@@ -3392,7 +3390,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 					hashes.remove(oldest);
 				}
 			}
-			nprefs.edit().putStringSet("calls_access_hashes", hashes).apply();
+			nprefs.edit().putStringSet("calls_access_hashes", hashes).commit();
 
 			boolean sysAecAvailable = false, sysNsAvailable = false;
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -4002,8 +4000,8 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			builder.setSmallIcon(isMicMute() ? R.drawable.voicechat_muted : R.drawable.voicechat_active);
 		} else {
 			builder.setContentTitle(LocaleController.getString(R.string.VoipOutgoingCall));
-			builder.setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon());
-			builder.setOngoing(true);
+			builder.setSmallIcon(R.drawable.call);
+            builder.setOngoing(true);
 		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			Intent endIntent = new Intent(this, VoIPActionsReceiver.class);
@@ -4544,7 +4542,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			if (error == null) {
 				String data = ((TLRPC.TL_dataJSON) response).data;
 				Instance.setGlobalServerConfig(data);
-				preferences.edit().putString("voip_server_config", data).apply();
+				preferences.edit().putString("voip_server_config", data).commit();
 			}
 		});
 	}
@@ -4578,24 +4576,23 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 	}
 
 	public static String convertStreamToString(InputStream is) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        String line;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-        }
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			sb.append(line).append("\n");
+		}
+		reader.close();
 		return sb.toString();
 	}
 
-    public static String getStringFromFile(String filePath) throws Exception {
-        File fl = new File(filePath);
-        String ret;
-        try (FileInputStream fin = new FileInputStream(fl)) {
-            ret = convertStreamToString(fin);
-        }
-        return ret;
-    }
+	public static String getStringFromFile(String filePath) throws Exception {
+		File fl = new File(filePath);
+		FileInputStream fin = new FileInputStream(fl);
+		String ret = convertStreamToString(fin);
+		fin.close();
+		return ret;
+	}
 
 	public boolean hasRate() {
 		return needRateCall || forceRating;
@@ -4707,7 +4704,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 				if (groupCall != null) {
 					bldr.setSmallIcon(isMicMute() ? R.drawable.voicechat_muted : R.drawable.voicechat_active);
 				} else {
-					bldr.setSmallIcon(R.drawable.ic_call);
+					bldr.setSmallIcon(R.drawable.call);
 				}
 				foregroundStarted = true;
 				if (Build.VERSION.SDK_INT >= 33) {
@@ -4720,7 +4717,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 				Notification.Builder bldr = new Notification.Builder(this, NotificationsController.OTHER_NOTIFICATIONS_CHANNEL)
 						.setContentTitle(LocaleController.getString(R.string.VoipCallEnded))
 						.setShowWhen(false);
-				bldr.setSmallIcon(R.drawable.ic_call);
+				bldr.setSmallIcon(R.drawable.call);
 				foregroundStarted = true;
 				if (Build.VERSION.SDK_INT >= 33) {
 					startForeground(foregroundId = ID_ONGOING_CALL_NOTIFICATION, foregroundNotification = bldr.build(), lastForegroundType = getCurrentForegroundType());
@@ -5181,7 +5178,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 
 		Notification.Builder builder = new Notification.Builder(this)
 				.setContentTitle(video ? LocaleController.getString(R.string.VoipInVideoCallBranding) : LocaleController.getString(R.string.VoipInCallBranding))
-				.setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon())
+				.setSmallIcon(R.drawable.call)
 				.setContentIntent(PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			SharedPreferences nprefs = MessagesController.getGlobalNotificationsSettings();
@@ -5204,7 +5201,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 					}
 					nm.deleteNotificationChannel("incoming_calls4" + chanIndex);
 					chanIndex++;
-					nprefs.edit().putInt("calls_notification_channel", chanIndex).apply();
+					nprefs.edit().putInt("calls_notification_channel", chanIndex).commit();
 				} else {
 					needCreate = false;
 				}
@@ -5288,7 +5285,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			incomingNotification = builder.build();
 		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
 			builder.addAction(R.drawable.ic_call_end_white_24dp, endTitle, endPendingIntent);
-			builder.addAction(R.drawable.ic_call, answerTitle, answerPendingIntent);
+			builder.addAction(R.drawable.call, answerTitle, answerPendingIntent);
 			builder.setContentText(name);
 
 			RemoteViews customView = new RemoteViews(getPackageName(), LocaleController.isRTL ? R.layout.call_notification_rtl : R.layout.call_notification);
@@ -5313,7 +5310,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 		} else {
 			builder.setContentText(name);
 			builder.addAction(R.drawable.ic_call_end_white_24dp, endTitle, endPendingIntent);
-			builder.addAction(R.drawable.ic_call, answerTitle, answerPendingIntent);
+			builder.addAction(R.drawable.call, answerTitle, answerPendingIntent);
 			incomingNotification = builder.getNotification();
 		}
 		foregroundStarted = true;

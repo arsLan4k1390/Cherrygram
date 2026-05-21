@@ -42,6 +42,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.DownloadController;
 import org.telegram.messenger.FileLoader;
@@ -58,6 +59,7 @@ import org.telegram.messenger.SecretChatHelper;
 import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.utils.DebugRecordingCanvas;
+import org.telegram.messenger.utils.LeakDetector;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.ui.ArticleViewer;
 import org.telegram.ui.Components.BulletinFactory;
@@ -215,12 +217,15 @@ public abstract class BaseFragment {
     }
 
     public BaseFragment() {
-        classGuid = ConnectionsManager.generateClassGuid();
+        this(null);
     }
 
     public BaseFragment(Bundle args) {
         arguments = args;
         classGuid = ConnectionsManager.generateClassGuid();
+        if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+            LeakDetector.getInstance().add(this);
+        }
     }
 
     public void setCurrentAccount(int account) {

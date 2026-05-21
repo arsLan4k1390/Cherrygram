@@ -2304,6 +2304,8 @@ public class MessagePreviewView extends FrameLayout {
             textDrawable.setText(state1 ? text1 : text2, animated && !LocaleController.isRTL);
             iconDrawable.setState(state1, animated);
             first = false;
+
+            setContentDescription(textDrawable.getText());
         }
 
         public boolean getState() {

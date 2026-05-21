@@ -424,6 +424,9 @@ public class CaptionContainerView extends FrameLayout {
 
     public void setDialogId(long dialogId) {
         this.dialogId = dialogId;
+        if (mentionContainer != null) {
+            mentionContainer.setDialogId(dialogId);
+        }
     }
 
     public int additionalRightMargin() {
@@ -531,7 +534,7 @@ public class CaptionContainerView extends FrameLayout {
 
 
     private void createMentionsContainer() {
-        mentionContainer = new MentionsContainerView(getContext(), UserConfig.getInstance(currentAccount).getClientUserId(), 0, LaunchActivity.getLastFragment(), new DarkThemeResourceProvider()) {
+        mentionContainer = new MentionsContainerView(getContext(), dialogId, 0, LaunchActivity.getLastFragment(), new DarkThemeResourceProvider()) {
             @Override
             public void drawRoundRect(Canvas canvas, Rect rectTmp, float radius) {
                 rectF.set(rectTmp);
@@ -576,7 +579,7 @@ public class CaptionContainerView extends FrameLayout {
         mentionContainer.getAdapter().setAllowStickers(false);
         mentionContainer.getAdapter().setAllowBots(false);
         mentionContainer.getAdapter().setAllowChats(false);
-        mentionContainer.getAdapter().setSearchInDailogs(true);
+        mentionContainer.getAdapter().setSearchInDialogs(this instanceof CaptionStory);
     }
 
     private void replaceWithText(int start, int len, CharSequence text, boolean parseEmoji) {

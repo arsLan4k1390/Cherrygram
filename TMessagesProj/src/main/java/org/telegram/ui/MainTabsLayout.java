@@ -3,19 +3,40 @@ package org.telegram.ui;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.lerp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.dynamicanimation.animation.FloatPropertyCompat;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
+
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedLinearLayout;
 import org.telegram.ui.Components.glass.GlassTabView;
 
-import me.vkryl.android.animator.ListAnimator;
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import java.util.HashSet;
+import java.util.Set;
 
+import me.vkryl.android.animator.ListAnimator;
+import me.vkryl.android.util.ClickHelper;
+
+@SuppressLint("ViewConstructor")
 public class MainTabsLayout extends AnimatedLinearLayout {
 
-    public MainTabsLayout(Context context) {
+    private final Theme.ResourcesProvider resourcesProvider;
+
+    public MainTabsLayout(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
+        this.resourcesProvider = resourcesProvider;
     }
 
     @Override
@@ -23,16 +44,11 @@ public class MainTabsLayout extends AnimatedLinearLayout {
         final int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
         final int tabHeight = height - getPaddingTop() - getPaddingBottom();
-        final int tabWidth = dp(CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle() ? 24 : 12);
 
         measureTabTexts();
 
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        int searchOffset = dp(DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS);
-        int absoluteMaxLimit = screenWidth - searchOffset - dp(DialogsActivity.MAIN_TABS_MARGIN * 2);
-
-        final int maxTotalWidthForTabs = Math.max(width, absoluteMaxLimit) - getPaddingLeft() - getPaddingRight();
-        final int minTotalWidthForTabs = Math.min(dp(320) / 2, maxTotalWidthForTabs);
+        final int maxTotalWidthForTabs = width - getPaddingLeft() - getPaddingRight();
+        final int minTotalWidthForTabs = Math.min(dp(320), maxTotalWidthForTabs);
         final int tabPadding = dp(16);
 
         final int minTabTextWidthIfEq = (minTotalWidthForTabs / visibleChildCount) - tabPadding * 2;
@@ -49,16 +65,14 @@ public class MainTabsLayout extends AnimatedLinearLayout {
                 continue;
             }
 
-            float baseTabWidth = tabWidth + dp(12) * 2;
-            final float w = Math.max(tabsTextWidth[a], baseTabWidth);
-
+            final float w = tabsTextWidth[a];
             if (w > maxTabTextWidthIfEq) {
-                tabsTextWidthWithMargin[a] = w + dp(13) * 2;
+                tabsTextWidthWithMargin[a] = tabsTextWidth[a] + dp(13) * 2;
             } else {
-                tabsTextWidthWithMargin[a] = w + dp(16) * 2;
+                tabsTextWidthWithMargin[a] = tabsTextWidth[a] + dp(16) * 2;
             }
+            tabsWeight[a] = tabsTextWidthWithMargin[a] > (maxTabTextWidthIfEq + dp(16) * 2) ? 0 : 1;
 
-            tabsWeight[a] = 1;
             totalWidth += tabsTextWidthWithMargin[a];
             totalWeight += tabsWeight[a];
         }
@@ -76,17 +90,7 @@ public class MainTabsLayout extends AnimatedLinearLayout {
                 tabsTextWidthWithMargin[a] *= m;
             }
         } else if (totalWidth < minTotalWidthForTabs) {
-
-            float targetWidth;
-
-            if (visibleChildCount == 1) {
-                targetWidth = totalWidth + tabWidth;
-                targetWidth = Math.min(targetWidth, maxTotalWidthForTabs * 0.5f);
-            } else {
-                targetWidth = minTotalWidthForTabs;
-            }
-
-            final float growW = targetWidth - totalWidth;
+            final float growW = minTotalWidthForTabs - totalWidth;
             final float growP = growW / totalWeight;
 
             //boolean needStage2 = false;
@@ -275,5 +279,463 @@ public class MainTabsLayout extends AnimatedLinearLayout {
             final float width = entry.getRectF().width();
             ((GlassTabView) entry.item.view).setVisualWidth(width);
         }
+    }
+
+
+
+
+
+
+
+
+    public void setTabSelected(View tab, boolean animated) {
+        for (int a = 0, N = getChildCount(); a < N; a++) {
+            final View child = getChildAt(a);
+            if (child instanceof GlassTabView) {
+                ((GlassTabView) child).setSelected(child == tab, animated);
+            }
+        }
+    }
+
+    private View findSelectedTab() {
+        for (int a = 0, N = getChildCount(); a < N; a++) {
+            final View child = getChildAt(a);
+            if (child.getVisibility() != View.VISIBLE) {
+                continue;
+            }
+
+            if (child instanceof GlassTabView) {
+                if (((GlassTabView) child).isTabSelected()) {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
+    private final Runnable restoreDrawSelector = () -> setSkipDrawSelector(false);
+
+    private boolean drawCustomSelector;
+    private void setSkipDrawSelector(boolean skipDrawSelector) {
+        drawCustomSelector = skipDrawSelector;
+        if (drawCustomSelector) {
+            selectorPaint.setColor(Theme.multAlpha(Theme.getColor(Theme.key_glass_tabSelected, resourcesProvider), 0.09f));
+        }
+        for (int a = 0, N = getChildCount(); a < N; a++) {
+            final View child = getChildAt(a);
+            if (child.getVisibility() != View.VISIBLE) {
+                continue;
+            }
+
+            if (child instanceof GlassTabView) {
+                ((GlassTabView) child).setSkipDrawSelector(skipDrawSelector);
+            }
+        }
+        invalidate();
+    }
+
+
+
+
+
+
+
+    @Override
+    protected void dispatchDraw(@NonNull Canvas canvas) {
+        if (drawCustomSelector) {
+            final float x = animatedLongSelectedViewCenterX + animatedLongSelectedViewOffsetX;
+            final float sWidth = getInterpolatedWidthByX(x, this);
+            final float sHeight = getHeight() - getPaddingTop() - getPaddingBottom();
+
+            canvas.drawRoundRect(
+                    x - sWidth / 2f, (getHeight() - sHeight) / 2f,
+                    x + sWidth / 2f, (getHeight() + sHeight) / 2f,
+                    sHeight / 2f, sHeight / 2f, selectorPaint);
+        }
+
+        super.dispatchDraw(canvas);
+    }
+
+
+    final Paint selectorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    final SpringAnimation scaleX = new SpringAnimation(this, DynamicAnimation.SCALE_X, 1f);
+    final SpringAnimation scaleY = new SpringAnimation(this, DynamicAnimation.SCALE_Y, 1f);
+
+    final SpringAnimation selectedTabPositionOffsetX = new SpringAnimation(this, new FloatPropertyCompat<MainTabsLayout>("selectedTabPositionOffsetX") {
+        @Override
+        public float getValue(MainTabsLayout object) {
+            return object.animatedLongSelectedViewOffsetX;
+        }
+
+        @Override
+        public void setValue(MainTabsLayout object, float value) {
+            object.animatedLongSelectedViewOffsetX = value;
+            object.invalidate();
+        }
+    });
+    final SpringAnimation selectedTabPositionX = new SpringAnimation(this, new FloatPropertyCompat<MainTabsLayout>("selectedTabPositionX") {
+        @Override
+        public float getValue(MainTabsLayout object) {
+            return object.animatedLongSelectedViewCenterX;
+        }
+
+        @Override
+        public void setValue(MainTabsLayout object, float value) {
+            object.animatedLongSelectedViewCenterX = value;
+            object.invalidate();
+        }
+    });
+
+    {
+        selectedTabPositionOffsetX.setSpring(new SpringForce(1)
+            .setStiffness(SpringForce.STIFFNESS_MEDIUM)
+            .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY));
+        scaleX.setSpring(new SpringForce(1f)
+            .setStiffness(250)
+            .setDampingRatio(0.25f));
+        scaleY.setSpring(new SpringForce(1f)
+            .setStiffness(250)
+            .setDampingRatio(0.25f));
+        selectedTabPositionX.setSpring(new SpringForce(1f)
+            .setStiffness(SpringForce.STIFFNESS_MEDIUM)
+            .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY));
+    }
+
+    private float animatedLongSelectedViewCenterX;
+    private float animatedLongSelectedViewOffsetX;
+
+    private boolean isInLongPress;
+    private float lastLongSelectedViewCenterX;
+    private float lastLongSelectedViewWidth;
+    private View lastLongSelectedView;
+
+
+
+
+    public static View findChildUnder(ViewGroup parent, float x, float y) {
+        for (int i = parent.getChildCount() - 1; i >= 0; i--) {
+            View child = parent.getChildAt(i);
+
+            if (child.getVisibility() != View.VISIBLE) continue;
+
+            if (x >= child.getLeft() && x <= child.getRight()
+                    && y >= child.getTop() && y <= child.getBottom()) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+    private void checkLongMove(float x_, float y, boolean start, boolean end) {
+        final float x = clampXToChildrenCenters(x_, this);
+        final View found = findNearestVisibleChildByX(x, this);
+        if (start) {
+            View selected = findSelectedTab();
+            if (selected != null) {
+                animatedLongSelectedViewCenterX = selected.getX() + selected.getWidth() / 2f;
+                animatedLongSelectedViewOffsetX = animatedLongSelectedViewCenterX - x;
+                selectedTabPositionOffsetX.animateToFinalPosition(0);
+                if (selected != found && found != null) {
+                    found.performClick();
+                }
+            }
+            selectedTabPositionX.cancel();
+        }
+
+        if (!end) {
+            animatedLongSelectedViewCenterX = x;
+            invalidate();
+        }
+
+        if (found != null) {
+            lastLongSelectedView = found;
+            setTabSelected(found, true);
+
+            if (end) {
+                final float vw = found.getWidth();
+                final float cx = found.getX() + vw / 2f;
+                if (lastLongSelectedViewWidth != vw || lastLongSelectedViewCenterX != cx) {
+                    selectedTabPositionX.animateToFinalPosition(cx);
+                }
+            }
+        }
+    }
+
+    private final Set<View> tabsWithIgnoreClick = new HashSet<>();
+    public void addTabToIgnoreClick(View v) {
+        tabsWithIgnoreClick.add(v);
+    }
+
+
+    private final ClickHelper clickHelper = new ClickHelper(new ClickHelper.Delegate() {
+        @Override
+        public boolean needClickAt(View view, float x, float y) {
+            lastLongSelectedView = null;
+            final View found = findChildUnder(MainTabsLayout.this, x, y);
+            return found != null && !tabsWithIgnoreClick.contains(found);
+        }
+
+        @Override
+        public void onClickAt(View view, float x, float y) {
+        }
+
+        @Override
+        public boolean needLongPress(float x, float y) {
+            return true;
+        }
+
+        @Override
+        public boolean needCancelTouchBySlopMove() {
+            return false;
+        }
+
+
+        @Override
+        public boolean onLongPressRequestedAt(View view, float x, float y) {
+            isInLongPress = true;
+            AndroidUtilities.cancelRunOnUIThread(restoreDrawSelector);
+            setSkipDrawSelector(true);
+            checkLongMove(x, y, true, false);
+            invalidate();
+            return true;
+        }
+
+        @Override
+        public void onLongPressMove(View view, MotionEvent e, float x, float y, float startX, float startY) {
+            checkLongMove(x, y, false, false);
+            invalidate();
+        }
+
+        @Override
+        public void onLongPressFinish(View view, float x, float y) {
+            checkLongMove(x, y, false, true);
+            isInLongPress = false;
+            AndroidUtilities.runOnUIThread(restoreDrawSelector, 450);
+            if (lastLongSelectedView != null) {
+                lastLongSelectedView.performClick();
+            }
+            lastLongSelectedView = null;
+            invalidate();
+        }
+
+        @Override
+        public void onLongPressCancelled(View view, float x, float y) {
+            checkLongMove(x, y, false, true);
+            isInLongPress = false;
+            AndroidUtilities.runOnUIThread(restoreDrawSelector, 450);
+            lastLongSelectedView = null;
+            invalidate();
+        }
+
+        @Override
+        public void onClickTouchDown(View view, float x, float y) {
+            checkPivot(view, x, y);
+            if (!scaleX.isRunning()) {
+                scaleX.setStartVelocity(-0.45f);
+                scaleY.setStartVelocity(-0.45f);
+            }
+            scaleX.animateToFinalPosition(1.012f);
+            scaleY.animateToFinalPosition(1.012f);
+        }
+
+        @Override
+        public void onClickTouchMove(View view, float x, float y) {
+            checkPivot(view, x, y);
+        }
+
+        @Override
+        public void onClickTouchUp(View view, float x, float y) {
+            checkPivot(view, x, y);
+            if (!scaleX.isRunning()) {
+                scaleX.setStartVelocity(0.25f);
+                scaleY.setStartVelocity(0.25f);
+            }
+            scaleX.animateToFinalPosition(1f);
+            scaleY.animateToFinalPosition(1f);
+        }
+    });
+
+    @Override
+    public void setScaleY(float scaleY) {
+        super.setScaleY(scaleY);
+        checkLayerType();
+    }
+
+    @Override
+    public void setScaleX(float scaleX) {
+        super.setScaleX(scaleX);
+        checkLayerType();
+    }
+
+    private void checkLayerType() {
+        final int layerType = Math.abs(getScaleX() - 1f) < 0.0001f && Math.abs(getScaleY() - 1f) < 0.0001f ?
+            View.LAYER_TYPE_NONE : View.LAYER_TYPE_HARDWARE;
+
+        if (getLayerType() != layerType) {
+            setLayerType(layerType, null);
+            invalidate();
+        }
+    }
+
+
+    private void checkPivot(View view, float x, float y) {
+        float w = view.getWidth();
+        float h = view.getHeight();
+
+        if (w <= 0f || h <= 0f) {
+            return;
+        }
+
+        float cx = w * 0.5f;
+        float cy = h * 0.5f;
+
+        float dx = x - cx;
+        float dy = y - cy;
+
+        float halfW = w * 0.5f;
+        float halfH = h * 0.5f;
+
+        float nx = dx / halfW;
+        float ny = dy / halfH;
+
+        float r = (float) Math.sqrt(nx * nx + ny * ny);
+
+        float pivotX;
+        float pivotY;
+
+        if (r > 1e-4f) {
+            float mappedR = 1.5f * r / (r + 0.5f);
+
+            float scale = mappedR / r;
+            pivotX = cx + dx * scale;
+            pivotY = cy + dy * scale;
+        } else {
+            pivotX = cx;
+            pivotY = cy;
+        }
+
+        pivotX = lerp(cx, pivotX, 0.95f);
+        pivotY = lerp(cy, pivotY, 2.83f);
+
+        view.setPivotX(pivotX);
+        view.setPivotY(pivotY);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        clickHelper.onTouchEvent(this, ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
+
+    private static float clampXToChildrenCenters(float x, ViewGroup parent) {
+        if (parent == null || parent.getChildCount() == 0) {
+            return x;
+        }
+
+        float min = Float.MAX_VALUE;
+        float max = -Float.MAX_VALUE;
+        boolean found = false;
+
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View view = parent.getChildAt(i);
+            if (view == null || view.getVisibility() != View.VISIBLE) {
+                continue;
+            }
+
+            float centerX = view.getX() + view.getWidth() * 0.5f;
+
+            if (centerX < min) min = centerX;
+            if (centerX > max) max = centerX;
+
+            found = true;
+        }
+
+        if (!found) {
+            return x;
+        }
+
+        if (x < min) return min;
+        if (x > max) return max;
+        return x;
+    }
+
+    @Nullable
+    private static View findNearestVisibleChildByX(float x, ViewGroup parent) {
+        if (parent == null || parent.getChildCount() == 0) {
+            return null;
+        }
+
+        View nearest = null;
+        float nearestDistance = Float.MAX_VALUE;
+
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View view = parent.getChildAt(i);
+            if (view == null || view.getVisibility() != View.VISIBLE) {
+                continue;
+            }
+
+            float centerX = view.getX() + view.getWidth() * 0.5f;
+            float distance = Math.abs(centerX - x);
+
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearest = view;
+            }
+        }
+
+        return nearest;
+    }
+
+    private static float getInterpolatedWidthByX(float x, ViewGroup parent) {
+        if (parent == null || parent.getChildCount() == 0) {
+            return 0f;
+        }
+
+        View left = null;
+        View right = null;
+
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View view = parent.getChildAt(i);
+            if (view == null || view.getVisibility() != View.VISIBLE) {
+                continue;
+            }
+
+            float centerX = view.getX() + view.getWidth() * 0.5f;
+
+            if (centerX <= x && (left == null || centerX > getCenterX(left))) {
+                left = view;
+            }
+
+            if (centerX >= x && (right == null || centerX < getCenterX(right))) {
+                right = view;
+            }
+        }
+
+        if (left == null && right == null) {
+            return 0f;
+        }
+
+        if (left == null) {
+            return right.getWidth();
+        }
+
+        if (right == null) {
+            return left.getWidth();
+        }
+
+        float leftX = getCenterX(left);
+        float rightX = getCenterX(right);
+
+        if (left == right || leftX == rightX) {
+            return left.getWidth();
+        }
+
+        float ratio = (x - leftX) / (rightX - leftX);
+        return lerp(left.getWidth(), right.getWidth(), ratio);
+    }
+
+    private static float getCenterX(View v) {
+        return v.getX() + v.getWidth() * 0.5f;
     }
 }
