@@ -195,6 +195,7 @@ import org.telegram.ui.Components.Premium.boosts.UserSelectorBottomSheet;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.SearchTagsList;
+import org.telegram.ui.Components.ShareTopView;
 import org.telegram.ui.Components.SharingLocationsAlert;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
 import org.telegram.ui.Components.StickerSetBulletinLayout;
@@ -1810,7 +1811,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                             }
                         }
                         if (uris != null) {
-                            if (type != null && type.startsWith("image/")) {
+                            if (type != null && (type.startsWith("image/") || type.startsWith("video/"))) {
                                 for (int a = 0; a < uris.size(); a++) {
                                     Parcelable parcelable = uris.get(a);
                                     if (!(parcelable instanceof Uri)) {
@@ -1822,6 +1823,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                     }
                                     SendMessagesHelper.SendingMediaInfo info = new SendMessagesHelper.SendingMediaInfo();
                                     info.uri = uri;
+                                    final String itemType = getContentResolver().getType(uri);
+                                    info.isVideo = itemType != null ? itemType.startsWith("video/") : type.startsWith("video/");
                                     photoPathsArray.add(info);
                                 }
                             } else {
@@ -1832,6 +1835,17 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                         parcelable = Uri.parse(parcelable.toString());
                                     }
                                     Uri uri = (Uri) parcelable;
+                                    final String itemType = getContentResolver().getType(uri);
+                                    if (itemType != null && (itemType.startsWith("image/") || itemType.startsWith("video/"))) {
+                                        if (photoPathsArray == null) {
+                                            photoPathsArray = new ArrayList<>();
+                                        }
+                                        SendMessagesHelper.SendingMediaInfo info = new SendMessagesHelper.SendingMediaInfo();
+                                        info.uri = uri;
+                                        info.isVideo = itemType.startsWith("video/");
+                                        photoPathsArray.add(info);
+                                        continue;
+                                    }
                                     String path = AndroidUtilities.getPath(uri);
                                     String originalPath = parcelable.toString();
                                     if (originalPath == null) {
@@ -3541,22 +3555,30 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             args.putString("selectAlertString", LocaleController.getString(R.string.SendMessagesToText));
             args.putString("selectAlertStringGroup", LocaleController.getString(R.string.SendMessagesToGroupText));
         }
-        DialogsActivity fragment = new DialogsActivity(args) {
-            @Override
-            public boolean shouldShowNextButton(DialogsActivity dialogsFragment, ArrayList<Long> dids, CharSequence message, boolean param) {
-                if (exportingChatUri != null) {
-                    return false;
-                }
-                if (contactsToSend != null && contactsToSend.size() == 1 && !mainFragmentsStack.isEmpty()) {
-                    return true;
-                }
-                if (dids.size() <= 1) {
-                    return videoPath != null || photoPathsArray != null && photoPathsArray.size() > 0;
-                }
-                return false;
-            }
-        };
+        DialogsActivity fragment = new DialogsActivity(args);
         fragment.setDelegate(this);
+        if (videoPath != null || photoPathsArray != null && !photoPathsArray.isEmpty()) {
+            final ArrayList<MediaController.PhotoEntry> shareEntries = new ArrayList<>();
+            if (photoPathsArray != null && !photoPathsArray.isEmpty()) {
+                shareEntries.addAll(ChatActivity.createEntriesFromMedia(photoPathsArray, false, null));
+            }
+            if (videoPath != null) {
+                shareEntries.add(new MediaController.PhotoEntry(0, 0, 0, videoPath, 0, true, 0, 0, 0));
+            }
+            if (!shareEntries.isEmpty()) {
+                if (!TextUtils.isEmpty(sendingText)) {
+                    shareEntries.get(0).caption = sendingText;
+                }
+                fragment.setSharedMedia(shareEntries, sendingText);
+            }
+        } else if (!TextUtils.isEmpty(sendingText)) {
+            final String url = ShareTopView.extractFirstUrl(sendingText);
+            if (url != null) {
+                fragment.setSharedLink(url, sendingText);
+            } else {
+                fragment.setSharedText(sendingText, sendingText);
+            }
+        }
         final boolean removeLast;
         if (AndroidUtilities.isTablet()) {
             removeLast = !layersActionBarLayout.getFragmentStack().isEmpty() && layersActionBarLayout.getFragmentStack().get(layersActionBarLayout.getFragmentStack().size() - 1) instanceof MainTabsActivity;
@@ -6412,6 +6434,28 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     sendingText = message;
                     message = null;
                 }
+                final boolean hasSharedMediaEntries = dialogsFragment != null && dialogsFragment.hasSharedMediaEntries();
+                if (hasSharedMediaEntries) {
+                    final ArrayList<MediaController.PhotoEntry> sharedEntries = dialogsFragment.getSharedMediaEntries();
+                    photoPathsArray = buildSendingInfosFromEntries(sharedEntries);
+                    if (!photoPathsArray.isEmpty()) {
+                        final CharSequence[] m = new CharSequence[]{ sendingText == null ? "" : sendingText };
+                        final ArrayList<TLRPC.MessageEntity> entities = MediaDataController.getInstance(currentAccount).getEntities(m, false);
+                        final String capStr = m[0] == null ? null : m[0].toString();
+                        for (int i = 0; i < photoPathsArray.size(); i++) {
+                            final SendMessagesHelper.SendingMediaInfo info = photoPathsArray.get(i);
+                            if (i == 0) {
+                                info.caption = capStr;
+                                info.entities = entities;
+                            } else {
+                                info.caption = null;
+                                info.entities = null;
+                            }
+                        }
+                    }
+                    videoPath = null;
+                    sendingText = null;
+                }
                 CharSequence captionToSend = null;
                 for (int i = 0; i < dids.size(); i++) {
                     final long did = dids.get(i).dialogId;
@@ -6431,11 +6475,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         boolean withoutAnimation = dialogsFragment == null || videoPath != null || (photoPathsArray != null && photoPathsArray.size() > 0);
                         getActionBarLayout().presentFragment(fragment, dialogsFragment != null, withoutAnimation, true, false);
                         presentedFragmentWithRemoveLast = dialogsFragment != null;
-                        if (videoPath != null && topicId == 0) {
+                        if (videoPath != null && topicId == 0 && !hasSharedMediaEntries) {
                             fragment.openVideoEditor(videoPath, sendingText);
                             videoEditorOpened = true;
                             sendingText = null;
-                        } else if (photoPathsArray != null && photoPathsArray.size() > 0 && topicId == 0) {
+                        } else if (photoPathsArray != null && photoPathsArray.size() > 0 && topicId == 0 && !hasSharedMediaEntries) {
                             photosEditorOpened = fragment.openPhotosEditor(photoPathsArray, message == null || message.length() == 0 ? sendingText : message);
                             if (photosEditorOpened) {
                                 sendingText = null;
@@ -6455,7 +6499,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                 photoPathsArray.get(0).caption = m[0].toString();
                                 sendingText = null;
                             }
-                            SendMessagesHelper.prepareSendingMedia(accountInstance, photoPathsArray, did, replyToMsg, replyToMsg, null, null, false, false, null, notify, scheduleDate, scheduleRepeatPeriod, 0, false, null, null, 0, 0, false, 0, 0, null);
+                            SendMessagesHelper.prepareSendingMedia(accountInstance, photoPathsArray, did, replyToMsg, replyToMsg, null, null, false, photoPathsArray.size() > 1, null, notify, scheduleDate, scheduleRepeatPeriod, 0, false, null, null, 0, 0, false, 0, 0, null);
                         }
                     } else {
                         if (videoPath != null) {
@@ -6474,7 +6518,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                 photoPathsArray.get(0).caption = m[0].toString();
                                 sendingText = null;
                             }
-                            SendMessagesHelper.prepareSendingMedia(accountInstance, photoPathsArray, did, replyToMsg, replyToMsg, null, null, false, false, null, notify, scheduleDate, scheduleRepeatPeriod, 0, false, null, null, 0, 0, false, 0, 0, null);
+                            SendMessagesHelper.prepareSendingMedia(accountInstance, photoPathsArray, did, replyToMsg, replyToMsg, null, null, false, photoPathsArray.size() > 1, null, notify, scheduleDate, scheduleRepeatPeriod, 0, false, null, null, 0, 0, false, 0, 0, null);
                         }
                     }
                     if (documentsPathsArray != null || documentsUrisArray != null) {
@@ -6513,7 +6557,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         }
                     }
                     if (sendingText != null) {
-                        SendMessagesHelper.prepareSendingText(accountInstance, sendingText, did, topicId, notify, scheduleDate, scheduleRepeatPeriod, 0);
+                        sendShareText(accountInstance, dialogsFragment, sendingText, did, replyToMsg, topicId, notify, scheduleDate, scheduleRepeatPeriod);
                     }
                     if (contactsToSend != null && !contactsToSend.isEmpty()) {
                         for (int a = 0; a < contactsToSend.size(); a++) {
@@ -6522,7 +6566,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         }
                     }
                     if (!TextUtils.isEmpty(message) && !videoEditorOpened && !photosEditorOpened) {
-                        SendMessagesHelper.prepareSendingText(accountInstance, message, did, topicId, notify, scheduleDate, scheduleRepeatPeriod, 0);
+                        sendShareText(accountInstance, dialogsFragment, message, did, replyToMsg, topicId, notify, scheduleDate, scheduleRepeatPeriod);
                     }
                 }
             }
@@ -6543,6 +6587,53 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         contactsToSendUri = null;
         exportingChatUri = null;
         return true;
+    }
+
+    private static void sendShareText(AccountInstance accountInstance, DialogsActivity dialogsFragment, CharSequence text, long dialogId, MessageObject replyToMsg, long topicId, boolean notify, int scheduleDate, int scheduleRepeatPeriod) {
+        final boolean previewEnabled = dialogsFragment == null || dialogsFragment.isWebPagePreviewEnabled();
+        final TLRPC.WebPage webPage = previewEnabled && dialogsFragment != null ? dialogsFragment.getSharedWebPage() : null;
+        if (TextUtils.isEmpty(text)) return;
+        if (webPage == null && previewEnabled) {
+            SendMessagesHelper.prepareSendingText(accountInstance, text, dialogId, topicId, notify, scheduleDate, scheduleRepeatPeriod, 0);
+            return;
+        }
+        final CharSequence trimmed = SendMessagesHelper.getTrimmedString(text);
+        if (trimmed == null || trimmed.length() == 0) return;
+        final CharSequence[] cs = new CharSequence[]{ trimmed };
+        final ArrayList<TLRPC.MessageEntity> entities = accountInstance.getMediaDataController().getEntities(cs, true);
+        final SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(cs[0].toString(), dialogId, replyToMsg, replyToMsg, webPage, previewEnabled, entities, null, null, notify, scheduleDate, scheduleRepeatPeriod, null, false);
+        accountInstance.getSendMessagesHelper().sendMessage(params);
+    }
+
+    private static ArrayList<SendMessagesHelper.SendingMediaInfo> buildSendingInfosFromEntries(ArrayList<MediaController.PhotoEntry> entries) {
+        final ArrayList<SendMessagesHelper.SendingMediaInfo> infos = new ArrayList<>();
+        if (entries == null) {
+            return infos;
+        }
+        for (MediaController.PhotoEntry entry : entries) {
+            final SendMessagesHelper.SendingMediaInfo info = new SendMessagesHelper.SendingMediaInfo();
+            if (!entry.isVideo && entry.imagePath != null) {
+                info.path = entry.imagePath;
+            } else if (entry.path != null) {
+                info.path = entry.path;
+            }
+            info.thumbPath = entry.thumbPath;
+            info.coverPath = entry.coverPath;
+            info.isVideo = entry.isVideo;
+            info.isLivePhoto = entry.isLivePhoto();
+            info.discardLivePhoto = entry.isUnalivePhoto();
+            info.livePhotoVideoOffset = entry.livePhotoVideoOffset;
+            info.livePhotoTimestampUs = entry.livePhotoTimestampUs;
+            info.caption = entry.caption != null ? entry.caption.toString() : null;
+            info.entities = entry.entities;
+            info.masks = entry.stickers;
+            info.ttl = entry.ttl;
+            info.videoEditedInfo = entry.editedInfo;
+            info.canDeleteAfter = entry.canDeleteAfter;
+            info.highQuality = entry.isHighQuality();
+            infos.add(info);
+        }
+        return infos;
     }
 
     private void onFinish() {

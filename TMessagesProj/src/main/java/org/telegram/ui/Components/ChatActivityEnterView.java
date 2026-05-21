@@ -636,7 +636,7 @@ public class ChatActivityEnterView extends FrameLayout implements
     @Nullable
     private ImageView reactionsButton;
     protected FrameLayout messageEditTextContainer;
-    private FrameLayout textFieldContainer;
+    public FrameLayout textFieldContainer;
     public FrameLayout sendButtonContainer;
     @Nullable
     private SendButton doneButton;
@@ -14310,7 +14310,7 @@ public class ChatActivityEnterView extends FrameLayout implements
     }
 
     @SuppressLint("ViewConstructor")
-    public static class SendButton extends View {
+    public static class SendButton extends View implements ItemOptions.ScrimView {
         public static final float INFINITE_LOADING = -3f;
 
         public final Theme.ResourcesProvider resourcesProvider;
@@ -14400,6 +14400,74 @@ public class ChatActivityEnterView extends FrameLayout implements
             if (circleHeight >= 0)
                 return circleHeight;
             return getMeasuredHeight() - dp(8);
+        }
+
+        @Override
+        public void getBounds(RectF bounds) {
+            final float w = getCircleWidth();
+            final float h = getCircleHeight();
+            final float right = getMeasuredWidth() - dp(4) - circlePadX;
+            final float bottom = getMeasuredHeight() - dp(4) - circlePadY;
+            bounds.set(right - w, bottom - h, right, bottom);
+        }
+
+        private int scrimViewBackgroundColor;
+        private final Paint scrimViewBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        public void setScrimViewBackgroundColor(int color) {
+            scrimViewBackgroundColor = color;
+            scrimViewBackgroundPaint.setColor(color);
+        }
+
+        @Override
+        public void drawScrim(Canvas canvas, float progress) {
+            if (scrimViewBackgroundColor != 0) {
+                scrimViewBackgroundPaint.setColor(scrimViewBackgroundColor);
+                scrimViewBackgroundPaint.setAlpha((int) (Color.alpha(scrimViewBackgroundColor) * progress));
+
+                final float openProgress = open.get();
+                final float priceProgress = animatedPriceVisible.get();
+
+                final float right, cy, h;
+                if (newCounterPos) {
+                    right = lerp(getMeasuredWidth() - getMeasuredHeight() / 2.0f, getMeasuredWidth() - dp(4), openProgress) - circlePadX;
+                    h = getCircleHeight() * openProgress;
+                    cy = getMeasuredHeight() - circlePadY - dp(4) - h / 2f;
+                } else {
+                    right = lerp(
+                            lerp(getMeasuredWidth() - getMeasuredHeight() / 2.0f, getMeasuredWidth() - dp(4), openProgress) - circlePadX,
+                            getMeasuredWidth() - dp(9),
+                            priceProgress);
+                    cy = lerp(
+                            getMeasuredHeight() - circlePadY - dp(4) - getCircleHeight() / 2f,
+                            getMeasuredHeight() - dp(24),
+                            priceProgress);
+                    h = lerp(getCircleHeight(), dp(32), priceProgress) * openProgress;
+                }
+                final float w = lerp(getCircleWidth(), dp(isNewDesignSendButton ? (10 + 10) : (11 + 11)) + priceText.getCurrentWidth(), priceProgress) * openProgress;
+
+                if (openProgress > 0 && w > 0 && h > 0) {
+                    AndroidUtilities.rectTmp.set(right - w, cy - h / 2f, right, cy + h / 2f);
+                    AndroidUtilities.rectTmp.inset(-dp(4), -dp(4));
+                    final float r = Math.min(w, h) / 2f + dp(4);
+                    canvas.drawRoundRect(AndroidUtilities.rectTmp, r, r, scrimViewBackgroundPaint);
+                }
+
+                final float countScale = count.isNotEmpty() * (1.0f - priceProgress);
+                if (countScale > 0) {
+                    final float sz = Math.max(dp(9) + count.getCurrentWidth(), dp(18));
+                    final float _cx, _cy;
+                    if (newCounterPos) {
+                        _cx = right - dp(50f);
+                        _cy = cy - getCircleHeight() / 2f + sz / 2f;
+                    } else {
+                        _cx = getMeasuredWidth() - circlePadX - sz / 2f;
+                        _cy = getMeasuredHeight() - circlePadY - sz / 2f;
+                    }
+                    canvas.drawCircle(_cx, _cy, (sz / 2f + dp(2)) * countScale * countBounceScale, scrimViewBackgroundPaint);
+                }
+            }
+            draw(canvas);
         }
 
         private float circlePadX, circlePadY;

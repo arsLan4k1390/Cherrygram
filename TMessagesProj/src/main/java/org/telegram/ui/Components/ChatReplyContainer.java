@@ -162,7 +162,7 @@ public class ChatReplyContainer extends FrameLayout {
                     }
                 }
             };
-            image.setRoundRadius(dp(2));
+            image.setRoundRadius(dp(6));
             addView(image, LayoutHelper.createFrame(34, 34, Gravity.TOP | Gravity.LEFT, 52, 6, 0, 0));
 
             updateColors();

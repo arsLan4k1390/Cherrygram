@@ -2158,10 +2158,14 @@ public class AlertsCreator {
         }, resourcesProvider);
     }
 
-    public static void showAlertWithCheckbox(Context context, CharSequence title, CharSequence message, CharSequence check, CharSequence button, Utilities.Callback<Boolean> onAction, Theme.ResourcesProvider resourcesProvider) {
+    public static AlertDialog showAlertWithCheckbox(Context context, CharSequence title, CharSequence message, CharSequence check, CharSequence button, Utilities.Callback<Boolean> onAction, Theme.ResourcesProvider resourcesProvider) {
+        return showAlertWithCheckbox(context, title, message, check, button, onAction, resourcesProvider, true);
+    }
+
+    public static AlertDialog showAlertWithCheckbox(Context context, CharSequence title, CharSequence message, CharSequence check, CharSequence button, Utilities.Callback<Boolean> onAction, Theme.ResourcesProvider resourcesProvider, boolean showStarsBalance) {
         if (context == null) {
             onAction.run(false);
-            return;
+            return null;
         }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(context, resourcesProvider);
@@ -2230,8 +2234,9 @@ public class AlertsCreator {
         });
         builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
         AlertDialog d = builder.create();
-        d.setShowStarsBalance(true);
+        d.setShowStarsBalance(showStarsBalance);
         d.show();
+        return d;
     }
 
     public static void createClearOrDeleteDialogAlert(BaseFragment fragment, boolean clear, TLRPC.Chat chat, TLRPC.User user, boolean secret, boolean canDeleteHistory, MessagesStorage.BooleanCallback onProcessRunnable) {
@@ -4416,6 +4421,8 @@ public class AlertsCreator {
             final HintView2 hint = notifyHint[0] = new HintView2(context, HintView2.DIRECTION_BOTTOM);
             hint.setRoundingWithCornerEffect(false);
             hint.setPadding(dp(8), 0, dp(8), 0);
+            hint.setRounding(20);
+            hint.setShadow(dp(12), 0, dp(4), Theme.multAlpha(0xFF000000, .25f));
 
             hint.setText(
                 ChatObject.isChannelAndNotMegaGroup(chat) ?
@@ -4427,9 +4434,7 @@ public class AlertsCreator {
                     formatString(notify[0] ? R.string.ScheduleNotifyOnChat : R.string.ScheduleNotifyOffChat, UserObject.getForcedFirstName(user))
             );
             hint.setDuration(5_000L);
-            hint.setRounding(20);
             hint.setJoint(1.0f, -(8 + (finalOptionsButton != null ? 42 : -8) + 20 - 8));
-            hint.setShadow(dp(12), 0, dp(4), Theme.multAlpha(0xFF000000, .25f));
             hint.setOnHiddenListener(() -> AndroidUtilities.removeFromParent(hint));
             bottomSheet.getContainerView().setClipToPadding(false);
             bottomSheet.getContainerView().setClipChildren(false);

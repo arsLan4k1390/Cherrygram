@@ -558,7 +558,11 @@ public class DeleteMessagesBottomSheet extends BottomSheetWithRecyclerListView {
 
     @Override
     protected CharSequence getTitle() {
-        if (!restrictUserDeleteAllMessages && isReactionOnlyMode) {
+        if (isReactionOnlyMode) {
+            if (restrictUserDeleteAllMessages) {
+                return getString(R.string.DeleteMessagesOptionsTitleAll);
+            }
+
             return restrictUserDeleteAllReactions ?
                 LocaleController.getString(R.string.DeleteReactionOptionsTitleAll) :
                 LocaleController.formatPluralString("DeleteReactionOptionsTitle", 1);

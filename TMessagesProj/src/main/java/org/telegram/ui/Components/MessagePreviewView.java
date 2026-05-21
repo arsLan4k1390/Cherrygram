@@ -119,7 +119,9 @@ public class MessagePreviewView extends FrameLayout {
         ChatMessageSharedResources sharedResources;
         private boolean firstLayout = true;
 
-        int scrollToOffset = -1;
+        int scrollToQuoteStartY = -1;
+        int scrollToQuoteEndY = -1;
+        boolean shouldScrollToQuote = false;
 
 
         boolean toQuote;
@@ -422,11 +424,34 @@ public class MessagePreviewView extends FrameLayout {
                     super.onLayout(changed, l, t, r, b);
                     updatePositions();
                     checkScroll();
-//                    if (scrollToOffset != -1) {
-//                        final int offset = scrollToOffset;
-//                        post(() -> chatLayoutManager.scrollToPositionWithOffset(0, offset, false));
-//                        scrollToOffset = -1;
-//                    }
+                    if (shouldScrollToQuote && currentTab == TAB_REPLY) {
+                        final int startInCell = scrollToQuoteStartY;
+                        final int endInCell = scrollToQuoteEndY;
+                        shouldScrollToQuote = false;
+                        post(() -> {
+                            ChatMessageCell cell = getReplyMessageCell();
+                            if (cell == null) {
+                                return;
+                            }
+                            int selStart = cell.getTop() + startInCell;
+                            int selEnd = cell.getTop() + endInCell;
+                            int selHeight = selEnd - selStart;
+                            int viewportTop = chatListView.getPaddingTop();
+                            int viewportBottom = chatListView.getHeight() - chatListView.getPaddingBottom();
+                            int viewportHeight = viewportBottom - viewportTop;
+                            int dy;
+                            if (selHeight > viewportHeight) {
+                                dy = selStart - viewportTop;
+                            } else {
+                                int selCenter = (selStart + selEnd) / 2;
+                                int viewportCenter = (viewportTop + viewportBottom) / 2;
+                                dy = selCenter - viewportCenter;
+                            }
+                            if (dy < 0) {
+                                chatListView.scrollBy(0, dy);
+                            }
+                        });
+                    }
                 }
 
                 private void drawChatBackgroundElements(Canvas canvas) {
@@ -1631,7 +1656,9 @@ public class MessagePreviewView extends FrameLayout {
                     if (!messagePreviewParams.isSecret && messagePreviewParams.quote != null && isReplyMessageCell(messageCell) && !textSelectionHelper.isInSelectionMode()) {
                         textSelectionHelper.select(messageCell, messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
                         if (firstAttach) {
-                            scrollToOffset = offset(messageCell, messagePreviewParams.quoteStart);
+                            scrollToQuoteStartY = offset(messageCell, messagePreviewParams.quoteStart, false);
+                            scrollToQuoteEndY = offset(messageCell, messagePreviewParams.quoteEnd, true);
+                            shouldScrollToQuote = true;
                             firstAttach = false;
                         }
                     }
@@ -1641,6 +1668,10 @@ public class MessagePreviewView extends FrameLayout {
             }
 
             private int offset(ChatMessageCell cell, int index) {
+                return offset(cell, index, false);
+            }
+
+            private int offset(ChatMessageCell cell, int index, boolean lineBottom) {
                 if (cell == null) {
                     return 0;
                 }
@@ -1678,7 +1709,9 @@ public class MessagePreviewView extends FrameLayout {
                         if (index - block.charactersOffset > layoutText.length() - 1) {
                             y = offsetY + (int) (block.textYOffset(textLayoutBlocks, cell.transitionParams) + block.padTop + block.height);
                         } else {
-                            y = offsetY + block.textYOffset(textLayoutBlocks, cell.transitionParams) + block.padTop + layout.getLineTop(layout.getLineForOffset(index - block.charactersOffset));
+                            int line = layout.getLineForOffset(index - block.charactersOffset);
+                            int lineY = lineBottom ? layout.getLineBottom(line) : layout.getLineTop(line);
+                            y = offsetY + block.textYOffset(textLayoutBlocks, cell.transitionParams) + block.padTop + lineY;
                         }
                         return (int) y;
                     }

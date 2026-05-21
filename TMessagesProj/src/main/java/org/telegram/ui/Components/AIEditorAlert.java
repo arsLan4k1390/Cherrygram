@@ -438,6 +438,10 @@ public class AIEditorAlert extends BottomSheetWithRecyclerListView implements No
         }
 
         styleHint = new HintView2(getContext(), HintView2.DIRECTION_TOP);
+        styleHint.setRoundingWithCornerEffect(false);
+        styleHint.setPadding(dp(8), 0, dp(8), 0);
+        styleHint.setRounding(20);
+        styleHint.setShadow(dp(12), 0, dp(4), Theme.multAlpha(0xFF000000, .25f));
         styleHint.setText(getString(R.string.AIEditorChooseStyle));
         styleHint.setJoint(0.5f, 0);
         styleHint.setDuration(8000L);

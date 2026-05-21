@@ -1342,6 +1342,7 @@
     <string name="DeleteReactionMenu">Delete Reaction</string>
     <string name="ReportAlertReaction">Are you sure you want to report reaction from this user?</string>
     <string name="DeleteAlertReaction">Are you sure you want to delete reaction from this user?</string>
+    <string name="DeleteAlertReactionAll">Delete all user reactions</string>
     <string name="NobodyLikesSpam1">Sorry, you can only send messages to mutual contacts at the moment.</string>
     <string name="NobodyLikesSpam2">Sorry, you can only add mutual contacts to groups at the moment.</string>
     <string name="NobodyLikesSpam3">Sorry, you are currently restricted from posting to public groups.</string>
@@ -1349,6 +1350,18 @@
     <string name="ShareSendTo">Send to...</string>
     <string name="ShareSendToNewTopic">Send to new topic</string>
     <string name="ShareSendToOffTopic">Send to off topic</string>
+    <string name="ShareSendPhoto">Send photo</string>
+    <string name="ShareSendVideo">Send video</string>
+    <string name="ShareSendPhotos_one">Send %1$d photo</string>
+    <string name="ShareSendPhotos_other">Send %1$d photos</string>
+    <string name="ShareSendVideos_one">Send %1$d video</string>
+    <string name="ShareSendVideos_other">Send %1$d videos</string>
+    <string name="ShareSendItems_one">Send %1$d media</string>
+    <string name="ShareSendItems_other">Send %1$d media</string>
+    <string name="ShareSendToChats">To %s</string>
+    <string name="ShareSendToMany_one">To %1$d chat</string>
+    <string name="ShareSendToMany_other">To %1$d chats</string>
+    <string name="ShareTapToEditMedia">Tap here to edit media</string>
     <string name="ShareComment">Write a comment...</string>
     <string name="TapHereGifs">Tap here to access saved GIFs</string>
     <string name="TapHereEmoji">Tap %1$s to access more emoji.</string>
@@ -1385,6 +1398,7 @@
     <string name="DeleteReactionOptionsTitle_one">Delete %d Reaction?</string>
     <string name="DeleteReactionOptionsTitle_other">Delete %d Reactions?</string>
     <string name="DeleteReactionOptionsTitleAll">Delete All Reactions?</string>
+    <string name="DeleteMessagesOptionsTitleAll">Delete All Messages?</string>
     <string name="DeleteAdditionalActions">Additional actions</string>
     <string name="DeleteToggleBanUsers">Fully ban users</string>
     <string name="DeleteToggleBanUser">Fully ban this user</string>
@@ -6791,6 +6805,7 @@
     <string name="StealthModeCooldownHint">Please wait until the **Stealth Mode** is ready to use again.</string>
     <string name="StoryViewLocation">View Location ></string>
     <string name="StoryViewMessage">View Message ></string>
+    <string name="LocationsShowAll">Show All</string>
     <string name="StoryViewGift">Show Gift ></string>
     <string name="AccDescrLike">Like</string>
     <string name="ReactionLongTapHint">Long tap for more reactions</string>
@@ -10491,6 +10506,7 @@
     <string name="StakeDicePlaceholder">Your Stake</string>
     <string name="StakeDiceButton">Save and Roll</string>
     <string name="StakeDiceToast">Your Stake: 💎 </string>
+    <string name="StakeDiceToastChange">change</string>
     <string name="StakeDiceToastButton">Send</string>
     <string name="StakeDiceActionYouWon">You won 💎 %s</string>
     <string name="StakeDiceActionYouLost">You lost 💎 %s</string>

@@ -4339,33 +4339,38 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 args.putString("last_name_card", vcardLastName);
                 openAddToContact(user, args);
             } else if (position == deleteReactionRow) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity(), resourcesProvider);
-                builder.setTitle(LocaleController.getString(R.string.DeleteReaction));
-                builder.setMessage(LocaleController.getString(R.string.DeleteAlertReaction));
+                final AlertDialog dialog = AlertsCreator.showAlertWithCheckbox(getContext(),
+                    LocaleController.getString(R.string.DeleteReaction),
+                    LocaleController.getString(R.string.DeleteAlertReaction),
+                    getString(R.string.DeleteAlertReactionAll),
+                    LocaleController.getString(R.string.Delete), (checked) -> {
+                        final long participantDid;
+                        if (userId != 0) {
+                            participantDid = userId;
+                        } else if (chatId != 0) {
+                            participantDid = -chatId;
+                        } else {
+                            participantDid = dialogId;
+                        }
 
-                builder.setPositiveButton(LocaleController.getString(R.string.Delete), (dialog, which) -> {
-                    final long participantDid;
-                    if (userId != 0) {
-                        participantDid = userId;
-                    } else if (chatId != 0) {
-                        participantDid = -chatId;
-                    } else {
-                        participantDid = dialogId;
-                    }
-                    MessagesController.getInstance(currentAccount)
-                        .deleteReactionsFromMessage(reportReactionFromDialogId, participantDid, reportReactionMessageId);
-                    reportReactionMessageId = 0;
-                    updateListAnimated(false);
+                        if (checked) {
+                            MessagesController.getInstance(currentAccount)
+                                .deleteAllReactionsFrom(reportReactionFromDialogId, participantDid);
+                        } else {
+                            MessagesController.getInstance(currentAccount)
+                                .deleteReactionsFromMessage(reportReactionFromDialogId, participantDid, reportReactionMessageId);
+                        }
 
-                    final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
-                    layout.setAnimation(R.raw.chats_infotip);
-                    layout.textView.setText(LocaleController.getString(R.string.ReactionDeleteSent));
-                    BulletinFactory.of(ProfileActivity.this).create(layout, Bulletin.DURATION_SHORT).show();
-                });
-                builder.setNegativeButton(LocaleController.getString(R.string.Cancel), (dialog, which) -> {
-                    dialog.dismiss();
-                });
-                AlertDialog dialog = builder.show();
+                        reportReactionMessageId = 0;
+                        updateListAnimated(false);
+
+                        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
+                        layout.setAnimation(R.raw.chats_infotip);
+                        layout.textView.setText(LocaleController.getString(R.string.ReactionDeleteSent));
+                        BulletinFactory.of(ProfileActivity.this).create(layout, Bulletin.DURATION_SHORT).show();
+                    }, resourcesProvider, false
+                );
+
                 TextView button = (TextView) dialog.getButton(DialogInterface.BUTTON_POSITIVE);
                 if (button != null) {
                     button.setTextColor(Theme.getColor(Theme.key_text_RedBold));

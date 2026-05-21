@@ -307,6 +307,11 @@ public class CaptionContainerView extends FrameLayout {
                 }
                 return true;
             }
+
+            @Override
+            protected void onLineCountChanged(int oldLineCount, int newLineCount) {
+                CaptionContainerView.this.onLineCountChanged(oldLineCount, newLineCount);
+            }
         };
         editText.glassDesignForEmojiView = true;
         editText.getEditText().addTextChangedListener(new EditTextSuggestionsFix());
@@ -400,11 +405,7 @@ public class CaptionContainerView extends FrameLayout {
         applyButton.setScaleType(ImageView.ScaleType.CENTER);
         applyButton.setAlpha(0f);
         applyButton.setVisibility(View.GONE);
-        applyButton.setOnClickListener(e -> {
-            closeKeyboard();
-            AndroidUtilities.cancelRunOnUIThread(textChangeRunnable);
-            textChangeRunnable.run();
-        });
+        applyButton.setOnClickListener(e -> done());
         addView(applyButton, LayoutHelper.createFrame(44, 44, Gravity.RIGHT | (isAtTop() ? Gravity.TOP : Gravity.BOTTOM), 8, 8, 8, 8));
 
         limitTextView = new AnimatedTextView(context, false, true, true);
@@ -422,6 +423,10 @@ public class CaptionContainerView extends FrameLayout {
         fadePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     }
 
+    protected void onLineCountChanged(int oldLineCount, int newLineCount) {
+
+    }
+
     public void setDialogId(long dialogId) {
         this.dialogId = dialogId;
         if (mentionContainer != null) {
@@ -435,6 +440,12 @@ public class CaptionContainerView extends FrameLayout {
 
     private final Runnable textChangeRunnable = () -> onTextChange();
     protected void onTextChange() {}
+
+    protected void done() {
+        closeKeyboard();
+        AndroidUtilities.cancelRunOnUIThread(textChangeRunnable);
+        textChangeRunnable.run();
+    }
 
     public void invalidateBlur() {
         invalidate();

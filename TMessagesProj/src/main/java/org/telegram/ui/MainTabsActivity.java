@@ -33,10 +33,12 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.ContactsController;
+import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
@@ -45,13 +47,16 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
+import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CubicBezierInterpolator;
+import org.telegram.ui.Components.FolderDrawable;
 import org.telegram.ui.Components.HintsController;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
@@ -258,12 +263,15 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         tabs[INDEX_SETTINGS] = GlassTabView.createMainTab(context, resourceProvider, GlassTabView.TabAnimation.SETTINGS, R.string.Settings);
         tabs[INDEX_CALLS] = GlassTabView.createMainTab(context, resourceProvider, GlassTabView.TabAnimation.CALLS, R.string.MainTabsCalls);
         tabs[INDEX_PROFILE] = GlassTabView.createAvatar(context, resourceProvider, currentAccount, R.string.MainTabsProfile);
-        tabs[INDEX_PROFILE].setOnLongClickListener(v -> {
-            openAccountSelector(v);
-            return true;
-        });
+        tabs[INDEX_CHATS].setOnLongClickListener(this::openFoldersSelector);
+        tabs[INDEX_CONTACTS].setOnLongClickListener(this::openContactsSelector);
+        tabs[INDEX_CALLS].setOnLongClickListener(this::openCallsSelector);
+        tabs[INDEX_PROFILE].setOnLongClickListener(this::openAccountSelector);
 
+        tabsView.addTabToIgnoreClick(tabs[INDEX_CHATS]);
+        tabsView.addTabToIgnoreClick(tabs[INDEX_CONTACTS]);
         tabsView.addTabToIgnoreClick(tabs[INDEX_PROFILE]);
+        tabsView.addTabToIgnoreClick(tabs[INDEX_CALLS]);
 
         for (int index = 0; index < tabs.length; index++) {
             final GlassTabView view = tabs[index];
@@ -350,7 +358,107 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         }
     }
 
-    public void openAccountSelector(View button) {
+    public boolean openContactsSelector(View anchor) {
+        if (getContext() == null || getParentActivity() == null) return false;
+        final ItemOptions o = ItemOptions.makeOptions(this, anchor);
+        o.add(R.drawable.msg_contact_add, getString(R.string.NewContact), () -> {
+            new NewContactBottomSheet(this, getContext()).show();
+        });
+        o.add(R.drawable.msg_calls, getString(R.string.VoipChatRecentCalls), () -> {
+            Bundle args = new Bundle();
+            args.putBoolean("needFinishFragment", false);
+            presentFragment(new CallLogActivity(args));
+        });
+        o.setBlur(true);
+        o.translate(0, -dp(4));
+        o.setGravity(Gravity.LEFT);
+        final ShapeDrawable bg = Theme.createRoundRectDrawable(dp(28), getThemedColor(Theme.key_windowBackgroundWhite));
+        bg.getPaint().setShadowLayer(dp(6), 0, dp(1), Theme.multAlpha(0xFF000000, 0.15f));
+        o.setScrimViewBackground(bg);
+        o.show();
+        return true;
+    }
+
+    public boolean openCallsSelector(View anchor) {
+        if (getContext() == null || getParentActivity() == null) return false;
+        final ItemOptions o = ItemOptions.makeOptions(this, anchor);
+        o.add(R.drawable.menu_call_create, getString(R.string.GroupCallCreate2), () -> CallLogActivity.openCreateCall(this));
+        if (getUserConfig().showCallsTab) {
+            o.add(R.drawable.msg_archive_hide, getString(R.string.HideCallTab), () -> {
+                getUserConfig().setShowCallsTab(false);
+                checkUi_callTabVisible(false, true);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.callTabsVisibleToggled);
+            });
+        } else {
+            o.add(R.drawable.menu_add_tab_24, getString(R.string.GroupCallShowInMainTabs), () -> {
+                getUserConfig().setShowCallsTab(true);
+                checkUi_callTabVisible(true, true);
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.callTabsVisibleToggled);
+            });
+        }
+        o.setBlur(true);
+        o.translate(0, -dp(4));
+        final ShapeDrawable bg = Theme.createRoundRectDrawable(dp(28), getThemedColor(Theme.key_windowBackgroundWhite));
+        bg.getPaint().setShadowLayer(dp(6), 0, dp(1), Theme.multAlpha(0xFF000000, 0.15f));
+        o.setScrimViewBackground(bg);
+        o.show();
+        return true;
+    }
+
+    private Integer pendingFolderId;
+
+    private boolean openFoldersSelector(View anchor) {
+        if (getContext() == null || getParentActivity() == null) return false;
+        final ArrayList<MessagesController.DialogFilter> filters = getMessagesController().getDialogFilters();
+        if (filters == null || filters.size() <= 1) return false;
+
+        final ItemOptions o = ItemOptions.makeOptions(this, anchor);
+        for (int i = 0; i < filters.size(); i++) {
+            final MessagesController.DialogFilter folder = filters.get(i);
+            final ActionBarMenuSubItem folderItem = new ActionBarMenuSubItem(getParentActivity(), 2, false, false, getResourceProvider());
+            folderItem.setPadding(dp(18), 0, dp(18), 0);
+            CharSequence title = folder.isDefault() ? getString(R.string.FilterAllChats) : folder.name;
+            title = Emoji.replaceEmoji(title, folderItem.getTextView().getPaint().getFontMetricsInt(), false);
+            if (!folder.isDefault()) {
+                title = MessageObject.replaceAnimatedEmoji(title, folder.entities, folderItem.getTextView().getPaint().getFontMetricsInt());
+            }
+            folderItem.setEmojiCacheType(folder.title_noanimate ? AnimatedEmojiDrawable.CACHE_TYPE_NOANIMATE_FOLDER : AnimatedEmojiDrawable.CACHE_TYPE_MESSAGES);
+            final int color = getMessagesController().folderTags ? folder.color : -1;
+            folderItem.setTextAndIcon(title, 0, new FolderDrawable(getContext(), R.drawable.msg_folders, color));
+            folderItem.getTextView().setEmojiColor(getThemedColor(Theme.key_featuredStickers_addButton));
+            folderItem.setMinimumWidth(160);
+            folderItem.setOnClickListener(e -> {
+                o.dismiss();
+                openFolder(folder.id);
+            });
+            o.addView(folderItem, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        }
+//        o.setBlur(true);
+        o.translate(-dp(8), -dp(4));
+        o.setMaxHeight(dp(400));
+        final ShapeDrawable bg = Theme.createRoundRectDrawable(dp(28), getThemedColor(Theme.key_windowBackgroundWhite));
+        bg.getPaint().setShadowLayer(dp(6), 0, dp(1), Theme.multAlpha(0xFF000000, 0.15f));
+        o.setScrimViewBackground(bg);
+        o.setGravity(Gravity.LEFT);
+        o.show();
+
+        return true;
+    }
+
+    private void openFolder(int folderId) {
+        if (viewPager.getCurrentPosition() == POSITION_CHATS && dialogsActivity != null) {
+            dialogsActivity.scrollToFolder(folderId);
+        } else {
+            if (dialogsActivity == null) {
+                prepareDialogsActivity(null);
+            }
+            pendingFolderId = folderId;
+            selectTab(POSITION_CHATS, true);
+            viewPager.scrollToPosition(POSITION_CHATS);
+        }
+    }
+
+    public boolean openAccountSelector(View button) {
         final ArrayList<Integer> accountNumbers = new ArrayList<>();
 
         accountNumbers.clear();
@@ -422,6 +530,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         o.show();
 
         HintsController.Hint.AccountSwitchHint.doNotShowAgain();
+
+        return true;
     }
 
     public LinearLayout accountView(int account, boolean selected) {
@@ -486,6 +596,10 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             }
             if (currentPosition != POSITION_PROFILE) {
                 dropFragmentAtPosition(POSITION_PROFILE);
+            }
+            if (pendingFolderId != null && currentPosition == POSITION_CHATS && dialogsActivity != null) {
+                dialogsActivity.scrollToFolder(pendingFolderId);
+                pendingFolderId = null;
             }
         }
 

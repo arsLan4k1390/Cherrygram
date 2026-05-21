@@ -26,6 +26,7 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -82,6 +83,7 @@ import org.telegram.ui.SettingsActivity;
 import org.telegram.ui.Stories.StoriesController;
 import org.telegram.ui.Stories.recorder.HintView2;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 
 public class ItemOptions {
@@ -1328,6 +1330,7 @@ public class ItemOptions {
             public void onDismiss() {
                 actionBarPopupWindow = null;
                 dismissDim(container);
+                clearHoverListener();
 
                 if (dismissListener != null) {
                     dismissListener.run();
@@ -1419,12 +1422,12 @@ public class ItemOptions {
             }
         }
 
-        // discard all scrolls/gestures
-        if (fragment != null && fragment.getFragmentView() != null) {
-            fragment.getFragmentView().getRootView().dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
-        } else if (this.container != null) {
-            container.dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
-        }
+//        // discard all scrolls/gestures
+//        if (fragment != null && fragment.getFragmentView() != null) {
+//            fragment.getFragmentView().getRootView().dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
+//        } else if (this.container != null) {
+//            container.dispatchTouchEvent(AndroidUtilities.emptyMotionEvent());
+//        }
 
         if (blurForMenu && scrimBlur3SourceBitmap != null) {
             setGapBackgroundColor(Theme.multAlpha(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider), 0.06f));
@@ -1446,6 +1449,8 @@ public class ItemOptions {
             (int) (offsetX = (X + this.translateX)),
             (int) (offsetY = (Y + this.translateY))
         );
+
+        installHoverReleaseListener();
 
         return this;
     }
@@ -1605,6 +1610,103 @@ public class ItemOptions {
     private boolean dontDismiss;
     public void dontDismiss() {
         dontDismiss = true;
+    }
+
+    private View.OnTouchListener hoverReleaseListener;
+    private View hoveredItem;
+    private final int[] hoverLoc = new int[2];
+
+    private void installHoverReleaseListener() {
+        if (scrimView == null) return;
+        if (scrimView.getParent() != null) {
+            scrimView.getParent().requestDisallowInterceptTouchEvent(true);
+        }
+        final WeakReference<ItemOptions> weakSelf = new WeakReference<>(this);
+        scrimView.setOnTouchListener(hoverReleaseListener = (v, event) -> {
+            final ItemOptions self = weakSelf.get();
+            if (self == null || self.actionBarPopupWindow == null || !self.actionBarPopupWindow.isShowing()) {
+                v.setOnTouchListener(null);
+                return false;
+            }
+            if (v.getParent() != null) {
+                v.getParent().requestDisallowInterceptTouchEvent(true);
+            }
+            final int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_MOVE) {
+                self.updateHover((int) event.getRawX(), (int) event.getRawY());
+            } else if (action == MotionEvent.ACTION_UP) {
+                self.releaseHover((int) event.getRawX(), (int) event.getRawY());
+                v.setOnTouchListener(null);
+                self.hoverReleaseListener = null;
+            } else if (action == MotionEvent.ACTION_CANCEL) {
+                self.cancelHover();
+                v.setOnTouchListener(null);
+                self.hoverReleaseListener = null;
+            }
+            return true;
+        });
+    }
+
+    private void clearHoverListener() {
+        cancelHover();
+        if (hoverReleaseListener != null && scrimView != null) {
+            scrimView.setOnTouchListener(null);
+        }
+        hoverReleaseListener = null;
+    }
+
+    private void updateHover(int rawX, int rawY) {
+        View hit = findItemAt(layout, rawX, rawY);
+        if (hit != hoveredItem) {
+            if (hoveredItem != null) {
+                hoveredItem.setPressed(false);
+            }
+            hoveredItem = hit;
+            if (hoveredItem != null) {
+                hoveredItem.setPressed(true);
+            }
+        }
+        if (hoveredItem != null) {
+            hoveredItem.getLocationOnScreen(hoverLoc);
+            hoveredItem.drawableHotspotChanged(rawX - hoverLoc[0], rawY - hoverLoc[1]);
+        }
+    }
+
+    private void releaseHover(int rawX, int rawY) {
+        updateHover(rawX, rawY);
+        if (hoveredItem != null) {
+            View target = hoveredItem;
+            hoveredItem = null;
+            target.setPressed(false);
+            target.performClick();
+        }
+    }
+
+    private void cancelHover() {
+        if (hoveredItem != null) {
+            hoveredItem.setPressed(false);
+            hoveredItem = null;
+        }
+    }
+
+    private static View findItemAt(View root, int rawX, int rawY) {
+        if (root == null || root.getVisibility() != View.VISIBLE) return null;
+        int[] loc = new int[2];
+        root.getLocationOnScreen(loc);
+        int l = loc[0], t = loc[1];
+        int r = l + root.getWidth(), b = t + root.getHeight();
+        if (rawX < l || rawX >= r || rawY < t || rawY >= b) return null;
+        if (root instanceof ViewGroup) {
+            ViewGroup vg = (ViewGroup) root;
+            for (int i = vg.getChildCount() - 1; i >= 0; i--) {
+                View deeper = findItemAt(vg.getChildAt(i), rawX, rawY);
+                if (deeper != null) return deeper;
+            }
+        }
+        if (root.isClickable() && root.isEnabled() && !(root instanceof ActionBarPopupWindow.GapView)) {
+            return root;
+        }
+        return null;
     }
 
     public static void getPointOnScreen(View v, ViewGroup finalContainer, float[] point) {

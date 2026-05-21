@@ -1093,18 +1093,20 @@ public class ChatAttachAlertPollLayout extends ChatAttachAlert.AttachAlertLayout
             }
         }
         int count = 0;
+        final int maxQuestionLength = todo ? getMessagesController().todoTitleLengthMax : MAX_QUESTION_LENGTH;
+        final int maxAnswerLength = todo ? getMessagesController().todoItemLengthMax : MAX_ANSWER_LENGTH;
         if (!TextUtils.isEmpty(getFixedString(descriptionString)) && descriptionString.length() > MAX_CAPTION_LENGTH) {
             enabled = false;
         } else if (!TextUtils.isEmpty(getFixedString(solutionString)) && solutionString.length() > MAX_SOLUTION_LENGTH) {
             enabled = false;
-        } else if (TextUtils.isEmpty(getFixedString(questionString)) || questionString.length() > MAX_QUESTION_LENGTH) {
+        } else if (TextUtils.isEmpty(getFixedString(questionString)) || questionString.length() > maxQuestionLength) {
             enabled = false;
         }
         boolean hasAnswers = false;
         for (int a = 0; a < answers.length; a++) {
             if (!TextUtils.isEmpty(getFixedString(answers[a]))) {
                 hasAnswers = true;
-                if (answers[a].length() > MAX_ANSWER_LENGTH) {
+                if (answers[a].length() > maxAnswerLength) {
                     count = 0;
                     break;
                 }

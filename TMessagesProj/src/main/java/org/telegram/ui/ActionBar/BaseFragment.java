@@ -1370,6 +1370,23 @@ public abstract class BaseFragment {
         return storyViewer;
     }
 
+    public ArticleViewer getArticleViewer() {
+        if (getLastSheet() instanceof ArticleViewer.Sheet && getLastSheet().isShown()) {
+            return ((ArticleViewer.Sheet) getLastSheet()).getArticleViewer();
+        }
+        if (
+            parentLayout instanceof ActionBarLayout &&
+            ((ActionBarLayout) parentLayout).getSheetFragment(false) != null &&
+            ((ActionBarLayout) parentLayout).getSheetFragment(false).getLastSheet() instanceof ArticleViewer.Sheet
+        ) {
+            ArticleViewer.Sheet lastSheet = (ArticleViewer.Sheet) ((ActionBarLayout) parentLayout).getSheetFragment(false).getLastSheet();
+            if (lastSheet.isShown()) {
+                return lastSheet.getArticleViewer();
+            }
+        }
+        return null;
+    }
+
     public ArticleViewer createArticleViewer(boolean forceRecreate) {
         if (sheetsStack == null) {
             sheetsStack = new ArrayList<>();

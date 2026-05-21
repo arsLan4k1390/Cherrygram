@@ -595,7 +595,7 @@ public class SharedConfig {
             nextMediaTap = preferences.getBoolean("next_media_on_tap", true);
             recordViaSco = preferences.getBoolean("record_via_sco", false);
             customTabs = preferences.getBoolean("custom_tabs", true);
-            inappBrowser = preferences.getBoolean("inapp_browser", true);
+            inappBrowser = preferences.getBoolean("inapp_browser", false);
             adaptableColorInBrowser = preferences.getBoolean("adaptableBrowser", false);
             onlyLocalInstantView = preferences.getBoolean("onlyLocalInstantView", BuildVars.DEBUG_PRIVATE_VERSION);
             directShare = preferences.getBoolean("direct_share", true);

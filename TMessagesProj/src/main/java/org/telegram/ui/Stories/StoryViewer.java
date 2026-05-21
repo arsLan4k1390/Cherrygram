@@ -2098,7 +2098,18 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
             }
         }
         if (placeProvider != null) {
-            placeProvider.preLayout(storiesViewPager.getCurrentDialogId(), messageId, () -> {
+            long preLayoutDid = storiesViewPager.getCurrentDialogId();
+            int preLayoutMessageId = messageId;
+            if (storiesList instanceof StoriesController.StoryRepostsList) {
+                final PeerStoriesView peerView = storiesViewPager.getCurrentPeerView();
+                int position = peerView == null ? 0 : peerView.getSelectedPosition();
+                TL_stories.StoryItem si = peerView == null || position < 0 || position >= peerView.storyItems.size() ? null : peerView.storyItems.get(position);
+                if (si != null) {
+                    preLayoutDid = si.dialogId;
+                    preLayoutMessageId = si.id;
+                }
+            }
+            placeProvider.preLayout(preLayoutDid, preLayoutMessageId, () -> {
                 updateTransitionParams();
                 if (transitionViewHolder.avatarImage != null) {
                     transitionViewHolder.avatarImage.setVisible(false, true);
@@ -2130,6 +2141,9 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
             if (storiesList instanceof StoriesController.SearchStoriesList && storyItem != null) {
                 did = storyItem.dialogId;
                 storyId = storyItem.messageId;
+            } else if (storiesList instanceof StoriesController.StoryRepostsList && storyItem != null) {
+                did = storyItem.dialogId;
+                storyId = storyItem.id;
             } else if (storiesList != null) {
                 storyId = dayStoryId;
             }

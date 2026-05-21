@@ -6795,7 +6795,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             isThreadPost = isThreadChat && messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.channel_post != 0 && messageObject.messageOwner.reply_to == null;
             isAvatarVisible = needDrawAvatar() && (currentPosition == null || currentPosition.edge);
             boolean drawAvatar = needDrawAvatar();
-            if (messageObject.customAvatarDrawable != null || messageObject.forceAvatar) {
+            if (messageObject.customAvatarDrawable != null || messageObject.forceAvatar || messageObject.messageOwner.guestchat_via_from != null) {
                 isAvatarVisible = true;
                 drawAvatar = true;
             }
@@ -13885,7 +13885,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     x = dp(15);
                     if (isSideMenuLeftMargin()) {
                         x += dp(ChatActivity.SIDE_MENU_WIDTH);
-                    } else if ((isChat || currentMessageObject.isRepostPreview) && isAvatarVisible && !isPlayingRound) {
+                    } else if ((isChat || currentMessageObject.isRepostPreview || currentMessageObject.messageOwner.guestchat_via_from != null) && isAvatarVisible && !isPlayingRound) {
                         x += dp(48);
                     }
                     if (currentPosition != null && !currentPosition.edge) {
