@@ -46,6 +46,13 @@ public class ChatActivityDraftMessageMeasureController {
         return hasAdditionalHeight;
     }
 
+    public boolean onMessageIdChanged(int oldMessageId, int newMessageId, long groupId) {
+        if (messageIdToOverride == oldMessageId) {
+            return setMessageIdToOverride(newMessageId, groupId);
+        }
+        return false;
+    }
+
     public boolean setMessageIdToOverride(int messageIdToOverride, long groupIdToOverride) {
         if (this.messageIdToOverride != messageIdToOverride || this.groupIdToOverride != groupIdToOverride) {
             this.messageIdToOverride = messageIdToOverride;

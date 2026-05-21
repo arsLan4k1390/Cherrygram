@@ -21,11 +21,13 @@ import androidx.dynamicanimation.animation.SpringForce;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedLinearLayout;
+import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.glass.GlassTabView;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.ListAnimator;
 import me.vkryl.android.util.ClickHelper;
 
@@ -466,6 +468,10 @@ public class MainTabsLayout extends AnimatedLinearLayout {
         tabsWithIgnoreClick.add(v);
     }
 
+    private final BoolAnimator animatorIsScaled = new BoolAnimator(0, (a, factor, c, g) -> {
+        setScaleX(lerp(1, 1.019f, factor));
+        setScaleY(lerp(1, 1.019f, factor));
+    }, CubicBezierInterpolator.EASE_OUT_QUINT, 380);
 
     private final ClickHelper clickHelper = new ClickHelper(new ClickHelper.Delegate() {
         @Override
@@ -492,22 +498,31 @@ public class MainTabsLayout extends AnimatedLinearLayout {
 
         @Override
         public boolean onLongPressRequestedAt(View view, float x, float y) {
+            checkPivot(view, x, y);
             isInLongPress = true;
             AndroidUtilities.cancelRunOnUIThread(restoreDrawSelector);
             setSkipDrawSelector(true);
             checkLongMove(x, y, true, false);
             invalidate();
+            longTouchStart();
             return true;
         }
 
         @Override
         public void onLongPressMove(View view, MotionEvent e, float x, float y, float startX, float startY) {
+            checkPivot(view, x, y);
             checkLongMove(x, y, false, false);
             invalidate();
         }
 
         @Override
+        public long getLongPressDuration() {
+            return ClickHelper.Delegate.super.getLongPressDuration() * 750 / 1000;
+        }
+
+        @Override
         public void onLongPressFinish(View view, float x, float y) {
+            checkPivot(view, x, y);
             checkLongMove(x, y, false, true);
             isInLongPress = false;
             AndroidUtilities.runOnUIThread(restoreDrawSelector, 450);
@@ -516,42 +531,44 @@ public class MainTabsLayout extends AnimatedLinearLayout {
             }
             lastLongSelectedView = null;
             invalidate();
+            longTouchEnd();
         }
 
         @Override
         public void onLongPressCancelled(View view, float x, float y) {
+            checkPivot(view, x, y);
             checkLongMove(x, y, false, true);
             isInLongPress = false;
             AndroidUtilities.runOnUIThread(restoreDrawSelector, 450);
             lastLongSelectedView = null;
             invalidate();
+            longTouchEnd();
         }
 
-        @Override
-        public void onClickTouchDown(View view, float x, float y) {
-            checkPivot(view, x, y);
+        private void longTouchStart() {
+            animatorIsScaled.setValue(true, true);
+
+            /*
             if (!scaleX.isRunning()) {
                 scaleX.setStartVelocity(-0.45f);
                 scaleY.setStartVelocity(-0.45f);
             }
             scaleX.animateToFinalPosition(1.012f);
             scaleY.animateToFinalPosition(1.012f);
+            */
         }
 
-        @Override
-        public void onClickTouchMove(View view, float x, float y) {
-            checkPivot(view, x, y);
-        }
+        private void longTouchEnd() {
+            animatorIsScaled.setValue(false, true);
 
-        @Override
-        public void onClickTouchUp(View view, float x, float y) {
-            checkPivot(view, x, y);
+            /*
             if (!scaleX.isRunning()) {
                 scaleX.setStartVelocity(0.25f);
                 scaleY.setStartVelocity(0.25f);
             }
             scaleX.animateToFinalPosition(1f);
             scaleY.animateToFinalPosition(1f);
+            */
         }
     });
 
@@ -614,8 +631,8 @@ public class MainTabsLayout extends AnimatedLinearLayout {
             pivotY = cy;
         }
 
-        pivotX = lerp(cx, pivotX, 0.95f);
-        pivotY = lerp(cy, pivotY, 2.83f);
+        pivotX = lerp(cx, pivotX, 1f);
+        pivotY = lerp(cy, pivotY, 3f);
 
         view.setPivotX(pivotX);
         view.setPivotY(pivotY);

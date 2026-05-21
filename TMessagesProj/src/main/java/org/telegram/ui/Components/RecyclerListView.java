@@ -1891,7 +1891,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
                             int count = sectionsAdapter.getCountForSection(startSection);
 
                             int pos = sectionsAdapter.getPositionInSectionForPosition(firstVisibleItem);
-                            int sectionOffsetY = maxBottom != 0 && maxBottom < (getMeasuredHeight() - getPaddingBottom()) ? 0 : sectionOffset;
+                            int sectionOffsetY = maxBottom != 0 && maxBottom < (getMeasuredHeight() - getPaddingBottom()) ? -paddingTop : sectionOffset;
 
                             if (pos == count - 1) {
                                 int headerHeight = pinnedHeader.getHeight();

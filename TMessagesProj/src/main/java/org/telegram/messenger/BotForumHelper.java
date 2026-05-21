@@ -2,6 +2,8 @@ package org.telegram.messenger;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
@@ -10,6 +12,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.DynamicDrawableSpan;
 import android.util.LongSparseArray;
+import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import androidx.annotation.Nullable;
@@ -402,12 +405,22 @@ public class BotForumHelper extends BaseController {
         }
     }
 
+    private final SharedPreferences preferences;
+
+    public void saveIsStreamingTopic(long dialogId, long topicId, boolean isStreaming) {
+        preferences.edit().putBoolean(dialogId + "_" + topicId, isStreaming).apply();
+    }
+
+    public boolean isStreamingTopic(long dialogId, long topicId) {
+        return preferences.getBoolean(dialogId + "_" + topicId, false);
+    }
 
 
     /** Instance **/
 
     private BotForumHelper(int currentAccount) {
         super(currentAccount);
+        preferences = ApplicationLoader.applicationContext.getSharedPreferences("bot_drafts" + currentAccount, Activity.MODE_PRIVATE);
     }
 
     private static volatile BotForumHelper[] Instance = new BotForumHelper[UserConfig.MAX_ACCOUNT_COUNT];

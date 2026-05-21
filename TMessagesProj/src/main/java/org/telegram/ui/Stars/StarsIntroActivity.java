@@ -1662,7 +1662,16 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                     spanString.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     setGiftImage(span.imageReceiver, transaction.stargift, 16);
                     titleTextView.setText(username);
-                    if (transaction.stargift_resale) {
+                    if (transaction.offer) {
+                        final SpannableStringBuilder sb = new SpannableStringBuilder("x ");
+                        sb.setSpan(new AnimatedEmojiSpan(transaction.stargift.getDocument(), subtitleTextView.getPaint().getFontMetricsInt()), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        if (!transaction.amount.negative()) {
+                            sb.append(getString(transaction.refund ? R.string.StarGiftTransactionGiftOfferRefund : R.string.StarGiftTransactionGiftSale));
+                        } else {
+                            sb.append(getString(transaction.refund ? R.string.StarGiftTransactionGiftSaleRefund : R.string.StarGiftTransactionGiftOffer));
+                        }
+                        subtitleTextView.setText(sb);
+                    } else if (transaction.stargift_resale) {
                         final SpannableStringBuilder sb = new SpannableStringBuilder("x ");
                         sb.setSpan(new AnimatedEmojiSpan(transaction.stargift.getDocument(), subtitleTextView.getPaint().getFontMetricsInt()), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         if (!transaction.amount.negative()) {
@@ -4136,7 +4145,17 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 final TL_stars.TL_starsTransactionPeer peer = (TL_stars.TL_starsTransactionPeer) transaction.peer;
                 final long peerId = DialogObject.getPeerDialogId(peer.peer);
                 long from_id, to_id;
-                if (transaction.stargift_resale) {
+                if (transaction.offer) {
+                    if (!negative) {
+                        tableView.addRow(getString(R.string.StarGiftReason), getString(transaction.refund ? R.string.StarGiftReasonOfferRefund : R.string.StarGiftReasonSale));
+                        to_id = selfId;
+                        from_id = peerId;
+                    } else {
+                        tableView.addRow(getString(R.string.StarGiftReason), getString(transaction.refund ? R.string.StarGiftReasonSale : R.string.StarGiftReasonOffer));
+                        to_id = peerId;
+                        from_id = selfId;
+                    }
+                } else if (transaction.stargift_resale) {
                     if (!negative) {
                         tableView.addRow(getString(R.string.StarGiftReason), getString(transaction.refund ? R.string.StarGiftReasonPurchase : R.string.StarGiftReasonSale));
                         to_id = selfId;

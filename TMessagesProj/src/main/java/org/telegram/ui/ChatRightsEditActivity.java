@@ -626,10 +626,11 @@ public class ChatRightsEditActivity extends BaseFragment implements Notification
                 }
                 sendMediaExpanded = !sendMediaExpanded;
                 updateRows(false);
+                listViewAdapter.notifyItemChanged(sendMediaRow);
                 if (sendMediaExpanded) {
-                    listViewAdapter.notifyItemRangeInserted(sendMediaRow + 1, 9);
+                    listViewAdapter.notifyItemRangeInserted(sendMediaRow + 1, 10);
                 } else {
-                    listViewAdapter.notifyItemRangeRemoved(sendMediaRow + 1, 9);
+                    listViewAdapter.notifyItemRangeRemoved(sendMediaRow + 1, 10);
                 }
                 return;
             } else if (position == channelMessagesRow) {
@@ -989,7 +990,7 @@ public class ChatRightsEditActivity extends BaseFragment implements Notification
                         value = bannedRights.send_plain = !bannedRights.send_plain;
                     }
                     if (!disabled) {
-                        if ((!bannedRights.send_plain || !bannedRights.embed_links || !bannedRights.send_inline || !bannedRights.send_photos || !bannedRights.send_videos || !bannedRights.send_audios || !bannedRights.send_docs || !bannedRights.send_voices || !bannedRights.send_roundvideos || !bannedRights.send_polls) && bannedRights.view_messages) {
+                        if ((!bannedRights.send_plain || !bannedRights.embed_links || !bannedRights.send_inline || !bannedRights.send_photos || !bannedRights.send_videos || !bannedRights.send_audios || !bannedRights.send_docs || !bannedRights.send_voices || !bannedRights.send_roundvideos || !bannedRights.send_polls || !bannedRights.send_reactions) && bannedRights.view_messages) {
                             bannedRights.view_messages = false;
                         }
                     }
@@ -2245,6 +2246,7 @@ public class ChatRightsEditActivity extends BaseFragment implements Notification
         bannedRights.send_roundvideos = !enabled;
         bannedRights.embed_links = !enabled;
         bannedRights.send_polls = !enabled;
+        bannedRights.send_reactions = !enabled;
         AndroidUtilities.updateVisibleRows(listView);
     }
 
@@ -2327,8 +2329,9 @@ public class ChatRightsEditActivity extends BaseFragment implements Notification
 
     private boolean allDefaultMediaBanned() {
         return defaultBannedRights.send_photos && defaultBannedRights.send_videos && defaultBannedRights.send_stickers
-                && defaultBannedRights.send_audios && defaultBannedRights.send_docs && defaultBannedRights.send_voices &&
-                defaultBannedRights.send_roundvideos && defaultBannedRights.embed_links && defaultBannedRights.send_polls;
+            && defaultBannedRights.send_audios && defaultBannedRights.send_docs && defaultBannedRights.send_voices
+            && defaultBannedRights.send_roundvideos && defaultBannedRights.embed_links && defaultBannedRights.send_polls
+            && defaultBannedRights.send_reactions;
     }
 
     private boolean isExpandableSendMediaRow(int position) {

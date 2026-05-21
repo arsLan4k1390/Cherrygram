@@ -8718,6 +8718,8 @@
     <string name="StarGiftReasonRemovedDescription">Removed Description</string>
     <string name="StarGiftReasonSale">Gift Sale</string>
     <string name="StarGiftReasonPurchase">Gift Purchase</string>
+    <string name="StarGiftReasonOffer">Gift Offer</string>
+    <string name="StarGiftReasonOfferRefund">Gift Offer Refund</string>
     <string name="StarGiftUpgradeGiftFrom">Gift From</string>
     <string name="StarGiftTransactionGiftTransfer">Gift Transfer</string>
     <string name="StarGiftTransactionGiftTransferRefund">Refunded Gift Transfer</string>
@@ -8725,6 +8727,8 @@
     <string name="StarGiftTransactionGiftSaleRefund">Refunded Gift Sale</string>
     <string name="StarGiftTransactionGiftPurchase">Gift Purchase</string>
     <string name="StarGiftTransactionGiftPurchaseRefund">Refunded Gift Purchase</string>
+    <string name="StarGiftTransactionGiftOffer">Gift Offer</string>
+    <string name="StarGiftTransactionGiftOfferRefund">Refunded Gift Offer</string>
     <string name="StarSubscriptionPurchase">Monthly subscription fee</string>
     <string name="StarMySubscriptions">My subscriptions</string>
     <string name="StarMySubscriptionsExpand">Show More</string>
