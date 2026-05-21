@@ -17,6 +17,7 @@ public final class AiTonesController {
     public long hash;
 
     public boolean open;
+    private boolean loadedLocal;
 
     public AiTonesController(int currentAccount) {
         this.currentAccount = currentAccount;
@@ -70,19 +71,22 @@ public final class AiTonesController {
     }
 
     public void load() {
-        try {
-            final String base64 = MessagesController.getInstance(currentAccount).getMainSettings().getString("ai_styles", null);
-            if (base64 != null) {
-                final SerializedData data = new SerializedData(Base64.getDecoder().decode(base64));
-                final TL_aicompose.Tones tones = TL_aicompose.Tones.TLdeserialize(data, data.readInt32(true), true);
-                if (tones instanceof TL_aicompose.TL_tones) {
-                    hash = ((TL_aicompose.TL_tones) tones).hash;
-                    this.tones.clear();
-                    this.tones.addAll(((TL_aicompose.TL_tones) tones).tones);
+        if (!loadedLocal) {
+            loadedLocal = true;
+            try {
+                final String base64 = MessagesController.getInstance(currentAccount).getMainSettings().getString("ai_styles", null);
+                if (base64 != null) {
+                    final SerializedData data = new SerializedData(Base64.getDecoder().decode(base64));
+                    final TL_aicompose.Tones tones = TL_aicompose.Tones.TLdeserialize(data, data.readInt32(true), true);
+                    if (tones instanceof TL_aicompose.TL_tones) {
+                        hash = ((TL_aicompose.TL_tones) tones).hash;
+                        this.tones.clear();
+                        this.tones.addAll(((TL_aicompose.TL_tones) tones).tones);
+                    }
                 }
+            } catch (Exception e) {
+                FileLog.e(e);
             }
-        } catch (Exception e) {
-            FileLog.e(e);
         }
         request();
     }
@@ -120,6 +124,7 @@ public final class AiTonesController {
 
     public void remove(TL_aicompose.AiComposeTone tone) {
         tones.remove(tone);
+        save();
         notifyUpdate();
     }
 
@@ -144,7 +149,8 @@ public final class AiTonesController {
             }
         }
         if (!has) {
-            tones.add(tone);
+            tones.add(0, tone);
+            save();
             notifyUpdate();
         }
     }
