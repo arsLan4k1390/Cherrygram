@@ -126,6 +126,7 @@
         tools:replace="android:supportsRtl"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
+        android:networkSecurityConfig="@xml/network_security_config"
     >
         <!-- usesCleartextTraffic for browser supporting opening http:// links -->
 
@@ -758,15 +759,15 @@
             android:enabled="true"
             android:foregroundServiceType="mediaPlayback"
         />
-        <service
-            android:name=".MusicBrowserService"
-            android:exported="true"
-            android:foregroundServiceType="mediaPlayback"
-        >
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService"/>
-            </intent-filter>
-        </service>
+<!--        <service-->
+<!--            android:name=".MusicBrowserService"-->
+<!--            android:exported="true"-->
+<!--            android:foregroundServiceType="mediaPlayback"-->
+<!--        >-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.media.browse.MediaBrowserService"/>-->
+<!--            </intent-filter>-->
+<!--        </service>-->
         <service
             android:name=".voip.TelegramConnectionService"
             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
@@ -928,8 +929,8 @@
 
         <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="false" />
 
-        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" tools:node="remove" />
-        <meta-data android:name="com.google.android.gms.car.application" tools:node="remove" />
+<!--        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" tools:node="remove" />-->
+<!--        <meta-data android:name="com.google.android.gms.car.application" tools:node="remove" />-->
 
         <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="face,barcode" />
 

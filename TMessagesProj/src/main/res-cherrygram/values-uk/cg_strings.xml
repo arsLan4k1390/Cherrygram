@@ -112,6 +112,8 @@
     <string name="CG_CopyPhoto">Скопіювати фото</string>
     <string name="CG_CopyPhotoAsSticker">Копіювати фото та наліпки</string>
     <string name="CG_SendPhotoAsSticker">Надіслати як наліпку</string>
+    <string name="CG_EnableMotionPhotos">Увімкнути фото з рухом</string>
+    <string name="CG_DisableMotionPhotos">Вимкнути фото з рухом</string>
     <string name="CG_PhotoCopied">Фото скопійовано до буфера обміну.</string>
     <string name="CG_SaveSticker">Зберегти наліпку</string>
     <string name="CG_StickerSavedHint">Наліпку збережено до завантажень</string>
@@ -130,12 +132,13 @@
     <string name="CG_Sleep_Timer">Таймер сну встановлено на **%s**</string>
     <string name="CG_Sleep_Disabled">Таймер сну вимкнено</string>
     <string name="CG_Sleep_Permission">Будь ласка, дозвольте Cherrygram встановлювати точні будильники, щоб таймер сну працював належним чином.</string>
-    <string name="CG_QR_Hint">This is a digital copy of the scanned QR code. Tap to copy it to the clipboard, or press and hold to save it to your gallery.</string>
-    <string name="CG_WifiConnect">Connect</string>
-    <string name="CG_WifiSuccess">Successfully connected to Wi-Fi.</string>
-    <string name="CG_WifiFailed">Failed to connect to Wi-Fi.</string>
-    <string name="CG_WifiDisabled">Wi-Fi is disabled.</string>
-    <string name="CG_AreYouSureToLogin">Are you sure you want to log in to this account on another device?</string>
+    <string name="CG_QR_Hint">Це цифрова копія QR коду. Натисніть, щоб скопіювати його в буфер обміну, або натисніть і утримуйте, щоб зберегти його в галереї.</string>
+    <string name="CG_WifiConnect">Під\'єднатися</string>
+    <string name="CG_WifiSuccess">Успішно під\'єднано до Wi-Fi.</string>
+    <string name="CG_WifiFailed">Не вдалося під\'єднатися до Wi-Fi.</string>
+    <string name="CG_WifiDisabled">Wi-Fi вимкнено.</string>
+    <string name="CG_AreYouSureToLogin">Ви впевнені, що хочете увійти в цей обліковий запис на іншому пристрої?</string>
+    <string name="CG_CreateQR">Створити QR код</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -150,6 +153,20 @@
     <string name="CGP_Source">Вихідний код</string>
     <string name="CGP_Crowdin">Допомогти з перекладом</string>
     <string name="CGP_Header_Categories">Категорії</string>
+    <string name="CGP_General_Desc">Основні налаштування та функції додатку, що не стосуються певних розділів</string>
+    <string name="CGP_Appearance_Desc">Зовнішній вигляд програми та налаштування інтерфейсу</string>
+    <string name="CGP_Folders_Desc">Налаштування зовнішнього вигляду тек, налаштування макета та переміщення панелі тек униз</string>
+    <string name="CGP_BottomTabs_Desc">Налаштовуйте, упорядковуйте та змінюйте порядок нижніх вкладок на головному екрані</string>
+    <string name="CGP_MessagesProfiles_Desc">Зображення Преміум емодзі, інформації про ID/DC та додаткові елементи профілю/повідомлень</string>
+    <string name="CGP_Chats_Desc">Інтерфейс чату та налаштування повідомлень</string>
+    <string name="CGP_Messages_Desc">Установки повідомлень, меню дій, зовнішній вигляд та взаємодія</string>
+    <string name="CGP_MessagesFilter_Desc">Фільтрація повідомлень та захист від спаму</string>
+    <string name="CGP_Camera_Desc">Налаштування камери та фото/відеозйомки</string>
+    <string name="CGP_Experimental_Desc">Експериментальні, нестабільні та функції програми, що знаходяться в розробці</string>
+    <string name="CGP_Privacy_Desc">Налаштування конфіденційності, блокування/приховування чату та захисту даних</string>
+    <string name="CGP_ADS">Watch ADS</string>
+    <string name="CGP_ADS_Advertiser">Advertiser:</string>
+    <string name="CGP_ADS_Click">Click the ad for more information</string>
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">Основне</string>
@@ -305,8 +322,9 @@
 Якщо збіг знайдено всередині посилання, все повідомлення буде автоматично приховано під спойлером, незалежно від того, чи з’являється ключове слово у видимому тексті.
 \n\nЦе допомагає захиститися від замаскованого спаму, прихованої реклами або фішингових доменів, які інакше могли б обійти звичайну фільтрацію на основі тексту    </string>
     <string name="CP_Message_Filtering_FilterBlocked">Фільтрувати повідомлення від заблокованих користувачів</string>
-    <string name="CP_Message_Filtering_HideBlocked">Приховати повідомлення від заблокованих користувачів</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">Коли цю опцію увімкнено, всі повідомлення та переслані повідомлення від заблокованих користувачів будуть автоматично приховані під спойлером.</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">Коли увімкнено, всі повідомлення та надіслані повідомлення від заблокованих користувачів будуть автоматично фільтруватися.</string>
+    <string name="CP_Message_Filtering_FullyHide">Приховати повідомлення</string>
+    <string name="CP_Message_Filtering_FullyHide_Desc">Повністю приховувати відфільтровані повідомлення замість приховування тексту за допомогою ефекту спойлера.</string>
     <string name="CP_Message_Filtering_HideAll">Спойлер усього повідомлення</string>
     <string name="CP_Message_Filtering_HideAllDesc">Приховує весь текст повідомлення та медіа під спойлером, якщо воно містить слово з фільтра.</string>
     <string name="CP_Message_Filtering_Collapse">Згорнути повідомлення</string>
@@ -322,6 +340,7 @@
     <string name="CP_AutoPauseVideo">Зупиняти вiдео</string>
     <string name="CP_AutoPauseVideo_Desc">При блокуванні екрана або перемиканні в фоновий режим</string>
     <string name="CP_DisableVibration">Вимкнути вібрацію</string>
+    <string name="CP_OpenLinksInIV">Відкривати посилання у миттєвому перегляді</string>
     <string name="CP_VideoSeekDuration">Подвійний тап для перемотування відео (секунди)</string>
     <string name="CP_VibrateInChats">Вібрація в чаті</string>
     <string name="CP_VibrateInChats_Desc">Коротка вібрація при отриманні повідомлення в чатах</string>

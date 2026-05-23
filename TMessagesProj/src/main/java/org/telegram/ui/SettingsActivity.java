@@ -39,6 +39,7 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -104,6 +105,7 @@ import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FloatingDebug.FloatingDebugController;
 import org.telegram.ui.Components.FragmentFloatingButton;
+import org.telegram.ui.Components.HintsController;
 import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.ImageUpdater;
 import org.telegram.ui.Components.InstantCameraView;
@@ -301,7 +303,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
         actionBar.setUseContainerForTitles();
-        actionBar.setTitle(getString(R.string.Settings));
+        actionBar.setTitle(getString(R.string.Settings), null, true);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -723,7 +725,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     getMessagesController().removeSuggestion(0, "VALIDATE_PHONE_NUMBER");
                 }*/
                 "", null,
-                getString(R.string.AppUpdateRemindMeLater), v -> {
+                getString(R.string.Understood), v -> {
                     getMessagesController().removeSuggestion(0, "VALIDATE_PHONE_NUMBER");
                 }
             ));
@@ -783,7 +785,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         TLRPC.TL_attachMenuBots menuBots = MediaDataController.getInstance(UserConfig.selectedAccount).getAttachMenuBots();
         if (menuBots != null && menuBots.bots != null && !menuBots.bots.isEmpty()) {
             for (TLRPC.TL_attachMenuBot attachMenuBot : menuBots.bots) {
-                final int WALLET_BOT_ID = 1985737506;
+                final long WALLET_BOT_ID = 1985737506L;
                 if (attachMenuBot.show_in_side_menu && attachMenuBot.bot_id == WALLET_BOT_ID) {
                     UItem item = SettingCell.Factory.ofBot(attachMenuBot, 0xFF1BA4ED, 0xFF1488E1, R.drawable.settings_wallet);
                     item.object = attachMenuBot;
@@ -792,7 +794,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             }
         }
 
-//        items.add(SettingCell.Factory.of(14, 0, "Wallet"));
         if (!getMessagesController().premiumFeaturesBlocked()) {
             items.add(SettingCell.Factory.of(15, 0xFFF45255, 0xFFDF3955, R.drawable.settings_business, getString(R.string.TelegramBusiness)));
         }
@@ -863,7 +864,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         telegramSettingsHelper.handleOnClick(item);
         switch (item.id) {
             case 1:
-                if (telegramSettingsHelper.showMyProfile()) {
+                if (TelegramSettingsHelper.Helper.INSTANCE.showMyProfile()) {
                     Bundle args = new Bundle();
                     args.putLong("user_id", UserConfig.getInstance(currentAccount).getClientUserId());
                     args.putBoolean("my_profile", true);
@@ -1280,6 +1281,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
         private final Theme.ResourcesProvider resourcesProvider;
         private final Background iconBackground;
+        private final FrameLayout iconLayout;
         private final ImageView iconView;
         private final LinearLayout textLayout;
         private final TextView titleView;
@@ -1292,9 +1294,12 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             this.resourcesProvider = resourcesProvider;
             setOrientation(HORIZONTAL);
 
+            iconLayout = new FrameLayout(context);
+            iconLayout.setBackground(iconBackground = new Background());
+
             iconView = new ImageView(context);
-            iconView.setScaleType(ImageView.ScaleType.CENTER);
-            iconView.setBackground(iconBackground = new Background());
+            iconView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            iconLayout.addView(iconView, LayoutHelper.createFrame(24, 24, Gravity.CENTER));
 
             textLayout = new LinearLayout(context);
             textLayout.setOrientation(VERTICAL);
@@ -1305,7 +1310,14 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
             subtitleView = new TextView(context);
             subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-            textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 4, 0, 0));
+            if (cgSettings) {
+                subtitleView.setMaxLines(5);
+                subtitleView.setEllipsize(TextUtils.TruncateAt.END);
+                subtitleView.setLineSpacing(dp(2), 0.92f);
+                textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 1, 0, 0));
+            } else {
+                textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 4, 0, 0));
+            }
 
             counterView = new TextView(context);
             counterView.setPadding(dp(6.66f), 0, dp(6.66f), 0);
@@ -1341,9 +1353,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
                 addView(valueView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 20, 0, 0, 0));
                 addView(textLayout, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1, Gravity.CENTER_VERTICAL | Gravity.FILL_HORIZONTAL, 20, 0, 18, 0));
-                addView(iconView, LayoutHelper.createLinear(28, 28, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 0, 0, 18, 0));
+                addView(iconLayout, LayoutHelper.createLinear(28, 28, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 0, 0, 18, 0));
             } else {
-                addView(iconView, LayoutHelper.createLinear(28, 28, Gravity.CENTER_VERTICAL | Gravity.LEFT, 18, 0, 0, 0));
+                addView(iconLayout, LayoutHelper.createLinear(28, 28, Gravity.CENTER_VERTICAL | Gravity.LEFT, 18, 0, 0, 0));
                 addView(textLayout, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1, Gravity.CENTER_VERTICAL | Gravity.FILL_HORIZONTAL, 18, 0, 20, 0));
                 addView(valueView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 0, 0, 20, 0));
 
@@ -1370,7 +1382,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             CharSequence subtitle,
             CharSequence value
         ) {
-            iconView.setVisibility(icon != 0 ? View.VISIBLE : View.GONE);
+            iconLayout.setVisibility(icon != 0 ? View.VISIBLE : View.GONE);
             titleView.setTranslationX(icon == 0 ? dp(2) : 0);
             subtitleView.setTranslationX(icon == 0 ? dp(2) : 0);
 
@@ -1388,8 +1400,41 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(
                 MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(dp(twoLines ? 60 : 50), MeasureSpec.EXACTLY)
+                MeasureSpec.makeMeasureSpec(
+                        cgSettings ? 0 : dp(twoLines ? 60 : 50),
+                        cgSettings ? MeasureSpec.UNSPECIFIED : MeasureSpec.EXACTLY
+                )
             );
+
+            if (cgSettings) {
+                int lines = 0;
+                if (subtitleView.getVisibility() == View.VISIBLE) {
+                    Layout layout = subtitleView.getLayout();
+                    if (layout != null) {
+                        lines = layout.getLineCount();
+                    } else {
+                        subtitleView.measure(
+                                MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.AT_MOST),
+                                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+                        );
+                        lines = subtitleView.getLineCount();
+                    }
+                }
+
+                int minHeight;
+                if (lines >= 2) {
+                    minHeight = dp(65);
+                } else if (lines == 1) {
+                    minHeight = dp(60);
+                } else {
+                    minHeight = dp(50);
+                }
+
+                setMeasuredDimension(
+                        getMeasuredWidth(),
+                        Math.max(minHeight, getMeasuredHeight())
+                );
+            }
         }
 
         public static class Background extends Drawable {
@@ -1488,6 +1533,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             public static UItem of(int id, int iconColorTop, int iconColorBottom, int icon, CharSequence title, CharSequence subtitle) {
                 return of(id, iconColorTop, iconColorBottom, icon, title, subtitle, null);
             }
+            public static UItem of(int id, int iconColorTop, int iconColorBottom, int icon, CharSequence title, CharSequence subtitle, boolean cgSettings) {
+                SettingCell.cgSettings = cgSettings;
+                return of(id, iconColorTop, iconColorBottom, icon, title, subtitle, null);
+            }
             public static UItem of(int id, int iconColorTop, int iconColorBottom, int icon, CharSequence title, CharSequence subtitle, CharSequence value) {
 
                 iconColorTop = MonetHelper.getSettingsIconBackgroundColor(iconColorTop);
@@ -1519,6 +1568,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
 
         /** Cherrygram start */
+        public static boolean cgSettings = false;
+
         private Runnable onArrowClick;
         private final ImageView arrowView;
         private final ImageView starsBadgeView;
@@ -1786,9 +1837,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 getMessagesStorage().clearSentMedia();
                 SharedConfig.setNoSoundHintShowed(false);
                 SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
-                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("searchpostsnew").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("voicepausehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("groupEmojiPackHintShown").remove("newppsms").remove("monetizationadshint").remove("seekSpeedHintShowed").remove("unsupport_video/av01").remove("channelgifthint").remove("statusgiftpage").remove("multistorieshint").remove("channelsuggesthint").remove("trimvoicehint").remove("taptostoryhighlighthint").remove("proxycheckstatusip").remove("callmiconstart").remove("showchattagsinfo").remove("language_showed2").remove("aihintshown").apply();
+                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("searchpostsnew").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("voicepausehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("newppsms").remove("monetizationadshint").remove("seekSpeedHintShowed").remove("unsupport_video/av01").remove("statusgiftpage").remove("multistorieshint").remove("trimvoicehint").remove("taptostoryhighlighthint").remove("proxycheckstatusip").remove("callmiconstart").remove("showchattagsinfo").remove("language_showed2").remove("aihintshown").remove("savedmsgschatshint").apply();
+                HintsController.resetAll();
                 MessagesController.getEmojiSettings(currentAccount).edit().remove("featured_hidden").remove("emoji_featured_hidden").commit();
-                MessagesController.getGlobalNotificationsSettings().edit().remove("disable_sharing_learn").apply();
+                MessagesController.getGlobalNotificationsSettings().edit().remove("disable_sharing_learn").remove("askedAboutFSILockscreen").apply();
                 SharedConfig.textSelectionHintShows = 0;
                 SharedConfig.lockRecordAudioVideoHint = 0;
                 SharedConfig.stickersReorderingHintUsed = false;
@@ -2193,20 +2245,20 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         final TLRPC.VideoSize videoSize = photos_photo.photo.video_sizes.isEmpty() ? null : FileLoader.getClosestVideoSizeWithSize(photos_photo.photo.video_sizes, 1000);
                         user.photo = new TLRPC.TL_userProfilePhoto();
                         user.photo.photo_id = photos_photo.photo.id;
-                        if (small != null) {
+                        if (user.photo.photo_small != null && small != null && small.location != null) {
                             user.photo.photo_small = small.location;
                         }
-                        if (big != null) {
+                        if (user.photo.photo_big != null && big != null && big.location != null) {
                             user.photo.photo_big = big.location;
                         }
 
-                        if (small != null && avatar != null) {
+                        if (small != null && small.location != null && avatar != null) {
                             final File destFile = FileLoader.getInstance(currentAccount).getPathToAttach(small, true);
                             final File src = FileLoader.getInstance(currentAccount).getPathToAttach(avatar, true);
                             src.renameTo(destFile);
                             final String oldKey = avatar.volume_id + "_" + avatar.local_id + "@90_90";
                             final String newKey = small.location.volume_id + "_" + small.location.local_id + "@90_90";
-                            ImageLoader.getInstance().replaceImageInCache(oldKey, newKey, ImageLocation.getForUserOrChat(user, ImageLocation.TYPE_SMALL), false);
+                            ImageLoader.getInstance().replaceImageInCache(oldKey, newKey, ImageLocation.getForUserOrChat(currentAccount, user, ImageLocation.TYPE_SMALL), false);
                         }
 
                         if (videoSize != null && videoPath != null) {

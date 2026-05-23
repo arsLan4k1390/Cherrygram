@@ -19,11 +19,11 @@
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">visto pela última vez há pouco</string>
-    <string name="CG_LastSeenMinutes_one">visto pela última vez há %1$d minutos</string>
+    <string name="CG_LastSeenMinutes_one">visto pela última vez há %1$d minuto</string>
     <string name="CG_LastSeenMinutes_few">visto pela última vez há %1$d minutos</string>
     <string name="CG_LastSeenMinutes_many">visto pela última vez há %1$d minutos</string>
     <string name="CG_LastSeenMinutes_other">visto pela última vez há %1$d minutos</string>
-    <string name="CG_LastSeenHours_one">visto pela última vez há %1$d horas</string>
+    <string name="CG_LastSeenHours_one">visto pela última vez há %1$d hora</string>
     <string name="CG_LastSeenHours_few">visto pela última vez há %1$d horas</string>
     <string name="CG_LastSeenHours_many">visto pela última vez há %1$d horas</string>
     <string name="CG_LastSeenHours_other">visto pela última vez há %1$d horas</string>
@@ -114,6 +114,8 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CG_CopyPhoto">Copiar fotografia</string>
     <string name="CG_CopyPhotoAsSticker">Copiar fotografia como autocolante</string>
     <string name="CG_SendPhotoAsSticker">Enviar como figurinha</string>
+    <string name="CG_EnableMotionPhotos">Ativar fotos em movimento</string>
+    <string name="CG_DisableMotionPhotos">Desativar fotos em movimento</string>
     <string name="CG_PhotoCopied">Fotografia copiada para a área de transferência.</string>
     <string name="CG_SaveSticker">Guardar autocolante</string>
     <string name="CG_StickerSavedHint">Autocolante guardado em transferências</string>
@@ -132,12 +134,13 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CG_Sleep_Timer">Temporizador de sono está definido para **%s**</string>
     <string name="CG_Sleep_Disabled">Temporizador de sono está desativado</string>
     <string name="CG_Sleep_Permission">Por favor permita o Cherrygram para agendar alarmes exatos para que o temporizador de sono possa funcionar corretamente.</string>
-    <string name="CG_QR_Hint">Esta é uma cópia digital do código QR escaneado. Toque para copiá-lo para a área de transferência ou pressione e segure para salvá-lo na sua galeria.</string>
+    <string name="CG_QR_Hint">Esta é uma cópia digital do código QR. Toque para copiá-lo para a área de transferência ou pressione e segure para salvá-lo na sua galeria.</string>
     <string name="CG_WifiConnect">Conectar</string>
     <string name="CG_WifiSuccess">Conexão Wi-Fi estabelecida com sucesso.</string>
     <string name="CG_WifiFailed">Falha ao conectar-se ao Wi-Fi.</string>
     <string name="CG_WifiDisabled">O Wi-Fi está desativado.</string>
     <string name="CG_AreYouSureToLogin">Tem certeza de que deseja entrar nesta conta em outro dispositivo?</string>
+    <string name="CG_CreateQR">Criar Código QR</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -152,6 +155,20 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CGP_Source">Código-fonte</string>
     <string name="CGP_Crowdin">Ajudar com a tradução</string>
     <string name="CGP_Header_Categories">Categorias</string>
+    <string name="CGP_General_Desc">Configurações e recursos principais do aplicativo não relacionados a seções específicas sections</string>
+    <string name="CGP_Appearance_Desc">Personalização da aparência e da interface do aplicativo</string>
+    <string name="CGP_Folders_Desc">Configurações de aparência da pasta, personalização do layout e movimentação da barra de pastas para a parte inferior</string>
+    <string name="CGP_BottomTabs_Desc">Personalize, organize e reordene as abas inferiores na tela principal.</string>
+    <string name="CGP_MessagesProfiles_Desc">Exibição de emojis Premium, informações de ID/DC e elementos extras de perfil/mensagem</string>
+    <string name="CGP_Chats_Desc">Interface de bate-papo e configurações de mensagens</string>
+    <string name="CGP_Messages_Desc">Configurações de mensagens, menus de ação, aparência e interações.</string>
+    <string name="CGP_MessagesFilter_Desc">Filtragem de mensagens e proteção contra spam</string>
+    <string name="CGP_Camera_Desc">Configurações da câmera e de captura de fotos/vídeos</string>
+    <string name="CGP_Experimental_Desc">Funcionalidades experimentais, instáveis e em desenvolvimento no aplicativo</string>
+    <string name="CGP_Privacy_Desc">Configurações de privacidade, bloqueio/ocultação de bate-papo e proteção de dados</string>
+    <string name="CGP_ADS">Watch ADS</string>
+    <string name="CGP_ADS_Advertiser">Advertiser:</string>
+    <string name="CGP_ADS_Click">Click the ad for more information</string>
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">Geral</string>
@@ -309,8 +326,9 @@ as configurações do sistema. Esta característica apaga completamente todas as
 Se uma correspondência for encontrada dentro do link, toda a mensagem será automaticamente ocultada sob um spoiler, independentemente de a palavra-chave aparecer ou não no texto visível.
 \n\nIsso ajuda a proteger contra spam disfarçado, publicidade oculta ou domínios de phishing que poderiam, de outra forma, burlar a filtragem regular baseada em texto    </string>
     <string name="CP_Message_Filtering_FilterBlocked">Filtrar mensagens de usuários bloqueados</string>
-    <string name="CP_Message_Filtering_HideBlocked">Ocultar mensagens de usuários bloqueados</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">Quando ativada, todas as mensagens e mensagens encaminhadas de usuários bloqueados serão automaticamente ocultadas em um spoiler.</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">Quando ativada, todas as mensagens e mensagens encaminhadas de usuários bloqueados serão filtradas automaticamente.</string>
+    <string name="CP_Message_Filtering_FullyHide">Ocultar mensagens</string>
+    <string name="CP_Message_Filtering_FullyHide_Desc">Ocultar completamente as mensagens filtradas em vez de ocultar o texto sob um efeito de spoiler.</string>
     <string name="CP_Message_Filtering_HideAll">Spoiler na mensagem inteira</string>
     <string name="CP_Message_Filtering_HideAllDesc">Oculta todo o texto da mensagem e a mídia sob um spoiler se contiver uma palavra filtrada.</string>
     <string name="CP_Message_Filtering_Collapse">Recolher mensagens</string>
@@ -326,6 +344,7 @@ Se uma correspondência for encontrada dentro do link, toda a mensagem será aut
     <string name="CP_AutoPauseVideo">Pausar vídeo automaticamente</string>
     <string name="CP_AutoPauseVideo_Desc">Ao bloquear a tela ou alternar para o plano de fundo</string>
     <string name="CP_DisableVibration">Desativar a vibração</string>
+    <string name="CP_OpenLinksInIV">Abra links na Visualização Instantânea</string>
     <string name="CP_VideoSeekDuration">Toque duas vezes para procurar vídeo (segundos)</string>
     <string name="CP_VibrateInChats">Vibração no chat</string>
     <string name="CP_VibrateInChats_Desc">Faça uma vibração curta ao receber uma mensagem no chat</string>

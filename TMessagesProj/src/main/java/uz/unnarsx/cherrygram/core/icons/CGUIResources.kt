@@ -12,9 +12,8 @@ package uz.unnarsx.cherrygram.core.icons
 import android.annotation.SuppressLint
 import android.content.res.*
 import android.graphics.drawable.Drawable
-import android.util.Log
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
 
 @Suppress("DEPRECATION")
@@ -46,7 +45,7 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         cacheHits = 0
         cacheMisses = 0
 
-        if (CherrygramCoreConfig.isDevBuild()) Log.d("CGUIResources", "🗑 Cache cleared automatically (limit exceeded)!")
+        CherrygramLogger.d("CGUIResources") { "🗑 Cache cleared automatically (limit exceeded)!" }
     }
 
     private fun getCachedDrawable(
@@ -56,13 +55,13 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
     ): Drawable? {
         return drawableCache.getOrPut(cacheKey) {
             cacheMisses++
-            if (CherrygramCoreConfig.isDevBuild()) Log.w("CGUIResources", "🛑 Cache MISS ($cacheMisses misses) - Loading new drawable for id=$wrappedId, key=$cacheKey")
+            CherrygramLogger.d("CGUIResources") { "🛑 Cache MISS ($cacheMisses misses) - Loading new drawable for id=$wrappedId, key=$cacheKey" }
             loader()
         }?.let { drawable ->
             drawable.constantState?.newDrawable(wrapped, cacheKey.third)?.mutate() ?: drawable
         }?.also {
             cacheHits++
-            if (CherrygramCoreConfig.isDevBuild()) Log.d("CGUIResources", "✅ Cache HIT ($cacheHits hits) - Using cached drawable for id=$wrappedId, key=$cacheKey")
+            CherrygramLogger.d("CGUIResources") { "✅ Cache HIT ($cacheHits hits) - Using cached drawable for id=$wrappedId, key=$cacheKey" }
         }
     }
 

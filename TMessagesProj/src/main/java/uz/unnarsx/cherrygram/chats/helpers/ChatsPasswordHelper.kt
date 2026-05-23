@@ -15,14 +15,13 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.telegram.messenger.BaseController
 import org.telegram.messenger.DialogObject
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.FingerprintController
 import org.telegram.messenger.MessageObject
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC.MessageEntity
 import org.telegram.tgnet.TLRPC.TL_messageEntitySpoiler
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 
 class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
@@ -43,7 +42,7 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     fun getPasscodeArray(): String = "locked_chats_list"
 
     fun saveArrayList(list: ArrayList<String>, key: String) {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил saveArrayList")
+        CherrygramLogger.d { "запросил saveArrayList" }
 
         if (key == getPasscodeArray()) {
             lockedChatsCache = HashSet(list)
@@ -56,16 +55,16 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun getArrayList(key: String): ArrayList<String> {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил кешированный getArrayList для паролей")
+        CherrygramLogger.d { "запросил кешированный getArrayList для паролей" }
 
         if (key == getPasscodeArray() && lockedChatsCache != null) {
             return ArrayList(lockedChatsCache!!)
         }
 
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил getArrayList для паролей")
+        CherrygramLogger.d { "запросил getArrayList для паролей" }
 
         val json = messagesController.mainSettings.getString(key, null)
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("getArrayList: $json")
+        CherrygramLogger.d { "getArrayList: $json" }
         val list: ArrayList<String> = Gson().fromJson(json, object : TypeToken<ArrayList<String>>() {}.type)
             ?: arrayListOf(userConfig.clientUserId.toString())
 
@@ -77,7 +76,7 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun isChatLocked(chatId: Long): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил isChatLocked")
+        CherrygramLogger.d { "запросил isChatLocked" }
         if (chatId == 0L || !CherrygramPrivacyConfig.askBiometricsToOpenChat) return false
 
         if (lockedChatsCache == null) {
@@ -89,7 +88,7 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun isChatLocked(messageObject: MessageObject): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил isChatLocked2")
+        CherrygramLogger.d { "запросил isChatLocked2" }
         return CherrygramPrivacyConfig.askBiometricsToOpenChat && messageObject.messageOwner.message != null
                 && !messageObject.isStoryReactionPush && !messageObject.isStoryPush
                 && !messageObject.isStoryMentionPush && !messageObject.isStoryPushHidden
@@ -97,7 +96,7 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun isEncryptedChat(chatId: Long): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил isEncryptedChat")
+        CherrygramLogger.d { "запросил isEncryptedChat" }
         if (CherrygramPrivacyConfig.askBiometricsToOpenEncrypted) {
             val encID = DialogObject.getEncryptedChatId(chatId)
             val encryptedChat = messagesController.getEncryptedChat(encID)
@@ -108,7 +107,7 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun isEncryptedChat(messageObject: MessageObject): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил isEncryptedChat2")
+        CherrygramLogger.d { "запросил isEncryptedChat2" }
         if (CherrygramPrivacyConfig.askBiometricsToOpenEncrypted) {
             val encID = DialogObject.getEncryptedChatId(messageObject.dialogId)
             val encryptedChat = messagesController.getEncryptedChat(encID)
@@ -122,12 +121,12 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun checkLockedChatsEntities(messageObject: MessageObject): ArrayList<MessageEntity>? {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил checkLockedChatsEntities")
+        CherrygramLogger.d { "запросил checkLockedChatsEntities" }
         return checkLockedChatsEntities(messageObject, messageObject.messageOwner.entities)
     }
 
     fun checkLockedChatsEntities(messageObject: MessageObject, original: ArrayList<MessageEntity>?): ArrayList<MessageEntity>? {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил checkLockedChatsEntities2")
+        CherrygramLogger.d { "запросил checkLockedChatsEntities2" }
         return if (isChatLocked(messageObject) || isEncryptedChat(messageObject)) {
             val entities = original?.let { ArrayList(it) }
             val spoiler = TL_messageEntitySpoiler()
@@ -145,7 +144,7 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     )
 
     fun replaceStringToSpoilers(originalText: String?, force: Boolean): String? {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил replaceStringToSpoilers")
+        CherrygramLogger.d { "запросил replaceStringToSpoilers" }
         if (originalText == null) {
             return null
         }
@@ -161,12 +160,12 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun getLockedChatsCount(): Int {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил getLockedChatsCount")
+        CherrygramLogger.d { "запросил getLockedChatsCount" }
         return getArrayList(getPasscodeArray()).size
     }
 
     fun shouldRequireBiometrics(userID: Long, chatID: Long, encID: Long): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometrics")
+        CherrygramLogger.d { "запросил shouldRequireBiometrics" }
         val lockedChat = (userID != 0L && isChatLocked(userID)) || (chatID != 0L && isChatLocked(chatID))
 
         val encryptedChat = encID != 0L && isEncryptedChat(encID)
@@ -175,22 +174,22 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun shouldRequireBiometricsToOpenChats(): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenChats")
+        CherrygramLogger.d { "запросил shouldRequireBiometricsToOpenChats" }
         return CherrygramPrivacyConfig.askBiometricsToOpenChat && checkBiometricAvailable()
     }
 
     fun shouldRequireBiometricsToOpenEncryptedChats(): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenEncryptedChats")
+        CherrygramLogger.d { "запросил shouldRequireBiometricsToOpenEncryptedChats" }
         return CherrygramPrivacyConfig.askBiometricsToOpenEncrypted && checkBiometricAvailable()
     }
 
     fun askPasscodeBeforeDelete(): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил askPasscodeBeforeDelete")
+        CherrygramLogger.d { "запросил askPasscodeBeforeDelete" }
         return CherrygramPrivacyConfig.askPasscodeBeforeDelete && checkBiometricAvailable()
     }
 
     fun checkBiometricAvailable(): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил checkBiometricAvailable")
+        CherrygramLogger.d { "запросил checkBiometricAvailable" }
 
         val hasBiometrics = CGBiometricPrompt.hasBiometricEnrolled()
         if (!hasBiometrics) return false

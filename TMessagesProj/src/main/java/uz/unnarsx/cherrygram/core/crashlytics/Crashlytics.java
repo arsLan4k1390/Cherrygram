@@ -21,7 +21,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.LaunchActivity;
@@ -36,6 +35,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
@@ -142,12 +142,8 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
             Uri uri;
 
             Intent i = new Intent(Intent.ACTION_SEND);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                uri = FileProvider.getUriForFile(activity, ApplicationLoader.getApplicationId() + ".provider", cacheFile);
-                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            } else {
-                uri = Uri.fromFile(cacheFile);
-            }
+            uri = FileProvider.getUriForFile(activity, ApplicationLoader.getApplicationId() + ".provider", cacheFile);
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             i.setType("message/rfc822");
             i.putExtra(Intent.EXTRA_SUBJECT, Crashlytics.getCrashReportMessage());
             i.putExtra(Intent.EXTRA_STREAM, uri);
@@ -157,7 +153,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
 
             bottomSheet.dismiss();
         } catch (IOException e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
     }
 

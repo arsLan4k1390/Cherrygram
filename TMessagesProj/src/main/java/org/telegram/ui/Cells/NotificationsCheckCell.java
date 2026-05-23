@@ -10,6 +10,8 @@ package org.telegram.ui.Cells;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
@@ -29,6 +31,8 @@ import org.telegram.ui.Components.AnimatedTextView;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Switch;
+
+import java.util.ArrayList;
 
 public class NotificationsCheckCell extends FrameLayout {
 
@@ -244,4 +248,28 @@ public class NotificationsCheckCell extends FrameLayout {
         info.setCheckable(true);
         info.setChecked(checkBox.isChecked());
     }
+
+    /** Cherrygram start */
+    public void setEnabled(boolean value, ArrayList<Animator> animators) {
+        super.setEnabled(value);
+        if (animators != null) {
+            animators.add(ObjectAnimator.ofFloat(textView, View.ALPHA, value ? 1.0f : 0.5f));
+            animators.add(ObjectAnimator.ofFloat(checkBox, View.ALPHA, value ? 1.0f : 0.5f));
+            if (valueTextView.getVisibility() == VISIBLE) {
+                animators.add(ObjectAnimator.ofFloat(valueTextView, View.ALPHA, value ? 1.0f : 0.5f));
+            }
+        } else {
+            textView.setAlpha(value ? 1.0f : 0.5f);
+            checkBox.setAlpha(value ? 1.0f : 0.5f);
+            if (valueTextView.getVisibility() == VISIBLE) {
+                valueTextView.setAlpha(value ? 1.0f : 0.5f);
+            }
+        }
+    }
+
+    public void setCheckBoxIcon(int icon) {
+        checkBox.setIcon(icon);
+    }
+    /** Cherrygram finish */
+
 }

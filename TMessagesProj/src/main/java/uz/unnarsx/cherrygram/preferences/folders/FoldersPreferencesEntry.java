@@ -20,9 +20,12 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
+import org.telegram.ui.FiltersSetupActivity;
+import org.telegram.ui.SettingsActivity;
 
 import java.util.ArrayList;
 
@@ -47,16 +50,19 @@ public class FoldersPreferencesEntry extends UniversalFragment {
     private final int folderNameAppHeaderRow = 5;
     private final int foldersAtBottomRow = 6;
 
-    @Override
-    public View createView(Context context) {
-        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("folders_preferences_screen");
-        setMD3(true);
-        return super.createView(context);
-    }
+    private final int telegramFoldersSettings = 7;
 
     @Override
     protected CharSequence getTitle() {
+        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("folders_preferences_screen");
         return getString(R.string.CP_Filters_Header);
+    }
+
+    @Override
+    public View createView(Context context) {
+        setMD3(true);
+        setGilroy(true);
+        return super.createView(context);
     }
 
     @Override
@@ -83,6 +89,18 @@ public class FoldersPreferencesEntry extends UniversalFragment {
         );
         items.add(SettingsHelper.asSwitchCG(foldersAtBottomRow, getString(R.string.AP_FoldersAtBottom))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()).setLocked(!DonatesManager.INSTANCE.didUserDonateForFeature())
+        );
+        items.add(UItem.asShadow(null));
+
+        items.add(UItem.asHeader(getString(R.string.AppName)));
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        telegramFoldersSettings,
+                        IconBackgroundColors.BLUE_ALT.top, IconBackgroundColors.BLUE_ALT.bottom,
+                        R.drawable.settings_folders,
+                        getString(R.string.SettingsFolders),
+                        getString(R.string.SettingsFoldersInfo)
+                )
         );
         items.add(UItem.asShadow(null));
     }
@@ -157,6 +175,8 @@ public class FoldersPreferencesEntry extends UniversalFragment {
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+        } else if (item.id == telegramFoldersSettings) {
+            presentFragment(new FiltersSetupActivity());
         }
     }
 

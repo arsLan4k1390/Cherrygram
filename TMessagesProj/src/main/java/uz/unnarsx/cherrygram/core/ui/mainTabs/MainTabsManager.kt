@@ -147,7 +147,7 @@ object MainTabsManager {
                     GlassTabView.createStaticTab(
                         context,
                         resourceProvider,
-                        R.drawable.ic_ab_search,
+                        R.drawable.outline_header_search,
                         R.string.Search,
                         false
                     )

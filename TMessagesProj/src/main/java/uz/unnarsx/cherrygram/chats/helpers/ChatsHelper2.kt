@@ -18,7 +18,6 @@ import androidx.core.view.isVisible
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.AndroidUtilities.dp
 import org.telegram.messenger.ChatObject
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController.formatJoined
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessageObject
@@ -37,6 +36,7 @@ import org.telegram.ui.Components.TranslateAlert2
 import org.telegram.ui.Components.UndoView
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
@@ -150,7 +150,7 @@ object ChatsHelper2 {
 
             .setGravity(Gravity.LEFT)
             .forceBottom(true)
-            .translate(0f, -AndroidUtilities.dp(48f).toFloat())
+            .translate(0f, -dp(48f).toFloat())
             .setDrawScrim(false)
             .setBlur(true)
             .show()
@@ -341,7 +341,7 @@ object ChatsHelper2 {
                         false
                     )
                 } catch (e: Exception) {
-                    FileLog.e(e)
+                    CherrygramLogger.e(e)
                 }
             }
 
@@ -388,7 +388,7 @@ object ChatsHelper2 {
                 alert.setDimBehind(true)
             }
             CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI -> {
-                if (msg == null && msg.messageOwner == null && msg.messageOwner.message == null) {
+                if (msg == null || msg.messageOwner == null || msg.messageOwner.message == null) {
                     return
                 }
 
@@ -416,7 +416,7 @@ object ChatsHelper2 {
     /** Message slide action finish */
 
     /** Misc start */
-    fun updateStickerSetCache(fragment: BaseFragment, stickerSet: TLRPC.TL_messages_stickerSet, emoji: Boolean, isKeyboardVisible: Boolean) {
+    fun updateStickerSetCache(fragment: BaseFragment, stickerSet: TLRPC.TL_messages_stickerSet, emoji: Boolean) {
         val req = TLRPC.TL_messages_getStickerSet()
         val input = TLRPC.TL_inputStickerSetShortName().apply {
             short_name = stickerSet.set.short_name

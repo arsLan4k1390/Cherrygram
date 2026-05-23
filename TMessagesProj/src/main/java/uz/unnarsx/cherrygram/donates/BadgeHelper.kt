@@ -10,9 +10,8 @@
 package uz.unnarsx.cherrygram.donates
 
 import androidx.core.graphics.toColorInt
-import org.telegram.messenger.FileLog
 import org.telegram.ui.ActionBar.Theme
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 
 enum class BadgeHelper {
 
@@ -90,9 +89,7 @@ enum class BadgeHelper {
 
             getUserColor(userId)?.let { uc ->
                 val color = if (Theme.isCurrentThemeDay()) uc.lightColor else uc.darkColor
-                if (CherrygramCoreConfig.isDevBuild()) {
-                    FileLog.d("UserID $userId: BadgeColorsManager color = ${color.toHexString()} (dynamic)")
-                }
+                CherrygramLogger.d { "UserID $userId: BadgeColorsManager color = ${color.toHexString()} (dynamic)" }
                 return color
             }
 

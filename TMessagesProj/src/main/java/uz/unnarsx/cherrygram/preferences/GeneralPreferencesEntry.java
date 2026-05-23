@@ -65,6 +65,7 @@ public class GeneralPreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 

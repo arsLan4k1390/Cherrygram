@@ -16,7 +16,6 @@ import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
-import android.util.Log;
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -26,6 +25,8 @@ import androidx.camera.core.ImageProxy;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 
 public final class JpegImageUtils {
@@ -50,7 +51,7 @@ public final class JpegImageUtils {
         } else if (image.getFormat() == ImageFormat.YUV_420_888) {
             data = yuvImageToJpegByteArray(image, flipState);
         } else {
-            Log.w(TAG, "Unrecognized image format: " + image.getFormat());
+            CherrygramLogger.w(TAG, () -> "Unrecognized image format: " + image.getFormat());
         }
         return data;
     }

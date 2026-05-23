@@ -61,6 +61,7 @@ import androidx.core.view.ViewCompat;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
+import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.NotificationCenter;
@@ -68,6 +69,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.camera.CameraView;
+import org.telegram.messenger.utils.LeakDetector;
 import org.telegram.ui.Components.AnimatedEmojiSpan;
 import org.telegram.ui.Components.AnimationProperties;
 import org.telegram.ui.Components.Bulletin;
@@ -161,7 +163,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
 
         @Override
         public void draw(@NonNull Canvas canvas) {
-            if (boundsWithInsets.isEmpty() || getAlpha() == 0) {
+            if (boundsWithInsets.isEmpty() || getAlpha() == 0 || AndroidUtilities.makingGlobalBlurBitmap) {
                 return;
             }
             canvas.drawRect(boundsWithInsets, bgPaint);
@@ -317,7 +319,6 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
             if (dismissed || !allowNestedScroll) {
                 return;
             }
-            float currentTranslation = containerView.getTranslationY();
             checkDismiss(0, 0);
         }
 
@@ -459,7 +460,6 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
                         container.invalidate();
                     }
                 } else if (ev == null || ev.getPointerId(0) == startedTrackingPointerId && (ev.getAction() == MotionEvent.ACTION_CANCEL || ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_POINTER_UP)) {
-//                    containerView.setTranslationX(0);
                     if (velocityTracker == null) {
                         velocityTracker = VelocityTracker.obtain();
                     }
@@ -668,6 +668,8 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
         protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
             bottom -= internalPaddingBottom;
 
+            onContainerLayout(left, top, right, bottom);
+
             layoutCount--;
             if (containerView != null) {
                 int t = (bottom - top) - containerView.getMeasuredHeight();
@@ -854,7 +856,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
                 canvas.drawRect(0, containerView.getTranslationY(), containerView.getLeft() + backgroundPaddingLeft, getMeasuredHeight(), backgroundPaint);
             }
 
-            if (containerView.getTranslationY() < 0) {
+            if (containerView.getY() + containerView.getMeasuredHeight() < getMeasuredHeight()) {
                 backgroundPaint.setColor(behindKeyboardColorKey >= 0 ? getThemedColor(behindKeyboardColorKey) : behindKeyboardColor);
                 canvas.drawRect(containerView.getLeft() + backgroundPaddingLeft, containerView.getY() + containerView.getMeasuredHeight(), containerView.getRight() - backgroundPaddingLeft, getMeasuredHeight(), backgroundPaint);
             }
@@ -974,6 +976,10 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
         }
         Insets insets = lastInsets.getSystemGestureInsets();
         return !keyboardVisible && drawNavigationBar && insets != null && (insets.left != 0 || insets.right != 0) ? insets.bottom : 0;
+    }
+
+    protected void onContainerLayout(int l, int t, int r, int b) {
+
     }
 
     public boolean isKeyboardVisible() {
@@ -1171,6 +1177,9 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
     public BottomSheet(Context context, boolean needFocus, boolean edgeToEdge, Theme.ResourcesProvider resourcesProvider) {
         super(context, R.style.TransparentDialog);
         this.resourcesProvider = resourcesProvider;
+        if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+            LeakDetector.getInstance().add(this);
+        }
 
         if (Build.VERSION.SDK_INT >= 30) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -1237,13 +1246,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
         if (!edgeToEdge) {
             container.setFitsSystemWindows(true);
             container.setOnApplyWindowInsetsListener((v, insets) -> {
-                int newTopInset = insets.getSystemWindowInsetTop();
-                if ((newTopInset != 0 || AndroidUtilities.isInMultiwindow) && statusBarHeight != newTopInset) {
-                    statusBarHeight = newTopInset;
-                }
-                lastInsets = insets;
-                v.requestLayout();
-                onInsetsChanged();
+                processLegacyContainerInsets(insets);
                 if (Build.VERSION.SDK_INT >= 30) {
                     return WindowInsets.CONSUMED;
                 } else {
@@ -1258,6 +1261,20 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
         }
 
         backDrawable.setAlpha(0);
+    }
+
+    protected void processLegacyContainerInsets(WindowInsets insets) {
+        if (insets == null) {
+            return;
+        }
+
+        int newTopInset = insets.getSystemWindowInsetTop();
+        if ((newTopInset != 0 || AndroidUtilities.isInMultiwindow) && statusBarHeight != newTopInset) {
+            statusBarHeight = newTopInset;
+        }
+        lastInsets = insets;
+        container.requestLayout();
+        onInsetsChanged();
     }
 
     protected void onInsetsChanged() {
@@ -2425,7 +2442,9 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
     }
 
     protected void onSmoothContainerViewLayout(float ty) {
-
+        if (container != null) {
+            container.invalidate();
+        }
     }
 
 

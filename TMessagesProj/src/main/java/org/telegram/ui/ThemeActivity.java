@@ -629,7 +629,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         Collections.sort(defaultThemes, (o1, o2) -> Integer.compare(o1.sortIndex, o2.sortIndex));
 
         if (currentType == THEME_TYPE_THEMES_BROWSER) {
-            selectThemeHeaderRow = rowCount++;
+            selectThemeHeaderRow = rowCount++; // TYPE_HEADER
             themeListRow2 = rowCount++;
             chatListInfoRow = rowCount++;
 
@@ -710,8 +710,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             appIconSelectorRow = rowCount++;
             appIconShadowRow = rowCount++;
         } else {
-            nightDisabledRow = rowCount++;
-            nightScheduledRow = rowCount++;
+            nightDisabledRow = rowCount++;  // TYPE_THEME_TYPE
+            nightScheduledRow = rowCount++; // TYPE_THEME_TYPE
             nightAutomaticRow = rowCount++;
             if (Build.VERSION.SDK_INT >= 29) {
                 nightSystemDefaultRow = rowCount++;

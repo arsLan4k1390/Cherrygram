@@ -18,19 +18,23 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.LaunchActivity;
+import org.telegram.ui.SettingsActivity;
 
 import java.util.ArrayList;
 
+import kotlin.Pair;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
+import uz.unnarsx.cherrygram.preferences.helpers.TelegramSettingsHelper;
 
 public class AppearancePreferencesEntry extends UniversalFragment {
 
@@ -55,6 +59,7 @@ public class AppearancePreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 
@@ -83,9 +88,38 @@ public class AppearancePreferencesEntry extends UniversalFragment {
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
-        items.add(UItem.asButton(foldersRow, R.drawable.msg_folders, getString(R.string.CP_Filters_Header)));
-        items.add(UItem.asButton(bottomTabsRow, R.drawable.tabs_reorder, getString(R.string.CP_MainTabs_Header)));
-        items.add(UItem.asButton(messagesAndProfilesRow, R.drawable.msg_customize, getString(R.string.CP_ProfileReplyBackground)));
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        foldersRow,
+                        IconBackgroundColors.BLUE_ALT.top, IconBackgroundColors.BLUE_ALT.bottom,
+                        R.drawable.settings_folders_filled_solar,
+                        getString(R.string.CP_Filters_Header),
+                        getString(R.string.CGP_Folders_Desc),
+                        true
+                )
+        );
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        bottomTabsRow,
+                        IconBackgroundColors.ORANGE_DEEP.top, IconBackgroundColors.ORANGE_DEEP.bottom,
+                        R.drawable.settings_reorder_filled_solar,
+                        getString(R.string.CP_MainTabs_Header),
+                        getString(R.string.CGP_BottomTabs_Desc),
+                        true
+                )
+        );
+        Pair<Integer, Integer> colors = TelegramSettingsHelper.Helper.INSTANCE.getProfileButtonColor(getUserConfig().getCurrentUser(), true);
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        messagesAndProfilesRow,
+                        Theme.isCurrentThemeDay() ? colors.getSecond() : colors.getFirst(),
+                        Theme.isCurrentThemeDay() ? colors.getFirst() : colors.getSecond(),
+                        R.drawable.settings_customize_filled_solar,
+                        getString(R.string.CP_ProfileReplyBackground),
+                        getString(R.string.CGP_MessagesProfiles_Desc),
+                        true
+                )
+        );
         items.add(UItem.asShadow(null));
     }
 

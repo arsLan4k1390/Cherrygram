@@ -16,12 +16,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.KotlinFragmentsManager
 import org.telegram.messenger.MessageObject
 import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.Extra
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.helpers.MessageLoader
 import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.helpers.network.StickersManager
@@ -71,6 +71,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var autoQuoteReplies by sharedPreferences.boolean("CP_AutoQuoteReplies", false)
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var disableVibration by sharedPreferences.boolean("CP_DisableVibration", false)
+    var openLinksInIV by sharedPreferences.boolean("CP_OpenLinksInIV", false)
     /** Actions finish */
 
     /** Media start */
@@ -138,7 +139,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
                 }
 
                 override fun onError(error: String?) {
-                    if (CherrygramCoreConfig.isDevBuild()) FileLog.e("MessageLoader: $error")
+                    CherrygramLogger.e( {"MessageLoader: $error" }, true)
                 }
             })
         }

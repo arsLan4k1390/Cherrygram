@@ -313,7 +313,7 @@
     </string>
     <string name="CP_Message_Filtering_FilterBlocked">Filter messages from blocked users</string>
     <string name="CP_Message_Filtering_HideBlocked">忽略被屏蔽用户在群组内的消息</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">启用后，来自被屏蔽用户的全部消息及转发消息将自动隐藏在剧透标签下。</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">启用后，来自被屏蔽用户的全部消息及转发消息将自动隐藏在剧透标签下。</string>
     <string name="CP_Message_Filtering_HideAll">完整消息剧透隐藏</string>
     <string name="CP_Message_Filtering_HideAllDesc">如消息内容包含过滤词，则将整条消息文本或媒体隐藏在剧透标签下。</string>
     <string name="CP_Message_Filtering_Collapse">折叠消息</string>

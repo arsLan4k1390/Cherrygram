@@ -9,6 +9,7 @@
 
 package uz.unnarsx.cherrygram.chats.helpers;
 
+import static org.telegram.messenger.LocaleController.formatString;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.app.DatePickerDialog;
@@ -28,7 +29,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.DialogObject;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessagesController;
@@ -51,6 +51,8 @@ import org.telegram.ui.Components.LayoutHelper;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.CountDownLatch;
+
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 public class MessageHelper extends BaseController {
 
@@ -149,7 +151,7 @@ public class MessageHelper extends BaseController {
         }
 
         if (before > 0) {
-            messageTextView.setText(AndroidUtilities.replaceTags(LocaleController.formatString("CG_DeleteAllFromSelfAlertBefore", R.string.CG_DeleteAllFromSelfAlertBefore, LocaleController.formatDateForBan(before))));
+            messageTextView.setText(AndroidUtilities.replaceTags(formatString(R.string.CG_DeleteAllFromSelfAlertBefore, LocaleController.formatDateForBan(before))));
         } else {
             messageTextView.setText(AndroidUtilities.replaceTags(getString(R.string.CG_DeleteAllFromSelfAlert)));
         }
@@ -166,7 +168,7 @@ public class MessageHelper extends BaseController {
                     try {
                         progressDialog.show();
                     } catch (Exception e) {
-                        FileLog.e(e);
+                        CherrygramLogger.e(e);
                     }
                 });
                 deleteUserHistoryWithSearch(fragment, -chat.id, forumTopic != null ? forumTopic.id : 0, forumTopic != null ? forumTopic.id : 0, mergeDialogId, before == -1 ? getConnectionsManager().getCurrentTime() : before, (count, deleteAction) -> {
@@ -175,7 +177,7 @@ public class MessageHelper extends BaseController {
                         try {
                             if (progressDialog != null && progressDialog.isShowing()) progressDialog.dismiss();
                         } catch (Exception e) {
-                            FileLog.e(e);
+                            CherrygramLogger.e(e);
                         }
                     });
                 });
@@ -303,7 +305,7 @@ public class MessageHelper extends BaseController {
             try {
                 latch.await();
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
             }
             if (!messageIds.isEmpty()) {
                 ArrayList<ArrayList<Integer>> lists = new ArrayList<>();
@@ -356,7 +358,7 @@ public class MessageHelper extends BaseController {
                 try {
                     if (progressDialog != null && progressDialog.isShowing()) progressDialog.dismiss();
                 } catch (Exception e) {
-                    FileLog.e(e);
+                    CherrygramLogger.e(e);
                 }
             });
             if (response instanceof TLRPC.messages_Messages res) {

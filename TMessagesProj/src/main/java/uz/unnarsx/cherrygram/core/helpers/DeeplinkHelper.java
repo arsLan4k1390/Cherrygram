@@ -52,6 +52,10 @@ public class DeeplinkHelper {
                     CherrygramPreferencesNavigator.INSTANCE.createAbout(fragment);
                     return;
                 }
+                case DeepLinksRepo.CG_ADS-> {
+                    CherrygramPreferencesNavigator.INSTANCE.createADS(fragment);
+                    return;
+                }
                 case DeepLinksRepo.CG_Appearance -> {
                     CherrygramPreferencesNavigator.INSTANCE.createAppearance(fragment);
                     return;
@@ -180,6 +184,7 @@ public class DeeplinkHelper {
     }
 
     public static class DeepLinksRepo {
+        public static final String CG_ADS = "cg_ads";
 
         public static final String CG_Proxy = "cg_proxy";
 

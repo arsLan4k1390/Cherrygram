@@ -123,7 +123,7 @@
 
 # Gson uses generic type information stored in a class file when working with fields. Proguard
 # removes such information by default, so configure it to keep all of it.
--keepattributes Signature,InnerClasses,EnclosingMethod
+-keepattributes Signature, *Annotation*, EnclosingMethod, InnerClasses
 
 -keep class org.telegram.messenger.voip.* { *; }
 -keep class org.telegram.messenger.AnimatedFileDrawableStream { <methods>; }
@@ -159,6 +159,8 @@
 -keep class androidx.camera.core.impl.** { *; }
 -keep class androidx.camera.video.** { *; }
 
+-keep class uz.unnarsx.cherrygram.donates.adsgram.** { *; }
+
 -keepclassmembernames class androidx.core.widget.NestedScrollView {
     private android.widget.OverScroller mScroller;
     private void abortAnimatedScroll();
@@ -186,6 +188,16 @@
     public void suppressLayout(boolean);
     public boolean isLayoutSuppressed();
 }
+
+-dontwarn org.checkerframework.**
+-dontwarn javax.annotation.**
+
+-keep class io.nano.tex.** {*;}
+
+# JLatexMath: macro/atom classes are loaded reflectively by Class.forName
+-keep class org.scilab.forge.jlatexmath.** { *; }
+-keep class ru.noties.jlatexmath.** { *; }
+-dontwarn org.scilab.forge.jlatexmath.**
 
 -repackageclasses
 -allowaccessmodification

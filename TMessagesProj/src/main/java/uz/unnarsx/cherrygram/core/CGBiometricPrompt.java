@@ -15,7 +15,6 @@ import android.app.Activity;
 import android.hardware.biometrics.BiometricManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,7 +23,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.FingerprintController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.support.fingerprint.FingerprintManagerCompat;
@@ -142,7 +140,7 @@ public class CGBiometricPrompt {
             try {
                 return fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints();
             } catch (SecurityException e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
                 return false;
             }
         } else {
@@ -150,7 +148,7 @@ public class CGBiometricPrompt {
                 FingerprintManagerCompat compat = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
                 return compat.isHardwareDetected() && compat.hasEnrolledFingerprints();
             } catch (Throwable e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
                 return false;
             }
         }
@@ -193,7 +191,7 @@ public class CGBiometricPrompt {
                 ContextCompat.getMainExecutor(activity),
                 createCallback(
                         result -> {
-                            Log.d(TAG, "PasscodeView onAuthenticationSucceeded");
+                            CherrygramLogger.d(TAG, () -> "PasscodeView onAuthenticationSucceeded");
                             if (FingerprintController.isKeyReady() && FingerprintController.checkDeviceFingerprintsChanged()) {
                                 FingerprintController.deleteInvalidKey();
                             }
@@ -201,7 +199,7 @@ public class CGBiometricPrompt {
                         },
                         callback::onFailed,
                         (code, errStr) -> {
-                            Log.d(TAG, "PasscodeView onAuthenticationError: " + code + " \"" + errStr + "\"");
+                            CherrygramLogger.d(TAG, () -> "PasscodeView onAuthenticationError: " + code + " \"" + errStr + "\"");
                             callback.onError(code, errStr);
                         }
                 )
@@ -236,26 +234,27 @@ public class CGBiometricPrompt {
 
     private static boolean hasFingerprintInternal() {
         try {
-            Log.d(TAG, "Starting fingerprint check...");
+            CherrygramLogger.d(TAG, () -> "Starting fingerprint check...");
 
             FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
 
             boolean conditions = fingerprintManager.isHardwareDetected();
-            Log.d(TAG, "Fingerprint hardware detected: " + conditions);
+            boolean finalConditions = conditions;
+            CherrygramLogger.d(TAG, () -> "Fingerprint hardware detected: " + finalConditions);
 
             conditions &= fingerprintManager.hasEnrolledFingerprints();
-            Log.d(TAG, "Enrolled fingerprints: " + fingerprintManager.hasEnrolledFingerprints());
+            CherrygramLogger.d(TAG, () -> "Enrolled fingerprints: " + fingerprintManager.hasEnrolledFingerprints());
 
             conditions &= FingerprintController.isKeyReady();
-            Log.d(TAG, "Fingerprint key ready: " + FingerprintController.isKeyReady());
+            CherrygramLogger.d(TAG, () -> "Fingerprint key ready: " + FingerprintController.isKeyReady());
 
             conditions &= !FingerprintController.checkDeviceFingerprintsChanged();
-            Log.d(TAG, "Device fingerprints changed: " + !FingerprintController.checkDeviceFingerprintsChanged());
+            CherrygramLogger.d(TAG, () -> "Device fingerprints changed: " + !FingerprintController.checkDeviceFingerprintsChanged());
 
-            Log.d(TAG, "Final fingerprint check result: " + conditions);
+            CherrygramLogger.d(TAG, () -> "Final fingerprint check result: " + finalConditions);
             return conditions;
         } catch (Throwable e) {
-            FileLog.e("Error checking fingerprint availability", e);
+            CherrygramLogger.e(TAG, () -> "Error checking fingerprint availability", e);
         }
         return false;
     }

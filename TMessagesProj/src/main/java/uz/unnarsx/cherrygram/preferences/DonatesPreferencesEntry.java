@@ -31,7 +31,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.browser.Browser;
@@ -58,6 +57,7 @@ import java.util.HashSet;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
@@ -158,7 +158,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
     public View createView(Context context) {
         actionBar.setBackButtonDrawable(new BackDrawable(false));
 
-        actionBar.setTitle(getString(R.string.DP_SupportOptions));
+        actionBar.setTitle(getString(R.string.DP_SupportOptions), null, true);
         actionBar.setAllowOverlayTitle(false);
 
         if (!isTestBackend) {
@@ -786,7 +786,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     }
 
                 } catch (Exception e) {
-                    FileLog.e(e);
+                    CherrygramLogger.e(e);
                     updateRowsId(true);
                 }
             }
@@ -891,7 +891,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
         public static String Card_Humo = CherrygramCoreConfig.INSTANCE.getHumoCardNumber();
 
-        public static String Card_Kapital_Humo = "9860100124370345";
+        public static String Card_Kapital_Humo = "9860100128256904";
         public static String Card_Kapital_Visa_USD = "4278310028377794";
         public static String Card_Kapital_Master_UZS = "5397170005511325";
 

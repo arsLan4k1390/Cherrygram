@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.os.Build;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -24,8 +25,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.ButtonBounce;
 import org.telegram.ui.Components.CubicBezierInterpolator;
-import org.telegram.ui.Components.Point;
-import org.telegram.ui.Components.Rect;
+import org.telegram.ui.Components.RectOld;
 
 import java.util.Arrays;
 import java.util.List;
@@ -84,7 +84,7 @@ public class EntityView extends FrameLayout {
 
     private EntityViewDelegate delegate;
 
-    private Point position;
+    private PointF position;
     public SelectionView selectionView;
 
     private final Runnable longPressRunnable = () -> {
@@ -123,7 +123,7 @@ public class EntityView extends FrameLayout {
     private int stickyXRunnableValue, stickyYRunnableValue;
     private ValueAnimator stickyXAnimator, stickyYAnimator;
 
-    public EntityView(Context context, Point pos) {
+    public EntityView(Context context, PointF pos) {
         super(context);
 
         uuid = UUID.randomUUID();
@@ -134,11 +134,11 @@ public class EntityView extends FrameLayout {
         return uuid;
     }
 
-    public Point getPosition() {
+    public PointF getPosition() {
         return position;
     }
 
-    public void setPosition(Point value) {
+    public void setPosition(PointF value) {
         position = value;
         updatePosition();
     }
@@ -731,8 +731,8 @@ public class EntityView extends FrameLayout {
         updateSelectionView();
     }
 
-    public Rect getSelectionBounds() {
-        return new Rect(0, 0, 0, 0);
+    public RectOld getSelectionBounds() {
+        return new RectOld(0, 0, 0, 0);
     }
 
     public boolean isSelected() {
@@ -847,7 +847,7 @@ public class EntityView extends FrameLayout {
         }
 
         public void updatePosition() {
-            Rect bounds = getSelectionBounds();
+            RectOld bounds = getSelectionBounds();
             LayoutParams layoutParams = (LayoutParams) getLayoutParams();
             layoutParams.leftMargin = (int) bounds.x;
             layoutParams.topMargin = (int) bounds.y;

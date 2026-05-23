@@ -22,6 +22,7 @@ import android.view.View;
 import androidx.camera.video.Quality;
 
 import org.telegram.messenger.R;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
@@ -63,9 +64,10 @@ public class CameraPreferencesEntry extends UniversalFragment {
     private final int continuousAutofocusRow = 11;
     private final int noiceReductionRow = 12;
     private final int faceDetectionRow = 13;
+    private final int bokehEffectRow = 14;
 
-    private final int exposureSliderRow = 14;
-    private final int cameraControlButtonsRow = 15;
+    private final int exposureSliderRow = 15;
+    private final int cameraControlButtonsRow = 16;
 
     private boolean expandedCameraEnhancementsSection = false;
 
@@ -78,6 +80,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 
@@ -149,6 +152,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
                         CherrygramCameraConfig.INSTANCE.setContinuousAutofocus(newValue);
                         CherrygramCameraConfig.INSTANCE.setNoiceReduction(newValue);
                         CherrygramCameraConfig.INSTANCE.setFaceDetection(newValue);
+                        CherrygramCameraConfig.INSTANCE.setBokehEffect(newValue);
 
                         listView.adapter.update(true);
                     })
@@ -178,6 +182,12 @@ public class CameraPreferencesEntry extends UniversalFragment {
                         .setChecked(CherrygramCameraConfig.INSTANCE.getFaceDetection())
                         .setPad(1)
                 );
+
+                if (isBokehAvailable()) {
+                    items.add(SettingsHelper.asRoundGroupCheckbox(bokehEffectRow, "Bokeh Effect", "Laggy // W.I.P")
+                            .setChecked(CherrygramCameraConfig.INSTANCE.getBokehEffect())
+                    );
+                }
             }
             items.add(UItem.asShadow(getString(R.string.CP_EnhancementsNote)));
         } else {
@@ -273,6 +283,9 @@ public class CameraPreferencesEntry extends UniversalFragment {
         } else if (item.id == faceDetectionRow) {
             CherrygramCameraConfig.INSTANCE.setFaceDetection(!CherrygramCameraConfig.INSTANCE.getFaceDetection());
             listView.adapter.update(true);
+        } else if (item.id == bokehEffectRow) {
+            CherrygramCameraConfig.INSTANCE.setBokehEffect(!CherrygramCameraConfig.INSTANCE.getBokehEffect());
+            listView.adapter.update(true);
         } else if (item.id == exposureSliderRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();
@@ -312,15 +325,17 @@ public class CameraPreferencesEntry extends UniversalFragment {
         if (CherrygramCameraConfig.INSTANCE.getContinuousAutofocus()) count++;
         if (CherrygramCameraConfig.INSTANCE.getNoiceReduction()) count++;
         if (CherrygramCameraConfig.INSTANCE.getFaceDetection()) count++;
+        if (CherrygramCameraConfig.INSTANCE.getBokehEffect()) count++;
 
-        return count + "/5";
+        return count + (isBokehAvailable() ? "/6" : "/5");
     }
 
     private boolean useCaptureRequestOptions() {
         return CherrygramCameraConfig.INSTANCE.getOpticalStabilisation() || CherrygramCameraConfig.INSTANCE.getVideoStabilisation()
                 || CherrygramCameraConfig.INSTANCE.getContinuousAutofocus()
                 || CherrygramCameraConfig.INSTANCE.getNoiceReduction()
-                || CherrygramCameraConfig.INSTANCE.getFaceDetection();
+                || CherrygramCameraConfig.INSTANCE.getFaceDetection()
+                || CherrygramCameraConfig.INSTANCE.getBokehEffect();
     }
 
     public static void showAspectRatioSelector(Context context, Runnable runnable) {
@@ -352,6 +367,10 @@ public class CameraPreferencesEntry extends UniversalFragment {
                 || DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
     }
 
+    private boolean isBokehAvailable() {
+        return CameraXUtils.isCurrentCameraCameraX() && (isExtendedFpsAvailable() || SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH);
+    }
+
     public static String getCameraName() {
         return switch (CherrygramCameraConfig.INSTANCE.getCameraType()) {
             case CherrygramCameraConfig.TELEGRAM_CAMERA -> "Telegram";
@@ -369,12 +388,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
             default -> getString(R.string.CP_SystemCameraDesc);
         };
 
-        Spannable htmlParsed;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            htmlParsed = new SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            htmlParsed = new SpannableString(Html.fromHtml(advise));
-        }
+        Spannable htmlParsed = new SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY));
 
         return CGResourcesHelper.INSTANCE.getUrlNoUnderlineText(htmlParsed);
     }

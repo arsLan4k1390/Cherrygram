@@ -510,11 +510,13 @@ public class NotificationsController extends BaseController {
                     popupIntent.putExtra("currentAccount", currentAccount);
                     popupIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NO_USER_ACTION | Intent.FLAG_FROM_BACKGROUND);
                     ApplicationLoader.applicationContext.startActivity(popupIntent);
-                    try {
-                        Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-                        ApplicationLoader.applicationContext.sendBroadcast(it);
-                    } catch (Exception e) {
-                        FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+                        try {
+                            Intent it = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+                            ApplicationLoader.applicationContext.sendBroadcast(it);
+                        } catch (Exception e) {
+                            FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
+                        }
                     }
                 });
             }

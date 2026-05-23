@@ -214,7 +214,7 @@ public class CheckBoxCell extends FrameLayout {
         if (type == TYPE_CHECK_BOX_USER_GROUP) {
             collapseButton = new CollapseButton(context, R.drawable.msg_folders_groups);
             addView(collapseButton, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.END | Gravity.CENTER_VERTICAL, padding, 0, padding - 11, 0));
-        } else if (type == TYPE_CHECK_BOX_ROUND_GROUP) {
+        } else if (type == TYPE_CHECK_BOX_ROUND_GROUP && !TextUtils.isEmpty(valueTextView.getText())) {
             collapseButton = new CollapseButton(context, 0);
             addView(collapseButton, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.END | Gravity.CENTER_VERTICAL, padding, 0, padding - 11, 0));
         } else if (type == TYPE_CHECK_BOX_USER) {

@@ -144,11 +144,8 @@ object BackupHelper {
         try {
             if (!fileToShare.exists()) return
 
-            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            val uri =
                 FileProvider.getUriForFile(context, "${ApplicationLoader.getApplicationId()}.provider", fileToShare)
-            } else {
-                Uri.fromFile(fileToShare)
-            }
 
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "message/rfc822"
@@ -157,9 +154,7 @@ object BackupHelper {
                 if (caption.isNotBlank()) {
                     putExtra(Intent.EXTRA_SUBJECT, caption)
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 setClass(context, LaunchActivity::class.java)
             }
 
@@ -268,7 +263,7 @@ object BackupHelper {
             "CP_MsgFiltersHideAll", "CP_MsgFiltersCollapseAutomatically", "CP_MsgFilterTransparentMsg",
             "CP_AutoQuoteReplies", "CP_TimeOnStick", "CP_ForwardMsgDate", "AP_PencilIcon",
             "CP_LeftBottomButtonAction", "CP_DoubleTapAction", "CP_MessageSlideAction", "CP_DeleteForAll",
-            "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration",
+            "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration", "CP_OpenLinksInIV",
             "CP_VideoSeekDuration", "CP_Notification_Sound", "CP_VibrationInChats", "CP_SilenceNonContacts", "CG_UnarchiveOnSwipe",
 
             // Camera

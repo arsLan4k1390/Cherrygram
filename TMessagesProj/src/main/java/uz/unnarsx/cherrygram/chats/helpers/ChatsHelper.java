@@ -33,7 +33,6 @@ import android.widget.Toast;
 import androidx.collection.LongSparseArray;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -42,7 +41,6 @@ import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
 import org.telegram.messenger.MessageObject;
@@ -90,8 +88,8 @@ import java.util.Set;
 
 import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
@@ -244,7 +242,7 @@ public class ChatsHelper extends BaseController {
             clipboard.setPrimaryClip(clip);
             callback.run();
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
     }
 
@@ -273,7 +271,7 @@ public class ChatsHelper extends BaseController {
                     }
                 }
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
             }
         });
     }
@@ -765,6 +763,7 @@ public class ChatsHelper extends BaseController {
                         pollText.append("\n\uD83D\uDD18 ").append(answer.text == null ? "" : answer.text.text);
                     messageTextToTranslate = pollText.toString();
                 } catch (Exception e) {
+                    CherrygramLogger.e(e);
                 }
             }
             if (messageTextToTranslate == null && MessageObject.isMediaEmpty(selectedObject.messageOwner)) {

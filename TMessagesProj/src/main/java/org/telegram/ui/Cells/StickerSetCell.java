@@ -744,6 +744,7 @@ public class StickerSetCell extends FrameLayout {
 
         @Override
         public void attachedView(RecyclerListView listView, View view, UItem item) {
+            if (view == null || item == null || listView == null) return;
             final StickerSetCell cell = (StickerSetCell) view;
             cell.setChecked(item.checked, true);
             cell.setReorderable(listView instanceof UniversalRecyclerView ? ((UniversalRecyclerView) listView).isReorderAllowed() : false, true);

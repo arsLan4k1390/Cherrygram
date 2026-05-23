@@ -49,6 +49,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager
 import uz.unnarsx.cherrygram.donates.DonatesManager
+import uz.unnarsx.cherrygram.helpers.CreateQRSheet
 import uz.unnarsx.cherrygram.helpers.QRCodeSheet
 import uz.unnarsx.cherrygram.misc.Constants
 import kotlin.math.abs
@@ -318,6 +319,15 @@ object CGChatMenuInjector {
         }
     }
 
+    fun injectCreateQR(io: ItemOptions, fragment: BaseFragment?) {
+        io.add(
+            R.drawable.msg_qrcode,
+            getString(R.string.CG_CreateQR)
+        ) {
+            CreateQRSheet(fragment?.context, fragment, fragment?.resourceProvider).show()
+        }
+    }
+
     fun injectProxySettings(io: ItemOptions, fragment: BaseFragment) {
         var available = false
 
@@ -346,12 +356,13 @@ object CGChatMenuInjector {
     }
 
     private fun openCameraScanActivity(fragment: BaseFragment) {
-        CameraScanActivity.showAsSheet(fragment, false, CameraScanActivity.TYPE_QR_UNIVERSAL, object : CameraScanActivity.CameraScanActivityDelegate {
+        CameraScanActivity.showAsSheet(fragment, true, CameraScanActivity.TYPE_QR_UNIVERSAL, object : CameraScanActivity.CameraScanActivityDelegate {
             override fun processQr(text: String, action: Runnable): Boolean {
                 AndroidUtilities.runOnUIThread({
                     action.run()
                     AndroidUtilities.runOnUIThread({
-                        QRCodeSheet(fragment, text).show()
+                        QRCodeSheet.text = text
+                        QRCodeSheet(fragment).show()
                     }, 150L)
                 }, 600L)
                 return true

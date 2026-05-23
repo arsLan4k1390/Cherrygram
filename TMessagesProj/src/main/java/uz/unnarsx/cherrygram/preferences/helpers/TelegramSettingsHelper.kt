@@ -9,7 +9,6 @@
 
 package uz.unnarsx.cherrygram.preferences.helpers
 
-import android.os.Build
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.edit
@@ -82,10 +81,6 @@ class TelegramSettingsHelper(
         this.listView = listView
     }
 
-    fun showMyProfile(): Boolean {
-        return !CherrygramAppearanceConfig.showMainTabs || !MainTabsManager.hasTab(MainTabsManager.TabType.PROFILE)
-    }
-
     fun showItemOptions(button: View) {
         val o = ItemOptions.makeOptions(fragment, button)
 
@@ -118,7 +113,9 @@ class TelegramSettingsHelper(
             )
         ) {
             CherrygramAppearanceConfig.marketPlaceDrawerButton = !CherrygramAppearanceConfig.marketPlaceDrawerButton
-            listView.adapter.update(true)
+            if (::listView.isInitialized) {
+                listView.adapter.update(true)
+            }
         }
 
         o.setBlur(false)
@@ -219,13 +216,15 @@ class TelegramSettingsHelper(
     fun checkChannelSubscription() {
         if (cachedCherryChannel != null || isCheckingChannel) return
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !CherrygramCoreConfig.isStandalonePremiumBuild()) {
+        if (!CherrygramCoreConfig.isStandalonePremiumBuild()) {
             isCheckingChannel = true
             CherrygramExtras.getChatJava(fragment).thenAccept { channel ->
                 AndroidUtilities.runOnUIThread {
                     cachedCherryChannel = channel
                     isCheckingChannel = false
-                    listView.adapter.update(true)
+                    if (::listView.isInitialized) {
+                        listView.adapter.update(true)
+                    }
                 }
             }
         }
@@ -240,7 +239,9 @@ class TelegramSettingsHelper(
         isCheckingChannel = false
         cachedCherryChannel = null
 
-        listView.adapter.update(true)
+        if (::listView.isInitialized) {
+            listView.adapter.update(true)
+        }
 
         if (follow) {
             fragment.messagesController.addUserToChat(
@@ -258,7 +259,7 @@ class TelegramSettingsHelper(
 
     /** Inject options start */
     fun injectChannelAdvice(items: ArrayList<UItem>) {
-        if (CherrygramExtras.shouldCheckFollow(fragment) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (CherrygramExtras.shouldCheckFollow(fragment)) {
             val channel = cachedCherryChannel
             if (channel != null && (channel.left || channel.kicked)) {
 
@@ -284,8 +285,8 @@ class TelegramSettingsHelper(
 
         val addAccountItem = SettingsActivity.SettingCell.Factory.of(
             1392,
-            0xFF1CA5ED.toInt(),
-            0xFF1488E1.toInt(),
+            IconBackgroundColors.BLUE.top,
+            IconBackgroundColors.BLUE_LIGHT.bottom,
             R.drawable.filled_add_album,
             getString(R.string.AddAccount)
         )
@@ -324,44 +325,56 @@ class TelegramSettingsHelper(
         items.add(UItem.asShadow(null))
     }
 
-    fun injectMyProfile(items: MutableList<UItem>, user: TLRPC.User?) {
-        var colorTop = IconBackgroundColors.BLUE.top
-        var colorBottom = IconBackgroundColors.BLUE.bottom
+    object Helper {
+        fun getProfileButtonColor(user: TLRPC.User?, force: Boolean): Pair<Int, Int> {
+            var colorTop = IconBackgroundColors.BLUE.top
+            var colorBottom = IconBackgroundColors.BLUE_LIGHT.bottom
 
-        if (showMyProfile() && user != null) {
-            if (user.color is TL_peerColorCollectible) {
-                val p = user.color as TL_peerColorCollectible
-                val dark = Theme.isCurrentThemeDark()
-                val colors = if (dark && p.dark_colors != null) p.dark_colors else p.colors
+            if ((showMyProfile() || force) && user != null) {
+                if (user.color is TL_peerColorCollectible) {
+                    val p = user.color as TL_peerColorCollectible
+                    val dark = Theme.isCurrentThemeDark()
+                    val colors = if (dark && p.dark_colors != null) p.dark_colors else p.colors
 
-                val color1 = colors[0]!! or -0x1000000
-                val color2 = if (colors.size >= 2) colors[1]!! or -0x1000000 else color1
-                val color3 = if (colors.size >= 3) colors[2]!! or -0x1000000 else color1
+                    val color1 = colors[0]!! or -0x1000000
+                    val color2 = if (colors.size >= 2) colors[1]!! or -0x1000000 else color1
+                    val color3 = if (colors.size >= 3) colors[2]!! or -0x1000000 else color1
 
-                colorTop = color1
-                colorBottom = color2
-            } else {
-                val colorId = UserObject.getColorId(user)
-                if (colorId < 7) {
-                    val color = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
-                    val isWhite = CherrygramExtras.isWhiteOrNearWhite(color)
-                    if (isWhite) {
-                        colorTop = 0xFF1CA5ED.toInt()
-                        colorBottom = 0xFF1488E1.toInt()
-                    } else {
-                        colorTop = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
-                        colorBottom = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
-                    }
+                    colorTop = color1
+                    colorBottom = color2
                 } else {
-                    val peerColors = MessagesController.getInstance(UserConfig.selectedAccount).peerColors
-                    val peerColor = if (peerColors == null) null else peerColors.getColor(colorId)
-                    if (peerColor != null) {
-                        colorTop = peerColor.color1
-                        colorBottom = peerColor.color2
+                    val colorId = UserObject.getColorId(user)
+                    if (colorId < 7) {
+                        val color = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
+                        val isWhite = CherrygramExtras.isWhiteOrNearWhite(color)
+                        if (isWhite) {
+                            colorTop = IconBackgroundColors.BLUE.top
+                            colorBottom = IconBackgroundColors.BLUE_LIGHT.bottom
+                        } else {
+                            colorTop = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
+                            colorBottom = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
+                        }
+                    } else {
+                        val peerColors = MessagesController.getInstance(UserConfig.selectedAccount).peerColors
+                        val peerColor = if (peerColors == null) null else peerColors.getColor(colorId)
+                        if (peerColor != null) {
+                            colorTop = peerColor.color1
+                            colorBottom = peerColor.color2
+                        }
                     }
                 }
             }
+            return Pair(colorTop, colorBottom)
         }
+
+        fun showMyProfile(): Boolean {
+            return !CherrygramAppearanceConfig.showMainTabs || !MainTabsManager.hasTab(MainTabsManager.TabType.PROFILE)
+        }
+    }
+
+
+    fun injectMyProfile(items: MutableList<UItem>, user: TLRPC.User?) {
+        val (colorTop, colorBottom) = Helper.getProfileButtonColor(user, false)
 
         items.add(
             SettingsActivity.SettingCell.Factory.of(
@@ -369,7 +382,7 @@ class TelegramSettingsHelper(
                 if (Theme.isCurrentThemeDay()) colorBottom else colorTop,
                 if (Theme.isCurrentThemeDay()) colorTop else colorBottom,
                 R.drawable.settings_account,
-                if (showMyProfile()) getString(R.string.MyProfile) else getString(R.string.SettingsAccount),
+                if (Helper.showMyProfile()) getString(R.string.MyProfile) else getString(R.string.SettingsAccount),
                 getString(R.string.SettingsAccountInfo)
             )
         )
@@ -384,8 +397,8 @@ class TelegramSettingsHelper(
         if (!CherrygramPrivacyConfig.hideArchiveFromChatsList && fragment.messagesController.getDialogs(1).isNotEmpty()) {
             val archiveItem = SettingsActivity.SettingCell.Factory.of(
                 1395,
-                0xFFF45255.toInt(),
-                0xFFDF3955.toInt(),
+                IconBackgroundColors.RED.top,
+                IconBackgroundColors.RED.bottom,
                 R.drawable.cg_settings_archive_solar,
                 getString(R.string.ArchivedChats)
             )
@@ -396,8 +409,8 @@ class TelegramSettingsHelper(
         items.add(
             SettingsActivity.SettingCell.Factory.of(
                 1393,
-                0xFF4F85F6.toInt(),
-                0xFF3568E8.toInt(),
+                IconBackgroundColors.BLUE_DEEP.top,
+                IconBackgroundColors.BLUE_DEEP.bottom,
                 R.drawable.cg_settings_saved_solar,
                 getString(R.string.SavedMessages)
             )

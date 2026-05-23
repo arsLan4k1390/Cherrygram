@@ -20,7 +20,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.Theme;
@@ -35,6 +34,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 public class ApiClient {
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -76,12 +76,12 @@ public class ApiClient {
                         modelList.add(new ModelInfo(name, displayName, description));
                     }
                 } else {
-                    FileLog.e("Ошибка API_ERROR: " + responseCode);
+                    CherrygramLogger.e(() -> "Ошибка API_ERROR: " + responseCode);
                     showErrorAlert(connection, context, progressDialog, resourcesProvider);
                 }
                 connection.disconnect();
             } catch (Exception e) {
-                FileLog.e("Ошибка NETWORK_ERROR: " + e.getMessage());
+                CherrygramLogger.e(() -> "Ошибка NETWORK_ERROR: " + e.getMessage());
                 showErrorAlert(connection, context, progressDialog, resourcesProvider);
             }
             dismissProgressDialog(progressDialog);
@@ -99,9 +99,9 @@ public class ApiClient {
         dismissProgressDialog(progressDialog);
 
         int errorResponseCode = 0;
-        String errorResponseMessage = " ";
+        String errorResponseMessage;
 
-        if (connection == null && connection.getErrorStream() == null) return;
+        if (connection == null || connection.getErrorStream() == null) return;
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
             StringBuilder errorJsonString = new StringBuilder();
@@ -113,7 +113,7 @@ public class ApiClient {
             errorResponseCode = handleError(errorJsonString.toString()).getError().getCode();
             errorResponseMessage = handleError(errorJsonString.toString()).getError().getMessage();
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
             errorResponseMessage = e.toString();
         }
 
@@ -133,7 +133,7 @@ public class ApiClient {
             try {
                 if (progressDialog.isShowing()) progressDialog.dismiss();
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
             }
         });
     }

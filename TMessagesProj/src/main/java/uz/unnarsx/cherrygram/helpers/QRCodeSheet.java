@@ -17,9 +17,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Outline;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -32,19 +30,17 @@ import android.util.Base64;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewOutlineProvider;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LinkifyPort;
 import org.telegram.messenger.MediaController;
 import org.telegram.messenger.R;
@@ -53,30 +49,35 @@ import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.DialogCell;
 import org.telegram.ui.Components.AlertsCreator;
+import org.telegram.ui.Components.BottomSheetWithRecyclerListView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.ColoredImageSpan;
-import org.telegram.ui.Components.HintView;
+import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.Components.StickerImageView;
+import org.telegram.ui.Components.UItem;
+import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
-public class QRCodeSheet extends BottomSheet {
+public class QRCodeSheet extends BottomSheetWithRecyclerListView {
 
     private static final String AUTH_TOKEN_PREFIX = "tg://login?token=";
     private static final String PHONE_PREFIX = "tel:";
@@ -88,18 +89,71 @@ public class QRCodeSheet extends BottomSheet {
     private final int TEXT_TYPE_PHONE = 3;
     private final int TEXT_TYPE_WIFI = 4;
 
-    private final BaseFragment fragment;
     private String password;
     private String ssid;
     private String wifiAuthType = "WPA";
 
-    public QRCodeSheet(BaseFragment fragment, String text) {
-        super(fragment.getParentActivity(), false, fragment.getResourceProvider());
-        this.fragment = fragment;
+    public static String text;
+
+    @Override
+    protected CharSequence getTitle() {
+        return getString(R.string.AuthAnotherClient);
+    }
+
+    private UniversalAdapter adapter;
+    @Override
+    protected RecyclerListView.SelectionAdapter createAdapter(RecyclerListView listView) {
+        adapter = new UniversalAdapter(listView, getContext(), currentAccount, 0, true, this::fillItems, resourcesProvider);
+        adapter.setApplyBackground(false);
+        return adapter;
+    }
+
+    public QRCodeSheet(BaseFragment fragment) {
+        super(fragment.getContext(), fragment, true, false, false, false, ActionBarType.SLIDING, fragment.getResourceProvider());
 
         fixNavigationBar();
-        setCanDismissWithSwipe(false);
+        setCanDismissWithTouchOutside(false);
 
+        ImageView closeView = new ImageView(fragment.getContext());
+        closeView.setScaleType(ImageView.ScaleType.CENTER);
+        closeView.setImageResource(R.drawable.ic_close_white);
+        closeView.setColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        closeView.setBackground(Theme.createSelectorDrawable(Theme.multAlpha(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), .10f)));
+        actionBar.addView(closeView, LayoutHelper.createFrame(54, 54, Gravity.BOTTOM | Gravity.RIGHT, 0, 0, 8, 0));
+        ScaleStateListAnimator.apply(closeView, .1f, 1.5f);
+        closeView.setOnClickListener(v -> dismiss());
+
+        ignoreTouchActionBar = false;
+        headerMoveTop = dp(12);
+        topPadding = 0.35f;
+
+        setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
+
+        recyclerListView.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, dp(20));
+        recyclerListView.setClipToPadding(false);
+        recyclerListView.setSections();
+        recyclerListView.setOnItemClickListener((view, position) -> {
+            final UItem item = adapter.getItem(position - 1);
+            if (item == null) return;
+        });
+
+        takeTranslationIntoAccount = true;
+        final DefaultItemAnimator itemAnimator = new DefaultItemAnimator() {
+            @Override
+            protected void onMoveAnimationUpdate(RecyclerView.ViewHolder holder) {
+                containerView.invalidate();
+            }
+        };
+        itemAnimator.setSupportsChangeAnimations(false);
+        itemAnimator.setDelayAnimations(false);
+        itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+        itemAnimator.setDurations(350);
+        recyclerListView.setItemAnimator(itemAnimator);
+
+        adapter.update(false);
+    }
+
+    private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         int textType;
         CharSequence primaryButtonText;
         CharSequence secondaryButtonText;
@@ -109,7 +163,7 @@ public class QRCodeSheet extends BottomSheet {
             primaryButtonText = getString(R.string.Cancel);
             secondaryButtonText = getString(R.string.Allow);
         } else {
-            Matcher matcher = org.telegram.messenger.LinkifyPort.WEB_URL.matcher(text);
+            Matcher matcher = LinkifyPort.WEB_URL.matcher(text);
             boolean isWebUrl = matcher.matches();
             if (!isWebUrl && !text.startsWith(PHONE_PREFIX)) {
                 if (text.startsWith(WIFI_PREFIX)) {
@@ -134,40 +188,24 @@ public class QRCodeSheet extends BottomSheet {
         }
 
         final String finalActionText = actionText;
-        Activity activity = fragment.getParentActivity();
-        fixNavigationBar();
+        Activity activity = getBaseFragment().getParentActivity();
 
-        FrameLayout root = new FrameLayout(activity);
-
-        LinearLayout contentLayout = new LinearLayout(activity);
-        contentLayout.setOrientation(LinearLayout.VERTICAL);
-        root.addView(contentLayout);
-
-        contentLayout.addView(
-                new SheetHandleView(activity),
-                LayoutHelper.createLinear(36, 4, Gravity.CENTER_HORIZONTAL, 18, 2, 18, 0)
-        );
+        LinearLayout qrContainer = new LinearLayout(activity);
+        qrContainer.setOrientation(LinearLayout.VERTICAL);
 
         if (textType == TEXT_TYPE_AUTH_TOKEN) {
             StickerImageView authImageView = new StickerImageView(activity, currentAccount);
             authImageView.setStickerPackName("tg_placeholders_android");
             authImageView.setStickerNum(6);
             authImageView.getImageReceiver().setAutoRepeat(1);
-            authImageView.getImageReceiver().setAutoRepeatCount(1);
-            contentLayout.addView(
+
+            qrContainer.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
+            qrContainer.addView(
                     authImageView,
                     LayoutHelper.createLinear(144, 144, Gravity.CENTER_HORIZONTAL, 0, 20, 0, 10)
             );
         } else {
-            TextView hintTextView = new TextView(activity);
-            hintTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-            hintTextView.setTextSize(1, 14);
-            hintTextView.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
-            hintTextView.setText(getString(R.string.CG_QR_Hint));
-            contentLayout.addView(
-                    hintTextView,
-                    LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 15, 15, 15, 5)
-            );
+            items.add(UItem.asCenterShadow(getString(R.string.CG_QR_Hint)));
 
             ImageView qrImageView = new ImageView(activity);
             ScaleStateListAnimator.apply(qrImageView, 0.03f, 1.2f);
@@ -189,22 +227,20 @@ public class QRCodeSheet extends BottomSheet {
                 return true;
             });
 
-            contentLayout.addView(
+            qrContainer.addView(
                     qrImageView,
-                    LayoutHelper.createLinear(230, 230, Gravity.CENTER_HORIZONTAL, 18, 20, 18, 15)
+                    LayoutHelper.createLinear(230, 230, Gravity.CENTER_HORIZONTAL, 18, 20, 18, 20)
             );
         }
+        items.add(UItem.asCustom(qrContainer));
+        items.add(UItem.asShadow(null));
 
         TextView textView = new TextView(activity);
         ScaleStateListAnimator.apply(textView, 0.02f, 1.5f);
-        textView.setGravity(Gravity.CENTER_HORIZONTAL);
+        textView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
         textView.setTextSize(1, 14);
-        textView.setPadding(
-                dp(8),
-                dp(4),
-                dp(8),
-                dp(4)
-        );
+        textView.setPadding(dp(8), dp(4), dp(8), dp(4));
+        textView.setMinHeight(dp(48 + 24));
         textView.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
         textView.setText(displayText);
 
@@ -216,54 +252,31 @@ public class QRCodeSheet extends BottomSheet {
                     showCopyBulletin(true);
                 }
             });
+            items.add(UItem.asCustom(textView));
+        } else {
+            items.add(UItem.asCenterShadow(displayText));
         }
-
-        ScrollView scrollView = new ScrollView(activity);
-        scrollView.setVerticalScrollBarEnabled(false);
-        scrollView.addView(
-                textView,
-                LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT)
-        );
-
-        textView.measure(
-                View.MeasureSpec.makeMeasureSpec(AndroidUtilities.displaySize.x - dp(42), View.MeasureSpec.AT_MOST),
-                View.MeasureSpec.UNSPECIFIED
-        );
-
-        int textHeight = textView.getMeasuredHeight();
-        int maxHeight = (int) (AndroidUtilities.displaySize.y * 0.4f);
-
-        LinearLayout.LayoutParams scrollParams = LayoutHelper.createLinear(
-                LayoutHelper.WRAP_CONTENT,
-                LayoutHelper.WRAP_CONTENT,
-                Gravity.CENTER_HORIZONTAL,
-                21, 2, 21, 8
-        );
-        scrollParams.height = Math.min(textHeight, maxHeight);
-        contentLayout.addView(scrollView, scrollParams);
+        items.add(UItem.asShadow(null));
 
         LinearLayout buttonsLayout = new LinearLayout(activity);
+        buttonsLayout.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
         buttonsLayout.setOrientation(LinearLayout.HORIZONTAL);
-        contentLayout.addView(
-                buttonsLayout,
-                LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 16, 15, 16, 4)
-        );
 
-        ButtonWithCounterView primaryButton = new ButtonWithCounterView(activity, fragment.getResourceProvider());
+        ButtonWithCounterView primaryButton = new ButtonWithCounterView(activity, getBaseFragment().getResourceProvider());
         primaryButton.setRound();
         primaryButton.setText(primaryButtonText, false);
         primaryButton.setOnClickListener(view -> handlePrimaryAction(textType, finalActionText));
         if (textType == TEXT_TYPE_AUTH_TOKEN) {
-            primaryButton.setNeutral();
+            primaryButton.setNeutral(true);
         }
 
         View spacer = new View(activity);
 
-        ButtonWithCounterView secondaryButton = new ButtonWithCounterView(activity, fragment.getResourceProvider());
+        ButtonWithCounterView secondaryButton = new ButtonWithCounterView(activity, getBaseFragment().getResourceProvider());
         secondaryButton.setRound();
         secondaryButton.setText(secondaryButtonText, false);
         secondaryButton.setFilled(true);
-        secondaryButton.setOnClickListener(view -> handleSecondaryAction(textType, finalActionText, fragment));
+        secondaryButton.setOnClickListener(view -> handleSecondaryAction(textType, finalActionText));
 
         ButtonWithCounterView first = textType == TEXT_TYPE_AUTH_TOKEN ? primaryButton : secondaryButton;
         ButtonWithCounterView second = textType == TEXT_TYPE_AUTH_TOKEN ? secondaryButton : primaryButton;
@@ -272,7 +285,7 @@ public class QRCodeSheet extends BottomSheet {
         buttonsLayout.addView(spacer, LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 0.06f));
         buttonsLayout.addView(second, LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 1.0F));
 
-        setCustomView(root);
+        items.add(UItem.asCustom(buttonsLayout, 48));
     }
 
     private CharSequence buildOpenButtonText(String actionText) {
@@ -291,7 +304,7 @@ public class QRCodeSheet extends BottomSheet {
 
         ColoredImageSpan arrowSpan = new ColoredImageSpan(
                 ContextCompat.getDrawable(
-                        fragment.getParentActivity(),
+                        getBaseFragment().getParentActivity(),
                         isTelegramLink ? R.drawable.filter_all : R.drawable.settings_language
                 )
         );
@@ -315,13 +328,13 @@ public class QRCodeSheet extends BottomSheet {
 
             builder.setSpan(new DialogCell.FixedWidthSpan(dp(4)), start, start + 1, 0);
 
-            ColoredImageSpan span = new ColoredImageSpan(ContextCompat.getDrawable(fragment.getParentActivity(), iconRes));
+            ColoredImageSpan span = new ColoredImageSpan(ContextCompat.getDrawable(getBaseFragment().getParentActivity(), iconRes));
             builder.setSpan(span, start + 1, start + 2, 0);
         } else {
             builder = new SpannableStringBuilder();
             builder.append("..");
 
-            ColoredImageSpan span = new ColoredImageSpan(ContextCompat.getDrawable(fragment.getParentActivity(), iconRes));
+            ColoredImageSpan span = new ColoredImageSpan(ContextCompat.getDrawable(getBaseFragment().getParentActivity(), iconRes));
             builder.setSpan(span, 0, 1, 0);
             builder.setSpan(new DialogCell.FixedWidthSpan(dp(4)), 1, 2, 0);
 
@@ -355,11 +368,11 @@ public class QRCodeSheet extends BottomSheet {
             if (host != null) {
                 if (isTelegramLink(host.toLowerCase())) {
                     dismiss();
-                    Browser.openAsInternalIntent(fragment.getParentActivity(), actionText);
+                    Browser.openAsInternalIntent(getBaseFragment().getParentActivity(), actionText);
                     return;
                 }
             }
-            Browser.openUrl(fragment.getParentActivity(), uri);
+            Browser.openUrl(getBaseFragment().getParentActivity(), uri);
         } else if (textType == TEXT_TYPE_TEXT) {
             if (AndroidUtilities.addToClipboard(actionText)) {
                 showCopyBulletin(false);
@@ -371,9 +384,9 @@ public class QRCodeSheet extends BottomSheet {
         dismiss();
     }
 
-    private void handleSecondaryAction(int textType, String actionText, BaseFragment fragment) {
+    private void handleSecondaryAction(int textType, String actionText) {
         if (textType == TEXT_TYPE_AUTH_TOKEN) {
-            AndroidUtilities.runOnUIThread(() -> acceptLoginToken(actionText, fragment), 750L);
+            AndroidUtilities.runOnUIThread(() -> acceptLoginToken(actionText), 750L);
             dismiss();
             return;
         }
@@ -384,16 +397,16 @@ public class QRCodeSheet extends BottomSheet {
             shareIntent.putExtra(Intent.EXTRA_TEXT, actionText);
 
             Intent chooser = Intent.createChooser(shareIntent, getString(R.string.QrCode));
-            fragment.startActivityForResult(chooser, 500);
+            getBaseFragment().startActivityForResult(chooser, 500);
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
 
         dismiss();
     }
 
     /** Auth start */
-    private void acceptLoginToken(String actionText, BaseFragment fragment) {
+    private void acceptLoginToken(String actionText) {
         try {
             String token = actionText.substring(AUTH_TOKEN_PREFIX.length());
             token = token.replaceAll("/", "_");
@@ -408,7 +421,7 @@ public class QRCodeSheet extends BottomSheet {
                 if (error != null) {
                     dismiss();
                     AlertsCreator.showSimpleAlert(
-                            fragment,
+                            getBaseFragment(),
                             getString(R.string.AuthAnotherClient),
                             error.text
                     );
@@ -417,9 +430,9 @@ public class QRCodeSheet extends BottomSheet {
                 }
             }));
         } catch (Exception e) {
-            FileLog.e("Failed to pass qr code auth", e);
+            CherrygramLogger.e(() -> "Failed to pass qr code auth", e);
             AndroidUtilities.runOnUIThread(() -> AlertsCreator.showSimpleAlert(
-                    fragment,
+                    getBaseFragment(),
                     getString(R.string.AuthAnotherClient),
                     getString(R.string.ErrorOccurred)
             ));
@@ -466,7 +479,7 @@ public class QRCodeSheet extends BottomSheet {
             showErrorBulletin(getString(R.string.CG_WifiDisabled));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 Intent panelIntent = new Intent("android.settings.panel.action.WIFI");
-                fragment.startActivityForResult(panelIntent, 501);
+                getBaseFragment().startActivityForResult(panelIntent, 501);
             }
             return;
         }
@@ -500,7 +513,7 @@ public class QRCodeSheet extends BottomSheet {
         int networkId = wifiManager.addNetwork(configuration);
         if (networkId != -1 && wifiManager.enableNetwork(networkId, true)) {
             wifiManager.reconnect();
-            BulletinFactory.of(fragment)
+            BulletinFactory.of(getBaseFragment())
                     .createSimpleBulletin(R.raw.contact_check, getString(R.string.CG_WifiSuccess))
                     .show();
             return;
@@ -528,7 +541,7 @@ public class QRCodeSheet extends BottomSheet {
 
         if (wifiManager.addNetworkSuggestions(suggestions) == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
             Intent wifiSettingsIntent = new Intent("android.settings.WIFI_SETTINGS");
-            fragment.getParentActivity().startActivity(wifiSettingsIntent);
+            getBaseFragment().getParentActivity().startActivity(wifiSettingsIntent);
             return;
         }
 
@@ -576,7 +589,7 @@ public class QRCodeSheet extends BottomSheet {
                         .show());
             }
         } catch (IOException e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
     }
 
@@ -584,51 +597,19 @@ public class QRCodeSheet extends BottomSheet {
         AndroidUtilities.runOnUIThread(() -> {
             BulletinFactory factory = useContainer
                     ? BulletinFactory.of(getContainer(), resourcesProvider)
-                    : BulletinFactory.of(fragment);
+                    : BulletinFactory.of(getBaseFragment());
             factory.createCopyBulletin(formatString(R.string.TextCopied)).show();
         });
     }
 
     private void showErrorBulletin(String message) {
         AndroidUtilities.runOnUIThread(() ->
-                BulletinFactory.of(fragment).createErrorBulletin(message).show()
+                BulletinFactory.of(getBaseFragment()).createErrorBulletin(message).show()
         );
     }
     /** Misc finish */
 
-    private final class SheetHandleView extends View {
-
-        private SheetHandleView(Context context) {
-            super(context);
-        }
-
-        private final RectF rect = new RectF();
-
-        @Override
-        protected void onDraw(@NonNull Canvas canvas) {
-            super.onDraw(canvas);
-
-            int handleWidth = dp(36);
-
-            rect.set(
-                    (getWidth() - handleWidth) / 2f,
-                    0,
-                    (getWidth() + handleWidth) / 2f,
-                    dp(4)
-            );
-
-            Theme.dialogs_onlineCirclePaint.setColor(getThemedColor(Theme.key_sheet_scrollUp));
-
-            canvas.drawRoundRect(
-                    rect,
-                    dp(2),
-                    dp(2),
-                    Theme.dialogs_onlineCirclePaint
-            );
-        }
-    }
-
-    private static final class RoundedQrOutlineProvider extends ViewOutlineProvider {
+    public static final class RoundedQrOutlineProvider extends ViewOutlineProvider {
         @Override
         public void getOutline(View view, Outline outline) {
             outline.setRoundRect(

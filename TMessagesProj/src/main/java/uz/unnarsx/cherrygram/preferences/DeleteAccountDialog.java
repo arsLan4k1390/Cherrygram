@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildConfig;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLRPC;
@@ -28,6 +27,7 @@ import org.telegram.ui.ActionBar.Theme;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 
 public class DeleteAccountDialog extends BaseFragment {
@@ -70,7 +70,7 @@ public class DeleteAccountDialog extends BaseFragment {
                     try {
                         progressDialog.dismiss();
                     } catch (Exception e) {
-                        FileLog.e(e);
+                        CherrygramLogger.e(e);
                     }
                     if (response instanceof TLRPC.TL_boolTrue) {
                         fragment.getMessagesController().performLogout(0);

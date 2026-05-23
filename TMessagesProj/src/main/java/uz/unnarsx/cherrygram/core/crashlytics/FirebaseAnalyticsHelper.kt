@@ -15,7 +15,7 @@ import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.FileLog
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
@@ -28,8 +28,6 @@ object FirebaseAnalyticsHelper {
     private var firebaseAnalytics: FirebaseAnalytics? = null
 
     fun init(context: Context) {
-        if (!ApplicationLoader.checkPlayServices()) return
-
         firebaseAnalytics = FirebaseAnalytics.getInstance(context).apply {
             val bundle = Bundle().apply {
                 putString("flavor", CGResourcesHelper.getBuildType())
@@ -39,16 +37,14 @@ object FirebaseAnalyticsHelper {
             }
             setDefaultEventParameters(bundle)
 
-            setAnalyticsCollectionEnabled(CherrygramPrivacyConfig.googleAnalytics)
+            setAnalyticsCollectionEnabled(/*CherrygramPrivacyConfig.googleAnalytics*/ true)
         }
     }
 
     fun onPrivacyConfigChanged(isEnabled: Boolean) {
         firebaseAnalytics?.setAnalyticsCollectionEnabled(isEnabled)
 
-        if (CherrygramCoreConfig.isDevBuild()) {
-            FileLog.e("Firebase Analytics collection: $isEnabled")
-        }
+        CherrygramLogger.w {"Firebase Analytics collection: $isEnabled" }
     }
 
     fun trackEventWithEmptyBundle(eventName: String) {
@@ -62,7 +58,7 @@ object FirebaseAnalyticsHelper {
             analytics.logEvent(eventName, bundle)
 
             if (CherrygramCoreConfig.isDevBuild()) {
-                FileLog.e("отслежен ивент: $eventName $bundle")
+                CherrygramLogger.i { "отслежен ивент: $eventName $bundle" }
 
                 if (CherrygramDebugConfig.showRPCErrors) {
                     AndroidUtilities.runOnUIThread({

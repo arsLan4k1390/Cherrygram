@@ -14,13 +14,14 @@ import android.graphics.Typeface;
 import android.os.Build;
 
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
+
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 public class FontHelper {
 
@@ -98,7 +99,7 @@ public class FontHelper {
                 return Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
             }
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
             return Typeface.DEFAULT;
         }
     }
@@ -113,7 +114,7 @@ public class FontHelper {
                 try {
                     systemEmojiTypeface = Typeface.createFromFile(font);
                 } catch (Exception e) {
-                    FileLog.e("Failed to load system emoji font: " + font.getAbsolutePath(), e);
+                    CherrygramLogger.e(() -> "Failed to load system emoji font: " + font.getAbsolutePath(), e);
                 }
             }
             if (systemEmojiTypeface == null) {
@@ -141,7 +142,7 @@ public class FontHelper {
                         if (font.toLowerCase().contains("emoji")) {
                             File file = new File("/system/fonts/" + font);
                             if (file.exists()) {
-                                FileLog.d("emoji font file fonts.xml = " + font);
+                                CherrygramLogger.d(() -> "emoji font file fonts.xml = " + font);
                                 return file;
                             }
                         }
@@ -155,7 +156,7 @@ public class FontHelper {
                 return fileAOSP;
             }
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
         return null;
     }
@@ -178,7 +179,7 @@ public class FontHelper {
             Typeface medium = createTypeface(500, false);
 
             mediumWeightSupported = isDifferentTypeface(normal, medium);
-            FileLog.d("mediumWeightSupported = " + mediumWeightSupported);
+            CherrygramLogger.d(() -> "mediumWeightSupported = " + mediumWeightSupported);
         }
         return mediumWeightSupported;
     }
@@ -187,7 +188,7 @@ public class FontHelper {
         if (italicSupported == null) {
             Typeface tf = createTypeface(400, true);
             italicSupported = PAINT.hasGlyph(TEST_TEXT) && tf.isItalic();
-            FileLog.d("italicSupported = " + italicSupported);
+            CherrygramLogger.d(() -> "italicSupported = " + italicSupported);
         }
         return italicSupported;
     }
