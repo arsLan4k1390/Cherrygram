@@ -21,7 +21,6 @@ import androidx.biometric.BiometricPrompt;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.DialogObject;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.BulletinFactory;
@@ -35,6 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
@@ -72,6 +72,7 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 
@@ -144,9 +145,9 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
         items.add(UItem.asShadow(getString(R.string.SP_TestFingerprint_Desc)));
 
         items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
-        items.add(SettingsHelper.asSwitchCG(googleAnalyticsRow, getString(R.string.SP_GoogleAnalytics), getString(R.string.SP_GoogleAnalytics_Desc))
+        /*items.add(SettingsHelper.asSwitchCG(googleAnalyticsRow, getString(R.string.SP_GoogleAnalytics), getString(R.string.SP_GoogleAnalytics_Desc))
                 .setChecked(CherrygramPrivacyConfig.INSTANCE.getGoogleAnalytics())
-        );
+        );*/
 
         UItem deleteAccountButton = UItem.asButton(
                 deleteAccountRow,
@@ -237,15 +238,11 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
         AndroidUtilities.runOnUIThread(() -> {
             UsersSelectActivity activity = getUsersSelectActivity();
             activity.setDelegate((ids, type) -> {
-                // Убираем дубликаты через HashSet
                 Set<Long> chatIds = new HashSet<>(ids);
 
-                // Получаем текущий список заблокированных чатов
                 Set<String> lockedChats = new HashSet<>(getChatsPasswordHelper().getArrayList(getChatsPasswordHelper().getPasscodeArray()));
 
-                if (CherrygramCoreConfig.isDevBuild()) {
-                    FileLog.d("old locked chats array: " + lockedChats);
-                }
+                CherrygramLogger.d(() -> "old locked chats array: " + lockedChats);
 
                 lockedChats.clear();
 
@@ -257,15 +254,12 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
                     }
                 }
 
-                // Сохраняем, преобразуя Set обратно в ArrayList
                 getChatsPasswordHelper().saveArrayList(
                         new ArrayList<>(lockedChats),
                         getChatsPasswordHelper().getPasscodeArray()
                 );
 
-                if (CherrygramCoreConfig.isDevBuild()) {
-                    FileLog.d("new locked chats array: " + lockedChats);
-                }
+                CherrygramLogger.d(() -> "new locked chats array: " + lockedChats);
 
                 SettingsHelper.updateButtonValue(view, String.valueOf(getChatsPasswordHelper().getLockedChatsCount()));
             });
@@ -363,10 +357,10 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
                     }
                     context.startActivity(fallbackIntent);
                 } catch (SecurityException e) {
-                    FileLog.e(e);
+                    CherrygramLogger.e(e);
                     context.startActivity(fallbackIntent);
                 } catch (Exception e) {
-                    FileLog.e(e);
+                    CherrygramLogger.e(e);
                 }
             }
         });

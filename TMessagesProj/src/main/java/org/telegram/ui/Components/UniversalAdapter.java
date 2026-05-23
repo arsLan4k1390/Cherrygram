@@ -188,6 +188,9 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
     public void whiteSectionEnd() {
         if (currentWhiteSection != null) {
             currentWhiteSection.end = Math.max(0, itemsOffset + items.size() - 1);
+            if (currentWhiteSection.start == currentWhiteSection.end) {
+                whiteSections.remove(currentWhiteSection);
+            }
             currentWhiteSection = null;
         }
     }
@@ -631,6 +634,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
             case VIEW_TYPE_BLACK_HEADER:
             case VIEW_TYPE_LARGE_HEADER:
                 ((HeaderCell) holder.itemView).setText(item.text);
+                ((HeaderCell) holder.itemView).setEnabled(item.enabled, true);
                 break;
             case VIEW_TYPE_ANIMATED_HEADER:
                 HeaderCell animatedHeaderCell = (HeaderCell) holder.itemView;
@@ -658,12 +662,20 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
                         topCell.setEmoji(item.iconResId);
                     }
                 } else {
+                    if (item.intValue != 0) {
+                        topCell.setEmojiSize(item.intValue);
+                    }
                     topCell.setEmoji(item.subtext.toString(), item.textValue.toString());
                 }
-                topCell.setText(item.text);
+                if (TextUtils.isEmpty(item.animatedText)) {
+                    topCell.setText(item.text);
+                } else {
+                    topCell.setText(item.text, item.animatedText);
+                }
                 break;
             case VIEW_TYPE_TEXT:
                 TextCell cell = (TextCell) holder.itemView;
+                cell.setEnabled(item.enabled, null);
                 if (item.object instanceof TLRPC.Document) {
                     cell.setTextAndSticker(item.text, (TLRPC.Document) item.object, divider);
                 } else if (item.object instanceof String) {
@@ -692,6 +704,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
                 } else {
                     cell.setColors(Theme.key_windowBackgroundWhiteGrayIcon, Theme.key_windowBackgroundWhiteBlackText);
                 }
+                cell.setEnabled(item.enabled, true);
                 break;
             case VIEW_TYPE_CHECK:
             case VIEW_TYPE_CHECKRIPPLE:
@@ -725,6 +738,8 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
             case VIEW_TYPE_TEXT_CHECK:
                 NotificationsCheckCell checkCell1 = (NotificationsCheckCell) holder.itemView;
                 final boolean multiline = /*item.subtext != null && item.subtext.toString().contains("\n")*/ true;
+                checkCell1.setEnabled(item.enabled, null);
+                if (item.locked) checkCell1.setCheckBoxIcon(R.drawable.permission_locked);
                 checkCell1.setTextAndValueAndCheck(item.text, item.subtext, item.checked, 0, multiline, divider);
                 break;
             case VIEW_TYPE_ICON_TEXT_CHECK:
@@ -800,6 +815,8 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
             case VIEW_TYPE_FULLY_CUSTOM:
             case VIEW_TYPE_CUSTOM_WITH_BACKGROUND:
                 FrameLayout frameLayout = (FrameLayout) holder.itemView;
+                frameLayout.setClipChildren(!item.checked);
+                frameLayout.setClipToPadding(!item.checked);
                 if (frameLayout.getChildCount() != (item.view == null ? 0 : 1) || frameLayout.getChildAt(0) != item.view) {
                     frameLayout.removeAllViews();
                     if (item.view != null) {
@@ -837,6 +854,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
             case VIEW_TYPE_USER_ADD:
                 UserCell userCell2 = (UserCell) holder.itemView;
                 userCell2.setFromUItem(currentAccount, item, divider);
+                userCell2.setQuery(item.textValue == null ? null : item.textValue.toString().toLowerCase());
                 userCell2.setAddButtonVisible(!item.checked);
                 userCell2.setCloseIcon(item.clickCallback);
                 break;
@@ -1006,10 +1024,14 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
             case VIEW_TYPE_USER_GROUP_CHECKBOX:
                 CheckBoxCell checkBoxCell = (CheckBoxCell) holder.itemView;
                 checkBoxCell.setPad(item.pad);
-                checkBoxCell.setText(item.text, "", item.checked, divider, checkBoxCell.itemId == item.id);
+                if (item.subtext != null) {
+                    checkBoxCell.setText(item.text, item.subtext.toString(), item.checked, divider, checkBoxCell.itemId == item.id);
+                } else {
+                    checkBoxCell.setText(item.text, "", item.checked, divider, checkBoxCell.itemId == item.id);
+                }
                 checkBoxCell.itemId = item.id;
                 checkBoxCell.setIcon(item.locked ? R.drawable.permission_locked : 0);
-                if (viewType == VIEW_TYPE_USER_GROUP_CHECKBOX || viewType == VIEW_TYPE_ROUND_GROUP_CHECKBOX) {
+                if (item.subtext == null && (viewType == VIEW_TYPE_USER_GROUP_CHECKBOX || viewType == VIEW_TYPE_ROUND_GROUP_CHECKBOX)) {
                     checkBoxCell.setCollapseButton(item.collapsed, item.animatedText, item.clickCallback);
                 }
                 break;
@@ -1097,11 +1119,15 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
 
     public void updateReorder(RecyclerView.ViewHolder holder, boolean allowReorder) {
         if (holder == null) return;
+        final int position = holder.getAdapterPosition();
+        if (position == RecyclerView.NO_POSITION) return;
         final int viewType = holder.getItemViewType();
         if (viewType >= UItem.factoryViewTypeStartsWith) {
             UItem.UItemFactory<?> factory = UItem.findFactory(viewType);
             if (factory != null) {
-                factory.attachedView(listView, holder.itemView, getItem(holder.getAdapterPosition()));
+                UItem item = getItem(position);
+                if (item == null) return;
+                factory.attachedView(listView, holder.itemView, item);
             }
         } else {
             switch (viewType) {

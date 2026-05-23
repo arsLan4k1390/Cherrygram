@@ -48,13 +48,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
 import org.telegram.messenger.R;
@@ -93,6 +93,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class BackupFileImportActivity extends BaseFragment {
@@ -143,7 +144,7 @@ public class BackupFileImportActivity extends BaseFragment {
     private boolean receiverRegistered = false;
     private static final long sizeLimit = 1024 * 1024 * 1536;
     private DocumentSelectActivityDelegate delegate;
-    private HashMap<String, ListItem> selectedFiles = new HashMap<>();
+    private final HashMap<String, ListItem> selectedFiles = new HashMap<>();
     private boolean scrolling;
     private int maxSelectedFiles = -1;
 
@@ -166,7 +167,7 @@ public class BackupFileImportActivity extends BaseFragment {
         String title;
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context arg0, Intent intent) {
             Runnable r = () -> {
@@ -177,7 +178,7 @@ public class BackupFileImportActivity extends BaseFragment {
                         listFiles(currentDir);
                     }
                 } catch (Exception e) {
-                    FileLog.e(e);
+                    CherrygramLogger.e(e);
                 }
             };
             if (Intent.ACTION_MEDIA_UNMOUNTED.equals(intent.getAction())) {
@@ -209,7 +210,7 @@ public class BackupFileImportActivity extends BaseFragment {
                 ApplicationLoader.applicationContext.unregisterReceiver(receiver);
             }
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
         super.onFragmentDestroy();
     }
@@ -351,31 +352,20 @@ public class BackupFileImportActivity extends BaseFragment {
                     final int absoluteGravity = gravity & Gravity.HORIZONTAL_GRAVITY_MASK;
                     final int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
 
-                    switch (absoluteGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
-                        case Gravity.CENTER_HORIZONTAL:
-                            childLeft = (r - l - width) / 2 + lp.leftMargin - lp.rightMargin;
-                            break;
-                        case Gravity.RIGHT:
-                            childLeft = (r - l) - width - lp.rightMargin - getPaddingRight();
-                            break;
-                        case Gravity.LEFT:
-                        default:
-                            childLeft = lp.leftMargin + getPaddingLeft();
-                    }
+                    childLeft = switch (absoluteGravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
+                        case Gravity.CENTER_HORIZONTAL ->
+                                (r - l - width) / 2 + lp.leftMargin - lp.rightMargin;
+                        case Gravity.RIGHT -> (r - l) - width - lp.rightMargin - getPaddingRight();
+                        default -> lp.leftMargin + getPaddingLeft();
+                    };
 
-                    switch (verticalGravity) {
-                        case Gravity.TOP:
-                            childTop = lp.topMargin + getPaddingTop();
-                            break;
-                        case Gravity.CENTER_VERTICAL:
-                            childTop = ((b - paddingBottom) - t - height) / 2 + lp.topMargin - lp.bottomMargin;
-                            break;
-                        case Gravity.BOTTOM:
-                            childTop = ((b - paddingBottom) - t) - height - lp.bottomMargin;
-                            break;
-                        default:
-                            childTop = lp.topMargin;
-                    }
+                    childTop = switch (verticalGravity) {
+                        case Gravity.TOP -> lp.topMargin + getPaddingTop();
+                        case Gravity.CENTER_VERTICAL ->
+                                ((b - paddingBottom) - t - height) / 2 + lp.topMargin - lp.bottomMargin;
+                        case Gravity.BOTTOM -> ((b - paddingBottom) - t) - height - lp.bottomMargin;
+                        default -> lp.topMargin;
+                    };
 
                     if (commentTextView != null && commentTextView.isPopupView(child)) {
                         if (AndroidUtilities.isTablet()) {
@@ -438,7 +428,7 @@ public class BackupFileImportActivity extends BaseFragment {
 
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 scrolling = newState != RecyclerView.SCROLL_STATE_IDLE;
                 if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                     AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
@@ -664,7 +654,7 @@ public class BackupFileImportActivity extends BaseFragment {
 
         selectedCountView = new View(context) {
             @Override
-            protected void onDraw(Canvas canvas) {
+            protected void onDraw(@NonNull Canvas canvas) {
                 String text = String.format("%d", Math.max(1, selectedFiles.size()));
                 int textSize = (int) Math.ceil(textPaint.measureText(text));
                 int size = Math.max(AndroidUtilities.dp(16) + textSize, AndroidUtilities.dp(24));
@@ -672,14 +662,14 @@ public class BackupFileImportActivity extends BaseFragment {
 
                 textPaint.setColor(Theme.getColor(Theme.key_dialogRoundCheckBoxCheck));
                 paint.setColor(Theme.getColor(Theme.key_dialogBackground));
-                rect.set(cx - size / 2, 0, cx + size / 2, getMeasuredHeight());
+                rect.set(cx - (float) size / 2, 0, cx + (float) size / 2, getMeasuredHeight());
                 canvas.drawRoundRect(rect, AndroidUtilities.dp(12), AndroidUtilities.dp(12), paint);
 
                 paint.setColor(Theme.getColor(Theme.key_dialogRoundCheckBox));
-                rect.set(cx - size / 2 + AndroidUtilities.dp(2), AndroidUtilities.dp(2), cx + size / 2 - AndroidUtilities.dp(2), getMeasuredHeight() - AndroidUtilities.dp(2));
+                rect.set(cx - (float) size / 2 + AndroidUtilities.dp(2), AndroidUtilities.dp(2), cx + (float) size / 2 - AndroidUtilities.dp(2), getMeasuredHeight() - AndroidUtilities.dp(2));
                 canvas.drawRoundRect(rect, AndroidUtilities.dp(10), AndroidUtilities.dp(10), paint);
 
-                canvas.drawText(text, cx - textSize / 2, AndroidUtilities.dp(16.2f), textPaint);
+                canvas.drawText(text, cx - (float) textSize / 2, AndroidUtilities.dp(16.2f), textPaint);
             }
         };
         selectedCountView.setAlpha(0.0f);
@@ -847,8 +837,7 @@ public class BackupFileImportActivity extends BaseFragment {
             Object object = photos.get(order.get(a));
             SendMessagesHelper.SendingMediaInfo info = new SendMessagesHelper.SendingMediaInfo();
             media.add(info);
-            if (object instanceof MediaController.PhotoEntry) {
-                MediaController.PhotoEntry photoEntry = (MediaController.PhotoEntry) object;
+            if (object instanceof MediaController.PhotoEntry photoEntry) {
                 if (photoEntry.isVideo) {
                     info.path = photoEntry.path;
                     info.videoEditedInfo = photoEntry.editedInfo;
@@ -868,7 +857,7 @@ public class BackupFileImportActivity extends BaseFragment {
     }
 
     private void sendSelectedFiles(boolean notify, int scheduleDate, int scheduleRepeatPeriod) {
-        if (selectedFiles.size() == 0 || delegate == null || sendPressed) {
+        if (selectedFiles.isEmpty() || delegate == null || sendPressed) {
             return;
         }
         sendPressed = true;
@@ -880,8 +869,8 @@ public class BackupFileImportActivity extends BaseFragment {
     public void loadRecentFiles() {
         try {
             File[] files = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).listFiles();
-            for (int a = 0; a < files.length; a++) {
-                File file = files[a];
+            if (files == null) return;
+            for (File file : files) {
                 if (file.isDirectory()) {
                     continue;
                 }
@@ -900,7 +889,7 @@ public class BackupFileImportActivity extends BaseFragment {
             }
             sortRecentItems();
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
     }
 
@@ -963,7 +952,7 @@ public class BackupFileImportActivity extends BaseFragment {
     }
 
     private boolean canClosePicker() {
-        if (listAdapter.history.size() > 0) {
+        if (!listAdapter.history.isEmpty()) {
             HistoryEntry he = listAdapter.history.remove(listAdapter.history.size() - 1);
             actionBar.setTitle(he.title);
             if (he.dir != null) {
@@ -1025,8 +1014,7 @@ public class BackupFileImportActivity extends BaseFragment {
         }
         currentDir = dir;
         listAdapter.items.clear();
-        for (int a = 0; a < files.length; a++) {
-            File file = files[a];
+        for (File file : files) {
             if (file.getName().indexOf('.') == 0) {
                 continue;
             }
@@ -1051,7 +1039,7 @@ public class BackupFileImportActivity extends BaseFragment {
         }
         ListItem item = new ListItem();
         item.title = "..";
-        if (listAdapter.history.size() > 0) {
+        if (!listAdapter.history.isEmpty()) {
             HistoryEntry entry = listAdapter.history.get(listAdapter.history.size() - 1);
             if (entry.dir == null) {
                 item.subtitle = getString(R.string.Folder);
@@ -1101,14 +1089,13 @@ public class BackupFileImportActivity extends BaseFragment {
             paths.add(defaultPath);
         }
 
-        BufferedReader bufferedReader = null;
-        try {
-            bufferedReader = new BufferedReader(new FileReader("/proc/mounts"));
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("/proc/mounts"))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.contains("vfat") || line.contains("/mnt")) {
                     if (BuildVars.LOGS_ENABLED) {
-                        FileLog.d(line);
+                        String finalLine = line;
+                        CherrygramLogger.d(() -> finalLine);
                     }
                     StringTokenizer tokens = new StringTokenizer(line, " ");
                     String path = tokens.nextToken();
@@ -1132,15 +1119,7 @@ public class BackupFileImportActivity extends BaseFragment {
                 }
             }
         } catch (Exception e) {
-            FileLog.e(e);
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
-            }
+            CherrygramLogger.e(e);
         }
 
         ListItem fs;
@@ -1155,7 +1134,7 @@ public class BackupFileImportActivity extends BaseFragment {
                 listAdapter.items.add(fs);
             }
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
 
         if (!listAdapter.recentItems.isEmpty()) {
@@ -1169,12 +1148,12 @@ public class BackupFileImportActivity extends BaseFragment {
 
     private class ListAdapter extends RecyclerListView.SelectionAdapter {
 
-        private ArrayList<ListItem> items = new ArrayList<>();
-        private ArrayList<HistoryEntry> history = new ArrayList<>();
-        private ArrayList<ListItem> recentItems = new ArrayList<>();
+        private final ArrayList<ListItem> items = new ArrayList<>();
+        private final ArrayList<HistoryEntry> history = new ArrayList<>();
+        private final ArrayList<ListItem> recentItems = new ArrayList<>();
 
 
-        private Context mContext;
+        private final Context mContext;
 
         public ListAdapter(Context context) {
             mContext = context;
@@ -1218,8 +1197,9 @@ public class BackupFileImportActivity extends BaseFragment {
             return 1;
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view;
             switch (viewType) {
                 case 0:
@@ -1247,6 +1227,7 @@ public class BackupFileImportActivity extends BaseFragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (holder.getItemViewType() == 1) {
                 ListItem item = getItem(position);
+                if (item == null) return;
                 SharedDocumentCell documentCell = (SharedDocumentCell) holder.itemView;
                 if (item.icon != 0) {
                     documentCell.setTextAndValueAndTypeAndThumb(item.title, item.subtitle, null, null, item.icon, position != items.size() - 1);

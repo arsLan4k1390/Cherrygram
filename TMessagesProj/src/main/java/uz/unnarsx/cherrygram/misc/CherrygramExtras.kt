@@ -139,7 +139,6 @@ object CherrygramExtras : CoroutineScope by MainScope() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun getChatJava(fragment: BaseFragment): CompletableFuture<TLRPC.Chat> {
         val future = CompletableFuture<TLRPC.Chat>()
         val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())

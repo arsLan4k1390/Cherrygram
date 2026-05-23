@@ -26,11 +26,13 @@ import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Cells.UserCell;
+import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.LaunchActivity;
+import org.telegram.ui.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,15 +61,15 @@ public class ChatsPreferencesEntry extends UniversalFragment {
 
     private final int customChatRow = 10;
 
-    private final int autoQuoteRow = 11, disableSwipeToNextRow = 12, disableVibrationRow = 13;
+    private final int autoQuoteRow = 11, disableSwipeToNextRow = 12, disableVibrationRow = 13, openLinksInIV = 14;
 
-    private final int hideKbdSliderRow = 14;
+    private final int hideKbdSliderRow = 15;
 
-    private final int playVideoOnVolumeBtnRow = 15, autoPauseVideoRow = 16;
+    private final int playVideoOnVolumeBtnRow = 16, autoPauseVideoRow = 17;
 
-    private final int videoSeekSliderRow = 17;
+    private final int videoSeekSliderRow = 18;
 
-    private final int notificationSoundRow = 18, vibrateInChatsRow = 19;
+    private final int notificationSoundRow = 19, vibrateInChatsRow = 20;
 
     @Override
     protected CharSequence getTitle() {
@@ -78,6 +80,7 @@ public class ChatsPreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 
@@ -110,7 +113,15 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         items.add(UItem.asButton(recentEmojisStickersRow, 0, getString(R.string.CP_Slider_RecentEmojisAndStickers)));
         items.add(UItem.asShadow(null));
 
-        items.add(UItem.asButton(messagesPreferencesRow, R.drawable.msg_discussion, getString(R.string.MessagesSettings)));
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        messagesPreferencesRow, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom,
+                        R.drawable.settings_messages_filled_solar,
+                        getString(R.string.MessagesSettings),
+                        getString(R.string.CGP_Messages_Desc),
+                        true
+                )
+        );
         items.add(UItem.asShadow(null));
 
         items.add(SettingsHelper.asSwitchCG(customChatRow, getString(R.string.EP_CustomChat), getString(R.string.EP_CustomChat_Desc))
@@ -130,6 +141,9 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         );
         items.add(SettingsHelper.asSwitchCG(disableVibrationRow, getString(R.string.CP_DisableVibration))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getDisableVibration())
+        );
+        items.add(SettingsHelper.asSwitchCG(openLinksInIV, getString(R.string.CP_OpenLinksInIV))
+                .setChecked(CherrygramChatsConfig.INSTANCE.getOpenLinksInIV())
         );
         items.add(UItem.asShadow(null));
 
@@ -221,6 +235,9 @@ public class ChatsPreferencesEntry extends UniversalFragment {
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getDisableVibration());
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+        } else if (item.id == openLinksInIV) {
+            CherrygramChatsConfig.INSTANCE.setOpenLinksInIV(!CherrygramChatsConfig.INSTANCE.getOpenLinksInIV());
+            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getOpenLinksInIV());
         } else if (item.id == playVideoOnVolumeBtnRow) {
             CherrygramChatsConfig.INSTANCE.setPlayVideoOnVolume(!CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume());

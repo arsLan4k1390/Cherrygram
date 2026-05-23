@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.tgnet.TLRPC;
 
@@ -32,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 abstract public class BaseTranslator {
@@ -133,8 +133,7 @@ abstract public class BaseTranslator {
                     ArrayList<Result> results = multiTranslate(translations, toLang);
                     AndroidUtilities.runOnUIThread(() -> translateCallBack.onSuccess(null, results));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    FileLog.e(e, false);
+                    CherrygramLogger.e(e);
                     AndroidUtilities.runOnUIThread(() -> translateCallBack.onSuccess(e, null));
                 }
             }

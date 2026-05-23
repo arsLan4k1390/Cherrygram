@@ -42,10 +42,10 @@
     <!--Telegram Folders Settings-->
     <!--Telegram Passkeys Settings-->
     <string name="CG_PasskeyLogin">Accesso tramite passkey</string>
-    <string name="CG_PasskeyInfo2">This feature only works with password managers that allow the user to manage trust settings for privileged apps, such as **Bitwarden** and **KeePassDX**.</string>
+    <string name="CG_PasskeyInfo2">Questa funzione è compatibile solo con i gestori di password che consentono all\'utente di gestire le impostazioni di affidabilità per le app privilegiate, come **Bitwarden** e **KeePassDX**.</string>
     <string name="CG_PasskeyUnsupportedTitle">Password manager non supportato</string>
-    <string name="CG_PasskeyUnsupportedMessage">Try other password managers like **Bitwarden** or **KeePassDX**.</string>
-    <string name="CG_PasskeyNoCredentialAvailable">No viable credential is available.</string>
+    <string name="CG_PasskeyUnsupportedMessage">Prova altri gestori di password come **Bitwarden** o **KeePassDX**.</string>
+    <string name="CG_PasskeyNoCredentialAvailable">Non è disponibile nessuna credenziale valida.</string>
     <!--Telegram Passkeys Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Vai all\'inizio</string>
@@ -91,12 +91,12 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
-    <string name="CG_SafeStars_buy">Buy via SafeStars</string>
+    <string name="CG_SafeStars_buy">Acquista tramite SafeStars</string>
     <string name="CG_SafeStars_Desc">Multi-chain &amp; No KYC</string>
-    <string name="CG_SafeStars_BuyPremiumButton">Check on the website</string>
+    <string name="CG_SafeStars_BuyPremiumButton">Verifica sul sito web</string>
     <string name="CG_SafeStars_buy_Telegram">Acquista Stelle via Telegram</string>
-    <string name="CG_Stars_TOS">By proceeding, you automatically agree to the **Telegram Terms and Conditions** and the **Cherrygram Terms of Service**.</string>
-    <string name="CG_SafeSurf_TOS">By proceeding, you automatically agree to the **Cherrygram Terms of Service**.</string>
+    <string name="CG_Stars_TOS">Se procedi, confermi automaticamente di accettare i **Termini e condizioni di Telegram** e i **Termini di servizio di Cherrygram**.</string>
+    <string name="CG_SafeSurf_TOS">Procedendo, accetti automaticamente i **Termini di servizio di Cherrygram**.</string>
     <string name="CG_SortByDate">Ordina per data del messaggio</string>
     <string name="CG_SortByUnread">Mostra i messaggi non letti in cima</string>
     <string name="CG_UnknownCherrySettingsOption">Nessuna voce trovata.</string>
@@ -112,6 +112,8 @@
     <string name="CG_CopyPhoto">Copia Foto</string>
     <string name="CG_CopyPhotoAsSticker">Copia foto come sticker</string>
     <string name="CG_SendPhotoAsSticker">Invia come sticker</string>
+    <string name="CG_EnableMotionPhotos">Abilita foto in movimento</string>
+    <string name="CG_DisableMotionPhotos">Disabilita foto in movimento</string>
     <string name="CG_PhotoCopied">Foto copiata negli appunti.</string>
     <string name="CG_SaveSticker">Salva sticker</string>
     <string name="CG_StickerSavedHint">Sticker salvato nei download</string>
@@ -130,12 +132,13 @@
     <string name="CG_Sleep_Timer">Timer impostato su **%s**</string>
     <string name="CG_Sleep_Disabled">Timer di sospensione disattivato</string>
     <string name="CG_Sleep_Permission">Permetti a Cherrygram di pianificare gli avvisi in modo che il timer funzioni correttamente.</string>
-    <string name="CG_QR_Hint">This is a digital copy of the scanned QR code. Tap to copy it to the clipboard, or press and hold to save it to your gallery.</string>
-    <string name="CG_WifiConnect">Connect</string>
-    <string name="CG_WifiSuccess">Successfully connected to Wi-Fi.</string>
-    <string name="CG_WifiFailed">Failed to connect to Wi-Fi.</string>
-    <string name="CG_WifiDisabled">Wi-Fi is disabled.</string>
-    <string name="CG_AreYouSureToLogin">Are you sure you want to log in to this account on another device?</string>
+    <string name="CG_QR_Hint">Questa è una copia digitale del codice QR. Tocca per copiarlo negli appunti, oppure tieni premuto per salvarlo nella tua galleria.</string>
+    <string name="CG_WifiConnect">Connetti</string>
+    <string name="CG_WifiSuccess">Connessione al Wi-Fi riuscita.</string>
+    <string name="CG_WifiFailed">Connessione al Wi-Fi non riuscita.</string>
+    <string name="CG_WifiDisabled">Il Wi-Fi è disabilitato.</string>
+    <string name="CG_AreYouSureToLogin">Vuoi davvero accedere a questo account su un altro dispositivo?</string>
+    <string name="CG_CreateQR">Crea QR code</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -150,6 +153,20 @@
     <string name="CGP_Source">Codice sorgente</string>
     <string name="CGP_Crowdin">Contribuisci alla traduzione</string>
     <string name="CGP_Header_Categories">Categorie</string>
+    <string name="CGP_General_Desc">Impostazioni principali e funzionalità non correlate a sezioni specifiche</string>
+    <string name="CGP_Appearance_Desc">Aspetto dell\'app e personalizzazione dell\'interfaccia</string>
+    <string name="CGP_Folders_Desc">Aspetto delle cartelle, layout, barra delle cartelle in basso</string>
+    <string name="CGP_BottomTabs_Desc">Personalizza, organizza e riordina le schede in basso (schermata principale)</string>
+    <string name="CGP_MessagesProfiles_Desc">Visualizzazione di emoji Premium, informazioni ID/DC ed elementi extra di profilo/messaggio</string>
+    <string name="CGP_Chats_Desc">Impostazioni interfaccia chat e messaggi</string>
+    <string name="CGP_Messages_Desc">Impostazioni messaggi, menu azione, aspetto e interazioni</string>
+    <string name="CGP_MessagesFilter_Desc">Filtro messaggi e protezione spam</string>
+    <string name="CGP_Camera_Desc">Impostazioni fotocamera e acquisizione foto/video</string>
+    <string name="CGP_Experimental_Desc">Funzioni sperimentali, instabili e in fase di sviluppo</string>
+    <string name="CGP_Privacy_Desc">Privacy, chat bloccate/nascoste, protezione dati</string>
+    <string name="CGP_ADS">Watch ADS</string>
+    <string name="CGP_ADS_Advertiser">Advertiser:</string>
+    <string name="CGP_ADS_Click">Click the ad for more information</string>
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">Generale</string>
@@ -174,7 +191,7 @@
     <string name="AP_SystemEmoji">Emoji di sistema</string>
     <string name="AP_ShowPencilIcon">Icona della matita per i messaggi modificati</string>
     <string name="AP_CenterTitle">Centra il titolo</string>
-    <string name="AP_HideSearchBar">Hide search bar in chats</string>
+    <string name="AP_HideSearchBar">Nascondi la barra di ricerca nelle chat</string>
     <string name="AP_DisableDividers">Disabilita divisori</string>
     <string name="AP_SystemFonts">Font di sistema</string>
     <string name="CP_Snowflakes_Header">Fiocchi di neve</string>
@@ -220,8 +237,8 @@
     <string name="CP_MainTabs_Layout_Desc">Tocca per abilitare/disabilitare, tieni premuto e trascina per riordinare.</string>
     <string name="CP_MainTabs_DoubleTap_Desc">Doppio tocco sulla scheda di una chat per aprire \'Messaggi salvati\'. Doppio tocco sulla scheda del profilo (o Impostazioni se la scheda del profilo è nascosta) per cambiare account.</string>
     <string name="CP_MainTabs_ShowTabsTitle">Mostra titoli delle schede</string>
-    <string name="CP_MainTabs_ForceOpenChats">Always search in chats</string>
-    <string name="CP_MainTabs_ForceOpenChats_Desc">When enabled, the search button always opens chat search. When disabled, it opens context search for the current screen (e.g., Settings or Contacts).</string>
+    <string name="CP_MainTabs_ForceOpenChats">Cerca sempre nelle chat</string>
+    <string name="CP_MainTabs_ForceOpenChats_Desc">Se abilitato, il pulsante di ricerca apre sempre la ricerca in chat. Quando disabilitato, apre la ricerca contestuale per la schermata corrente (ad esempio, Impostazioni o Contatti).</string>
     <string name="AP_HideUserPhone_Show">Tocca per mostrare</string>
     <string name="AP_HideUserPhone_Copy">Tieni premuto per copiare</string>
     <string name="AP_MutualContacts_Description">Questo contatto è reciproco.</string>
@@ -310,9 +327,10 @@
         Se il link contiene una corrispondenza, l\'intero messaggio sarà nascosto sotto spoiler, anche se la parola chiave non appare nel testo visibile.
         \n\nUtile come protezione da spam, pubblicità subdole o domini di phishing che potrebbero altrimenti bypassare il normale filtro testuale.
     </string>
-    <string name="CP_Message_Filtering_FilterBlocked">Filter messages from blocked users</string>
-    <string name="CP_Message_Filtering_HideBlocked">Nascondi i messaggi degli utenti bloccati</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">I messaggi inviati o inoltrati dagli utenti bloccati del gruppo sono automaticamente nascosti sotto spoiler.</string>
+    <string name="CP_Message_Filtering_FilterBlocked">Filtra messaggi da utenti bloccati</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">I messaggi inviati o inoltrati dagli utenti bloccati saranno automaticamente filtrati.</string>
+    <string name="CP_Message_Filtering_FullyHide">Nascondi messaggi</string>
+    <string name="CP_Message_Filtering_FullyHide_Desc">Nascondi completamente i messaggi filtrati invece di nascondere il testo sotto un effetto spoiler.</string>
     <string name="CP_Message_Filtering_HideAll">Intero messaggio sotto spoiler</string>
     <string name="CP_Message_Filtering_HideAllDesc">Se una parola da filtrare è rilevata, nasconde sotto spoiler l\'intero testo del messaggio più l\'eventuale link o allegato.</string>
     <string name="CP_Message_Filtering_Collapse">Comprimi i messaggi</string>
@@ -328,6 +346,7 @@
     <string name="CP_AutoPauseVideo">Pausa automatica video</string>
     <string name="CP_AutoPauseVideo_Desc">Quando si blocca lo schermo o si riproduce in background</string>
     <string name="CP_DisableVibration">Disabilita vibrazione</string>
+    <string name="CP_OpenLinksInIV">Apri link nella vista istantanea</string>
     <string name="CP_VideoSeekDuration">Doppio tap per avanzamento video (secondi)</string>
     <string name="CP_VibrateInChats">Vibrazione in-chat</string>
     <string name="CP_VibrateInChats_Desc">Vibra leggermente ogni volta che ricevi un nuovo messaggio</string>
@@ -342,13 +361,13 @@
     <string name="CP_CameraUW_Desc">Per i messaggi video sarà utilizzata la fotocamera Ultra Wide (se l\'API del tuo dispositivo lo supporta)</string>
     <string name="CP_CameraDualCamera">Doppia fotocamera</string>
     <string name="CP_CameraDualCamera_Desc">Registra da entrambe le fotocamere per passare più rapidamente da una fotocamera all\'altra durante la registrazione. Consuma più batteria.</string>
-    <string name="CP_CategoryEnhancements">Enhancements</string>
-    <string name="CP_EnhancementsNote">Some camera enhancements can improve video quality, but using multiple features at the same time may not always give the best result. Feel free to experiment and find what works best for your device.</string>
-    <string name="CP_OpticalStabilisation">Optical stabilisation (OIS)</string>
-    <string name="CP_VideoStabilisation">Video stabilisation (EIS)</string>
-    <string name="CP_ContinuousAutofocus">Continuous autofocus</string>
-    <string name="CP_NoiseReduction">Noise reduction</string>
-    <string name="CP_FaceDetection">Face detection</string>
+    <string name="CP_CategoryEnhancements">Miglioramenti</string>
+    <string name="CP_EnhancementsNote">Alcuni \'potenziamenti\' della fotocamera possono migliorare la qualità del video, ma utilizzare più funzionalità allo stesso tempo non sempre fornisce il miglior risultato. Ti invitiamo a fare delle prove per scoprire quale configurazione funziona meglio sul tuo dispositivo.</string>
+    <string name="CP_OpticalStabilisation">Stabilizzazione ottica (OIS)</string>
+    <string name="CP_VideoStabilisation">Stabilizzazione video (EIS)</string>
+    <string name="CP_ContinuousAutofocus">Messa a fuoco automatica continua</string>
+    <string name="CP_NoiseReduction">Riduzione rumore</string>
+    <string name="CP_FaceDetection">Rilevamento volto</string>
     <string name="CP_DefaultCameraDesc">Usa la fotocamera integrata di Telegram.</string>
     <string name="CP_CameraXDesc">CameraX è supportata solo su <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivi selezionati</a>]]>, il supporto agli effetti e alle lenti dipende dal produttore.</string>
     <string name="CP_CameraQuality">Qualità della fotocamera</string>
@@ -369,7 +388,7 @@
     <string name="CP_Exposure">Esposizione</string>
     <string name="CP_Brightness">Luminosità</string>
     <string name="CP_Flash_Hint">Tieni premuto il pulsante flash per regolare il colore e la luminosità del flash.</string>
-    <string name="CP_Flash_Hint_Rear">Hold the flash button to adjust the brightness of the flash.</string>
+    <string name="CP_Flash_Hint_Rear">Tieni premuto il pulsante flash per regolare la luminosità del flash.</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Sperimentale</string>

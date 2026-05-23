@@ -10,6 +10,7 @@
 package uz.unnarsx.cherrygram.preferences
 
 import org.telegram.ui.ActionBar.BaseFragment
+import uz.unnarsx.cherrygram.donates.adsgram.AdsScreen
 import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.tabs.MainTabsPreferencesEntry
 
@@ -39,6 +40,7 @@ object CherrygramPreferencesNavigator {
     @JvmOverloads
     fun createDonate(fragment: BaseFragment, force: Boolean = false) = fragment.presentFragment(DonatesPreferencesEntry().forceShowDonates(force))
     fun createStars(fragment: BaseFragment, customTitle: String?, userName: String?, type: Int) = fragment.presentFragment(StarsIntroActivityCG(customTitle, userName, type))
+    fun createADS(fragment: BaseFragment) = fragment.presentFragment(AdsScreen())
 
     fun createAbout(fragment: BaseFragment) = fragment.presentFragment(AboutPreferencesEntry())
     fun createDebug(fragment: BaseFragment) = fragment.presentFragment(DebugPreferencesEntry())

@@ -49,13 +49,6 @@ object Constants {
     var CG_CROWDIN_URL = "https://crowdin.com/project/cherrygram"
     @JvmField
     var CG_GITHUB_URL = "https://github.com/arsLan4k1390/Cherrygram"
-
-    @JvmField
-    var CG_SAFESTARS = "https://safestars.pro/?partner=cherrygram"
-    @JvmField
-    var CG_SAFESTARS_RU = "https://safestars.pro/ru/?partner=cherrygram"
-    @JvmField
-    var CG_SAFESURF_BOT = "https://t.me/safe_surfbot?start=cherry"
     /** CG Links finish**/
 
     const val PACKAGE_NAME = "uz.unnarsx.cherrygram"
@@ -89,11 +82,15 @@ object Constants {
     /** Misc finish**/
 
     /** Firebase remote Config start */
+    const val show_ads_screen_in_settings = "show_ads_screen_in_settings"
     const val Videomessages_Resolution = "videomessages_resolution"
     const val allow_use_safestars = "allow_use_safestars"
     const val allow_use_safesurf = "allow_use_safesurf"
     const val humo_card_number = "humo_card_number"
     const val tbank_card_number = "tbank_card_number"
+    const val safe_stars_URL = "safe_stars_URL"
+    const val safe_stars_URL_RU = "safe_stars_URL_RU"
+    const val safe_surf_URL = "safe_surf_URL"
     /** Firebase remote Config finish */
 
 }

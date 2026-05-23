@@ -95,7 +95,7 @@ object CherrygramMessagesConfig {
     var msgFiltersMatchExactWord by sharedPreferences.boolean("CP_MsgFiltersMatchExactWord", false)
     var msgFiltersDetectEntities by sharedPreferences.boolean("CP_MsgFiltersDetectEntities", false)
     var msgFiltersHideFromBlocked by sharedPreferences.boolean("CP_MsgFiltersHideFromBlocked1", false)
-    var msgFiltersHideAll by sharedPreferences.boolean("CP_MsgFiltersHideAll", false)
+    var msgFiltersHideAllUnderSpoiler by sharedPreferences.boolean("CP_MsgFiltersHideAll", false)
     var msgFiltersCollapseAutomatically by sharedPreferences.boolean("CP_MsgFiltersCollapseAutomatically", false)
     var msgFilterTransparentMsg by sharedPreferences.boolean("CP_MsgFilterTransparentMsg", false)
     /** Messages filter finish */
@@ -136,6 +136,7 @@ object CherrygramMessagesConfig {
     /** Misc start */
     var gifSpoilers by sharedPreferences.boolean("CG_GifSpoiler", false)
     var photoAsSticker by sharedPreferences.boolean("CG_PhotoAsSticker", false)
+    var motionPhotosEnabled by sharedPreferences.boolean("CG_MotionPhotosEnabled", false)
 
     /** Translator start */
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")

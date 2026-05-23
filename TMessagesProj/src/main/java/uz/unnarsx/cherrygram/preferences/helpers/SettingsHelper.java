@@ -11,13 +11,15 @@ package uz.unnarsx.cherrygram.preferences.helpers;
 
 import android.view.View;
 
-import org.telegram.messenger.FileLog;
 import org.telegram.ui.Cells.NotificationsCheckCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
+import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
+
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 public class SettingsHelper {
 
@@ -99,6 +101,14 @@ public class SettingsHelper {
         return item;
     }
 
+    public static UItem asRoundGroupCheckbox(int id, CharSequence text, CharSequence subtext) {
+        UItem item = new UItem(UniversalAdapter.VIEW_TYPE_ROUND_GROUP_CHECKBOX, false);
+        item.id = id;
+        item.text = text;
+        item.subtext = subtext;
+        return item;
+    }
+
     public static void updateCheckState(View view, boolean isChecked) {
         if (view instanceof NotificationsCheckCell notificationsCheckCell) {
             notificationsCheckCell.setChecked(isChecked);
@@ -106,9 +116,9 @@ public class SettingsHelper {
             textCheckCell.setChecked(isChecked);
         } else {
             if (view != null) {
-                FileLog.e("Unknown view type for setChecked: " + view.getClass().getName());
+                CherrygramLogger.e(() -> "Unknown view type for setChecked: " + view.getClass().getName());
             } else {
-                FileLog.e("Attempted to update check state on a NULL view");
+                CherrygramLogger.e(() -> "Attempted to update check state on a NULL view");
             }
         }
     }
@@ -116,11 +126,13 @@ public class SettingsHelper {
     public static void updateButtonValue(View view, String value) {
         if (view instanceof TextCell textCell) {
             textCell.setValue(value, true);
+        } else if (view instanceof TextSettingsCell textSettingsCell) {
+            textSettingsCell.getValueTextView().setText(value);
         } else {
             if (view != null) {
-                FileLog.e("Unknown view type for setChecked: " + view.getClass().getName());
+                CherrygramLogger.e(() -> "Unknown view type for setChecked: " + view.getClass().getName());
             } else {
-                FileLog.e("Attempted to update check state on a NULL view");
+                CherrygramLogger.e(() -> "Attempted to update check state on a NULL view");
             }
         }
     }

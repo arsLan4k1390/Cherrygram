@@ -1,3 +1,12 @@
+/**
+ * This is the source code of Cherrygram for Android.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ * Please, be respectful and credit the original author if you use this code.
+ *
+ * Copyright github.com/arsLan4k1390, 2022-2026.
+ */
+
 package uz.unnarsx.cherrygram.core.updater;
 
 import android.app.Activity;
@@ -8,7 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.UserConfig;
@@ -18,6 +26,7 @@ import org.telegram.tgnet.TLRPC;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public abstract class BaseRemoteHelper {
@@ -72,7 +81,7 @@ public abstract class BaseRemoteHelper {
             try {
                 responses.add(new JSONObject(message.message.substring(tag.length()).trim()));
             } catch (JSONException e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
             }
         }
         onLoadSuccess(responses, delegate);

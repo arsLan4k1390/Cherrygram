@@ -37,7 +37,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.R;
@@ -54,8 +53,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class GeminiSDKImplementation {
 
@@ -140,7 +139,7 @@ public class GeminiSDKImplementation {
             try {
                 if (!baseFragment.getParentActivity().isFinishing()) progressDialog.show();
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
             }
         });
 
@@ -158,13 +157,13 @@ public class GeminiSDKImplementation {
             public void onSuccess(GenerateContentResponse result) {
                 if (result.getText() != null) {
                     String resultText = result.getText().strip(); // Remove spaces
-                    if (CherrygramCoreConfig.isDevBuild()) FileLog.e("успешный ответ: " + resultText);
+                    CherrygramLogger.i(() -> "успешный ответ: " + resultText);
 
                     AndroidUtilities.runOnUIThread(() -> {
                         try {
                             if (!baseFragment.getParentActivity().isFinishing() && progressDialog.isShowing()) progressDialog.dismiss();
                         } catch (Exception e) {
-                            FileLog.e(e);
+                            CherrygramLogger.e(e);
                         }
                     });
 
@@ -188,7 +187,7 @@ public class GeminiSDKImplementation {
 
             @Override
             public void onFailure(@NonNull Throwable t) {
-                FileLog.e(t);
+                CherrygramLogger.e(t);
 
                 GoogleGenerativeAIException ex = GoogleGenerativeAIException.Companion.from(t);
 
@@ -196,7 +195,7 @@ public class GeminiSDKImplementation {
                     try {
                         if (!baseFragment.getParentActivity().isFinishing() && progressDialog.isShowing()) progressDialog.dismiss();
                     } catch (Exception e) {
-                        FileLog.e(e);
+                        CherrygramLogger.e(e);
                     }
                 });
 
@@ -257,7 +256,7 @@ public class GeminiSDKImplementation {
 
             content.addImage(inputBitmap);
 
-            if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + imagePrompt);
+            CherrygramLogger.d(() -> "промпт: " + imagePrompt);
         } else if (translateText) { // Message translation
             String lang = capitalFirst(languageName(CherrygramMessagesConfig.INSTANCE.getTranslationTargetGemini()));
             String translationPrompt = "You are a professional translator. Translate all input text into " +
@@ -266,7 +265,7 @@ public class GeminiSDKImplementation {
                     "Here is the text to translate into " + lang + ": " + inputText;
             content.addText(translationPrompt);
 
-            if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + translationPrompt);
+            CherrygramLogger.d(() -> "промпт: " + translationPrompt);
         } else if (transcribe) { // Voice to text
             byte[] audioBytes = readBytesCompat(mediaFile);
             Part audioPart = new BlobPart("audio/ogg", audioBytes);
@@ -289,7 +288,7 @@ public class GeminiSDKImplementation {
             content.addText(voiceToTextPrompt);
             content.addPart(audioPart);
 
-            if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + voiceToTextPrompt);
+            CherrygramLogger.d(() -> "промпт: " + voiceToTextPrompt);
         } else { // Answer only to text
             String textPrompt;
             if (summarize) {
@@ -304,7 +303,7 @@ public class GeminiSDKImplementation {
 
             content.addText(textPrompt);
 
-            if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + textPrompt);
+            CherrygramLogger.d(() -> "промпт: " + textPrompt);
         }
 
         return content.build();
@@ -375,7 +374,7 @@ public class GeminiSDKImplementation {
                 buffer.write(data, 0, nRead);
             }
         } catch (IOException e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
             return null;
         }
         return buffer.toByteArray();

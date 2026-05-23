@@ -17,9 +17,11 @@ import android.view.View;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
+import org.telegram.ui.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,6 +55,7 @@ public class MessagesPreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 
@@ -73,12 +76,26 @@ public class MessagesPreferencesEntry extends UniversalFragment {
         );
         items.add(UItem.asShadow(null));
 
-        items.add(UItem.asButton(geminiSettingsRow, R.drawable.magic_stick_solar, getString(R.string.CP_GeminiAI_Header)));
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        geminiSettingsRow, 0xFF4796E3, 0xFF9177C7,
+                        R.drawable.settings_magic_stick_filled_solar,
+                        getString(R.string.CP_GeminiAI_Header)
+                )
+        );
         items.add(UItem.asButton(voiceTranscriptionRow, getString(R.string.CP_GeminiAI_VoiceTranscriptionProvider), getTranscriptionProviderValue()));
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.ActionsChartTitle)));
-        items.add(UItem.asButton(messageFilterRow, R.drawable.msg_notspam, getString(R.string.CP_Message_Filtering)));
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        messageFilterRow, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom,
+                        R.drawable.settings_message_filrers_filled_solar,
+                        getString(R.string.CP_Message_Filtering),
+                        getString(R.string.CGP_MessagesFilter_Desc),
+                        true
+                )
+        );
         items.add(UItem.asButton(leftBottomBtnRow, getString(R.string.CP_LeftBottomButtonAction), getLeftBottomButtonValue()));
         items.add(UItem.asButton(doubleTapRow, getString(R.string.CP_DoubleTapAction), getDoubleTapActionValue()));
         items.add(UItem.asButton(slideActionRow, getString(R.string.CG_MsgSlideAction), getSlideActionValue()));

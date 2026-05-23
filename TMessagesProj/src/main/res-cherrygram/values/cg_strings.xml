@@ -132,6 +132,8 @@
     <string name="CG_CopyPhoto">Copy photo</string>
     <string name="CG_CopyPhotoAsSticker">Copy photo as sticker</string>
     <string name="CG_SendPhotoAsSticker">Send as sticker</string>
+    <string name="CG_EnableMotionPhotos">Enable motion photos</string>
+    <string name="CG_DisableMotionPhotos">Disable motion photos</string>
     <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
     <string name="CG_SaveSticker">Save sticker</string>
     <string name="CG_StickerSavedHint">Sticker saved to downloads</string>
@@ -153,12 +155,13 @@
     <string name="CG_Sleep_Disabled">Sleep timer is disabled</string>
     <string name="CG_Sleep_Permission">Please allow Cherrygram to schedule exact alarms so that the sleep timer can work properly.</string>
 
-    <string name="CG_QR_Hint">This is a digital copy of the scanned QR code. Tap to copy it to the clipboard, or press and hold to save it to your gallery.</string>
+    <string name="CG_QR_Hint">This is a digital copy of the QR code. Tap to copy it to the clipboard, or press and hold to save it to your gallery.</string>
     <string name="CG_WifiConnect">Connect</string>
     <string name="CG_WifiSuccess">Successfully connected to Wi-Fi.</string>
     <string name="CG_WifiFailed">Failed to connect to Wi-Fi.</string>
     <string name="CG_WifiDisabled">Wi-Fi is disabled.</string>
     <string name="CG_AreYouSureToLogin">Are you sure you want to log in to this account on another device?</string>
+    <string name="CG_CreateQR">Create QR Code</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -175,6 +178,22 @@
     <string name="CGP_Source">Source code</string>
     <string name="CGP_Crowdin">Help with translation</string>
     <string name="CGP_Header_Categories">Categories</string>
+
+    <string name="CGP_General_Desc">Main app settings and features not related to specific sections</string>
+    <string name="CGP_Appearance_Desc">App appearance and interface customization</string>
+    <string name="CGP_Folders_Desc">Folder appearance settings, layout customization, and moving the folder bar to the bottom</string>
+    <string name="CGP_BottomTabs_Desc">Customize, organize, and reorder bottom tabs on the main screen</string>
+    <string name="CGP_MessagesProfiles_Desc">Display of Premium emoji, ID/DC information, and extra profile/message elements</string>
+    <string name="CGP_Chats_Desc">Chat interface and message settings</string>
+    <string name="CGP_Messages_Desc">Message settings, action menus, appearance, and interactions</string>
+    <string name="CGP_MessagesFilter_Desc">Message filtering and spam protection</string>
+    <string name="CGP_Camera_Desc">Camera and photo/video capture settings</string>
+    <string name="CGP_Experimental_Desc">Experimental, unstable, and in-development app features</string>
+    <string name="CGP_Privacy_Desc">Privacy, chat locking/hiding, and data protection settings</string>
+
+    <string name="CGP_ADS">Watch ADS</string>
+    <string name="CGP_ADS_Advertiser">Advertiser:</string>
+    <string name="CGP_ADS_Click">Click the ad for more information</string>
     <!--Cherrygram Preferences-->
 
     <!--General Preferences-->
@@ -356,8 +375,9 @@
         \n\nThis helps protect against disguised spam, hidden advertising, or phishing domains that could otherwise bypass regular text-based filtering.
     </string>
     <string name="CP_Message_Filtering_FilterBlocked">Filter messages from blocked users</string>
-    <string name="CP_Message_Filtering_HideBlocked">Hide messages from blocked users</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">When enabled, all messages and forwarded messages from blocked users will automatically be hidden under a spoiler.</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">When enabled, all messages and forwarded messages from blocked users will automatically be filtered.</string>
+    <string name="CP_Message_Filtering_FullyHide">Hide messages</string>
+    <string name="CP_Message_Filtering_FullyHide_Desc">Fully hide filtered messages instead of hiding the text under a spoiler effect.</string>
     <string name="CP_Message_Filtering_HideAll">Entire message spoiler</string>
     <string name="CP_Message_Filtering_HideAllDesc">Hides the entire message text and media under a spoiler if it contains a filtered word.</string>
     <string name="CP_Message_Filtering_Collapse">Collapse messages</string>
@@ -375,6 +395,7 @@
     <string name="CP_AutoPauseVideo">Auto pause video</string>
     <string name="CP_AutoPauseVideo_Desc">When locking the screen or switching to the background</string>
     <string name="CP_DisableVibration">Disable vibration</string>
+    <string name="CP_OpenLinksInIV">Open links in Instant View</string>
     <string name="CP_VideoSeekDuration">Double-tap to seek video (seconds)</string>
 
     <string name="CP_VibrateInChats">In-chat vibration</string>

@@ -271,7 +271,7 @@ Si una palabra aparece con una forma diferente (con prefijos, terminaciones o de
 Si se encuentra una coincidencia dentro del enlace, el mensaje completo se ocultará automáticamente bajo un spoiler, independientemente de si la palabra clave aparece en el texto visible.
 \n\nEsto ayuda a proteger contra spam disfrazado, publicidad oculta o dominios de phishing que, de otro modo, podrían eludir el filtrado de texto estándar    </string>
     <string name="CP_Message_Filtering_HideBlocked">Ocultar mensajes de usuarios bloqueados</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">Cuando está activado, todos los mensajes y mensajes reenviados de usuarios bloqueados se ocultarán automáticamente bajo un spoiler.</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">Cuando está activado, todos los mensajes y mensajes reenviados de usuarios bloqueados se ocultarán automáticamente bajo un spoiler.</string>
     <string name="CP_Message_Filtering_HideAll">Todo el spoiler del mensaje</string>
     <string name="CP_Message_Filtering_HideAllDesc">Oculta todo el texto del mensaje y el medio bajo un spoiler si contiene una palabra filtrada.</string>
     <string name="CP_Message_Filtering_Collapse">Colapsar mensajes</string>

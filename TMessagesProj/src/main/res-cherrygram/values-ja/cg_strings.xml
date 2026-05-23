@@ -275,7 +275,7 @@
         \n\nThis helps protect against disguised spam, hidden advertising, or phishing domains that could otherwise bypass regular text-based filtering.
     </string>
     <string name="CP_Message_Filtering_HideBlocked">ブロックしたユーザーからのメッセージを非表示</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">有効化すると、ブロックされたユーザーからのすべてのメッセージと転送メッセージは、自動的にネタバレの下に非表示になります。</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">有効化すると、ブロックされたユーザーからのすべてのメッセージと転送メッセージは、自動的にネタバレの下に非表示になります。</string>
     <string name="CP_Message_Filtering_HideAll">メッセージ全体のネタバレ</string>
     <string name="CP_Message_Filtering_HideAllDesc">フィルタリングされた単語が含まれている場合、ネタバレの下にメッセージテキストとメディア全体を非表示にします。</string>
     <string name="CP_Message_Filtering_Collapse">メッセージを折りたたむ</string>

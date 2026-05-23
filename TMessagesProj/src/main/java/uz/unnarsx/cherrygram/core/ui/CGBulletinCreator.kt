@@ -23,6 +23,7 @@ import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.Bulletin
 import org.telegram.ui.Components.BulletinFactory
+import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 
@@ -57,21 +58,28 @@ object CGBulletinCreator {
     }
 
     fun createSwitchAccountBulletin(account: Int) {
-        val nextAcc: TLObject? = UserConfig.getInstance(account).currentUser
+        val nextAcc = UserConfig.getInstance(account).currentUser
 
         if (nextAcc is TLRPC.User) {
             AndroidUtilities.runOnUIThread({
+
+                val activity = LaunchActivity.instance
+                if (activity == null || activity.isFinishing || activity.isDestroyed) {
+                    return@runOnUIThread
+                }
+
                 val accs = ArrayList<TLObject?>()
                 accs.add(nextAcc)
 
-                val text: CharSequence = AndroidUtilities.replaceTags(
+                val text = AndroidUtilities.replaceTags(
                     formatString(
                         R.string.CG_SwitchedToAccount,
                         ContactsController.formatName(nextAcc.first_name, nextAcc.last_name)
                     )
                 )
 
-                BulletinFactory.global().createChatsBulletin(accs, text, null)
+                BulletinFactory.global()
+                    .createChatsBulletin(accs, text, null)
                     .setDuration(Bulletin.DURATION_SHORT)
                     .show()
 

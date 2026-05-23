@@ -33,7 +33,7 @@ public abstract class UniversalFragment extends BaseFragment {
     public View createView(Context context) {
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(getTitle());
+        actionBar.setTitle(getTitle(), null, isGilroyEnabled);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -120,9 +120,14 @@ public abstract class UniversalFragment extends BaseFragment {
 
     /** Cherrygram start */
     private boolean isMD3Enabled = false;
+    private boolean isGilroyEnabled = false;
 
     public void setMD3(boolean set) {
         this.isMD3Enabled = set;
+    }
+
+    public void setGilroy(boolean set) {
+        this.isGilroyEnabled = set;
     }
     /** Cherrygram finish */
 

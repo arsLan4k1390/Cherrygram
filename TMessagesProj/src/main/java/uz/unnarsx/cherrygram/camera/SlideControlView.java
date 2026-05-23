@@ -150,6 +150,7 @@ public class SlideControlView extends View {
         int knobX = (int) (progressStartX + (progressEndX - progressStartX) * sliderValue);
         int knobY = (int) (progressStartY + (progressEndY - progressStartY) * sliderValue);
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
+            float zoomLimit = 0.125f; // 0.25f
             if (x >= knobX - AndroidUtilities.dp(20) && x <= knobX + AndroidUtilities.dp(20) && y >= knobY - AndroidUtilities.dp(25) && y <= knobY + AndroidUtilities.dp(25)) {
                 if (action == MotionEvent.ACTION_DOWN) {
                     knobPressed = true;
@@ -159,14 +160,14 @@ public class SlideControlView extends View {
                 }
                 handled = true;
             } else if (x >= minusCx - AndroidUtilities.dp(16) && x <= minusCx + AndroidUtilities.dp(16) && y >= minusCy - AndroidUtilities.dp(16) && y <= minusCy + AndroidUtilities.dp(16)) {
-                if (action == MotionEvent.ACTION_UP && animateToValue((float) Math.floor(getSliderValue() / 0.25f) * 0.25f - 0.25f)) {
+                if (action == MotionEvent.ACTION_UP && animateToValue((float) Math.floor(getSliderValue() / zoomLimit) * zoomLimit - zoomLimit)) {
                     performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                 } else {
                     pressed = true;
                 }
                 handled = true;
             } else if (x >= plusCx - AndroidUtilities.dp(16) && x <= plusCx + AndroidUtilities.dp(16) && y >= plusCy - AndroidUtilities.dp(16) && y <= plusCy + AndroidUtilities.dp(16)) {
-                if (action == MotionEvent.ACTION_UP && animateToValue((float) Math.floor(getSliderValue() / 0.25f) * 0.25f + 0.25f)) {
+                if (action == MotionEvent.ACTION_UP && animateToValue((float) Math.floor(getSliderValue() / zoomLimit) * zoomLimit + zoomLimit)) {
                     performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                 } else {
                     pressed = true;
@@ -178,25 +179,19 @@ public class SlideControlView extends View {
                         knobStartX = x;
                         pressed = true;
                     } else if (Math.abs(knobStartX - x) <= AndroidUtilities.dp(10)) {
-                        sliderValue = (x - progressStartX) / (progressEndX - progressStartX);
-                        if (delegate != null) {
-                            delegate.didSlide(sliderValue);
-                        }
-                        invalidate();
+                        float target = (x - progressStartX) / (progressEndX - progressStartX);
+                        animateToValue(target);
                     }
                     handled = true;
                 }
             } else {
                 if (y >= progressStartY && y <= progressEndY) {
-                    if (action == MotionEvent.ACTION_UP) {
+                    if (action == MotionEvent.ACTION_DOWN) {
                         knobStartY = y;
                         pressed = true;
                     } else if (Math.abs(knobStartY - y) <= AndroidUtilities.dp(10)) {
-                        sliderValue = (y - progressStartY) / (progressEndY - progressStartY);
-                        if (delegate != null) {
-                            delegate.didSlide(sliderValue);
-                        }
-                        invalidate();
+                        float target = (y - progressStartY) / (progressEndY - progressStartY);
+                        animateToValue(target);
                     }
                     handled = true;
                 }
@@ -237,7 +232,7 @@ public class SlideControlView extends View {
         animatingToZoom = zoom;
         animatorSet = new AnimatorSet();
         animatorSet.playTogether(ObjectAnimator.ofFloat(this, SLIDER_PROPERTY, zoom));
-        animatorSet.setDuration(180);
+        animatorSet.setDuration(270);
         animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

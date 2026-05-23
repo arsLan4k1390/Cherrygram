@@ -23,9 +23,10 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.ui.ActionBar.OKLCH;
 import org.telegram.ui.ActionBar.Theme;
+
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 public class MonetHelper {
 
@@ -203,7 +204,7 @@ public class MonetHelper {
         try {
             overlayChangeReceiver.unregister(context);
         } catch (IllegalArgumentException e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
     }
 }

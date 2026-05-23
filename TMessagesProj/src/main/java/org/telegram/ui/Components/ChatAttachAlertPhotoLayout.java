@@ -360,6 +360,11 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         public boolean allowLivePhotos() {
             return parentAlert != null && parentAlert.allowLivePhotos;
         }
+
+        @Override
+        public void updatedLivePhotos() {
+            ChatAttachAlertPhotoLayout.this.updateCells();
+        }
     }
 
     private void setCurrentSpoilerVisible(int i, boolean visible) {
@@ -795,6 +800,15 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         qualityItem = parentAlert.selectedMenuItem.addSubItem(quality, R.drawable.menu_quality_hd, getString(R.string.SendInHighQuality));
         parentAlert.selectedMenuItem.addSubItem(caption, captionItem);
         starsItem = parentAlert.selectedMenuItem.addSubItem(stars, R.drawable.menu_feature_paid, getString(R.string.PaidMediaButton));
+        parentAlert.selectedMenuItem.addColoredGap(motionPhotosGap);
+        motionPhotosToggleItem = parentAlert.selectedMenuItem.addSubItem(
+                motionPhotos,
+                0,
+                motionIcon = new MotionPhotoDrawable(),
+                CherrygramMessagesConfig.INSTANCE.getMotionPhotosEnabled() ? getString(R.string.CG_DisableMotionPhotos) : getString(R.string.CG_EnableMotionPhotos),
+                true,
+                false
+        );
         parentAlert.selectedMenuItem.setFitSubItems(true);
 
         gridView = new RecyclerListView(context, resourcesProvider) {
@@ -1947,6 +1961,8 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         if (selectedPhotos.containsKey(key)) {
             object.starsAmount = 0;
             object.hasSpoiler = false;
+            object.discardLivePhoto = null;
+            object.highQuality = null;
 
             selectedPhotos.remove(key);
             int position = selectedPhotosOrder.indexOf(key);
@@ -1965,6 +1981,10 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             object.hasSpoiler = getStarsPrice() > 0;
             object.isChatPreviewSpoilerRevealed = false;
             object.isAttachSpoilerRevealed = false;
+            if (hasLivePhotos()) {
+                object.discardLivePhoto = !areLivePhotosEnabled();
+            }
+            object.highQuality = object.isHighQuality();
 
             boolean changed = checkSelectedCount(true);
             selectedPhotos.put(key, object);
@@ -3581,6 +3601,11 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     parentAlert.delegate.didPressedButton(9, true, true, 0, 0, 0, parentAlert.isCaptionAbove(), false, payStars);
                 });
             }
+            return;
+        }
+        if (id == motionPhotos) {
+            CherrygramMessagesConfig.INSTANCE.setMotionPhotosEnabled(!CherrygramMessagesConfig.INSTANCE.getMotionPhotosEnabled());
+            toggleLivePhotosCG(CherrygramMessagesConfig.INSTANCE.getMotionPhotosEnabled());
             return;
         }
         if (id == group || id == compress) {
@@ -5332,7 +5357,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         for (HashMap.Entry<Object, Object> entry : selectedPhotos.entrySet()) {
             if (entry.getValue() instanceof MediaController.PhotoEntry) {
                 final MediaController.PhotoEntry photoEntry = (MediaController.PhotoEntry) entry.getValue();
-                if (photoEntry.isLivePhoto) {
+                if (photoEntry.isLivePhoto()) {
                     return true;
                 }
             }
@@ -5341,12 +5366,12 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     }
 
     public boolean areLivePhotosEnabled() {
-        if (selectedPhotos.isEmpty()) return false;
+        if (selectedPhotos.isEmpty() || !CherrygramMessagesConfig.INSTANCE.getMotionPhotosEnabled()) return false;
         for (HashMap.Entry<Object, Object> entry : selectedPhotos.entrySet()) {
             if (entry.getValue() instanceof MediaController.PhotoEntry) {
                 final MediaController.PhotoEntry photoEntry = (MediaController.PhotoEntry) entry.getValue();
-                if (photoEntry.isLivePhoto) {
-                    if (photoEntry.discardLivePhoto)
+                if (photoEntry.isLivePhoto()) {
+                    if (photoEntry.isUnalivePhoto())
                         return false;
                 }
             }
@@ -5359,7 +5384,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         for (HashMap.Entry<Object, Object> entry : selectedPhotos.entrySet()) {
             if (entry.getValue() instanceof MediaController.PhotoEntry) {
                 final MediaController.PhotoEntry photoEntry = (MediaController.PhotoEntry) entry.getValue();
-                if (photoEntry.isLivePhoto) {
+                if (photoEntry.isLivePhoto()) {
                     photoEntry.discardLivePhoto = !enable;
 
                     for (int a = 0; a < gridView.getChildCount(); a++) {
@@ -5371,6 +5396,21 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                             }
                         }
                     }
+                }
+            }
+        }
+
+        ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
+            .edit().putBoolean("photoLiveDefault", SharedConfig.photoLiveDefault = enable).apply();
+        updateCells();
+    }
+
+    private void updateCells() {
+        if (gridView != null) {
+            for (int i = 0; i < gridView.getChildCount(); ++i) {
+                final View child = gridView.getChildAt(i);
+                if (child instanceof PhotoAttachPhotoCell) {
+                    ((PhotoAttachPhotoCell) child).imageView.invalidate();
                 }
             }
         }
@@ -5387,7 +5427,12 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     private boolean isExposureCompensationSupported = false;
 
     public final static int sticker = 1390;
+    public final static int motionPhotosGap = 1391;
+    public final static int motionPhotos = 1392;
     private final ActionBarMenuSubItem stickerItem;
+    private final ActionBarMenuSubItem motionPhotosToggleItem;
+
+    private final MotionPhotoDrawable motionIcon;
 
     private void updateStickersItem(int count, boolean hasVideo) {
         if (stickerItem == null) return;
@@ -5395,6 +5440,27 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             parentAlert.selectedMenuItem.showSubItem(sticker);
         } else {
             parentAlert.selectedMenuItem.hideSubItem(sticker);
+        }
+    }
+
+    public void toggleLivePhotosCG(boolean enable) {
+        if (motionPhotosToggleItem == null || motionIcon == null) return;
+        motionIcon.setDisabled(enable, true);
+        parentAlert.updateMotionItem(true);
+        motionPhotosToggleItem.setText(enable ? getString(R.string.CG_DisableMotionPhotos) : getString(R.string.CG_EnableMotionPhotos));
+
+        for (int a = 0; a < gridView.getChildCount(); a++) {
+            View view = gridView.getChildAt(a);
+            if (view instanceof PhotoAttachPhotoCell cell) {
+                cell.allowLivePhotos = enable;
+                MediaController.PhotoEntry photoEntry = cell.getPhotoEntry();
+                if (photoEntry != null && photoEntry.isLivePhoto) {
+                    photoEntry.discardLivePhoto = !enable;
+                    if (cell.getImageView() != null) {
+                        cell.getImageView().invalidate();
+                    }
+                }
+            }
         }
     }
     /** Cherrygram finish */

@@ -10,10 +10,10 @@
 package uz.unnarsx.cherrygram.donates
 
 import android.content.Context
-import org.telegram.messenger.FileLog
 import java.io.File
 import java.security.MessageDigest
 import androidx.core.content.edit
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 
 object FileIntegrityUtils {
@@ -77,7 +77,7 @@ object FileIntegrityUtils {
 
             true
         } catch (e: Exception) {
-            FileLog.e(e)
+            CherrygramLogger.e(e, true)
             false
         }
     }
@@ -88,7 +88,7 @@ object FileIntegrityUtils {
             val hash = computeFileHash(file)
             saveFileHash(context, file.name, hash)
         } catch (e: Exception) {
-            FileLog.e(e)
+            CherrygramLogger.e(e, true)
         }
     }
 

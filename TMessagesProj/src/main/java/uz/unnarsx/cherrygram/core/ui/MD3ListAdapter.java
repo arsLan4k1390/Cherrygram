@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.Path;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 import android.util.StateSet;
@@ -42,7 +41,7 @@ import org.telegram.ui.ProfileActivity;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
 
@@ -118,12 +117,12 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
 
     protected MD3ListAdapter() {
         this(null);
-        Log.d("lolkek", "MD3ListAdapter()");
+        CherrygramLogger.d("lolkek", () -> "MD3ListAdapter()");
     }
 
     protected MD3ListAdapter(@Nullable Theme.ResourcesProvider resourcesProvider) {
         config.resourcesProvider = resourcesProvider;
-        Log.d("lolkek", "MD3ListAdapter(resourcesProvider)");
+        CherrygramLogger.d("lolkek", () -> "MD3ListAdapter(resourcesProvider)");
     }
 
     @Override
@@ -146,7 +145,7 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "NullableProblems"})
+    @SuppressWarnings({"unchecked"})
     public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         int position = resolveAdapterPosition(holder);
@@ -572,7 +571,7 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
                 bottomLeft = bottomRight = cornerRadius;
             }
 
-            Log.e("a", "setting "+child);
+            CherrygramLogger.e("a", () -> "setting "+child);
             int backgroundColor = getBackgroundColor();
             Drawable backgroundDrawable = Theme.createRoundRectDrawable(topLeft, topRight, bottomRight, bottomLeft, backgroundColor);
             Drawable rippleMaskDrawable = Theme.createRoundRectDrawable(topLeft, topRight, bottomRight, bottomLeft, Color.WHITE);

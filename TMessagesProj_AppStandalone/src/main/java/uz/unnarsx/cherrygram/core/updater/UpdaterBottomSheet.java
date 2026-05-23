@@ -61,6 +61,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
@@ -124,7 +125,7 @@ public class UpdaterBottomSheet extends BottomSheet implements NotificationCente
 
             SimpleTextView nameView = new SimpleTextView(context);
             nameView.setTextSize(20);
-            nameView.setTypeface(AndroidUtilities.bold());
+            nameView.setTypeface(FontHelper.createTypeface2(FontHelper.TYPEFACE_GILROY_EXTRABOLD));
             nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
             nameView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             nameView.setText(getString(R.string.UP_UpdateAvailable));

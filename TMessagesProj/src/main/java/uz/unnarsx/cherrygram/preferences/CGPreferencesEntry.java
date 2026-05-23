@@ -9,6 +9,7 @@
 
 package uz.unnarsx.cherrygram.preferences;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
@@ -16,16 +17,28 @@ import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
+import org.telegram.ui.ActionBar.ActionBarMenu;
+import org.telegram.ui.ActionBar.ActionBarMenuItem;
+import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Components.Bulletin;
+import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.Components.IconBackgroundColors;
+import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
+import org.telegram.ui.SettingsActivity;
 
 import java.util.ArrayList;
 
+import kotlin.Pair;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
+import uz.unnarsx.cherrygram.preferences.helpers.TelegramSettingsHelper;
 
 public class CGPreferencesEntry extends UniversalFragment {
 
@@ -37,11 +50,12 @@ public class CGPreferencesEntry extends UniversalFragment {
     private final int privacyRow = 6;
 
     private final int supportRow = 7;
-    private final int exportRow = 8;
-    private final int importRow = 9;
-    private final int restartRow = 10;
 
-    private final int aboutRow = 11;
+    private final int aboutRow = 8;
+
+    private final int watchADSRow = 9;
+
+    public ActionBarMenuItem otherItem;
 
     @Override
     protected CharSequence getTitle() {
@@ -52,29 +66,110 @@ public class CGPreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
+
+        final ActionBarMenu menu = actionBar.createMenu();
+        otherItem = menu.addItem(1, R.drawable.ic_ab_other);
+        otherItem.setOnClickListener(view -> showItemOptions(otherItem));
+
         return super.createView(context);
     }
 
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
-        items.add(UItem.asHeader(getString(R.string.AP_Header_General)));
-        items.add(UItem.asButton(generalRow, R.drawable.msg_settings_solar, getString(R.string.AP_Header_General)));
-        items.add(UItem.asButton(appearanceRow, R.drawable.msg_theme_solar, getString(R.string.AP_Header_Appearance)));
-        items.add(UItem.asButton(chatsRow, R.drawable.msg_msgbubble3_solar, getString(R.string.FilterChats)));
-        items.add(UItem.asButton(cameraRow, R.drawable.camera_solar, getString(R.string.CP_Category_Camera)));
-//        items.add(UItem.asButton(experimentalRow, R.drawable.msg_fave_solar, getString(R.string.EP_Category_Experimental)));
-        items.add(UItem.asButton(privacyRow, R.drawable.msg_secret_solar, getString(R.string.SettingsPrivacySecurity)));
+        items.add(UItem.asHeader(getString(R.string.Settings)));
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        generalRow,
+                        IconBackgroundColors.ORANGE_DEEP.bottom, IconBackgroundColors.RED.bottom,
+                        R.drawable.settings_filled_solar,
+                        getString(R.string.AP_Header_General),
+                        getString(R.string.CGP_General_Desc),
+                        true
+                )
+        );
+        Pair<Integer, Integer> colors = TelegramSettingsHelper.Helper.INSTANCE.getProfileButtonColor(getUserConfig().getCurrentUser(), true);
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        appearanceRow,
+                        Theme.isCurrentThemeDay() ? colors.getSecond() : colors.getFirst(),
+                        Theme.isCurrentThemeDay() ? colors.getFirst() : colors.getSecond(),
+                        R.drawable.settings_palette_filled_solar,
+                        getString(R.string.AP_Header_Appearance),
+                        getString(R.string.CGP_Appearance_Desc),
+                        true
+                )
+        );
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        chatsRow, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom,
+                        R.drawable.settings_chats_filled_solar,
+                        getString(R.string.FilterChats),
+                        getString(R.string.CGP_Chats_Desc),
+                        true
+                )
+        );
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        cameraRow,
+                        0xFFE54C7F, 0xFFA33156,
+                        R.drawable.settings_camera_filled_solar,
+                        getString(R.string.CP_Category_Camera),
+                        getString(R.string.CGP_Camera_Desc),
+                        true
+                )
+        );
+        /*items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        experimentalRow,
+                        IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
+                        R.drawable.settings_tube_filled_solar,
+                        getString(R.string.EP_Category_Experimental),
+                        getString(R.string.CGP_Experimental_Desc),
+                        true
+                )
+        );*/
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        privacyRow,
+                        IconBackgroundColors.CYAN.top, IconBackgroundColors.CYAN.bottom,
+                        R.drawable.settings_privacy_solar_filled,
+                        getString(R.string.SettingsPrivacySecurity),
+                        getString(R.string.CGP_Privacy_Desc),
+                        true
+                )
+        );
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        aboutRow,
+                        0xFFE54C7F, 0xFFA33156,
+                        R.drawable.settings_info_filled_solar,
+                        getString(R.string.CGP_Header_About),
+                        getString(R.string.CGP_Header_About_Desc),
+                        true
+                )
+        );
         items.add(UItem.asShadow(null));
 
-        items.add(UItem.asHeader(getString(R.string.LocalOther)));
-        items.add(UItem.asButton(supportRow, R.drawable.heart_angle_solar, getString(R.string.DP_Support)));
-        items.add(UItem.asButton(exportRow, R.drawable.msg_instant_link_solar, getString(R.string.CG_ExportSettings)));
-        items.add(UItem.asButton(importRow, R.drawable.msg_photo_settings_solar, getString(R.string.CG_ImportSettings)));
-        items.add(UItem.asButton(restartRow, R.drawable.msg_retry_solar, getString(R.string.CG_Restart)));
-        items.add(UItem.asShadow(null));
-
-        items.add(UItem.asHeader(getString(R.string.CGP_Header_About)));
-        items.add(UItem.asButton(aboutRow, R.drawable.msg_info_solar, getString(R.string.CGP_Header_About_Desc)));
+        items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        supportRow,
+                        0xFFB659FF, 0xFF617CFF,
+                        R.drawable.settings_support_filled_solar,
+                        getString(R.string.DP_Support)
+                )
+        );
+        if (CherrygramCoreConfig.INSTANCE.getShowAdsScreenInSettings()) {
+            items.add(
+                    SettingsActivity.SettingCell.Factory.of(
+                            watchADSRow,
+                            0xFFF6538A, 0xFF581668,
+                            R.drawable.settings_watch_ads_filled_solar,
+                            getString(R.string.CGP_ADS)
+                    )
+            );
+        }
         items.add(UItem.asShadow(null));
     }
 
@@ -94,14 +189,10 @@ public class CGPreferencesEntry extends UniversalFragment {
             CherrygramPreferencesNavigator.INSTANCE.createPrivacy(this);
         } else if (item.id == supportRow) {
             CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
-        } else if (item.id == exportRow) {
-            BackupHelper.INSTANCE.backupSettings(this);
-        } else if (item.id == importRow) {
-            BackupHelper.INSTANCE.importSettings(this);
-        } else if (item.id == restartRow) {
-            AppRestartHelper.restartApp(getContext());
         } else if (item.id == aboutRow) {
             CherrygramPreferencesNavigator.INSTANCE.createAbout(this);
+        } else if (item.id == watchADSRow) {
+            CherrygramPreferencesNavigator.INSTANCE.createADS(this);
         }
     }
 
@@ -128,14 +219,34 @@ public class CGPreferencesEntry extends UniversalFragment {
         } else if (item.id == supportRow) {
             AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Support_Force);
             return true;
-        } else if (item.id == restartRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Restart);
-            return true;
         } else if (item.id == aboutRow) {
             AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_About);
             return true;
         }
         return false;
+    }
+
+    private void showItemOptions(View button) {
+        ItemOptions o = ItemOptions.makeOptions(this, button);
+
+        o.add(R.drawable.msg_instant_link_solar, getString(R.string.CG_ExportSettings), () -> BackupHelper.INSTANCE.backupSettings(this));
+        o.add(R.drawable.msg_photo_settings_solar, getString(R.string.CG_ImportSettings), () -> BackupHelper.INSTANCE.importSettings(this));
+        o.addGap();
+        o.add(R.drawable.bug_solar, getString(R.string.CG_CopyReportDetails), () -> {
+            AndroidUtilities.addToClipboard(Crashlytics.getReportMessage() + "\n\n#bug");
+            BulletinFactory.of(this).createErrorBulletin(getString(R.string.CG_ReportDetailsCopied))
+                    .setDuration(Bulletin.DURATION_SHORT)
+                    .show();
+        });
+
+        o.addSpaceGap();
+
+        o.add(R.drawable.msg_retry_solar, getString(R.string.CG_Restart), () -> AppRestartHelper.restartApp(getContext()));
+
+        o.setBlur(false);
+        o.setDrawScrim(false);
+        o.translate(0F, -dp(48F));
+        o.show();
     }
 
 }

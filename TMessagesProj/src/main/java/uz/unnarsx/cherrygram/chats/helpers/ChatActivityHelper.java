@@ -41,7 +41,6 @@ import org.telegram.messenger.BaseController;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.DialogObject;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesStorage;
@@ -85,9 +84,9 @@ import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet;
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
 import uz.unnarsx.cherrygram.helpers.network.StickersManager;
 import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert;
@@ -189,6 +188,11 @@ public class ChatActivityHelper extends BaseController {
                     ids.add(selectedMessagesIds[a].keyAt(b));
                 }
             }
+
+            if (ids.isEmpty()) {
+                return;
+            }
+
             Collections.sort(ids);
             Integer begin = ids.get(0);
             Integer end = ids.get(ids.size() - 1);
@@ -257,9 +261,7 @@ public class ChatActivityHelper extends BaseController {
                     arr.add(dialogIdStr);
                     headerItem.hideSubItem(OPTION_ASK_PASSCODE);
 
-                    if (CherrygramCoreConfig.isDevBuild()) {
-                        FileLog.d("new locked chats array: " + arr);
-                    }
+                    CherrygramLogger.d(() -> "new locked chats array: " + arr);
 
                     chatActivity.getChatsPasswordHelper().saveArrayList(new ArrayList<>(arr), chatActivity.getChatsPasswordHelper().getPasscodeArray());
                 }
@@ -271,16 +273,14 @@ public class ChatActivityHelper extends BaseController {
                     if (arr.remove(String.valueOf(chatActivity.getDialogId()))) {
                         headerItem.hideSubItem(OPTION_DO_NOT_ASK_PASSCODE);
 
-                        if (CherrygramCoreConfig.isDevBuild()) {
-                            FileLog.d("new locked chats array: " + arr);
-                        }
+                        CherrygramLogger.d(() -> "new locked chats array: " + arr);
 
                         chatActivity.getChatsPasswordHelper().saveArrayList(new ArrayList<>(arr), chatActivity.getChatsPasswordHelper().getPasscodeArray());
                     }
                 }
             });
         } else if (id == OPTION_OPEN_TELEGRAM_BROWSER) {
-            Browser.openInTelegramBrowser(chatActivity.getParentActivity(), SearchEngine.getCurrent().getSearchURL(""), null);
+            Browser.openInTelegramBrowser(chatActivity.getContext(), SearchEngine.getCurrent().getSearchURL(""), null);
         }
     }
     /** ActionBar options finish*/
@@ -399,7 +399,7 @@ public class ChatActivityHelper extends BaseController {
                 break;
             }
             case OPTION_REPLY_GEMINI: {
-                if (selectedObject == null && selectedObject.messageOwner == null && selectedObject.messageOwner.message == null) {
+                if (selectedObject == null || selectedObject.messageOwner == null || selectedObject.messageOwner.message == null) {
                     return;
                 }
 
@@ -411,7 +411,7 @@ public class ChatActivityHelper extends BaseController {
                 break;
             }
             case OPTION_TRANSLATE_GEMINI: {
-                if (selectedObject == null && selectedObject.messageOwner == null && selectedObject.messageOwner.message == null) {
+                if (selectedObject == null || selectedObject.messageOwner == null || selectedObject.messageOwner.message == null) {
                     return;
                 }
 
@@ -422,7 +422,7 @@ public class ChatActivityHelper extends BaseController {
                 break;
             }
             case OPTION_SUMMARIZE_GEMINI: {
-                if (selectedObject == null && selectedObject.messageOwner == null && selectedObject.messageOwner.message == null) {
+                if (selectedObject == null || selectedObject.messageOwner == null || selectedObject.messageOwner.message == null) {
                     return;
                 }
 
@@ -433,7 +433,7 @@ public class ChatActivityHelper extends BaseController {
                 break;
             }
             case OPTION_TRANSCRIBE_GEMINI: {
-                if (selectedObject == null && selectedObject.messageOwner == null) {
+                if (selectedObject == null || selectedObject.messageOwner == null) {
                     return;
                 }
 
@@ -451,7 +451,7 @@ public class ChatActivityHelper extends BaseController {
                 break;
             }
             case OPTION_EXPLANATION_GEMINI: {
-                if (selectedObject == null && selectedObject.messageOwner == null) {
+                if (selectedObject == null || selectedObject.messageOwner == null) {
                     return;
                 }
 
@@ -492,7 +492,7 @@ public class ChatActivityHelper extends BaseController {
                     try {
                         AndroidUtilities.openForView(selectedObject, chatActivity.getParentActivity(), chatActivity.getResourceProvider(), false);
                     } catch (Exception e) {
-                        FileLog.e(e);
+                        CherrygramLogger.e(e);
                         chatActivity.alertUserOpenError(selectedObject);
                     }
                 }

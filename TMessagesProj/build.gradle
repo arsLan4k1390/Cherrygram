@@ -50,8 +50,8 @@ dependencies {
 
     compileOnly 'org.checkerframework:checker-qual:2.5.2'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
-    implementation 'com.google.firebase:firebase-messaging:25.0.1'
-    implementation 'com.google.firebase:firebase-config:23.0.1'
+    implementation 'com.google.firebase:firebase-messaging:25.0.2'
+    implementation 'com.google.firebase:firebase-config:23.1.0'
     implementation 'com.google.firebase:firebase-appindexing:20.0.0'
     implementation 'com.google.android.gms:play-services-maps:20.0.0'
     implementation 'com.google.android.gms:play-services-auth:20.4.0'
@@ -66,17 +66,18 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.14.0'
 
     //Cherrygram
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.2'
+    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.3'
     implementation 'com.google.android.play:review:2.0.2'
     implementation 'com.google.firebase:firebase-analytics:23.2.0'
-    implementation 'com.google.firebase:firebase-crashlytics:20.0.5'
+    implementation 'com.google.firebase:firebase-crashlytics:20.0.6'
     implementation 'com.google.ai.client.generativeai:generativeai:0.9.0'
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
 
     // CameraX Implementation
-    def camerax_version = '1.6.0'
+    def camerax_version = '1.6.1'
     implementation "androidx.camera:camera-camera2:${camerax_version}"
     implementation "androidx.camera:camera-core:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
@@ -87,8 +88,15 @@ dependencies {
     implementation 'com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1'
     implementation 'com.google.android.gms:play-services-mlkit-image-labeling:16.0.8'
 
-    implementation "androidx.credentials:credentials:1.6.0-alpha04"
-    implementation "androidx.credentials:credentials-play-services-auth:1.6.0-alpha04"
+    implementation "androidx.credentials:credentials:1.6.0"
+    implementation "androidx.credentials:credentials-play-services-auth:1.6.0"
+
+    implementation "io.noties.markwon:core:4.6.2"
+    implementation "io.noties.markwon:ext-strikethrough:4.6.2"
+    implementation "io.noties.markwon:ext-tables:4.6.2"
+    implementation "io.noties.markwon:html:4.6.2"
+    implementation "io.noties.markwon:inline-parser:4.6.2"
+    implementation "io.noties.markwon:ext-latex:4.6.2"
 
 //    implementation 'com.google.mlkit:translate:17.0.3'
 
@@ -113,7 +121,7 @@ android {
 
     compileSdk 36
     buildToolsVersion = '36.0.0'
-    ndkVersion "21.4.7075529" // 26.3.11579264
+    ndkVersion "27.2.12479018"
 
     sourceSets.main.jniLibs.srcDirs = ['./jni/']
 
@@ -148,7 +156,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 35
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']

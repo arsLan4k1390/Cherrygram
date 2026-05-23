@@ -444,7 +444,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         ));
 
         String lang = LocaleController.getInstance().getCurrentLocaleInfo().shortName;
-        String baseUrl = cyrillicLangs.contains(lang) ? Constants.CG_SAFESTARS_RU : Constants.CG_SAFESTARS;
+        String baseUrl = cyrillicLangs.contains(lang) ? CherrygramCoreConfig.INSTANCE.getSafe_stars_URL_RU() : CherrygramCoreConfig.INSTANCE.getSafe_stars_URL();
 
         StringBuilder url = new StringBuilder(baseUrl);
 

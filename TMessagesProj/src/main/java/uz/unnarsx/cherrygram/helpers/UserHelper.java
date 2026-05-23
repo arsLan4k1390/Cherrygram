@@ -19,7 +19,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.DispatchQueue;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
@@ -37,6 +36,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.Extra;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.helpers.network.NetworkHelper;
 
 public class UserHelper extends BaseController {
@@ -132,10 +132,10 @@ public class UserHelper extends BaseController {
                     if (onResponseNotReceived != null)
                         AndroidUtilities.runOnUIThread(onResponseNotReceived::run);
 
-                    FileLog.d("POST request did not work.");
+                    CherrygramLogger.w(() -> "POST request did not work.");
                 }
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
             }
         }, 0);
     }
@@ -223,7 +223,7 @@ public class UserHelper extends BaseController {
             }
 
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
             return "LOC_ERR";
         }
     }

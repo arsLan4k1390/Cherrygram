@@ -31,10 +31,7 @@ import com.google.gson.Gson;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BaseController;
-import org.telegram.messenger.BuildVars;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
@@ -64,6 +61,7 @@ import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.donates.BadgeHelper;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
@@ -165,7 +163,7 @@ public class ProfileActivityHelper extends BaseController {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 fragment.getParentActivity().startActivityForResult(intent, 500);
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
             }
             itemOptions.dismiss();
         });
@@ -290,7 +288,7 @@ public class ProfileActivityHelper extends BaseController {
         if (reasons == null || reasons.isEmpty()) {
             return null;
         }
-        FileLog.d("причины: " + new Gson().toJson(reasons));
+        CherrygramLogger.i(() -> "причины: " + new Gson().toJson(reasons));
 
         StringBuilder sb = new StringBuilder();
 

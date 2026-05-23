@@ -131,6 +131,8 @@
     <string name="CG_CopyPhoto">Скопировать фото</string>
     <string name="CG_CopyPhotoAsSticker">Скопировать фото как стикер</string>
     <string name="CG_SendPhotoAsSticker">Отправить как стикер</string>
+    <string name="CG_EnableMotionPhotos">Включить Motion-эффект</string>
+    <string name="CG_DisableMotionPhotos">Отключить Motion-эффект</string>
     <string name="CG_PhotoCopied">Фото скопировано в буфер обмена.</string>
     <string name="CG_SaveSticker">Сохранить стикер</string>
     <string name="CG_StickerSavedHint">Стикер сохранен в загрузки</string>
@@ -152,12 +154,13 @@
     <string name="CG_Sleep_Disabled">Таймер сна отключен</string>
     <string name="CG_Sleep_Permission">Разрешите Cherrygram устанавливать точные будильники, чтобы таймер сна работал корректно.</string>
 
-    <string name="CG_QR_Hint">Это цифровая копия отсканированного QR-кода. Нажмите, чтобы скопировать его в буфер обмена, или удерживайте, чтобы сохранить в галерею.</string>
+    <string name="CG_QR_Hint">Это цифровая копия QR-кода. Нажмите, чтобы скопировать его в буфер обмена, или удерживайте, чтобы сохранить в галерею.</string>
     <string name="CG_WifiConnect">Подключиться</string>
     <string name="CG_WifiSuccess">Успешно подключено к сети Wi-Fi.</string>
     <string name="CG_WifiFailed">Не удалось подключиться к сети Wi-Fi.</string>
     <string name="CG_WifiDisabled">Wi-Fi выключен.</string>
     <string name="CG_AreYouSureToLogin">Вы уверены, что хотите войти в этот аккаунт на другом устройстве?</string>
+    <string name="CG_CreateQR">Создать QR-код</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -174,6 +177,22 @@
     <string name="CGP_Source">Исходный код</string>
     <string name="CGP_Crowdin">Помогите нам с переводом</string>
     <string name="CGP_Header_Categories">Категории</string>
+
+    <string name="CGP_General_Desc">Основные настройки приложения и функции, не относящиеся к отдельным разделам</string>
+    <string name="CGP_Appearance_Desc">Внешний вид приложения и настройка интерфейса</string>
+    <string name="CGP_Folders_Desc">Настройки внешнего вида папок, кастомизация и перенос панели папок вниз</string>
+    <string name="CGP_BottomTabs_Desc">Настройка, организация и изменение порядка нижних вкладок на главном экране</string>
+    <string name="CGP_MessagesProfiles_Desc">Отображение Premium emoji, ID/DC и дополнительных элементов профилей и сообщений</string>
+    <string name="CGP_Chats_Desc">Настройки интерфейса чатов и сообщений</string>
+    <string name="CGP_Messages_Desc">Настройки сообщений, меню действий, отображения и взаимодействия</string>
+    <string name="CGP_MessagesFilter_Desc">Фильтрация сообщений и защита от спама</string>
+    <string name="CGP_Camera_Desc">Настройки камеры и съёмки фото/видео</string>
+    <string name="CGP_Experimental_Desc">Экспериментальные, нестабильные и тестируемые функции приложения</string>
+    <string name="CGP_Privacy_Desc">Настройки конфиденциальности, блокировки, скрытия чатов и защиты данных</string>
+
+    <string name="CGP_ADS">Посмотреть рекламу</string>
+    <string name="CGP_ADS_Advertiser">Рекламодатель:</string>
+    <string name="CGP_ADS_Click">Кликните на рекламу для получения информации</string>
     <!--Cherrygram Preferences-->
 
     <!--General Preferences-->
@@ -349,8 +368,9 @@
         \n\nЭто позволяет защититься от замаскированной рекламы, скрытых спам-ссылок и фишинговых доменов, которые могли бы обойти обычный фильтр по тексту.
     </string>
     <string name="CP_Message_Filtering_FilterBlocked">Фильтровать сообщения от заблокированных пользователей</string>
-    <string name="CP_Message_Filtering_HideBlocked">Скрывать сообщения от заблокированных пользователей</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">Если включено, все сообщения и пересланные сообщения от заблокированных пользователей будут автоматически скрываться под спойлер.</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">Если включено, все сообщения и пересланные сообщения от заблокированных пользователей будут автоматически фильтроваться.</string>
+    <string name="CP_Message_Filtering_FullyHide">Скрывать сообщения</string>
+    <string name="CP_Message_Filtering_FullyHide_Desc">Полностью скрывать сообщения вместо того, чтобы покрывать часть текст эффектом спойлера.</string>
     <string name="CP_Message_Filtering_HideAll">Спойлер на все сообщение</string>
     <string name="CP_Message_Filtering_HideAllDesc">Скрывает весь текст и медиа сообщения под спойлером, если в нем есть слово из фильтра.</string>
     <string name="CP_Message_Filtering_Collapse">Сворачивать сообщения</string>
@@ -368,6 +388,7 @@
     <string name="CP_AutoPauseVideo">Останавливать видео</string>
     <string name="CP_AutoPauseVideo_Desc">При блокировке экрана или сворачивании приложения</string>
     <string name="CP_DisableVibration">Отключить вибрацию</string>
+    <string name="CP_OpenLinksInIV">Открывать ссылки в Instant View</string>
     <string name="CP_VideoSeekDuration">Дабл-тап для перемотки видео (секунды)</string>
 
     <string name="CP_VibrateInChats">Вибрация в чатах</string>

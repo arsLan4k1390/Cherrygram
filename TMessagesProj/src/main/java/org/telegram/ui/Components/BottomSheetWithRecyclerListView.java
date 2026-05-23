@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -53,7 +54,7 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
     public NestedSizeNotifierLayout nestedSizeNotifierLayout;
 
     public float topPadding = 0.4f;
-    boolean showShadow = true;
+    protected boolean showShadow = true;
     private float shadowAlpha = 1f;
 
     private boolean showHandle = false;
@@ -104,7 +105,12 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
 
     @SuppressLint("AppCompatCustomView")
     public BottomSheetWithRecyclerListView(Context context, BaseFragment fragment, boolean needFocus, boolean hasFixedSize, boolean useNested, boolean stackFromEnd, ActionBarType actionBarType, Theme.ResourcesProvider resourcesProvider) {
-        super(context, needFocus, resourcesProvider);
+        this(context, fragment, needFocus, false, hasFixedSize, useNested, stackFromEnd, actionBarType, resourcesProvider);
+    }
+
+    @SuppressLint("AppCompatCustomView")
+    public BottomSheetWithRecyclerListView(Context context, BaseFragment fragment, boolean needFocus, boolean edgeToEdge, boolean hasFixedSize, boolean useNested, boolean stackFromEnd, ActionBarType actionBarType, Theme.ResourcesProvider resourcesProvider) {
+        super(context, needFocus, edgeToEdge, resourcesProvider);
         this.baseFragment = fragment;
         this.hasFixedSize = hasFixedSize;
         this.stackFromEnd = stackFromEnd;
@@ -151,7 +157,7 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
                 }
             };
         } else {
-             containerView = new SizeNotifierFrameLayout(context) {
+            containerView = new SizeNotifierFrameLayout(context) {
                  private boolean ignoreLayout = false;
 
                  @Override
@@ -577,7 +583,7 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
             }
             wasDrawn = true;
         } else if (actionBarType == ActionBarType.SLIDING) {
-            if ((int) (255 * shadowAlpha) != 0) {
+            if ((int) (255 * shadowAlpha) != 0 && showShadow) {
                 headerShadowDrawable.setBounds(backgroundPaddingLeft, actionBar.getBottom() + (int) actionBar.getTranslationY(), parentView.getMeasuredWidth() - backgroundPaddingLeft, actionBar.getBottom() + (int) actionBar.getTranslationY() + headerShadowDrawable.getIntrinsicHeight());
                 headerShadowDrawable.setAlpha((int) (255 * shadowAlpha));
                 headerShadowDrawable.draw(canvas);
@@ -803,7 +809,15 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
     }
 
     public void updateTitleAnimated() {
+        updateTitleAnimated(true);
+    }
+
+    public void updateTitleAnimated(boolean checkEquals) {
         if (actionBar != null) {
+            CharSequence title = getTitle();
+            if (checkEquals && TextUtils.equals(title, actionBar.getTitle())) {
+                return;
+            }
             actionBar.setTitleAnimated(getTitle(), false, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
         }
     }

@@ -58,6 +58,7 @@ public class GeminiPreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 
@@ -232,12 +233,7 @@ public class GeminiPreferencesEntry extends UniversalFragment {
     private CharSequence getGeminiApiKeyAdvice() {
         String advise = getString(R.string.CP_GeminiAI_API_Key_Desc);
 
-        Spannable htmlParsed;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            htmlParsed = new SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            htmlParsed = new SpannableString(Html.fromHtml(advise));
-        }
+        Spannable htmlParsed = new SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY));
 
         return CGResourcesHelper.INSTANCE.getUrlNoUnderlineText(htmlParsed);
     }
@@ -245,12 +241,7 @@ public class GeminiPreferencesEntry extends UniversalFragment {
     private CharSequence getGeminiModelNameAdvice() {
         String advise = getString(R.string.CP_GeminiAI_Model_Desc);
 
-        Spannable htmlParsed;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            htmlParsed = new SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            htmlParsed = new SpannableString(Html.fromHtml(advise));
-        }
+        Spannable htmlParsed = new SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY));
 
         return CGResourcesHelper.INSTANCE.getUrlNoUnderlineText(htmlParsed);
     }

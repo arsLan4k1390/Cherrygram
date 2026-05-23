@@ -64,6 +64,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var autoQuoteReplies by sharedPreferences.boolean("CP_AutoQuoteReplies", false)
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var disableVibration by sharedPreferences.boolean("CP_DisableVibration", false)
+    var openLinksInIV by sharedPreferences.boolean("CP_OpenLinksInIV", false)
     /** Actions finish */
 
     /** Media start */

@@ -542,7 +542,7 @@ public class EmbedBottomSheet extends BottomSheet {
                         View controlsView = videoView.getControlsView();
                         ImageView textureImageView = videoView.getTextureImageView();
 
-                        Rect rect = PipVideoOverlay.getPipRect(true, aspectRatio);
+                        RectOld rect = PipVideoOverlay.getPipRect(true, aspectRatio);
 
                         float scale = rect.width / textureView.getWidth();
 
@@ -593,7 +593,7 @@ public class EmbedBottomSheet extends BottomSheet {
 
                     if (animated && PipVideoOverlay.IS_TRANSITION_ANIMATION_SUPPORTED) {
                         setOnShowListener(onShowListener);
-                        Rect rect = PipVideoOverlay.getPipRect(false, aspectRatio);
+                        RectOld rect = PipVideoOverlay.getPipRect(false, aspectRatio);
 
                         TextureView textureView = videoView.getTextureView();
                         ImageView textureImageView = videoView.getTextureImageView();

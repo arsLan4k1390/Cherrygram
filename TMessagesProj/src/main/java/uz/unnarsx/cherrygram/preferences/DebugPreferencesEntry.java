@@ -70,12 +70,13 @@ public class DebugPreferencesEntry extends UniversalFragment {
     @Override
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("debug_preferences_screen");
-        return "Debug // WIP";
+        return "Debug // W.I.P";
     }
 
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 
@@ -90,12 +91,14 @@ public class DebugPreferencesEntry extends UniversalFragment {
         items.add(SettingsHelper.asSwitchCG(oldTimeStyleRow, "Default time style in chats *", "Unlike iOS and TDesktop")
                 .setChecked(CherrygramDebugConfig.INSTANCE.getOldTimeStyle())
         );
-        items.add(SettingsHelper.asSwitchCG(safeStarsRow, "Use SafeStars *")
-                .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeStars())
-        );
-        items.add(SettingsHelper.asSwitchCG(safeSurfRow, "Use SafeSurf *")
-                .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeSurf())
-        );
+        if (CherrygramCoreConfig.isDevBuild()) {
+            items.add(SettingsHelper.asSwitchCG(safeStarsRow, "Use SafeStars *")
+                    .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeStars())
+            );
+            items.add(SettingsHelper.asSwitchCG(safeSurfRow, "Use SafeSurf *")
+                    .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeSurf())
+            );
+        }
         items.add(UItem.asButton(performanceClassRow, "Force performance class", SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass())));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             items.add(UItem.asButton(fixCallsNotifRow, "Fix calls notification *"));

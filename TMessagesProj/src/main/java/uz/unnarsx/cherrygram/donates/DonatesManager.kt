@@ -21,17 +21,17 @@ import org.json.JSONObject
 import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.AlertDialog
 import uz.unnarsx.cherrygram.Extra
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
+import uz.unnarsx.cherrygram.donates.SSLUtils.openSecureConnection
 import java.io.File
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.math.max
 import kotlin.math.pow
@@ -54,7 +54,7 @@ object DonatesManager {
                         progressDialog = AlertDialog(context, AlertDialog.ALERT_TYPE_SPINNER)
                         progressDialog.show()
                     } catch (e: Exception) {
-                        FileLog.e(e)
+                        CherrygramLogger.e(e, true)
                     }
                 }
             }
@@ -70,7 +70,7 @@ object DonatesManager {
 
                 if (!force) showToast("Loaded remote donate list")
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e, true)
                 showToast("Error loading donate list, using local cache")
 
                 if (!fromIntegrityChecker) {
@@ -87,7 +87,7 @@ object DonatesManager {
                             progressDialog?.dismiss()
                             NotificationCenter.getInstance(UserConfig.selectedAccount).postNotificationName(NotificationCenter.cgDonatesLoaded)
                         } catch (e: Exception) {
-                            FileLog.e(e)
+                            CherrygramLogger.e(e, true)
                         }
                     }
                 }
@@ -119,10 +119,7 @@ object DonatesManager {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(urlString)
-                val connection = (url.openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 5000
-                    readTimeout = 5000
-                }
+                val connection = openSecureConnection(url)
 
                 val reader = InputStreamReader(connection.inputStream)
                 val tempUserIds = mutableSetOf<Long>()
@@ -167,7 +164,7 @@ object DonatesManager {
                     fallback(context)
                 }
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e, true)
                 fallback(context)
             }
         }
@@ -201,7 +198,7 @@ object DonatesManager {
                     targetSet.addAll(tempUserIds)
                 }
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e, true)
             }
         }
     }
@@ -320,10 +317,7 @@ object DonatesManager {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(urlString)
-                val connection = (url.openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 5000
-                    readTimeout = 5000
-                }
+                val connection = openSecureConnection(url)
 
                 val tempMap = mutableMapOf<Long, BadgeHelper.UserColor>()
                 InputStreamReader(connection.inputStream).buffered().useLines { lines ->
@@ -375,7 +369,7 @@ object DonatesManager {
                     loadLocalBadgeColors(context, fileName)
                 }
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e, true)
                 loadLocalBadgeColors(context, fileName)
             }
         }
@@ -406,7 +400,7 @@ object DonatesManager {
                     BadgeHelper.updateBadgeColorsMap(tempMap)
                 }
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e, true)
             }
         }
     }
@@ -430,7 +424,7 @@ object DonatesManager {
             val rawRate = ton.getDouble("usdt")
             tonRateFinal = rawRate
         } catch (e: Exception) {
-            FileLog.e(e)
+            CherrygramLogger.e(e, true)
         }
     }
 
@@ -438,10 +432,7 @@ object DonatesManager {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(TON_RATE_URL)
-                val connection = (url.openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 5000
-                    readTimeout = 5000
-                }
+                val connection = openSecureConnection(url)
 
                 val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
                 val json = JSONObject(jsonString)
@@ -459,7 +450,7 @@ object DonatesManager {
                 FileIntegrityUtils.updateFileHash(context, file)
 
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e, true)
                 loadLocalTonUsdtRateSync(context)
             }
         }

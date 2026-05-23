@@ -20,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessageObject
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
@@ -37,6 +36,8 @@ import kotlin.math.roundToInt
 import androidx.core.graphics.scale
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper
+import uz.unnarsx.cherrygram.core.CherrygramLogger
+import uz.unnarsx.cherrygram.donates.SSLUtils.openSecureConnection
 
 object StickersManager {
 
@@ -71,10 +72,7 @@ object StickersManager {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(GITLAB_RAW_URL)
-                val connection = (url.openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 5000
-                    readTimeout = 5000
-                }
+                val connection = openSecureConnection(url)
 
                 val reader = InputStreamReader(connection.inputStream)
                 val tempStickerSetIDs = mutableSetOf<Long>()
@@ -100,7 +98,7 @@ object StickersManager {
                 CherrygramChatsConfig.lastStickersCheckTime = System.currentTimeMillis()
 
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e)
             }
         }
     }
@@ -128,7 +126,7 @@ object StickersManager {
                 }
 
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e)
             }
         }
     }
@@ -170,7 +168,7 @@ object StickersManager {
                 }
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            CherrygramLogger.e(e)
         }
     }
 
@@ -212,7 +210,7 @@ object StickersManager {
                 }
             }
         } catch (e: Exception) {
-            FileLog.e(e)
+            CherrygramLogger.e(e)
         }
 
         return webpFile
@@ -238,7 +236,7 @@ object StickersManager {
                     ChatsHelper.addFileToClipboard(file, callback)
                 }
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e)
             }
         }.start()
     }

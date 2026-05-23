@@ -61,6 +61,7 @@ object CherrygramCameraConfig {
     var continuousAutofocus by sharedPreferences.boolean("CP_ContinuousAutofocus", false)
     var noiceReduction by sharedPreferences.boolean("CP_NoiceReduction", false)
     var faceDetection by sharedPreferences.boolean("CP_FaceDetection", false)
+    var bokehEffect by sharedPreferences.boolean("CP_BokehEffect", false)
 
     var centerCameraControlButtons by sharedPreferences.boolean("CP_CenterCameraControlButtons", true)
 

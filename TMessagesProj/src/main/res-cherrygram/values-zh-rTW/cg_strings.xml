@@ -311,7 +311,7 @@
     </string>
     <string name="CP_Message_Filtering_FilterBlocked">篩選來自被封鎖使用者的訊息</string>
     <string name="CP_Message_Filtering_HideBlocked">隱藏被封鎖使用者在群組中的訊息</string>
-    <string name="CP_Message_Filtering_HideBlockedDesc">啟用功能後，所有來自被封鎖用戶的訊息和轉寄的訊息將自動隱藏在劇透標籤下。</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">啟用功能後，所有來自被封鎖用戶的訊息和轉寄的訊息將自動隱藏在劇透標籤下。</string>
     <string name="CP_Message_Filtering_HideAll">完整訊息劇透隱藏</string>
     <string name="CP_Message_Filtering_HideAllDesc">如訊息內容包含過濾字詞，則將整則訊息文字與媒體檔案隱藏於劇透標籤之下。</string>
     <string name="CP_Message_Filtering_Collapse">折疊訊息</string>

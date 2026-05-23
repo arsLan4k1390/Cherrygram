@@ -50,7 +50,6 @@ import com.google.gson.GsonBuilder;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.CodeHighlighting;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
@@ -73,23 +72,24 @@ import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 public class JsonBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
-    private HeaderView headerView;
-    private LoadingTextView loadingTextView;
-    private FrameLayout textViewContainer;
-    private TextView textView;
+    private final HeaderView headerView;
+    private final LoadingTextView loadingTextView;
+    private final FrameLayout textViewContainer;
+    private final TextView textView;
 
     private boolean sheetTopNotAnimate;
-    private RecyclerListView listView;
-    private PaddedAdapter adapter;
+    private final RecyclerListView listView;
+    private final PaddedAdapter adapter;
 
-    private View buttonShadowView;
-    private FrameLayout buttonView;
-    private ButtonWithCounterView buttonTextView;
-    private ButtonWithCounterView copyButton;
+    private final View buttonShadowView;
+    private final FrameLayout buttonView;
+    private final ButtonWithCounterView buttonTextView;
+    private final ButtonWithCounterView copyButton;
 
     public Theme.ResourcesProvider resourcesProvider;
     public BaseFragment fragment;
@@ -254,7 +254,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 jsonString = gson.toJson(messageObject.messageOwner);
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
                 CherrygramMessagesConfig.INSTANCE.setJacksonJSON_Provider(true);
                 jsonString = getString(R.string.SafetyNetErrorOccurred);
             }
@@ -264,7 +264,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 jsonString = mapper.writeValueAsString(messageObject.messageOwner);
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
                 CherrygramMessagesConfig.INSTANCE.setJacksonJSON_Provider(false);
                 jsonString = getString(R.string.SafetyNetErrorOccurred);
             }
@@ -300,7 +300,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         return false;
     }
 
-    private class LoadingTextView extends TextView {
+    private static class LoadingTextView extends TextView {
 
         private final LinkPath path = new LinkPath(true);
         private final LoadingDrawable loadingDrawable = new LoadingDrawable();
@@ -358,7 +358,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
 
     private static class PaddedAdapter extends RecyclerListView.Adapter {
 
-        private Context mContext;
+        private final Context mContext;
         private View mMainView;
 
         public PaddedAdapter(Context context, View mainView) {
@@ -413,7 +413,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         }
     }
 
-    private AnimatedFloat sheetTopAnimated;
+    private final AnimatedFloat sheetTopAnimated;
     private float getSheetTop() {
         return getSheetTop(true);
     }
@@ -435,13 +435,13 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
 
     private class HeaderView extends FrameLayout {
 
-        private ImageView backButton;
-        private TextView titleTextView;
-        private LinearLayout subtitleView;
+        private final ImageView backButton;
+        private final TextView titleTextView;
+        private final LinearLayout subtitleView;
         public TextView messageIdTextView;
-        private ImageView menuIconImageView;
+        private final ImageView menuIconImageView;
 
-        private View shadow;
+        private final View shadow;
 
         public HeaderView(Context context, MessageObject messageObject) {
             super(context);
@@ -568,8 +568,8 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             Theme.applyDefaultShadow(bgPaint);
         }
 
-        private Path bgPath = new Path();
-        private Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path bgPath = new Path();
+        private final Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         @Override
         protected void dispatchDraw(Canvas canvas) {

@@ -15,12 +15,12 @@ import android.text.SpannableString
 import android.text.style.URLSpan
 import org.telegram.messenger.BuildConfig
 import org.telegram.messenger.BuildVars
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.Components.URLSpanNoUnderline
 import org.telegram.ui.LauncherIconController
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
 import uz.unnarsx.cherrygram.misc.Constants
@@ -67,7 +67,7 @@ object CGResourcesHelper {
         try {
             abi = Build.SUPPORTED_ABIS[0]
         } catch (e: Exception) {
-            FileLog.e(e)
+            CherrygramLogger.e(e)
             abi = "universal"
         }
         return abi
@@ -94,7 +94,7 @@ object CGResourcesHelper {
                     "\n" +
                     "Based on Telegram v" + BuildVars.BUILD_VERSION_STRING + " (" + getSourceCodeVersion() + ")" +
                     "\n" +
-                    Constants.CG_AUTHOR;
+                    Constants.CG_AUTHOR
     }
     /** About app finish */
 
@@ -160,7 +160,7 @@ object CGResourcesHelper {
         return if (CherrygramCoreConfig.oldNotificationIcon) {
             R.drawable.notification
         } else {
-            return if (isAnyOfBraIconsEnabled()) R.drawable.cg_notification_bra else R.drawable.cg_notification
+            if (isAnyOfBraIconsEnabled()) R.drawable.cg_notification_bra else R.drawable.cg_notification
         }
     }
 

@@ -26,7 +26,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.SharedConfig;
 
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class CameraXUtils {
@@ -213,7 +213,7 @@ public class CameraXUtils {
                     cameraId = camera2Info.getCameraId();
                 }
             } catch (Exception e) {
-                FileLog.e(e);
+                CherrygramLogger.e(e);
             }
         }
 

@@ -16,10 +16,11 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
-import org.telegram.messenger.FileLog;
 import org.telegram.ui.ActionBar.Theme;
 
 import java.util.HashMap;
+
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 public class QrHelper {
 
@@ -28,10 +29,11 @@ public class QrHelper {
             HashMap<EncodeHintType, Object> hints = new HashMap<>();
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
             hints.put(EncodeHintType.MARGIN, 0);
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
             QRCodeWriter writer = new QRCodeWriter();
             return writer.encode(text, 768, 768, hints, null, 1.0f, Color.WHITE, Color.BLACK/*Theme.getColor(Theme.key_featuredStickers_addButton)*/);
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
         return null;
     }

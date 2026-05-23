@@ -12,7 +12,9 @@ package uz.unnarsx.cherrygram.core.configs
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.annotation.Keep
 import androidx.core.content.edit
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -28,6 +30,7 @@ import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 
+@Keep
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Default
 ) {
@@ -104,11 +107,17 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Misc start */
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
-    var humoCardNumber by sharedPreferences.string("CP_Humo_Card_Number", "9860600408892476")
-    var tbankCardNumber by sharedPreferences.string("CP_TBank_Card_Number", "9860350143344678")
+    var humoCardNumber by sharedPreferences.string("CP_Humo_Card_Number", "9860100128256904")
+    var tbankCardNumber by sharedPreferences.string("CP_TBank_Card_Number", "9860100128256904")
     var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
+
+    var showAdsScreenInSettings by sharedPreferences.boolean("CG_ShowAdsScreenInSettings", true)
+
     var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", true)
+    var safe_stars_URL by sharedPreferences.string("CP_SafeStarsURL", "https://safe-stars.com/?partner=cherrygram")
+    var safe_stars_URL_RU by sharedPreferences.string("CP_SafeStarsURL_RU", "https://safe-stars.com/ru/?partner=cherrygram")
     var allowSafeSurf by sharedPreferences.boolean("CG_AllowSafeSurfUI", true)
+    var safe_surf_URL by sharedPreferences.string("CP_SafeSurfURL", "https://t.me/safe_surfbot?start=cherry")
     /** Misc finish */
 
     /** Cherrygram build types start */
@@ -154,6 +163,8 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     fun init() {
         launch {
             if (ApplicationLoader.checkPlayServices()) {
+                FirebaseApp.initializeApp(ApplicationLoader.applicationContext)
+                FirebaseRemoteConfigHelper.init()
                 val success = FirebaseRemoteConfigHelper.fetchAndActivate()
                 if (success) {
                     FirebaseRemoteConfigHelper.applyConfig()

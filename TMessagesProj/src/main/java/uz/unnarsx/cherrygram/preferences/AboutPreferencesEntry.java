@@ -22,17 +22,16 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.Cells.TextDetailSettingsCell;
-import org.telegram.ui.Components.Bulletin;
-import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.LaunchActivity;
+import org.telegram.ui.SettingsActivity;
 
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
@@ -43,14 +42,13 @@ public class AboutPreferencesEntry extends UniversalFragment {
 
     private final int readmeRow = 1;
     private final int updatesRow = 2;
-    private final int bugReportRow = 3;
-    private final int debugPrefsRow = 4;
+    private final int debugPrefsRow = 3;
 
-    private final int channelRow = 5;
-    private final int chatRow = 6;
-    private final int githubRow = 7;
-    private final int crowdinRow = 8;
-    private final int policyRow = 9;
+    private final int channelRow = 4;
+    private final int chatRow = 5;
+    private final int githubRow = 6;
+    private final int crowdinRow = 7;
+    private final int policyRow = 8;
 
     @Override
     protected CharSequence getTitle() {
@@ -61,6 +59,7 @@ public class AboutPreferencesEntry extends UniversalFragment {
     @Override
     public View createView(Context context) {
         setMD3(true);
+        setGilroy(true);
         return super.createView(context);
     }
 
@@ -75,9 +74,25 @@ public class AboutPreferencesEntry extends UniversalFragment {
                         getString(R.string.CGP_About_Desc)
                 )
         );
-        items.add(SettingsHelper.asTextDetail(updatesRow, R.drawable.msg_retry_solar, getString(R.string.UP_Category_Updates), getLastCheckUpdateTime()));
-        items.add(UItem.asButton(bugReportRow, R.drawable.bug_solar, getString(R.string.CG_CopyReportDetails)));
-        items.add(UItem.asButton(debugPrefsRow, R.drawable.test_tube_solar, "Debug // WIP"));
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        updatesRow,
+                        IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom,
+                        R.drawable.settings_refresh_filled_solar,
+                        getString(R.string.UP_Category_Updates),
+                        getLastCheckUpdateTime()
+                )
+        );
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        debugPrefsRow,
+                        IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
+                        R.drawable.settings_tube_filled_solar,
+                        "Debug // W.I.P",
+                        getString(R.string.CGP_Experimental_Desc),
+                        true
+                )
+        );
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CGP_Links)));
@@ -113,11 +128,6 @@ public class AboutPreferencesEntry extends UniversalFragment {
                 if (LaunchActivity.instance == null) return;
                 LaunchActivity.instance.showUpdaterBottomSheet(this, false, null);
             }
-        } else if (item.id == bugReportRow) {
-            AndroidUtilities.addToClipboard(Crashlytics.getReportMessage() + "\n\n#bug");
-            BulletinFactory.of(this).createErrorBulletin(getString(R.string.CG_ReportDetailsCopied))
-                    .setDuration(Bulletin.DURATION_SHORT)
-                    .show();
         } else if (item.id == debugPrefsRow) {
             CherrygramPreferencesNavigator.INSTANCE.createDebug(this);
         } else if (item.id == channelRow) {

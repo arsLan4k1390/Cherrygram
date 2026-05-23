@@ -21,7 +21,7 @@ object CherrygramPrivacyConfig {
 
     /** Privacy start */
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxySponsor", true)
-    var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics", ApplicationLoader.checkPlayServices())
+    var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics1", true)
     /** Privacy finish */
 
     /** Passcode lock start */
@@ -38,7 +38,6 @@ object CherrygramPrivacyConfig {
     /** Misc **/
 
     fun init() {
-        FirebaseAnalyticsHelper.init(ApplicationLoader.applicationContext)
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("cg_start")
     }
 
