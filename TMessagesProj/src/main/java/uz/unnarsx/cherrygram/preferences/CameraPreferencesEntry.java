@@ -101,7 +101,9 @@ public class CameraPreferencesEntry extends UniversalFragment {
             items.add(UItem.asShadow(getCameraAdvise()));
         }
 
-        items.add(UItem.asHeader(getString(R.string.CP_Category_Camera)));
+        if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2 || CherrygramCoreConfig.isDevBuild()) {
+            items.add(UItem.asHeader(getString(R.string.CP_Category_Camera)));
+        }
         if (CherrygramCoreConfig.isDevBuild()) {
             items.add(SettingsHelper.asSwitchCG(disableAttachCameraRow, getString(R.string.CP_DisableCam), getString(R.string.CP_DisableCam_Desc))
                     .setChecked(CherrygramCameraConfig.INSTANCE.getDisableAttachCamera())
@@ -110,7 +112,9 @@ public class CameraPreferencesEntry extends UniversalFragment {
         if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2) {
             items.add(UItem.asButton(cameraAspectRatioRow, getString(R.string.CP_CameraAspectRatio), getCameraAspectRatio()));
         }
-        items.add(UItem.asShadow(null));
+        if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2 || CherrygramCoreConfig.isDevBuild()) {
+            items.add(UItem.asShadow(null));
+        }
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Videomessages)));
         if (CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 || CameraXUtils.isCurrentCameraCameraX()) {
@@ -216,12 +220,14 @@ public class CameraPreferencesEntry extends UniversalFragment {
             CherrygramCameraConfig.INSTANCE.setUseDualCamera(!CherrygramCameraConfig.INSTANCE.getUseDualCamera());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getUseDualCamera());
 
-            if (CameraXUtils.isCurrentCameraCameraX() && CherrygramCameraConfig.INSTANCE.getUseDualCamera()) {
-                CherrygramCameraConfig.INSTANCE.setCameraAspectRatio(CherrygramCameraConfig.Camera4to3);
-                listView.adapter.update(true);
+            if (CherrygramCameraConfig.INSTANCE.getUseDualCamera()) {
+                CherrygramCameraConfig.INSTANCE.setBokehEffect(false);
+                if (CameraXUtils.isCurrentCameraCameraX()) {
+                    CherrygramCameraConfig.INSTANCE.setCameraAspectRatio(CherrygramCameraConfig.Camera4to3);
+                }
             }
 
-            if (CameraXUtils.isCurrentCameraNotCameraX()) listView.adapter.update(true);
+            listView.adapter.update(true);
         } else if (item.id == rearCamRow) {
             CherrygramCameraConfig.INSTANCE.setRearCam(!CherrygramCameraConfig.INSTANCE.getRearCam());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getRearCam());
@@ -325,7 +331,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
         if (CherrygramCameraConfig.INSTANCE.getContinuousAutofocus()) count++;
         if (CherrygramCameraConfig.INSTANCE.getNoiceReduction()) count++;
         if (CherrygramCameraConfig.INSTANCE.getFaceDetection()) count++;
-        if (CherrygramCameraConfig.INSTANCE.getBokehEffect()) count++;
+        if (CherrygramCameraConfig.INSTANCE.getBokehEffect() && isBokehAvailable()) count++;
 
         return count + (isBokehAvailable() ? "/6" : "/5");
     }
@@ -335,7 +341,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
                 || CherrygramCameraConfig.INSTANCE.getContinuousAutofocus()
                 || CherrygramCameraConfig.INSTANCE.getNoiceReduction()
                 || CherrygramCameraConfig.INSTANCE.getFaceDetection()
-                || CherrygramCameraConfig.INSTANCE.getBokehEffect();
+                || (CherrygramCameraConfig.INSTANCE.getBokehEffect() && isBokehAvailable());
     }
 
     public static void showAspectRatioSelector(Context context, Runnable runnable) {
@@ -368,7 +374,9 @@ public class CameraPreferencesEntry extends UniversalFragment {
     }
 
     private boolean isBokehAvailable() {
-        return CameraXUtils.isCurrentCameraCameraX() && (isExtendedFpsAvailable() || SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH);
+        return CameraXUtils.isCurrentCameraCameraX()
+                && !CherrygramCameraConfig.INSTANCE.getUseDualCamera()
+                && (isExtendedFpsAvailable() || SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH);
     }
 
     public static String getCameraName() {

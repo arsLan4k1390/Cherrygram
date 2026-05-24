@@ -152,7 +152,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private ImageView muteImageView;
     private float progress;
     private CameraInfo selectedCamera;
-    public boolean isFrontface = true;
+    public boolean isFrontface = !CherrygramCameraConfig.INSTANCE.getRearCam();
     public volatile boolean cameraReady;
     private AnimatorSet muteAnimation;
     private TLRPC.InputFile file;

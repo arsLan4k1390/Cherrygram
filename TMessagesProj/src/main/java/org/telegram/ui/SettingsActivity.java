@@ -1662,6 +1662,11 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             arrowView.animate().rotation(rotation).setDuration(220).setInterpolator(CubicBezierInterpolator.EASE_OUT).start();
             arrowView.setContentDescription(CherrygramAppearanceConfig.INSTANCE.getShowAccounts() ? getString(R.string.AccDescrHideAccounts) : getString(R.string.AccDescrShowAccounts));
         }
+
+        public void setValue(CharSequence value) {
+            subtitleView.setVisibility(!TextUtils.isEmpty(value) ? View.VISIBLE : View.GONE);
+            subtitleView.setText(value);
+        }
         /** Cherrygram finish */
 
     }
