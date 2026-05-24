@@ -121,7 +121,7 @@ public class AboutPreferencesEntry extends UniversalFragment {
         } else if (item.id == updatesRow) {
             if (CherrygramCoreConfig.isPlayStoreBuild()) {
                 SharedConfig.lastUpdateCheckTime = System.currentTimeMillis();
-                ((TextDetailSettingsCell) view).setValue(getLastCheckUpdateTime());
+                SettingsHelper.updateButtonValue(view, getLastCheckUpdateTime());
 
                 Browser.openUrl(getContext(), Constants.UPDATE_APP_URL);
             } else {

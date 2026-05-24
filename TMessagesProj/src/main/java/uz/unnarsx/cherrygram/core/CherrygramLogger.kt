@@ -151,31 +151,31 @@ object CherrygramLogger {
     @JvmStatic
     @JvmOverloads
     fun e(message: () -> String, showOnlyInDev: Boolean = false) {
-        if (showOnlyInDev && isDebuggable()) Log.e(TAG, message())
+        if (!showOnlyInDev) Log.e(TAG, message())
     }
 
     @JvmStatic
     @JvmOverloads
     fun e(t: Throwable, showOnlyInDev: Boolean = false) {
-        if (showOnlyInDev && isDebuggable()) Log.e(TAG, t.message, t)
+        if (!showOnlyInDev) Log.e(TAG, t.message, t)
     }
 
     @JvmStatic
     @JvmOverloads
     fun e(tag: String, message: () -> String, showOnlyInDev: Boolean = false) {
-        if (showOnlyInDev && isDebuggable()) Log.e(tag, message())
+        if (!showOnlyInDev) Log.e(tag, message())
     }
 
     @JvmStatic
     @JvmOverloads
     fun e(message: () -> String, t: Throwable, showOnlyInDev: Boolean = false) {
-        if (showOnlyInDev && isDebuggable()) Log.e(TAG, message(), t)
+        if (!showOnlyInDev) Log.e(TAG, message(), t)
     }
 
     @JvmStatic
     @JvmOverloads
     fun e(tag: String, message: () -> String, t: Throwable, showOnlyInDev: Boolean = false) {
-        if (showOnlyInDev && isDebuggable()) Log.e(tag, message(), t)
+        if (!showOnlyInDev) Log.e(tag, message(), t)
     }
 
 }

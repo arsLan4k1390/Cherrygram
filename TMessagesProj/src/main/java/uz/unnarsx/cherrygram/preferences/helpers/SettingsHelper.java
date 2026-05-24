@@ -14,10 +14,12 @@ import android.view.View;
 import org.telegram.ui.Cells.NotificationsCheckCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
+import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
+import org.telegram.ui.SettingsActivity;
 
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
@@ -128,6 +130,10 @@ public class SettingsHelper {
             textCell.setValue(value, true);
         } else if (view instanceof TextSettingsCell textSettingsCell) {
             textSettingsCell.getValueTextView().setText(value);
+        } else if (view instanceof TextDetailSettingsCell textDetailSettingsCell) {
+            textDetailSettingsCell.getValueTextView().setText(value);
+        } else if (view instanceof SettingsActivity.SettingCell settingCell) {
+            settingCell.setValue(value);
         } else {
             if (view != null) {
                 CherrygramLogger.e(() -> "Unknown view type for setChecked: " + view.getClass().getName());
