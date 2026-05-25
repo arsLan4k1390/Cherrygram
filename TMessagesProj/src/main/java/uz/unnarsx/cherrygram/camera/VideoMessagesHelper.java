@@ -18,7 +18,11 @@ public class VideoMessagesHelper {
 
     public CameraXController cameraXController;
 
-    public void createCameraX(InstantCameraView instantCameraView, final SurfaceTexture... surfaceTextures) {
+    public void createSingleCameraX(InstantCameraView instantCameraView, final SurfaceTexture surfaceTexture) {
+
+    }
+
+    public void createDualCameraX(InstantCameraView instantCameraView, final SurfaceTexture[] surfaceTextures) {
 
     }
 

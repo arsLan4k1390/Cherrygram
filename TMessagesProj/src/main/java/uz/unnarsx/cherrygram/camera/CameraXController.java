@@ -177,18 +177,16 @@ public class CameraXController {
 
     }
 
-    @SuppressLint({"UnsafeExperimentalUsageError", "RestrictedApi"})
-    public void setTargetOrientation(int rotation) {
+    public void setPreviewRotation(int rotation) {
+
+    }
+
+    public void setCaptureRotation(int rotation) {
 
     }
 
     @SuppressLint({"UnsafeExperimentalUsageError", "RestrictedApi"})
-    public void setWorldCaptureOrientation(int rotation) {
-
-    }
-
-    @SuppressLint({"UnsafeExperimentalUsageError", "RestrictedApi"})
-    public void focusToPoint(int x, int y/*, boolean disableAutoCancel*/) {
+    public void focusToPoint(int x, int y, boolean disableAutoCancel) {
 
     }
 

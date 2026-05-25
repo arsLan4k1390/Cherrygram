@@ -135,9 +135,9 @@ public class CameraPreferencesEntry extends UniversalFragment {
 
         if (CameraXUtils.isCurrentCameraCameraX() || CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2) {
             items.add(UItem.asShadow(null));
-            if (CameraXUtils.isCurrentCameraCameraX()) {
+            /*if (CameraXUtils.isCurrentCameraCameraX()) {
                 items.add(UItem.asButton(cameraXQualityRow, getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p"));
-            }
+            }*/
             items.add(UItem.asButton(cameraXFpsRangeRow, "FPS", getCameraXFpsRange()));
             items.add(
                     SettingsHelper.asExpandableSwitch(
@@ -234,7 +234,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
         } else if (item.id == startFromUltraWideRow) {
             CherrygramCameraConfig.INSTANCE.setStartFromUltraWideCam(!CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
-        } else if (item.id == cameraXQualityRow) {
+        } /*else if (item.id == cameraXQualityRow) {
             Map<Quality, Size> availableSizes = CameraXUtils.getAvailableVideoSizes();
             Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
             ArrayList<Integer> types = tmp.collect(Collectors.toCollection(ArrayList::new));
@@ -244,7 +244,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
                 CherrygramCameraConfig.INSTANCE.setCameraResolution(types.get(i));
                 SettingsHelper.updateButtonValue(view, CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p");
             });
-        } else if (item.id == cameraXFpsRangeRow) {
+        }*/ else if (item.id == cameraXFpsRangeRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();
 

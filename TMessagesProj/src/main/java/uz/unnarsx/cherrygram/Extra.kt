@@ -12,14 +12,12 @@ package uz.unnarsx.cherrygram
 import android.app.Activity
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ChatObject
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
-import org.telegram.ui.ActionBar.AlertDialog
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.Bulletin
 import org.telegram.ui.Components.BulletinFactory
@@ -27,9 +25,16 @@ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.helpers.UserHelper
 
 object Extra {
+
     // https://core.telegram.org/api/obtaining_api_id
-    const val APP_ID = 12345678
-    const val APP_HASH = "abcdefg"
+
+    fun getAppID() : Int {
+        return 12345678
+    }
+
+    fun getAppHash() : String {
+        return "abcdefg"
+    }
 
     // https://developers.google.com/identity/sms-retriever/verify#computing_your_apps_hash_string
     const val SMS_HASH = ""
@@ -59,7 +64,9 @@ object Extra {
     const val ENDPOINT_FOR_DATE = "abcdefg"
     const val ENDPOINT_FOR_DATE_SECRET = "abcdefg"
 
-    fun getRegistrationDate(fragment: BaseFragment, parentActivity: Activity, userID: Long, chatId: Long) {
+    fun getRegistrationDate(fragment: BaseFragment?, parentActivity: Activity, userID: Long, chatId: Long) {
+
+        if (fragment == null || fragment.getParentActivity() == null) return
 
         if (chatId != 0L) {
             val chat = fragment.messagesController.getChat(chatId)
@@ -103,7 +110,7 @@ object Extra {
                 try {
                     progressDialog.show()
                 } catch (e: Exception) {
-                    FileLog.e(e)
+                    CherrygramLogger.e(e)
                 }
             }
 
@@ -119,12 +126,16 @@ object Extra {
                     try {
                         if (progressDialog.isShowing) progressDialog.dismiss()
                     } catch (e: Exception) {
-                        FileLog.e(e)
+                        CherrygramLogger.e(e)
                     }
                 }
-                BulletinFactory.of(fragment.layoutContainer, fragment.resourceProvider)
+
+                val window = Bulletin.BulletinWindow.make(fragment.getParentActivity())
+                window.setTouchable(true)
+
+                BulletinFactory.of(if (userID == fragment.userConfig.clientUserId) window else fragment.layoutContainer, fragment.getResourceProvider())
                     .createSimpleBulletin(R.raw.chats_infotip, UserHelper.getInstance(UserConfig.selectedAccount).getCreationDate(userID, false, null))
-                    .setDuration(Bulletin.DURATION_PROLONG)
+                    .setDuration(if (userID == fragment.userConfig.clientUserId) Bulletin.DURATION_SHORT else Bulletin.DURATION_PROLONG)
                     .show()
             }
         }*/

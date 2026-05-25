@@ -20,9 +20,9 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 	JNIEnv *env = 0;
     srand(time(NULL));
 
-	if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-		return -1;
-	}
+    if ((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        return -1;
+    }
 
     if (imageOnJNILoad(vm, env) != JNI_TRUE) {
         return -1;

@@ -19,6 +19,7 @@ import org.telegram.messenger.BaseController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.ChatScrimPopupContainerLayout;
 import org.telegram.ui.Components.ReactionsContainerLayout;
@@ -104,8 +105,12 @@ public class MessageMenuHelper extends BaseController {
         }
     }
 
-    public int getMessageMenuAlpha(boolean divider) {
-        return 255;
+    public static int getMessageMenuBackgroundColor() {
+        return Theme.getColor(Theme.key_actionBarDefaultSubmenuBackground);
+    }
+
+    public static int getMessageMenuGapColor() {
+        return Theme.getColor(Theme.key_windowBackgroundGrayShadow);
     }
 
     public boolean showDivider() {
@@ -113,10 +118,14 @@ public class MessageMenuHelper extends BaseController {
     }
 
     public boolean showCustomDivider(boolean verifyDonates) {
-        return true;
+        return false;
     }
 
     public boolean allowUnifiedScroll(boolean verifyDonates) {
+        return false;
+    }
+
+    public boolean allowToOccupyStatusBar() {
         return false;
     }
 
