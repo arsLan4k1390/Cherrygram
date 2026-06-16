@@ -440,6 +440,7 @@ public class RichMessageLayout {
     }
 
     private RichBlock emitBlock(TL_iv.PageBlock pageBlock, int level, Rect padding, int textFlags) {
+        if (padding.left + padding.right >= maxWidth) return null;
         if (pageBlock instanceof TL_iv.pageBlockThinking) {
             final RichThinkingBlock block = new RichThinkingBlock(this, new Rect(), maxWidth, formatText(pageBlock.text));
             blocks.add(block);
