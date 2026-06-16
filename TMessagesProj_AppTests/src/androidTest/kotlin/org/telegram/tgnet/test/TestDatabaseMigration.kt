@@ -10,7 +10,7 @@ import java.io.File
 
 class TestDatabaseMigration {
     @Test
-    public fun test() {
+    public fun testDatabaseMigration() {
         val dbCreationPath = File(ApplicationLoader.getFilesDirFixed(), "test_creation.db");
         dbCreationPath.mkdirs()
         dbCreationPath.delete()

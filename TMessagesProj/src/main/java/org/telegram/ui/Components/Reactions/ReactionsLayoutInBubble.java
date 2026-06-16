@@ -49,6 +49,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatActionCell;
 import org.telegram.ui.Cells.ChatMessageCell;
+import org.telegram.ui.Cells.IMessageCell;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedEmojiSpan;
 import org.telegram.ui.Components.AnimatedFileDrawable;
@@ -574,16 +575,8 @@ public class ReactionsLayoutInBubble {
     }
 
     private void didPressReaction(TLRPC.ReactionCount reaction, boolean longpress, float x, float y) {
-        if (parentView instanceof ChatMessageCell) {
-            final ChatMessageCell cell = (ChatMessageCell) parentView;
-            final ChatMessageCell.ChatMessageCellDelegate delegate = cell.getDelegate();
-            if (delegate == null) return;
-            delegate.didPressReaction(cell, reaction, longpress, x, y);
-        } else if (parentView instanceof ChatActionCell) {
-            final ChatActionCell cell = (ChatActionCell) parentView;
-            final ChatActionCell.ChatActionCellDelegate delegate = cell.getDelegate();
-            if (delegate == null) return;
-            delegate.didPressReaction(cell, reaction, longpress, x, y);
+        if (parentView instanceof IMessageCell) {
+            ((IMessageCell) parentView).didPressReactionFromLayout(reaction, longpress, x, y);
         }
     }
 
@@ -807,6 +800,7 @@ public class ReactionsLayoutInBubble {
         public boolean wasDrawn;
         public String key;
         public boolean choosen;
+        public boolean drawBgOnlyIfChosen;
 
         public String countText;
         public TLRPC.Reaction reaction;
@@ -1066,6 +1060,12 @@ public class ReactionsLayoutInBubble {
                     serviceBackgroundColor = Color.TRANSPARENT;
                 }
             }
+
+            if (drawBgOnlyIfChosen) {
+                backgroundColor = 0;
+                serviceBackgroundColor = 0;
+            }
+
             updateColors(progress);
             textPaint.setColor(lastDrawnTextColor);
             if (textDrawable != null) {
@@ -1110,7 +1110,7 @@ public class ReactionsLayoutInBubble {
                 canvas.scale(bounceScale, bounceScale, x + w / 2f, y + height / 2f);
             }
             float rad = height / 2f;
-            if (getDrawServiceShaderBackground() > 0) {
+            if (getDrawServiceShaderBackground() > 0 && !drawBgOnlyIfChosen) {
                 Paint paint1 = Theme.getThemePaint(Theme.key_paint_chatActionBackground, resourcesProvider);
                 Paint paint2 = Theme.getThemePaint(Theme.key_paint_chatActionBackgroundDarken, resourcesProvider);
                 int oldAlpha = paint1.getAlpha();
@@ -1484,12 +1484,11 @@ public class ReactionsLayoutInBubble {
         }
         float eventX = event.getX();
         float eventY = event.getY();
-        if (parentView instanceof ChatMessageCell) {
+        if (parentView instanceof org.telegram.ui.Cells.IMessageCell) {
             eventY -= parentView.getPaddingTop();
-        } else if (parentView instanceof ChatActionCell) {
-            ChatActionCell actionCell = (ChatActionCell) parentView;
-            eventX -= actionCell.sideMenuWidth / 2f;
-            eventY -= parentView.getPaddingTop();
+            if (parentView instanceof ChatActionCell) {
+                eventX -= ((ChatActionCell) parentView).sideMenuWidth / 2f;
+            }
         }
         float x = eventX - this.x;
         float y = eventY - this.y;

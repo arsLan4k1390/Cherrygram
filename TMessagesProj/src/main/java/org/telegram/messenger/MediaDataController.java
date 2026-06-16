@@ -8,8 +8,6 @@
 
 package org.telegram.messenger;
 
-import static org.telegram.messenger.AndroidUtilities.find;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -66,6 +64,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.Vector;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_bots;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.EmojiThemes;
 import org.telegram.ui.ActionBar.Theme;
@@ -8395,7 +8394,7 @@ public class MediaDataController extends BaseController {
         });
     }
 
-    public void updateBotInfo(long dialogId, TLRPC.TL_updateBotCommands update) {
+    public void updateBotInfo(long dialogId, TL_update.TL_updateBotCommands update) {
         TL_bots.BotInfo botInfo = botInfos.get(update.bot_id + "_" + dialogId);
         if (botInfo != null) {
             botInfo.commands = update.commands;

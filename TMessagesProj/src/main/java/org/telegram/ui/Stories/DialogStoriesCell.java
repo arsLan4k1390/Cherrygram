@@ -759,10 +759,10 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 if (adapterPosition > animateFromPosition && adapterPosition < animateFromPosition + animateToDialogIds.size()) {
                     StoryCell previousCell = (StoryCell) recyclerListView.getChildAt(i - 1);
                     if (previousCell != null) {
-                        float size = AndroidUtilities.dp(48);
-                        float collapsedSize = AndroidUtilities.dp(COLLAPSED_SIZE);
-                        float previousSize = AndroidUtilities.lerp(size, collapsedSize, previousCell.progressToCollapsed) + AndroidUtilities.dp(8);
-                        float currentSize = AndroidUtilities.lerp(size, collapsedSize, cell.progressToCollapsed) + AndroidUtilities.dp(8);
+                        float size = dp(48);
+                        float collapsedSize = dp(COLLAPSED_SIZE);
+                        float previousSize = AndroidUtilities.lerp(size, collapsedSize, previousCell.progressToCollapsed) + dp(8);
+                        float currentSize = AndroidUtilities.lerp(size, collapsedSize, cell.progressToCollapsed) + dp(8);
                         float radiusPrev = previousSize / 2f;
                         float radiusCurrent = currentSize / 2f ;
 
@@ -805,7 +805,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 }
 
                 float ovescrollSelectProgress = Utilities.clamp((overscrollProgress - 0.5f) / 0.5f, 1f, 0f);
-                float overScrollOffset = AndroidUtilities.dp(16) * ovescrollSelectProgress;
+                float overScrollOffset = dp(16) * ovescrollSelectProgress;
                 float overscrollAlpha = (float) (0.5 + 0.5f * (1f - ovescrollSelectProgress));
 
                 float translationX = 0;
@@ -814,9 +814,9 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                 if (adapterPosition <= animateFromPosition) {
                     toX = 0;
                 } else if (adapterPosition == animateFromPosition + 1) {
-                    toX = AndroidUtilities.dp(COLLAPSED_DIS) * cellCollapsedProgress - AndroidUtilities.dpf2(0.5f) + AndroidUtilities.lerp(AndroidUtilities.dp(COLLAPSED_DIS), 0f, collapsedProgress);
+                    toX = dp(COLLAPSED_DIS) * cellCollapsedProgress - AndroidUtilities.dpf2(0.5f) + AndroidUtilities.lerp(dp(COLLAPSED_DIS), 0f, collapsedProgress);
                 } else {
-                    toX = AndroidUtilities.dp(COLLAPSED_DIS) + AndroidUtilities.dp(COLLAPSED_DIS) * cellCollapsedProgress - AndroidUtilities.dpf2(0.5f) + AndroidUtilities.lerp(AndroidUtilities.dp(COLLAPSED_DIS + COLLAPSED_DIS), 0f, collapsedProgress);
+                    toX = dp(COLLAPSED_DIS) + dp(COLLAPSED_DIS) * cellCollapsedProgress - AndroidUtilities.dpf2(0.5f) + AndroidUtilities.lerp(dp(COLLAPSED_DIS + COLLAPSED_DIS), 0f, collapsedProgress);
                 }
                 toX += menuItemsOffset;
                 if (!collapsed) {
@@ -935,7 +935,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             titleView.setPivotX(0);
             titleView.setScaleX(lerp(1f, 0.95f, subtitleOverlayContainer.getTotalVisibility()));
             titleView.setScaleY(lerp(1f, 0.95f, subtitleOverlayContainer.getTotalVisibility()));
-            titleView.setTranslationY(bottomY + AndroidUtilities.dp(14) - offset + AndroidUtilities.dp(FAKE_TOP_PADDING) - dp(6) * subtitleOverlayContainer.getTotalVisibility());
+            titleView.setTranslationY(bottomY + dp(14) - offset + dp(FAKE_TOP_PADDING) - dp(6) * subtitleOverlayContainer.getTotalVisibility());
             int cellWidth = dp(72);
             lastViewRight += -cellWidth + getAvatarRight(cellWidth, collapsedProgress) + dp(12);
             titleView.setTranslationX(lastViewRight);
@@ -964,7 +964,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         }
 
         if (needSaveLayer) {
-            final float w = AndroidUtilities.dp(16);
+            final float w = dp(16);
             if (ellipsizeGradient == null) {
                 ellipsizeGradient = new LinearGradient(0, 0, w, 0, new int[] {0x00ff0000, 0xffff0000}, new float[] {0, 1}, Shader.TileMode.CLAMP);
                 ellipsizeGradientMatrix = new Matrix();
@@ -975,7 +975,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             ellipsizeGradientMatrix.reset();
             ellipsizeGradientMatrix.postTranslate(getWidth() - clipRightPadding - w, 0);
             ellipsizeGradient.setLocalMatrix(ellipsizeGradientMatrix);
-            canvas.drawRect(getWidth() - clipRightPadding - w, 0, getWidth() - clipRightPadding + AndroidUtilities.dp(1), getHeight(), ellipsizePaint);
+            canvas.drawRect(getWidth() - clipRightPadding - w, 0, getWidth() - clipRightPadding + dp(1), getHeight(), ellipsizePaint);
             canvas.restore();
             canvas.restore();
         }
@@ -1013,7 +1013,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         titleView.setTextSize(dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20));
         currentCellWidth = dp(ITEM_WIDTH);
         AndroidUtilities.rectTmp.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(85 + FAKE_TOP_PADDING), MeasureSpec.EXACTLY));
+        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(dp(85 + FAKE_TOP_PADDING), MeasureSpec.EXACTLY));
     }
 
     @Override

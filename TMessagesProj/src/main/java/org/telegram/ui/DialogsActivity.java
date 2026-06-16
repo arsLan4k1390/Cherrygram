@@ -3076,7 +3076,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             @Override
             public void closeSearchField(boolean closeKeyboard) {
                 fragmentSearchField.editText.getText().clear();
-                if (closeKeyboard) {
+                if (closeKeyboard && fragmentSearchField.editText.isFocused()) {
                     AndroidUtilities.hideKeyboard(fragmentSearchField.editText);
                 }
                 fragmentSearchField.editText.clearFocus();
@@ -11238,6 +11238,18 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 for (long did : selectedDialogs) {
                     if (DialogObject.isEncryptedDialog(did)) return false;
                     if (getMessagesController().getSendPaidMessagesStars(did) > 0) return false;
+                }
+                return true;
+            }
+
+            @Override
+            public boolean canSetTimer() {
+                if (selectedDialogs.isEmpty()) return false;
+                final MessagesController mc = getMessagesController();
+                for (long did : selectedDialogs) {
+                    if (!DialogObject.isUserDialog(did)) return false;
+                    final TLRPC.User u = mc.getUser(did);
+                    if (u == null || u.bot || UserObject.isUserSelf(u)) return false;
                 }
                 return true;
             }

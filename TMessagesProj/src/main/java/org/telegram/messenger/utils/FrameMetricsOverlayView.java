@@ -13,18 +13,22 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.view.Choreographer;
 import android.view.FrameMetrics;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.telegram.messenger.AndroidUtilities;
 
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiresApi(Build.VERSION_CODES.N)
 public final class FrameMetricsOverlayView extends View {
@@ -85,9 +89,32 @@ public final class FrameMetricsOverlayView extends View {
             int cornerGravity,
             int marginDp
     ) {
+        return attachToActivityCorner(activity, cornerGravity, marginDp, null);
+    }
+
+    /**
+     * @param observedView optional view whose ViewTreeObserver.onDraw calls will be counted;
+     *                     pass null to skip that counter.
+     */
+    public static FrameMetricsOverlayView attachToActivityCorner(
+            @NonNull Activity activity,
+            int cornerGravity,
+            int marginDp,
+            @Nullable View observedView
+    ) {
         FrameMetricsOverlayView v = new FrameMetricsOverlayView(activity);
+        v.setObservedView(observedView);
         v.attachInternal(activity, cornerGravity, marginDp);
         return v;
+    }
+
+    /** Set (or replace) the view whose onDraw callbacks are counted. May be called at any time. */
+    public void setObservedView(@Nullable View view) {
+        detachOnDrawListener();
+        observedView = view;
+        if (running.get()) {
+            attachOnDrawListener();
+        }
     }
 
     public void detach() {
@@ -99,6 +126,24 @@ public final class FrameMetricsOverlayView extends View {
         lp = null;
         hostWindow = null;
     }
+
+    // =======================
+    //  Vsync & onDraw counters
+    // =======================
+
+    /** Incremented on every Choreographer frame callback (UI thread). */
+    private int vsyncCountAccum = 0;
+    /** Timestamp (ns) of the second-window start; set from Choreographer frameTimeNanos. */
+    private long vsyncWindowStartNs = 0;
+    /** Published (display) value – snapshotted once per second inside the Choreographer callback. */
+    private int vsyncPerSecond = 0;
+
+    private Choreographer.FrameCallback choreographerCallback;
+
+    /** Raw counter incremented by the ViewTreeObserver.OnDrawListener. */
+    private final AtomicInteger onDrawCountAccum = new AtomicInteger(0);
+    /** Published display value – snapshotted once per second inside the Choreographer callback. */
+    private int onDrawPerSecond = 0;
 
     // =======================
     //  Internals
@@ -114,6 +159,9 @@ public final class FrameMetricsOverlayView extends View {
     private HandlerThread metricsThread;
     private Handler metricsHandler;
     private Window.OnFrameMetricsAvailableListener listener;
+
+    private View observedView;
+    private ViewTreeObserver.OnDrawListener onDrawListener;
 
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean attachedToWindowManager = new AtomicBoolean(false);
@@ -178,6 +226,7 @@ public final class FrameMetricsOverlayView extends View {
         metricsHandler = new Handler(metricsThread.getLooper());
 
         listener = (window, fm, dropCount) -> {
+            // ── per-metric processing ────────────────────────────────────────
             for (Metric m : Metric.values()) {
                 if (!m.isAvailable()) {
                     m.last = Long.MIN_VALUE;
@@ -196,6 +245,27 @@ public final class FrameMetricsOverlayView extends View {
         };
 
         hostWindow.addOnFrameMetricsAvailableListener(listener, metricsHandler);
+
+        // ── Choreographer vsync counter (UI thread) ──────────────────────────
+        choreographerCallback = frameTimeNanos -> {
+            if (!running.get()) return;
+            if (vsyncWindowStartNs == 0) {
+                // первый тик — только открываем окно, не считаем
+                vsyncWindowStartNs = frameTimeNanos;
+            } else if (frameTimeNanos - vsyncWindowStartNs >= 1_000_000_000L) {
+                vsyncPerSecond     = vsyncCountAccum;
+                onDrawPerSecond    = onDrawCountAccum.getAndSet(0);
+                vsyncCountAccum    = 0;
+                vsyncWindowStartNs = frameTimeNanos;
+            } else {
+                vsyncCountAccum++;
+            }
+            Choreographer.getInstance().postFrameCallback(choreographerCallback);
+        };
+        Choreographer.getInstance().postFrameCallback(choreographerCallback);
+
+        attachOnDrawListener();
+
         uiHandler.post(redraw);
     }
 
@@ -205,9 +275,39 @@ public final class FrameMetricsOverlayView extends View {
         if (hostWindow != null && listener != null) {
             hostWindow.removeOnFrameMetricsAvailableListener(listener);
         }
+        if (choreographerCallback != null) {
+            Choreographer.getInstance().removeFrameCallback(choreographerCallback);
+            choreographerCallback = null;
+        }
+        detachOnDrawListener();
         if (metricsThread != null) {
             metricsThread.quitSafely();
         }
+    }
+
+    // ── ViewTreeObserver helpers ─────────────────────────────────────────────
+
+    /**
+     * Must be called on the UI thread.
+     * Safe to call even when observedView is null or has no live ViewTreeObserver.
+     */
+    private void attachOnDrawListener() {
+        if (observedView == null) return;
+        onDrawListener = () -> onDrawCountAccum.incrementAndGet();
+        // getViewTreeObserver() is always non-null; isAlive() guards stale observers.
+        ViewTreeObserver vto = observedView.getViewTreeObserver();
+        if (vto.isAlive()) {
+            vto.addOnDrawListener(onDrawListener);
+        }
+    }
+
+    private void detachOnDrawListener() {
+        if (observedView == null || onDrawListener == null) return;
+        ViewTreeObserver vto = observedView.getViewTreeObserver();
+        if (vto.isAlive()) {
+            vto.removeOnDrawListener(onDrawListener);
+        }
+        onDrawListener = null;
     }
 
     // =======================
@@ -219,12 +319,10 @@ public final class FrameMetricsOverlayView extends View {
         float pad = dp(8);
         float line = dp(14);
 
-        int lines = 0;
-        for (Metric ignored : Metric.values()) lines++;
-        lines += 6;
+        // +3: blank line before counters + vsync/s + onDraw/s
+        int lines = Metric.values().length + 6 + 3;
 
-        float w;
-        w = getWidth() > 0 ? getWidth() : dp(260);
+        float w = getWidth() > 0 ? getWidth() : dp(260);
         float h = pad * 2 + line * lines;
 
         canvas.drawRoundRect(0, 0, w, h, dp(10), dp(10), bgPaint);
@@ -236,13 +334,13 @@ public final class FrameMetricsOverlayView extends View {
         long totalRt = 0;
         long totalGpu = 0;
         long totalOther = 0;
-        long totalFrame = 0;
+        long totalFrame;
 
         double totalUiAvg = 0;
         double totalRtAvg = 0;
         double totalGpuAvg = 0;
         double totalOtherAvg = 0;
-        double totalFrameAvg = 0;
+        double totalFrameAvg;
 
         for (Metric m : Metric.values()) {
             String text;
@@ -285,52 +383,41 @@ public final class FrameMetricsOverlayView extends View {
                         break;
                 }
             } else {
-                text = String.format(
-                        Locale.US,
-                        "%-16s : %d",
-                        m.label,
-                        m.last
-                );
+                text = String.format(Locale.US, "%-16s : %d", m.label, m.last);
             }
             canvas.drawText(text, x, y, textPaint);
             y += line;
         }
-        totalFrame = Math.max(totalUi, Math.max(totalRt, totalGpu));
+
+        totalFrame    = Math.max(totalUi, Math.max(totalRt, totalGpu));
         totalFrameAvg = Math.max(totalUiAvg, Math.max(totalRtAvg, totalGpuAvg));
 
         y += line;
         canvas.drawText(String.format(Locale.US, "%-16s : %5.2f / %5.2f ms",
-            "ui", totalUi / (double) MS_IN_NS, totalUiAvg), x, y, textPaint);
-        y += line;
+                "ui",    totalUi    / (double) MS_IN_NS, totalUiAvg),    x, y, textPaint); y += line;
         canvas.drawText(String.format(Locale.US, "%-16s : %5.2f / %5.2f ms",
-            "rt", totalRt / (double) MS_IN_NS, totalRtAvg), x, y, textPaint);
-        y += line;
+                "rt",    totalRt    / (double) MS_IN_NS, totalRtAvg),    x, y, textPaint); y += line;
         canvas.drawText(String.format(Locale.US, "%-16s : %5.2f / %5.2f ms",
-            "gpu", totalGpu / (double) MS_IN_NS, totalGpuAvg), x, y, textPaint);
-        y += line;
+                "gpu",   totalGpu   / (double) MS_IN_NS, totalGpuAvg),   x, y, textPaint); y += line;
         canvas.drawText(String.format(Locale.US, "%-16s : %5.2f / %5.2f ms",
-            "other", totalOther / (double) MS_IN_NS, totalOtherAvg), x, y, textPaint);
-        y += line;
+                "other", totalOther / (double) MS_IN_NS, totalOtherAvg), x, y, textPaint); y += line;
         canvas.drawText(String.format(Locale.US, "%-16s : %5.2f / %5.2f ms",
-            "frame", totalFrame / (double) MS_IN_NS, totalFrameAvg), x, y, textPaint);
+                "frame", totalFrame / (double) MS_IN_NS, totalFrameAvg), x, y, textPaint); y += line;
 
-        /*y += line;
-        {
-            double a = (totalFrame / (double) MS_IN_NS);
-            double b = totalOtherAvg;
-            if (a > 1 && b > 1) {
-                canvas.drawText(String.format(Locale.US, "%-16s : %5.2f / %5.2f ms",
-                        "fps", 1000.0 / a, 1000.0 / b), x, y, textPaint);
-            }
-        }*/
-
+        // ── new counters ─────────────────────────────────────────────────────
+        y += line; // blank separator
+        canvas.drawText(String.format(Locale.US, "%-16s : %d /s", "vsync", vsyncPerSecond),
+                x, y, textPaint); y += line;
+        canvas.drawText(String.format(Locale.US, "%-16s : %d /s",
+                        observedView != null ? "onDraw" : "onDraw (none)", onDrawPerSecond),
+                x, y, textPaint);
     }
 
     @Override
     protected void onMeasure(int w, int h) {
-        int width = dp(260);
-        int height = dp(8) * 2 + dp(14) * (Metric.values().length + 6);
+        int width  = dp(260);
+        // +3 for blank separator + vsync/s + onDraw/s
+        int height = dp(8) * 2 + dp(14) * (Metric.values().length + 6 + 3);
         setMeasuredDimension(width, height);
     }
-
 }

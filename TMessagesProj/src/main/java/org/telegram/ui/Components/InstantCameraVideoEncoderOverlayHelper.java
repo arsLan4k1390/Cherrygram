@@ -71,8 +71,7 @@ public class InstantCameraVideoEncoderOverlayHelper {
                 final int logoOffset = Math.round(width * 28 / 1536f);
                 final int trueSize = logoSize - logoOffset - logoOffset;
 
-                final int[] logoMetaData = new int[3];
-                final long logoPtr = RLottieDrawable.createWithJson(AndroidUtilities.readRes(R.raw.round_overlay_animation_cherry), "surface1701", logoMetaData, null);
+                final RLottieNative rLottie = RLottieNative.createFromRawJson(AndroidUtilities.readRes(R.raw.plane_logo_plain), "logo_plane", null);
                 final Bitmap logoBitmap = Bitmap.createBitmap(logoSize, logoSize, Bitmap.Config.ARGB_8888);
 
                 Bitmap bitmap = Bitmap.createBitmap(trueSize * 8, trueSize * 4, Bitmap.Config.ALPHA_8);
@@ -91,7 +90,7 @@ public class InstantCameraVideoEncoderOverlayHelper {
                         b = (y + 1) / 4f;
 
                         setTextureCords(texData, TEXTURE_BUFFER_WATERMARK_LOGO_POSITION + index * 8, l, t, r, b);
-                        RLottieDrawable.getFrame(logoPtr, index * 2, logoBitmap, true);
+                        rLottie.getFrame(index * 2, logoBitmap, true);
                         canvas.drawBitmap(logoBitmap, trueSize * x - logoOffset, trueSize * y - logoOffset, null);
                     }
                 }
@@ -103,13 +102,13 @@ public class InstantCameraVideoEncoderOverlayHelper {
 
                 bitmap.recycle();
                 logoBitmap.recycle();
-                RLottieDrawable.destroy(logoPtr);
+                rLottie.recycle();
             } else if (i == TEXTURE_INDEX_WATERMARK_TEXT) {
                 final int logoSize = Math.round(width * 372f / 1536f);
                 float scale = (float) logoSize / videoWidth;
                 setVertexCords(verData, VERTEX_BUFFER_WATERMARK_TEXT_POSITION, 1f - scale * 2f, -1f + scale * 2f, 1, -1);
 
-                Bitmap bitmap = AndroidUtilities.getBitmapFromRaw(R.raw.round_blur_overlay_text_cherry);
+                Bitmap bitmap = AndroidUtilities.getBitmapFromRaw(R.raw.round_blur_overlay_text);
                 if (bitmap != null) {
                     Bitmap sBitmap = Bitmap.createScaledBitmap(bitmap, logoSize, logoSize, true);
                     Bitmap aBitmap = sBitmap.extractAlpha();

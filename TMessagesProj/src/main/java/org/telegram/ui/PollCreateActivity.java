@@ -351,7 +351,7 @@ public class PollCreateActivity extends BaseFragment implements NotificationCent
         } else {
             actionBar.setTitle(getString(R.string.NewPoll));
         }
-        if (AndroidUtilities.isTablet()) {
+        if (parentLayout != null && parentLayout.isLayersLayout()) {
             actionBar.setOccupyStatusBar(false);
         }
         actionBar.setAllowOverlayTitle(true);

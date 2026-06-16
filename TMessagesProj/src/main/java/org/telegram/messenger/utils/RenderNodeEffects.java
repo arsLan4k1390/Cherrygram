@@ -12,6 +12,8 @@ public class RenderNodeEffects {
     private RenderNodeEffects() {}
 
     private static RenderEffect saturationUpX2Effect;
+    private static RenderEffect saturationUpX3Effect;
+    private static RenderEffect saturationUpX4Effect;
 
     public static RenderEffect getSaturationX2RenderEffect() {
         if (saturationUpX2Effect == null) {
@@ -21,5 +23,25 @@ public class RenderNodeEffects {
         }
 
         return saturationUpX2Effect;
+    }
+
+    public static RenderEffect getSaturationX3RenderEffect() {
+        if (saturationUpX3Effect == null) {
+            final ColorMatrix colorMatrix = new ColorMatrix();
+            colorMatrix.setSaturation(3f);
+            saturationUpX3Effect = RenderEffect.createColorFilterEffect(new ColorMatrixColorFilter(colorMatrix));
+        }
+
+        return saturationUpX3Effect;
+    }
+
+    public static RenderEffect getSaturationX4RenderEffect() {
+        if (saturationUpX4Effect == null) {
+            final ColorMatrix colorMatrix = new ColorMatrix();
+            colorMatrix.setSaturation(4f);
+            saturationUpX4Effect = RenderEffect.createColorFilterEffect(new ColorMatrixColorFilter(colorMatrix));
+        }
+
+        return saturationUpX4Effect;
     }
 }

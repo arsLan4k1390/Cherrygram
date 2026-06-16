@@ -734,6 +734,13 @@ public class ChatbotsActivity extends BaseFragment {
                                     .createSimpleBulletin(R.raw.contact_check, formatString(R.string.BusinessBotDone, UserObject.getUserName(newBot)))
                                     .show();
                             }
+                        } else if (newBot != null) {
+                            final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
+                            if (lastFragment != null) {
+                                BulletinFactory.of(lastFragment)
+                                    .createSimpleBulletin(R.raw.contact_check, formatString(R.string.BusinessBotUpdated, UserObject.getUserName(newBot)))
+                                    .show();
+                            }
                         }
                     }
                 }

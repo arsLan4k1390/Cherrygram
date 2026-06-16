@@ -425,6 +425,7 @@ class HardwareVideoEncoder implements VideoEncoder {
       VideoFrame videoFrame, long presentationTimestampUs) {
     encodeThreadChecker.checkIsOnValidThread();
     try {
+      textureEglBase.makeCurrent();
       // TODO(perkj): glClear() shouldn't be necessary since every pixel is covered anyway,
       // but it's a workaround for bug webrtc:5147.
       GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);

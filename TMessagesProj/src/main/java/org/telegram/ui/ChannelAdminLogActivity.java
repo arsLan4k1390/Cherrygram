@@ -925,7 +925,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
         actionBar.setCastShadows(false);
         actionBar.setBackground(null);
         actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
-        actionBar.setBackButtonDrawable(new BackDrawable(false).setTranslationX(-dp(3)));
+        actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(final int id) {
@@ -936,8 +936,9 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
         });
 
         avatarContainer = new ChatAvatarContainer(context, null, false);
+        avatarContainer.setGlassMode();
         avatarContainer.setOccupyStatusBar(!AndroidUtilities.isTablet());
-        actionBar.addView(avatarContainer, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, 47, 0, 40, 0));
+        actionBar.addView(avatarContainer, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, 54, 0, 52, 0));
 
         ActionBarMenu menu = actionBar.createMenu();
         searchItem = menu.addItem(0, R.drawable.outline_header_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
@@ -972,10 +973,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             }
         });
         searchItem.setSearchFieldHint(getString(R.string.Search));
-
-        actionBar.getBackButton().setTranslationX(dp(6));
-        actionBar.menu.setTranslationX(-dp(9));
-
+        searchItem.setSearchPaddingStart(12);
         avatarContainer.setEnabled(false);
 
         avatarContainer.setTitle(currentChat.title);
@@ -1160,11 +1158,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
 
         contentView.setOccupyStatusBar(!AndroidUtilities.isTablet());
         contentView.setBackgroundImage(Theme.getCachedWallpaper(), Theme.isWallpaperMotion());
-
-        actionBar.setGlassDrawable(glassBackgroundDrawableFactory.create(actionBar).setColorProvider(
-                BlurredBackgroundProviderImpl.topPanelChatActivity(resourceProvider)
-        ).setRadius(dp(26)).setPadding(dp(7)));
-
+        actionBar.setupGlass(glassBackgroundDrawableFactory, BlurredBackgroundProviderImpl.topPanelChatActivity(resourceProvider));
         emptyViewContainer = new FrameLayout(context);
         emptyViewContainer.setVisibility(View.INVISIBLE);
         contentView.addView(emptyViewContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));

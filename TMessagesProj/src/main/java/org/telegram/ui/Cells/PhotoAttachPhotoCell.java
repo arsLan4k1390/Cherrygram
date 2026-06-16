@@ -26,7 +26,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.SpannableString;
@@ -215,7 +214,7 @@ public class PhotoAttachPhotoCell extends FrameLayout {
                     invalidate();
                 }
 
-                if (photoEntry != null && photoEntry.isLivePhoto() && allowLivePhotos) {
+                if (allowLivePhotos && !isParentDoFastScroll() && photoEntry != null && photoEntry.isLivePhoto()) {
                     Drawable icon;
                     if (photoEntry.isUnalivePhoto()) {
                         if (livePhotoIconOff == null) {
@@ -283,6 +282,20 @@ public class PhotoAttachPhotoCell extends FrameLayout {
         addView(checkFrame, LayoutHelper.createFrame(42, 42, Gravity.LEFT | Gravity.TOP, 38, 0, 0, 0));
 
         itemSize = dp(80);
+    }
+
+    public interface ParentFastScrollDelegate {
+        boolean isInFastScroll();
+    }
+
+    private ParentFastScrollDelegate fastScrollDelegate;
+
+    public void setFastScrollDelegate(ParentFastScrollDelegate fastScrollDelegate) {
+        this.fastScrollDelegate = fastScrollDelegate;
+    }
+
+    private boolean isParentDoFastScroll() {
+        return fastScrollDelegate != null && fastScrollDelegate.isInFastScroll();
     }
 
     public boolean canRevealSpoiler() {
@@ -747,9 +760,7 @@ public class PhotoAttachPhotoCell extends FrameLayout {
         if (checkBox.isChecked()) {
             info.setSelected(true);
         }
-        if (Build.VERSION.SDK_INT >= 21) {
-            info.addAction(new AccessibilityNodeInfo.AccessibilityAction(R.id.acc_action_open_photo, getString(R.string.Open)));
-        }
+        info.addAction(new AccessibilityNodeInfo.AccessibilityAction(R.id.acc_action_open_photo, getString(R.string.Open)));
     }
 
     @Override

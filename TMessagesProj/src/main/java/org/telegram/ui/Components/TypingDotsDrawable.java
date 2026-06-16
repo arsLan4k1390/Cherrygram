@@ -84,7 +84,7 @@ public class TypingDotsDrawable extends StatusDrawable {
             }
         }
 
-        invalidateSelf();
+        invalidateLimited();
     }
 
     public void start() {

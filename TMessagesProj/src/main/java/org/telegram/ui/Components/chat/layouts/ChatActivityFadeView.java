@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.telegram.ui.Components.blur3.BlurredBackgroundWithFadeDrawable;
+import org.telegram.ui.Components.blur3.drawable.color.BlurredBackgroundColorProvider;
 
 public class ChatActivityFadeView extends View {
     private BlurredBackgroundWithFadeDrawable fadeDrawableTop;
@@ -21,10 +22,14 @@ public class ChatActivityFadeView extends View {
     }
 
     public void setup(BlurredBackgroundDrawableViewFactory factory) {
-        fadeDrawableTop = new BlurredBackgroundWithFadeDrawable(factory.create(this));
+        setup(factory, null);
+    }
+
+    public void setup(BlurredBackgroundDrawableViewFactory factory, BlurredBackgroundColorProvider colorProvider) {
+        fadeDrawableTop = new BlurredBackgroundWithFadeDrawable(factory.create(this).setColorProvider(colorProvider));
         fadeDrawableTop.setFadeHeight(-dp(30), true);
 
-        fadeDrawableBottom = new BlurredBackgroundWithFadeDrawable(factory.create(this));
+        fadeDrawableBottom = new BlurredBackgroundWithFadeDrawable(factory.create(this).setColorProvider(colorProvider));
         fadeDrawableBottom.setFadeHeight(dp(30), true);
     }
 
@@ -58,9 +63,21 @@ public class ChatActivityFadeView extends View {
         }
     }
 
+    public void setFadeTopAlpha(int alpha) {
+        if (fadeDrawableTop.getAlpha() != alpha) {
+            fadeDrawableTop.setAlpha(alpha);
+            invalidate();
+        }
+    }
+    
     private void checkBounds() {
         fadeDrawableTop.setBounds(0, 0, getMeasuredWidth(), fadeZoneTop);
         fadeDrawableBottom.setBounds(0, getMeasuredHeight() - fadeZoneBottom, getMeasuredWidth(), getMeasuredHeight());
+    }
+
+    public void setIgnoreFastWay(boolean ignoreFastWay) {
+        fadeDrawableTop.setIgnoreFastWay(ignoreFastWay);
+        fadeDrawableBottom.setIgnoreFastWay(ignoreFastWay);
     }
 
     @Override

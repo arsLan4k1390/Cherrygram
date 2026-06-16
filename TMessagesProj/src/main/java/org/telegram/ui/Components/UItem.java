@@ -91,6 +91,13 @@ public class UItem extends AdapterWithDiffUtils.Item {
         i.intValue = LayoutHelper.MATCH_PARENT;
         return i;
     }
+    public static UItem asCustomShadow(int id, View view) {
+        UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CUSTOM_SHADOW, false);
+        i.id = id;
+        i.view = view;
+        i.intValue = LayoutHelper.MATCH_PARENT;
+        return i;
+    }
     public static UItem asCustomShadow(View view) {
         UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CUSTOM_SHADOW, false);
         i.view = view;

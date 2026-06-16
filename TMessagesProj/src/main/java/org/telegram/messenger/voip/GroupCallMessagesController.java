@@ -10,16 +10,15 @@ import org.telegram.messenger.BaseController;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.json.TLJsonBuilder;
-import org.telegram.tgnet.TLMethod;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.json.TLJsonParser;
 import org.telegram.tgnet.tl.TL_phone;
+import org.telegram.tgnet.tl.TL_update;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class GroupCallMessagesController extends BaseController {
         void onPopGroupCallMessage();
     }
 
-    public void processUpdate(TLRPC.TL_updateGroupCallMessage update) {
+    public void processUpdate(TL_update.TL_updateGroupCallMessage update) {
         final long callId = update.call.id;
         final long fromId = DialogObject.getPeerDialogId(update.message.from_id);
         final long id = update.message.id;
@@ -48,7 +47,7 @@ public class GroupCallMessagesController extends BaseController {
         AndroidUtilities.runOnUIThread(() -> pushMessageToList(callId, message));
     }
 
-    public void processUpdate(TLRPC.TL_updateGroupCallEncryptedMessage update) {
+    public void processUpdate(TL_update.TL_updateGroupCallEncryptedMessage update) {
         final long callId = update.call.id;
         final long fromId = DialogObject.getPeerDialogId(update.from_id);
         final byte[] encrypted = update.encrypted_message;

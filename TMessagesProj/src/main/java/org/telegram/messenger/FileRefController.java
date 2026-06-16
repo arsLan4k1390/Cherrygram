@@ -9,6 +9,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.Vector;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_bots;
+import org.telegram.tgnet.tl.TL_iv;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Stories.StoriesController;
@@ -1005,6 +1006,8 @@ public class FileRefController extends BaseController {
                                     break;
                                 }
                             }
+                        } else if (message.rich_message != null) {
+                            result = getFileReferenceForRichMessage(message.rich_message, requester.location, needReplacement, locationReplacement);
                         } else if (message.media instanceof TLRPC.TL_messageMediaPoll) {
                             result = getFileReferenceForPoll((TLRPC.TL_messageMediaPoll) message.media, requester.location, needReplacement, locationReplacement);
                         } else if (message.media != null) {
@@ -1664,6 +1667,20 @@ public class FileRefController extends BaseController {
             }
         }
 
+        return result;
+    }
+
+    private byte[] getFileReferenceForRichMessage(TL_iv.RichMessage richMessage, TLRPC.InputFileLocation location, boolean[] needReplacement, TLRPC.InputFileLocation[] locationReplacement) {
+        if (richMessage == null) return null;
+        byte[] result = null;
+        for (TLRPC.Photo photo : richMessage.photos) {
+            result = getFileReference(photo, location, needReplacement, locationReplacement);
+            if (result != null) return result;
+        }
+        for (TLRPC.Document document : richMessage.documents) {
+            result = getFileReference(document, null, location, needReplacement, locationReplacement);
+            if (result != null) return result;
+        }
         return result;
     }
 

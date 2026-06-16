@@ -42,8 +42,8 @@ public class TLObject {
     public static final int FLAG_27 = 1 << 27; // 134_217_728
     public static final int FLAG_28 = 1 << 28; // 268_435_456
     public static final int FLAG_29 = 1 << 29; // 536_870_912
-    public static final int FLAG_30 = 1 << 30; // 107_374_1824
-    public static final int FLAG_31 = 1 << 31; // 214_748_3648
+    public static final int FLAG_30 = 1 << 30; // 1_073_741_824
+    public static final int FLAG_31 = 1 << 31; // 2_147_483_648
 
     public static int setFlag(int flags, int flag, boolean value) {
         return BitwiseUtils.setFlag(flags, flag, value);

@@ -9,9 +9,11 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -25,8 +27,6 @@ import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatMessageCell;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 import java.util.ArrayList;
 
@@ -71,26 +71,28 @@ public class ReplyMessageLine {
 
     public ReplyMessageLine(View view) {
         this.parentView = view;
-        parentView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(@NonNull View v) {
-                if (emoji != null) {
-                    emoji.attach();
+        if (parentView != null) {
+            parentView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(@NonNull View v) {
+                    if (emoji != null) {
+                        emoji.attach();
+                    }
+                    if (sticker != null) {
+                        sticker.attach();
+                    }
                 }
-                if (sticker != null) {
-                    sticker.attach();
+                @Override
+                public void onViewDetachedFromWindow(@NonNull View v) {
+                    if (emoji != null) {
+                        emoji.detach();
+                    }
+                    if (sticker != null) {
+                        sticker.attach();
+                    }
                 }
-            }
-            @Override
-            public void onViewDetachedFromWindow(@NonNull View v) {
-                if (emoji != null) {
-                    emoji.detach();
-                }
-                if (sticker != null) {
-                    sticker.attach();
-                }
-            }
-        });
+            });
+        }
 
         backgroundColorAnimated = new AnimatedColor(view, 0, 400, CubicBezierInterpolator.EASE_OUT_QUINT);
         color1Animated = new AnimatedColor(view, 0, 400, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -186,7 +188,7 @@ public class ReplyMessageLine {
         backgroundColor = Theme.multAlpha(nameColor, 0.10f);
         emojiDocumentId = p.background_emoji_id;
         stickerDocumentId = p.gift_emoji_id;
-        if (emojiDocumentId != 0 && emoji == null && CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji()) {
+        if (emojiDocumentId != 0 && emoji == null && parentView != null) {
             emoji = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(parentView, false, dp(20), AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_STATIC);
             if (parentView instanceof ChatMessageCell ? ((ChatMessageCell) parentView).isCellAttachedToWindow() : parentView.isAttachedToWindow()) {
                 emoji.attach();
@@ -199,7 +201,7 @@ public class ReplyMessageLine {
         }
         emojiColor = nameColor;
 
-        if (stickerDocumentId != 0 && sticker == null) {
+        if (stickerDocumentId != 0 && sticker == null && parentView != null) {
             sticker = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(parentView, false, dp(20), AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_STATIC);
             if (parentView instanceof ChatMessageCell ? ((ChatMessageCell) parentView).isCellAttachedToWindow() : parentView.isAttachedToWindow()) {
                 sticker.attach();
@@ -247,7 +249,7 @@ public class ReplyMessageLine {
             if (uid != 0) {
                 user = MessagesController.getInstance(messageObject.currentAccount).getUser(uid);
             }
-            if (!(messageObject.isOutOwner() || type == TYPE_CODE) && user != null && user.color instanceof TLRPC.TL_peerColorCollectible && (CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() || CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())) {
+            if (!(messageObject.isOutOwner() || type == TYPE_CODE) && user != null && user.color instanceof TLRPC.TL_peerColorCollectible) {
                 return resolveCollectionColor(messageObject, (TLRPC.TL_peerColorCollectible) user.color, resourcesProvider);
             }
             if (user != null) {
@@ -278,68 +280,68 @@ public class ReplyMessageLine {
                 long dialogId = DialogObject.getPeerDialogId(messageObject.messageOwner.fwd_from.from_id);
                 if (dialogId < 0) {
                     TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(-dialogId);
-                    if (!(messageObject.isOutOwner() || type == TYPE_CODE) && chat != null && chat.color instanceof TLRPC.TL_peerColorCollectible && (CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() || CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())) {
+                    if (!(messageObject.isOutOwner() || type == TYPE_CODE) && chat != null && chat.color instanceof TLRPC.TL_peerColorCollectible) {
                         return resolveCollectionColor(messageObject, (TLRPC.TL_peerColorCollectible) chat.color, resourcesProvider);
                     }
                     if (chat != null) {
-                        colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(currentChat) : 0;
+                        colorId = ChatObject.getColorId(chat);
                     }
                     if (type == TYPE_LINK) {
-                        emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
+                        emojiDocumentId = ChatObject.getEmojiId(chat);
                     }
                 } else {
                     TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(dialogId);
-                    if (!(messageObject.isOutOwner() || type == TYPE_CODE) && user != null && user.color instanceof TLRPC.TL_peerColorCollectible && (CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() || CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())) {
+                    if (!(messageObject.isOutOwner() || type == TYPE_CODE) && user != null && user.color instanceof TLRPC.TL_peerColorCollectible) {
                         return resolveCollectionColor(messageObject, (TLRPC.TL_peerColorCollectible) user.color, resourcesProvider);
                     }
                     if (user != null) {
-                        colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                        colorId = UserObject.getColorId(user);
                     }
                     if (type == TYPE_LINK) {
-                        emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                        emojiDocumentId = UserObject.getEmojiId(user);
                     }
                 }
             } else if (DialogObject.isEncryptedDialog(messageObject.getDialogId()) && currentUser != null) {
                 TLRPC.User user = messageObject.isOutOwner() ? UserConfig.getInstance(messageObject.currentAccount).getCurrentUser() : currentUser;
                 if (user == null) user = currentUser;
-                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && user != null && user.color instanceof TLRPC.TL_peerColorCollectible && (CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() || CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())) {
+                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && user != null && user.color instanceof TLRPC.TL_peerColorCollectible) {
                     return resolveCollectionColor(messageObject, (TLRPC.TL_peerColorCollectible) user.color, resourcesProvider);
                 }
-                colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                colorId = UserObject.getColorId(user);
                 if (type == TYPE_LINK) {
-                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                    emojiDocumentId = UserObject.getEmojiId(user);
                 }
             } else if (messageObject.isFromUser() && currentUser != null) {
-                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && currentUser != null && currentUser.color instanceof TLRPC.TL_peerColorCollectible && (CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() || CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())) {
+                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && currentUser != null && currentUser.color instanceof TLRPC.TL_peerColorCollectible) {
                     return resolveCollectionColor(messageObject, (TLRPC.TL_peerColorCollectible) currentUser.color, resourcesProvider);
                 }
-                colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(currentUser) : 0;
+                colorId = UserObject.getColorId(currentUser);
                 if (type == TYPE_LINK) {
-                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(currentUser) : 0;
+                    emojiDocumentId = UserObject.getEmojiId(currentUser);
                 }
             } else if (messageObject.isFromChannel() && currentChat != null) {
-                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && currentChat != null && currentChat.color instanceof TLRPC.TL_peerColorCollectible && (CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() || CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())) {
+                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && currentChat != null && currentChat.color instanceof TLRPC.TL_peerColorCollectible) {
                     return resolveCollectionColor(messageObject, (TLRPC.TL_peerColorCollectible) currentChat.color, resourcesProvider);
                 }
                 if (currentChat.signature_profiles) {
                     long did = messageObject.getFromChatId();
                     if (did >= 0) {
                         TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(did);
-                        colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                        colorId = UserObject.getColorId(user);
                         if (type == TYPE_LINK) {
-                            emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                            emojiDocumentId = UserObject.getEmojiId(user);
                         }
                     } else {
                         TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(-did);
-                        colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(chat) : 0;
+                        colorId = ChatObject.getColorId(chat);
                         if (type == TYPE_LINK) {
-                            emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
+                            emojiDocumentId = ChatObject.getEmojiId(chat);
                         }
                     }
                 } else {
-                    colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(currentChat) : 0;
+                    colorId = ChatObject.getColorId(currentChat);
                     if (type == TYPE_LINK) {
-                        emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(currentChat) : 0;
+                        emojiDocumentId = ChatObject.getEmojiId(currentChat);
                     }
                 }
             } else {
@@ -365,30 +367,30 @@ public class ReplyMessageLine {
             } else if (DialogObject.isEncryptedDialog(messageObject.replyMessageObject.getDialogId())) {
                 TLRPC.User user = messageObject.replyMessageObject.isOutOwner() ? UserConfig.getInstance(messageObject.replyMessageObject.currentAccount).getCurrentUser() : currentUser;
                 if (user != null) {
-                    colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
-                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                    colorId = UserObject.getColorId(user);
+                    emojiDocumentId = UserObject.getEmojiId(user);
                 } else {
                     colorId = 0;
                 }
             } else if (messageObject.replyMessageObject.isFromUser()) {
                 TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(messageObject.replyMessageObject.messageOwner.from_id.user_id);
-                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && user != null && user.color instanceof TLRPC.TL_peerColorCollectible && (CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() || CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())) {
+                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && user != null && user.color instanceof TLRPC.TL_peerColorCollectible) {
                     return resolveCollectionColor(messageObject, (TLRPC.TL_peerColorCollectible) user.color, resourcesProvider);
                 }
                 if (user != null) {
-                    colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
-                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                    colorId = UserObject.getColorId(user);
+                    emojiDocumentId = UserObject.getEmojiId(user);
                 } else {
                     colorId = 0;
                 }
             } else if (messageObject.replyMessageObject.isFromChannel()) {
                 TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id);
-                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && chat != null && chat.color instanceof TLRPC.TL_peerColorCollectible && (CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() || CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())) {
+                if (!(messageObject.isOutOwner() || type == TYPE_CODE) && chat != null && chat.color instanceof TLRPC.TL_peerColorCollectible) {
                     return resolveCollectionColor(messageObject, (TLRPC.TL_peerColorCollectible) chat.color, resourcesProvider);
                 }
                 if (chat != null) {
-                    colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(chat) : 0;
-                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
+                    colorId = ChatObject.getColorId(chat);
+                    emojiDocumentId = ChatObject.getEmojiId(chat);
                 } else {
                     colorId = 0;
                 }
@@ -396,7 +398,7 @@ public class ReplyMessageLine {
                 colorId = 0;
             }
             resolveColor(messageObject.replyMessageObject, colorId, resourcesProvider);
-            backgroundColor = CherrygramAppearanceConfig.INSTANCE.getReplyBackground() ? Theme.multAlpha(color1, 0.10f) : Color.TRANSPARENT;
+            backgroundColor = Theme.multAlpha(color1, 0.10f);
             nameColor = color1;
         } else {
             hasColor2 = false;
@@ -431,7 +433,7 @@ public class ReplyMessageLine {
         if ((type == TYPE_REPLY || type == TYPE_LINK || type == TYPE_CONTACT) && messageObject != null && messageObject.overrideLinkEmoji != -1) {
             emojiDocumentId = messageObject.overrideLinkEmoji;
         }
-        if (emojiDocumentId != 0 && emoji == null) {
+        if (emojiDocumentId != 0 && emoji == null && parentView != null) {
             emoji = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(parentView, false, dp(20), AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_STATIC);
             if (parentView instanceof ChatMessageCell ? ((ChatMessageCell) parentView).isCellAttachedToWindow() : parentView.isAttachedToWindow()) {
                 emoji.attach();
@@ -459,7 +461,7 @@ public class ReplyMessageLine {
         hasColor2 = false;
         hasColor3 = false;
         backgroundColor = Theme.multAlpha(Theme.getColor(Theme.key_text_RedBold, resourcesProvider), 0.10f);
-        if (emojiDocumentId != 0 && emoji == null) {
+        if (emojiDocumentId != 0 && emoji == null && parentView != null) {
             emoji = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(parentView, false, dp(20), AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_STATIC);
             if (parentView instanceof ChatMessageCell ? ((ChatMessageCell) parentView).isCellAttachedToWindow() : parentView.isAttachedToWindow()) {
                 emoji.attach();
@@ -565,7 +567,9 @@ public class ReplyMessageLine {
             canvas.clipPath(lineClipPath);
             restore = true;
 
-            parentView.invalidate();
+            if (parentView != null) {
+                parentView.invalidate();
+            }
         }
         canvas.drawPaint(color1Paint);
         final float color2Alpha = this.color2Alpha.set(hasColor2);
@@ -751,7 +755,9 @@ public class ReplyMessageLine {
             backgroundLoadingDrawable.setAlpha((int) (0xFF * alpha));
             backgroundLoadingDrawable.draw(canvas);
 
-            parentView.invalidate();
+            if (parentView != null) {
+                parentView.invalidate();
+            }
         } else if (backgroundLoadingDrawable != null) {
             backgroundLoadingDrawable.reset();
         }

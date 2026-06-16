@@ -1,5 +1,6 @@
 package org.telegram.ui.Components;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.find;
 
 import android.graphics.Bitmap;
@@ -53,6 +54,7 @@ import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_iv;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -131,7 +133,7 @@ public class MarkdownParser {
             webpage.title = filename;
         }
 
-        final TLRPC.TL_page page = new TLRPC.TL_page();
+        final TL_iv.TL_page page = new TL_iv.TL_page();
         page.local = file;
         page.url = webpage.url;
         try {
@@ -143,53 +145,10 @@ public class MarkdownParser {
             }
             if (fileText.length() > MAX_FILE_SIZE) return null;
 
-            final java.util.LinkedHashMap<String, String> footnotes = new java.util.LinkedHashMap<>();
-            fileText = extractFootnoteDefs(fileText, footnotes);
-            fileText = rewriteFootnoteRefs(fileText);
-
-            final java.util.List<Extension> extensions = Arrays.asList(
-                StrikethroughExtension.create(),
-                TablesExtension.create()
-            );
-            final io.noties.markwon.inlineparser.MarkwonInlineParserPlugin inlinePlugin =
-                io.noties.markwon.inlineparser.MarkwonInlineParserPlugin.create();
-            final io.noties.markwon.ext.latex.JLatexMathPlugin latexPlugin =
-                io.noties.markwon.ext.latex.JLatexMathPlugin.create(
-                    AndroidUtilities.dp(18),
-                    b -> b.inlinesEnabled(true)
-                );
-            latexPlugin.configure(new io.noties.markwon.MarkwonPlugin.Registry() {
-                @Override
-                public <P extends io.noties.markwon.MarkwonPlugin> P require(Class<P> plugin) {
-                    if (plugin == io.noties.markwon.inlineparser.MarkwonInlineParserPlugin.class) {
-                        @SuppressWarnings("unchecked") final P p = (P) inlinePlugin;
-                        return p;
-                    }
-                    throw new IllegalStateException("plugin not registered: " + plugin);
-                }
-                @Override
-                public <P extends io.noties.markwon.MarkwonPlugin> void require(
-                        Class<P> plugin,
-                        io.noties.markwon.MarkwonPlugin.Action<? super P> action) {
-                    action.apply(require(plugin));
-                }
-            });
-            inlinePlugin.factoryBuilder().addInlineProcessor(new SingleDollarLatexInlineProcessor());
-            final Parser.Builder parserBuilder = Parser.builder().extensions(extensions);
-            inlinePlugin.configureParser(parserBuilder);
-            latexPlugin.configureParser(parserBuilder);
-            final Parser parser = parserBuilder.build();
-            final java.util.ArrayDeque<String> orderedMarkers = scanOrderedListMarkers(fileText);
-            final BlockVisitor blockVisitor = new BlockVisitor(page.blocks, orderedMarkers);
-            parser.parse(fileText).accept(blockVisitor);
-            blockVisitor.finish();
-            appendFootnotes(parser, page.blocks, footnotes);
-            if (blockVisitor.title != null) {
-                final String titleText = richTextToString(blockVisitor.title);
-                if (!TextUtils.isEmpty(titleText)) {
-                    webpage.flags |= TLObject.FLAG_2;
-                    webpage.title = titleText;
-                }
+            final String title = parse(fileText, page.blocks);
+            if (!TextUtils.isEmpty(title)) {
+                webpage.flags |= TLObject.FLAG_2;
+                webpage.title = title;
             }
         } catch (Exception e) {
             FileLog.e(e);
@@ -200,6 +159,62 @@ public class MarkdownParser {
         webpage.cached_page = page;
 
         return webpage;
+    }
+
+    public static String parse(String source, ArrayList<TL_iv.PageBlock> blocks) {
+        final java.util.LinkedHashMap<String, String> footnotes = new java.util.LinkedHashMap<>();
+        source = extractFootnoteDefs(source, footnotes);
+        source = rewriteFootnoteRefs(source);
+
+        final java.util.List<Extension> extensions = Arrays.asList(
+            StrikethroughExtension.create(),
+            TablesExtension.create()
+        );
+        final io.noties.markwon.inlineparser.MarkwonInlineParserPlugin inlinePlugin =
+            io.noties.markwon.inlineparser.MarkwonInlineParserPlugin.create();
+        final io.noties.markwon.ext.latex.JLatexMathPlugin latexPlugin =
+            io.noties.markwon.ext.latex.JLatexMathPlugin.create(
+                dp(18),
+                b -> b.inlinesEnabled(true)
+            );
+        latexPlugin.configure(new io.noties.markwon.MarkwonPlugin.Registry() {
+            @Override
+            public <P extends io.noties.markwon.MarkwonPlugin> P require(Class<P> plugin) {
+                if (plugin == io.noties.markwon.inlineparser.MarkwonInlineParserPlugin.class) {
+                    @SuppressWarnings("unchecked") final P p = (P) inlinePlugin;
+                    return p;
+                }
+                throw new IllegalStateException("plugin not registered: " + plugin);
+            }
+            @Override
+            public <P extends io.noties.markwon.MarkwonPlugin> void require(
+                    Class<P> plugin,
+                    io.noties.markwon.MarkwonPlugin.Action<? super P> action) {
+                action.apply(require(plugin));
+            }
+        });
+        inlinePlugin.factoryBuilder().addInlineProcessor(new SingleDollarLatexInlineProcessor());
+        final Parser.Builder parserBuilder = Parser.builder().extensions(extensions);
+        inlinePlugin.configureParser(parserBuilder);
+        latexPlugin.configureParser(parserBuilder);
+        final Parser parser = parserBuilder.build();
+        final java.util.ArrayDeque<String> orderedMarkers = scanOrderedListMarkers(source);
+        final BlockVisitor blockVisitor = new BlockVisitor(blocks, orderedMarkers);
+        parser.parse(source).accept(blockVisitor);
+        blockVisitor.finish();
+        appendFootnotes(parser, blocks, footnotes);
+        if (blockVisitor.title != null) {
+            return richTextToString(blockVisitor.title);
+        }
+        return null;
+    }
+
+    public static boolean isMarkdown(ArrayList<TL_iv.PageBlock> blocks) {
+        if (blocks == null || blocks.isEmpty()) return false;
+        for (int i = 0; i < blocks.size(); ++i)
+            if (!(blocks.get(i) instanceof TL_iv.pageBlockParagraph) || !(blocks.get(i).text instanceof TL_iv.textPlain))
+                return true;
+        return false;
     }
 
     public static class SingleDollarLatexInlineProcessor extends io.noties.markwon.inlineparser.InlineProcessor {
@@ -219,13 +234,14 @@ public class MarkdownParser {
         }
     }
 
-    private static TLRPC.TL_textLatex makeLatex(String raw) {
-        final TLRPC.TL_textLatex out = new TLRPC.TL_textLatex();
-        out.raw = raw == null ? "" : raw.trim();
+    private static TL_iv.textMath makeLatex(String raw) {
+        final TL_iv.textMath out = new TL_iv.textMath();
+        out.source = raw == null ? "" : raw.trim();
+        out.tried = true;
         try {
             final JLatexMathDrawable drawable =
-                JLatexMathDrawable.builder(out.raw)
-                    .textSize(AndroidUtilities.dp(20))
+                JLatexMathDrawable.builder(out.source)
+                    .textSize(dp(20))
                     .build();
             final int w = drawable.getIntrinsicWidth();
             final int h = drawable.getIntrinsicHeight();
@@ -323,28 +339,28 @@ public class MarkdownParser {
         return sb.toString();
     }
 
-    private static void appendFootnotes(Parser parser, ArrayList<TLRPC.PageBlock> blocks,
+    private static void appendFootnotes(Parser parser, ArrayList<TL_iv.PageBlock> blocks,
                                          java.util.LinkedHashMap<String, String> defs) {
         if (defs.isEmpty()) return;
 
-        final TLRPC.TL_pageBlockDetails details = new TLRPC.TL_pageBlockDetails();
+        final TL_iv.pageBlockDetails details = new TL_iv.pageBlockDetails();
         details.title = bold(LocaleController.getString(R.string.InstantViewReferences));
 
         for (java.util.Map.Entry<String, String> entry : defs.entrySet()) {
             final String id = entry.getKey();
             final String body = entry.getValue();
 
-            final ArrayList<TLRPC.PageBlock> defBlocks = new ArrayList<>();
+            final ArrayList<TL_iv.PageBlock> defBlocks = new ArrayList<>();
             final BlockVisitor defVisitor = new BlockVisitor(defBlocks);
             parser.parse(body).accept(defVisitor);
             defVisitor.finish();
 
-            final TLRPC.RichText combined = first(combineParagraphs(defBlocks));
-            final TLRPC.TL_textAnchor anchor = new TLRPC.TL_textAnchor();
+            final TL_iv.RichText combined = first(combineParagraphs(defBlocks));
+            final TL_iv.textAnchor anchor = new TL_iv.textAnchor();
             anchor.name = "fn-" + id;
             anchor.text = combined;
 
-            final TLRPC.TL_pageBlockParagraph p = new TLRPC.TL_pageBlockParagraph();
+            final TL_iv.pageBlockParagraph p = new TL_iv.pageBlockParagraph();
             p.text = concat(bold(id + ". "), anchor);
             details.blocks.add(p);
         }
@@ -352,41 +368,41 @@ public class MarkdownParser {
         blocks.add(details);
     }
 
-    private static TLRPC.RichText combineParagraphs(ArrayList<TLRPC.PageBlock> blocks) {
-        final TLRPC.TL_textConcat concat = new TLRPC.TL_textConcat();
-        for (TLRPC.PageBlock b : blocks) {
-            TLRPC.RichText text = null;
-            if (b instanceof TLRPC.TL_pageBlockParagraph) text = ((TLRPC.TL_pageBlockParagraph) b).text;
-            else if (b instanceof TLRPC.TL_pageBlockHeader) text = ((TLRPC.TL_pageBlockHeader) b).text;
-            else if (b instanceof TLRPC.TL_pageBlockSubheader) text = ((TLRPC.TL_pageBlockSubheader) b).text;
-            else if (b instanceof TLRPC.TL_pageBlockTitle) text = ((TLRPC.TL_pageBlockTitle) b).text;
-            if (text == null || text instanceof TLRPC.TL_textEmpty) continue;
+    private static TL_iv.RichText combineParagraphs(ArrayList<TL_iv.PageBlock> blocks) {
+        final TL_iv.textConcat concat = new TL_iv.textConcat();
+        for (TL_iv.PageBlock b : blocks) {
+            TL_iv.RichText text = null;
+            if (b instanceof TL_iv.pageBlockParagraph) text = ((TL_iv.pageBlockParagraph) b).text;
+            else if (b instanceof TL_iv.pageBlockHeader) text = ((TL_iv.pageBlockHeader) b).text;
+            else if (b instanceof TL_iv.pageBlockSubheader) text = ((TL_iv.pageBlockSubheader) b).text;
+            else if (b instanceof TL_iv.pageBlockTitle) text = ((TL_iv.pageBlockTitle) b).text;
+            if (text == null || text instanceof TL_iv.textEmpty) continue;
             if (!concat.texts.isEmpty()) concat.texts.add(plain("\n\n"));
             concat.texts.add(text);
         }
-        if (concat.texts.isEmpty()) return new TLRPC.TL_textEmpty();
+        if (concat.texts.isEmpty()) return new TL_iv.textEmpty();
         if (concat.texts.size() == 1) return concat.texts.get(0);
         return concat;
     }
 
-    private static TLRPC.RichText richTextOf(Node node, TLRPC.PageBlock block) {
+    private static TL_iv.RichText richTextOf(Node node, TL_iv.PageBlock block) {
         final RichTextParser p = new RichTextParser(block);
         node.accept(p);
         return materializeStyles(pairHtml(p.getText()));
     }
 
-    private static TLRPC.RichText pairHtml(TLRPC.RichText rt) {
+    private static TL_iv.RichText pairHtml(TL_iv.RichText rt) {
         if (rt == null) return null;
-        if (rt instanceof TLRPC.TL_textConcat) {
-            final TLRPC.TL_textConcat concat = (TLRPC.TL_textConcat) rt;
+        if (rt instanceof TL_iv.textConcat) {
+            final TL_iv.textConcat concat = (TL_iv.textConcat) rt;
             for (int i = 0; i < concat.texts.size(); i++) {
                 concat.texts.set(i, pairHtml(concat.texts.get(i)));
             }
             return pairHtmlConcat(concat);
         }
-        TLRPC.RichText cursor = rt;
+        TL_iv.RichText cursor = rt;
         while (cursor != null && cursor.text != null) {
-            if (cursor.text instanceof TLRPC.TL_textConcat) {
+            if (cursor.text instanceof TL_iv.textConcat) {
                 cursor.text = pairHtml(cursor.text);
                 break;
             }
@@ -395,20 +411,20 @@ public class MarkdownParser {
         return rt;
     }
 
-    private static TLRPC.RichText pairHtmlConcat(TLRPC.TL_textConcat concat) {
+    private static TL_iv.RichText pairHtmlConcat(TL_iv.textConcat concat) {
         final StringBuilder buf = new StringBuilder();
-        final List<TLRPC.RichText> pieces = new ArrayList<>();
+        final List<TL_iv.RichText> pieces = new ArrayList<>();
         final List<int[]> ranges = new ArrayList<>();
         final MarkwonHtmlParser parser = MarkwonHtmlParserImpl.create();
 
-        for (TLRPC.RichText piece : concat.texts) {
-            if (piece instanceof TLRPC.TL_textPlain && looksLikeHtmlTag(((TLRPC.TL_textPlain) piece).text)) {
+        for (TL_iv.RichText piece : concat.texts) {
+            if (piece instanceof TL_iv.textPlain && looksLikeHtmlTag(((TL_iv.textPlain) piece).text)) {
                 final int before = buf.length();
                 try {
-                    parser.processFragment(buf, ((TLRPC.TL_textPlain) piece).text);
+                    parser.processFragment(buf, ((TL_iv.textPlain) piece).text);
                 } catch (Throwable t) {
                     FileLog.e(t);
-                    buf.append(((TLRPC.TL_textPlain) piece).text);
+                    buf.append(((TL_iv.textPlain) piece).text);
                 }
                 final int after = buf.length();
                 if (after > before) {
@@ -453,15 +469,15 @@ public class MarkdownParser {
                 }
             }
             if (firstIdx == -1) continue;
-            final TLRPC.RichText inner;
+            final TL_iv.RichText inner;
             if (firstIdx == lastIdx) {
                 inner = pieces.get(firstIdx);
             } else {
-                final TLRPC.TL_textConcat sub = new TLRPC.TL_textConcat();
+                final TL_iv.textConcat sub = new TL_iv.textConcat();
                 for (int i = firstIdx; i <= lastIdx; i++) sub.texts.add(pieces.get(i));
                 inner = sub;
             }
-            final TLRPC.RichText wrapped = wrapByTag(tag.name(), inner);
+            final TL_iv.RichText wrapped = wrapByTag(tag.name(), inner);
             for (int i = lastIdx; i >= firstIdx; i--) {
                 pieces.remove(i);
                 ranges.remove(i);
@@ -470,14 +486,14 @@ public class MarkdownParser {
             ranges.add(firstIdx, new int[]{tagStart, tagEnd});
         }
 
-        if (pieces.isEmpty()) return new TLRPC.TL_textEmpty();
+        if (pieces.isEmpty()) return new TL_iv.textEmpty();
         if (pieces.size() == 1) {
-            final TLRPC.RichText only = pieces.get(0);
-            if (only instanceof TLRPC.TL_textPlain || only instanceof TLRPC.TL_textEmpty) {
+            final TL_iv.RichText only = pieces.get(0);
+            if (only instanceof TL_iv.textPlain || only instanceof TL_iv.textEmpty) {
                 return only;
             }
         }
-        final TLRPC.TL_textConcat result = new TLRPC.TL_textConcat();
+        final TL_iv.textConcat result = new TL_iv.textConcat();
         result.texts.addAll(pieces);
         return result;
     }
@@ -495,7 +511,7 @@ public class MarkdownParser {
     }
 
     /** Internal-only RichText subclass; never escapes richTextOf. */
-    private static final class TextStyle extends TLRPC.RichText {
+    private static final class TextStyle extends TL_iv.RichText {
         int styleFlags;
     }
 
@@ -514,7 +530,7 @@ public class MarkdownParser {
         }
     }
 
-    private static TLRPC.RichText wrapByTag(String name, TLRPC.RichText inner) {
+    private static TL_iv.RichText wrapByTag(String name, TL_iv.RichText inner) {
         final int flag = flagFor(name);
         if (flag == 0) return inner;
         if (inner instanceof TextStyle) {
@@ -527,10 +543,10 @@ public class MarkdownParser {
         return ts;
     }
 
-    private static TLRPC.RichText materializeStyles(TLRPC.RichText rt) {
+    private static TL_iv.RichText materializeStyles(TL_iv.RichText rt) {
         if (rt == null) return null;
-        if (rt instanceof TLRPC.TL_textConcat) {
-            final TLRPC.TL_textConcat concat = (TLRPC.TL_textConcat) rt;
+        if (rt instanceof TL_iv.textConcat) {
+            final TL_iv.textConcat concat = (TL_iv.textConcat) rt;
             for (int i = 0; i < concat.texts.size(); i++) {
                 concat.texts.set(i, materializeStyles(concat.texts.get(i)));
             }
@@ -538,72 +554,72 @@ public class MarkdownParser {
         }
         if (rt instanceof TextStyle) {
             final TextStyle ts = (TextStyle) rt;
-            TLRPC.RichText cur = materializeStyles(ts.text);
+            TL_iv.RichText cur = materializeStyles(ts.text);
             final int f = ts.styleFlags;
-            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_MONO)      != 0) cur = wrapStyle(new TLRPC.TL_textFixed(),       cur);
-            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_STRIKE)    != 0) cur = wrapStyle(new TLRPC.TL_textStrike(),      cur);
-            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_UNDERLINE) != 0) cur = wrapStyle(new TLRPC.TL_textUnderline(),   cur);
-            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_MARKED)    != 0) cur = wrapStyle(new TLRPC.TL_textMarked(),      cur);
-            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_SUB)       != 0) cur = wrapStyle(new TLRPC.TL_textSubscript(),   cur);
-            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_SUP)       != 0) cur = wrapStyle(new TLRPC.TL_textSuperscript(), cur);
-            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_ITALIC)    != 0) cur = wrapStyle(new TLRPC.TL_textItalic(),      cur);
-            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_MEDIUM)    != 0) cur = wrapStyle(new TLRPC.TL_textBold(),        cur);
+            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_MONO)      != 0) cur = wrapStyle(new TL_iv.textFixed(),       cur);
+            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_STRIKE)    != 0) cur = wrapStyle(new TL_iv.textStrike(),      cur);
+            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_UNDERLINE) != 0) cur = wrapStyle(new TL_iv.textUnderline(),   cur);
+            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_MARKED)    != 0) cur = wrapStyle(new TL_iv.textMarked(),      cur);
+            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_SUB)       != 0) cur = wrapStyle(new TL_iv.textSubscript(),   cur);
+            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_SUP)       != 0) cur = wrapStyle(new TL_iv.textSuperscript(), cur);
+            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_ITALIC)    != 0) cur = wrapStyle(new TL_iv.textItalic(),      cur);
+            if ((f & org.telegram.ui.ArticleViewer.TEXT_FLAG_MEDIUM)    != 0) cur = wrapStyle(new TL_iv.textBold(),        cur);
             return cur;
         }
         if (rt.text != null) rt.text = materializeStyles(rt.text);
         return rt;
     }
 
-    private static TLRPC.RichText wrapStyle(TLRPC.RichText wrapper, TLRPC.RichText inner) {
+    private static TL_iv.RichText wrapStyle(TL_iv.RichText wrapper, TL_iv.RichText inner) {
         wrapper.text = inner;
         return wrapper;
     }
 
-    private static TLRPC.RichText plain(String s) {
-        final TLRPC.TL_textPlain p = new TLRPC.TL_textPlain();
+    private static TL_iv.RichText plain(String s) {
+        final TL_iv.textPlain p = new TL_iv.textPlain();
         p.text = s == null ? "" : s;
         return p;
     }
 
-    private static TLRPC.RichText bold(String s) {
-        final TLRPC.TL_textBold p = new TLRPC.TL_textBold();
+    private static TL_iv.RichText bold(String s) {
+        final TL_iv.textBold p = new TL_iv.textBold();
         p.text = plain(s);
         return p;
     }
 
-    private static TLRPC.RichText concat(TLRPC.RichText ...texts) {
-        final TLRPC.TL_textConcat c = new TLRPC.TL_textConcat();
-        for (TLRPC.RichText t : texts)
+    private static TL_iv.RichText concat(TL_iv.RichText...texts) {
+        final TL_iv.textConcat c = new TL_iv.textConcat();
+        for (TL_iv.RichText t : texts)
             c.texts.add(t);
         return c;
     }
 
-    private static int richTextLength(TLRPC.RichText rt) {
-        if (rt == null || rt instanceof TLRPC.TL_textEmpty) return 0;
-        if (rt instanceof TLRPC.TL_textPlain) {
-            final String s = ((TLRPC.TL_textPlain) rt).text;
+    private static int richTextLength(TL_iv.RichText rt) {
+        if (rt == null || rt instanceof TL_iv.textEmpty) return 0;
+        if (rt instanceof TL_iv.textPlain) {
+            final String s = ((TL_iv.textPlain) rt).text;
             return s == null ? 0 : s.length();
         }
-        if (rt instanceof TLRPC.TL_textConcat) {
+        if (rt instanceof TL_iv.textConcat) {
             int sum = 0;
-            for (TLRPC.RichText child : rt.texts) sum += richTextLength(child);
+            for (TL_iv.RichText child : rt.texts) sum += richTextLength(child);
             return sum;
         }
         return richTextLength(rt.text);
     }
 
-    private static TLRPC.RichText first(TLRPC.RichText rt) {
+    private static TL_iv.RichText first(TL_iv.RichText rt) {
         if (rt == null) return null;
         if (richTextLength(rt) <= MAX_RICH_TEXT_LEN) return rt;
         final String s = richTextToString(rt);
         return plain(s.substring(0, Math.min(s.length(), MAX_RICH_TEXT_LEN)));
     }
 
-    private static java.util.List<TLRPC.RichText> split(TLRPC.RichText rt) {
+    private static java.util.List<TL_iv.RichText> split(TL_iv.RichText rt) {
         if (rt == null) return java.util.Collections.singletonList(plain(""));
         if (richTextLength(rt) <= MAX_RICH_TEXT_LEN) return java.util.Collections.singletonList(rt);
         final String s = richTextToString(rt);
-        final java.util.List<TLRPC.RichText> out = new ArrayList<>();
+        final java.util.List<TL_iv.RichText> out = new ArrayList<>();
         int pos = 0;
         while (pos < s.length()) {
             if (s.length() - pos <= MAX_RICH_TEXT_LEN) {
@@ -625,12 +641,12 @@ public class MarkdownParser {
         return out;
     }
 
-    public static String richTextToString(TLRPC.RichText text) {
-        if (text == null || text instanceof TLRPC.TL_textEmpty) return "";
-        if (text instanceof TLRPC.TL_textPlain) return ((TLRPC.TL_textPlain) text).text;
-        if (text instanceof TLRPC.TL_textConcat) {
+    public static String richTextToString(TL_iv.RichText text) {
+        if (text == null || text instanceof TL_iv.textEmpty) return "";
+        if (text instanceof TL_iv.textPlain) return ((TL_iv.textPlain) text).text;
+        if (text instanceof TL_iv.textConcat) {
             final StringBuilder sb = new StringBuilder();
-            for (TLRPC.RichText child : text.texts) {
+            for (TL_iv.RichText child : text.texts) {
                 sb.append(richTextToString(child));
             }
             return sb.toString();
@@ -640,14 +656,14 @@ public class MarkdownParser {
 
     public static class BlockVisitor extends AbstractVisitor {
 
-        public final ArrayList<TLRPC.PageBlock> blocks;
-        public TLRPC.RichText title;
+        public final ArrayList<TL_iv.PageBlock> blocks;
+        public TL_iv.RichText title;
 
         private static final class Item {
-            final TLRPC.PageBlock block;
+            final TL_iv.PageBlock block;
             final int start;
             final int end;
-            Item(TLRPC.PageBlock block, int start, int end) {
+            Item(TL_iv.PageBlock block, int start, int end) {
                 this.block = block;
                 this.start = start;
                 this.end = end;
@@ -659,16 +675,16 @@ public class MarkdownParser {
         private final MarkwonHtmlParser htmlParser = MarkwonHtmlParserImpl.create();
         private final java.util.ArrayDeque<String> orderedMarkers;
 
-        public BlockVisitor(ArrayList<TLRPC.PageBlock> blocks) {
+        public BlockVisitor(ArrayList<TL_iv.PageBlock> blocks) {
             this(blocks, new java.util.ArrayDeque<>());
         }
 
-        public BlockVisitor(ArrayList<TLRPC.PageBlock> blocks, java.util.ArrayDeque<String> orderedMarkers) {
+        public BlockVisitor(ArrayList<TL_iv.PageBlock> blocks, java.util.ArrayDeque<String> orderedMarkers) {
             this.blocks = blocks;
             this.orderedMarkers = orderedMarkers;
         }
 
-        private void emit(TLRPC.PageBlock b) {
+        private void emit(TL_iv.PageBlock b) {
             final int s = synth.length();
             synth.append((char) 1);
             items.add(new Item(b, s, synth.length()));
@@ -711,7 +727,7 @@ public class MarkdownParser {
                         final String segment = synth.substring(from, to);
                         final String trimmed = segment.trim();
                         if (!trimmed.isEmpty()) {
-                            final TLRPC.TL_pageBlockParagraph p = new TLRPC.TL_pageBlockParagraph();
+                            final TL_iv.pageBlockParagraph p = new TL_iv.pageBlockParagraph();
                             p.text = first(plain(trimmed));
                             sliced.add(new Item(p, from, to));
                         }
@@ -769,14 +785,14 @@ public class MarkdownParser {
 
         private static final int MAX_SCOPE_DEPTH = 64;
 
-        private void materialize(List<Object> children, List<TLRPC.PageBlock> out) {
+        private void materialize(List<Object> children, List<TL_iv.PageBlock> out) {
             materialize(children, out, 0);
         }
 
-        private void materialize(List<Object> children, List<TLRPC.PageBlock> out, int depth) {
+        private void materialize(List<Object> children, List<TL_iv.PageBlock> out, int depth) {
             for (Object c : children) {
                 if (c instanceof Item) {
-                    final TLRPC.PageBlock b = ((Item) c).block;
+                    final TL_iv.PageBlock b = ((Item) c).block;
                     if (b != null) out.add(b);
                 } else if (c instanceof Scope) {
                     wrapScope((Scope) c, out, depth);
@@ -784,7 +800,7 @@ public class MarkdownParser {
             }
         }
 
-        private void wrapScope(Scope scope, List<TLRPC.PageBlock> out, int depth) {
+        private void wrapScope(Scope scope, List<TL_iv.PageBlock> out, int depth) {
             final String name = scope.tag.name() == null ? "" : scope.tag.name().toLowerCase();
             if (depth >= MAX_SCOPE_DEPTH) {
                 materialize(scope.children, out, depth + 1);
@@ -792,15 +808,15 @@ public class MarkdownParser {
             }
             switch (name) {
                 case "details": {
-                    final TLRPC.TL_pageBlockDetails d = new TLRPC.TL_pageBlockDetails();
+                    final TL_iv.pageBlockDetails d = new TL_iv.pageBlockDetails();
                     d.open = scope.tag.attributes() != null && scope.tag.attributes().containsKey("open");
-                    d.title = new TLRPC.TL_textEmpty();
-                    final List<TLRPC.PageBlock> body = new ArrayList<>();
+                    d.title = new TL_iv.textEmpty();
+                    final List<TL_iv.PageBlock> body = new ArrayList<>();
                     for (Object c : scope.children) {
                         if (c instanceof Scope && "summary".equalsIgnoreCase(((Scope) c).tag.name())) {
                             d.title = scopeToRichText((Scope) c);
                         } else if (c instanceof Item) {
-                            final TLRPC.PageBlock ib = ((Item) c).block;
+                            final TL_iv.PageBlock ib = ((Item) c).block;
                             if (ib != null) body.add(ib);
                         } else if (c instanceof Scope) {
                             wrapScope((Scope) c, body, depth + 1);
@@ -827,26 +843,26 @@ public class MarkdownParser {
             }
         }
 
-        private TLRPC.RichText scopeToRichText(Scope scope) {
+        private TL_iv.RichText scopeToRichText(Scope scope) {
             final StringBuilder sb = new StringBuilder();
             collectText(scope.children, sb);
             final String s = sb.toString().trim();
-            return s.isEmpty() ? new TLRPC.TL_textEmpty() : plain(s);
+            return s.isEmpty() ? new TL_iv.textEmpty() : plain(s);
         }
 
         private void collectText(List<Object> children, StringBuilder sb) {
             for (Object c : children) {
                 if (c instanceof Item) {
-                    final TLRPC.PageBlock b = ((Item) c).block;
-                    if (b instanceof TLRPC.TL_pageBlockParagraph) {
+                    final TL_iv.PageBlock b = ((Item) c).block;
+                    if (b instanceof TL_iv.pageBlockParagraph) {
                         if (sb.length() > 0) sb.append('\n');
-                        sb.append(richTextToString(((TLRPC.TL_pageBlockParagraph) b).text));
-                    } else if (b instanceof TLRPC.TL_pageBlockHeader) {
+                        sb.append(richTextToString(((TL_iv.pageBlockParagraph) b).text));
+                    } else if (b instanceof TL_iv.pageBlockHeader) {
                         if (sb.length() > 0) sb.append('\n');
-                        sb.append(richTextToString(((TLRPC.TL_pageBlockHeader) b).text));
-                    } else if (b instanceof TLRPC.TL_pageBlockSubheader) {
+                        sb.append(richTextToString(((TL_iv.pageBlockHeader) b).text));
+                    } else if (b instanceof TL_iv.pageBlockSubheader) {
                         if (sb.length() > 0) sb.append('\n');
-                        sb.append(richTextToString(((TLRPC.TL_pageBlockSubheader) b).text));
+                        sb.append(richTextToString(((TL_iv.pageBlockSubheader) b).text));
                     }
                 } else if (c instanceof Scope) {
                     collectText(((Scope) c).children, sb);
@@ -856,29 +872,53 @@ public class MarkdownParser {
 
         @Override
         public void visit(Heading heading) {
-            final TLRPC.RichText text = first(richTextOf(heading, null));
+            final TL_iv.RichText text = first(richTextOf(heading, null));
             if (items.isEmpty()) {
                 title = text;
             }
-            if (heading.getLevel() == 1) {
-                final TLRPC.TL_pageBlockTitle b = new TLRPC.TL_pageBlockTitle();
-                b.text = text;
-                emit(b);
-            } else if (heading.getLevel() == 2) {
-                final TLRPC.TL_pageBlockHeader b = new TLRPC.TL_pageBlockHeader();
-                b.text = text;
-                emit(b);
-            } else {
-                final TLRPC.TL_pageBlockSubheader b = new TLRPC.TL_pageBlockSubheader();
-                b.text = text;
-                emit(b);
+            switch (heading.getLevel()) {
+                case 1:
+                    final TL_iv.pageBlockHeading1 h1 = new TL_iv.pageBlockHeading1();
+                    h1.text = text;
+                    emit(h1);
+                    break;
+                case 2:
+                    final TL_iv.pageBlockHeading2 h2 = new TL_iv.pageBlockHeading2();
+                    h2.text = text;
+                    emit(h2);
+                    break;
+                case 3:
+                    final TL_iv.pageBlockHeading3 h3 = new TL_iv.pageBlockHeading3();
+                    h3.text = text;
+                    emit(h3);
+                    break;
+                case 4:
+                    final TL_iv.pageBlockHeading4 h4 = new TL_iv.pageBlockHeading4();
+                    h4.text = text;
+                    emit(h4);
+                    break;
+                case 5:
+                    final TL_iv.pageBlockHeading5 h5 = new TL_iv.pageBlockHeading5();
+                    h5.text = text;
+                    emit(h5);
+                    break;
+                case 6:
+                    final TL_iv.pageBlockHeading6 h6 = new TL_iv.pageBlockHeading6();
+                    h6.text = text;
+                    emit(h6);
+                    break;
+                default:
+                    final TL_iv.pageBlockHeader b = new TL_iv.pageBlockHeader();
+                    b.text = text;
+                    emit(b);
+                    break;
             }
         }
 
         @Override
         public void visit(Paragraph paragraph) {
-            for (TLRPC.RichText text : split(richTextOf(paragraph, null))) {
-                final TLRPC.TL_pageBlockParagraph b = new TLRPC.TL_pageBlockParagraph();
+            for (TL_iv.RichText text : split(richTextOf(paragraph, null))) {
+                final TL_iv.pageBlockParagraph b = new TL_iv.pageBlockParagraph();
                 b.text = text;
                 emit(b);
             }
@@ -886,21 +926,22 @@ public class MarkdownParser {
 
         @Override
         public void visit(BlockQuote blockQuote) {
-            for (TLRPC.RichText text : split(richTextOf(blockQuote, null))) {
-                final TLRPC.TL_pageBlockBlockquote b = new TLRPC.TL_pageBlockBlockquote();
+            for (TL_iv.RichText text : split(richTextOf(blockQuote, null))) {
+                final TL_iv.pageBlockBlockquote b = new TL_iv.pageBlockBlockquote();
                 b.text = text;
+                b.caption = new TL_iv.textEmpty();
                 emit(b);
             }
         }
 
         @Override
         public void visit(ThematicBreak thematicBreak) {
-            emit(new TLRPC.TL_pageBlockDivider());
+            emit(new TL_iv.pageBlockDivider());
         }
 
         @Override
         public void visit(FencedCodeBlock fencedCodeBlock) {
-            final TLRPC.TL_pageBlockPreformatted b = new TLRPC.TL_pageBlockPreformatted();
+            final TL_iv.pageBlockPreformatted b = new TL_iv.pageBlockPreformatted();
             b.text = first(plain(fencedCodeBlock.getLiteral()));
             b.language = fencedCodeBlock.getInfo() == null ? "" : fencedCodeBlock.getInfo();
             emit(b);
@@ -908,7 +949,7 @@ public class MarkdownParser {
 
         @Override
         public void visit(IndentedCodeBlock indentedCodeBlock) {
-            final TLRPC.TL_pageBlockPreformatted b = new TLRPC.TL_pageBlockPreformatted();
+            final TL_iv.pageBlockPreformatted b = new TL_iv.pageBlockPreformatted();
             b.text = first(plain(indentedCodeBlock.getLiteral()));
             b.language = "";
             emit(b);
@@ -916,20 +957,17 @@ public class MarkdownParser {
 
         @Override
         public void visit(BulletList bulletList) {
-            final TLRPC.TL_pageBlockList block = new TLRPC.TL_pageBlockList();
+            final TL_iv.pageBlockList block = new TL_iv.pageBlockList();
             for (Node child = bulletList.getFirstChild(); child != null; child = child.getNext()) {
                 if (child instanceof ListItem) {
                     final int checkbox = stripCheckboxPrefix(child);
+                    final TL_iv.TL_pageListItemText item = new TL_iv.TL_pageListItemText();
                     if (checkbox >= 0) {
-                        final TLRPC.TL_pageListItemCheckbox item = new TLRPC.TL_pageListItemCheckbox();
+                        item.checkbox = true;
                         item.checked = checkbox == 1;
-                        item.text = first(richTextOf(child, block));
-                        block.items.add(item);
-                    } else {
-                        final TLRPC.TL_pageListItemText item = new TLRPC.TL_pageListItemText();
-                        item.text = first(richTextOf(child, block));
-                        block.items.add(item);
                     }
+                    item.text = first(richTextOf(child, block));
+                    block.items.add(item);
                 }
             }
             emit(block);
@@ -937,7 +975,7 @@ public class MarkdownParser {
 
         @Override
         public void visit(OrderedList orderedList) {
-            final TLRPC.TL_pageBlockOrderedList block = new TLRPC.TL_pageBlockOrderedList();
+            final TL_iv.pageBlockOrderedList block = new TL_iv.pageBlockOrderedList();
             final boolean useSource = orderedList.getParent() instanceof org.commonmark.node.Document;
             int n = orderedList.getStartNumber();
             for (Node child = orderedList.getFirstChild(); child != null; child = child.getNext()) {
@@ -945,18 +983,14 @@ public class MarkdownParser {
                     final String marker = useSource && !orderedMarkers.isEmpty()
                         ? orderedMarkers.poll() : String.valueOf(n++);
                     final int checkbox = stripCheckboxPrefix(child);
+                    final TL_iv.TL_pageListOrderedItemText item = new TL_iv.TL_pageListOrderedItemText();
                     if (checkbox >= 0) {
-                        final TLRPC.TL_pageListOrderedItemCheckbox item = new TLRPC.TL_pageListOrderedItemCheckbox();
+                        item.checkbox = true;
                         item.checked = checkbox == 1;
-                        item.num = marker;
-                        item.text = first(richTextOf(child, block));
-                        block.items.add(item);
-                    } else {
-                        final TLRPC.TL_pageListOrderedItemText item = new TLRPC.TL_pageListOrderedItemText();
-                        item.num = marker;
-                        item.text = first(richTextOf(child, block));
-                        block.items.add(item);
                     }
+                    item.num = marker;
+                    item.text = first(richTextOf(child, block));
+                    block.items.add(item);
                 }
             }
             emit(block);
@@ -1002,7 +1036,7 @@ public class MarkdownParser {
             if (customBlock instanceof TableBlock) {
                 emit(buildTable((TableBlock) customBlock));
             } else if (customBlock instanceof io.noties.markwon.ext.latex.JLatexMathBlock) {
-                final TLRPC.TL_pageBlockParagraph b = new TLRPC.TL_pageBlockParagraph();
+                final TL_iv.pageBlockParagraph b = new TL_iv.pageBlockParagraph();
                 b.text = makeLatex(((io.noties.markwon.ext.latex.JLatexMathBlock) customBlock).latex());
                 emit(b);
             } else {
@@ -1010,10 +1044,10 @@ public class MarkdownParser {
             }
         }
 
-        private TLRPC.TL_pageBlockTable buildTable(TableBlock table) {
-            final TLRPC.TL_pageBlockTable b = new TLRPC.TL_pageBlockTable();
+        private TL_iv.pageBlockTable buildTable(TableBlock table) {
+            final TL_iv.pageBlockTable b = new TL_iv.pageBlockTable();
             b.bordered = true;
-            b.title = new TLRPC.TL_textEmpty();
+            b.title = new TL_iv.textEmpty();
             for (Node section = table.getFirstChild(); section != null; section = section.getNext()) {
                 final boolean header = section instanceof TableHead;
                 if (!header && !(section instanceof TableBody)) continue;
@@ -1026,8 +1060,8 @@ public class MarkdownParser {
             return b;
         }
 
-        private TLRPC.TL_pageTableRow buildTableRow(TableRow row, boolean header) {
-            final TLRPC.TL_pageTableRow r = new TLRPC.TL_pageTableRow();
+        private TL_iv.pageTableRow buildTableRow(TableRow row, boolean header) {
+            final TL_iv.pageTableRow r = new TL_iv.pageTableRow();
             for (Node cell = row.getFirstChild(); cell != null; cell = cell.getNext()) {
                 if (cell instanceof TableCell) {
                     r.cells.add(buildTableCell((TableCell) cell, header));
@@ -1036,8 +1070,8 @@ public class MarkdownParser {
             return r;
         }
 
-        private TLRPC.TL_pageTableCell buildTableCell(TableCell cell, boolean header) {
-            final TLRPC.TL_pageTableCell c = new TLRPC.TL_pageTableCell();
+        private TL_iv.pageTableCell buildTableCell(TableCell cell, boolean header) {
+            final TL_iv.pageTableCell c = new TL_iv.pageTableCell();
             c.header = header || cell.isHeader();
             final TableCell.Alignment align = cell.getAlignment();
             if (align == TableCell.Alignment.CENTER) {
@@ -1056,10 +1090,10 @@ public class MarkdownParser {
         private static final int MAX_BLOCK_DEPTH = 64;
         private int blockDepth;
 
-        private final TLRPC.PageBlock block;
-        private TLRPC.TL_textConcat current = new TLRPC.TL_textConcat();
+        private final TL_iv.PageBlock block;
+        private TL_iv.textConcat current = new TL_iv.textConcat();
 
-        public RichTextParser(TLRPC.PageBlock block) {
+        public RichTextParser(TL_iv.PageBlock block) {
             this.block = block;
         }
 
@@ -1091,25 +1125,25 @@ public class MarkdownParser {
             try { visitChildren(listItem); } finally { blockDepth--; }
         }
 
-        public TLRPC.RichText getText() {
+        public TL_iv.RichText getText() {
             return collapse(current);
         }
 
-        private static TLRPC.RichText collapse(TLRPC.TL_textConcat t) {
-            if (t.texts.isEmpty()) return new TLRPC.TL_textEmpty();
+        private static TL_iv.RichText collapse(TL_iv.textConcat t) {
+            if (t.texts.isEmpty()) return new TL_iv.textEmpty();
             if (t.texts.size() == 1) return t.texts.get(0);
             return t;
         }
 
-        private void append(TLRPC.RichText text) {
+        private void append(TL_iv.RichText text) {
             current.texts.add(text);
         }
 
-        private TLRPC.RichText collectChildren(Node node) {
-            final TLRPC.TL_textConcat parent = current;
-            current = new TLRPC.TL_textConcat();
+        private TL_iv.RichText collectChildren(Node node) {
+            final TL_iv.textConcat parent = current;
+            current = new TL_iv.textConcat();
             visitChildren(node);
-            final TLRPC.RichText result = collapse(current);
+            final TL_iv.RichText result = collapse(current);
             current = parent;
             return result;
         }
@@ -1129,21 +1163,21 @@ public class MarkdownParser {
 
         @Override
         public void visit(Emphasis emphasis) {
-            final TLRPC.TL_textItalic it = new TLRPC.TL_textItalic();
+            final TL_iv.textItalic it = new TL_iv.textItalic();
             it.text = collectChildren(emphasis);
             append(it);
         }
 
         @Override
         public void visit(StrongEmphasis strongEmphasis) {
-            final TLRPC.TL_textBold b = new TLRPC.TL_textBold();
+            final TL_iv.textBold b = new TL_iv.textBold();
             b.text = collectChildren(strongEmphasis);
             append(b);
         }
 
         @Override
         public void visit(Code code) {
-            final TLRPC.TL_textFixed f = new TLRPC.TL_textFixed();
+            final TL_iv.textFixed f = new TL_iv.textFixed();
             f.text = plain(code.getLiteral());
             append(f);
         }
@@ -1154,17 +1188,17 @@ public class MarkdownParser {
             url = url.trim();
 
             if (url.startsWith("mailto:")) {
-                final TLRPC.TL_textEmail email = new TLRPC.TL_textEmail();
+                final TL_iv.textEmail email = new TL_iv.textEmail();
                 email.text = collectChildren(link);
                 email.email = url.substring(7);
                 append(email);
             } else if (url.startsWith("tel:")) {
-                final TLRPC.TL_textPhone phone = new TLRPC.TL_textPhone();
+                final TL_iv.textPhone phone = new TL_iv.textPhone();
                 phone.text = collectChildren(link);
                 phone.phone = url.substring(4);
                 append(phone);
             } else {
-                final TLRPC.TL_textUrl u = new TLRPC.TL_textUrl();
+                final TL_iv.textUrl u = new TL_iv.textUrl();
                 u.text = collectChildren(link);
                 u.url = url;
                 append(u);
@@ -1183,7 +1217,7 @@ public class MarkdownParser {
 
         @Override
         public void visit(SoftLineBreak softLineBreak) {
-            append(plain(block instanceof TLRPC.TL_pageBlockBlockquote ? "\n" : " "));
+            append(plain(block instanceof TL_iv.pageBlockBlockquote ? "\n" : " "));
         }
 
         @Override
@@ -1194,7 +1228,7 @@ public class MarkdownParser {
         @Override
         public void visit(CustomNode customNode) {
             if (customNode instanceof Strikethrough) {
-                final TLRPC.TL_textStrike s = new TLRPC.TL_textStrike();
+                final TL_iv.textStrike s = new TL_iv.textStrike();
                 s.text = collectChildren(customNode);
                 append(s);
             } else if (customNode instanceof io.noties.markwon.ext.latex.JLatexMathNode) {

@@ -620,7 +620,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         if (shouldShowBrightnessControll) {
             progressToDarkTheme = onSwitchDayNightDelegate.isDark() ? 1f : 0;
         }
-        if (AndroidUtilities.isTablet()) {
+        if (parentLayout != null && parentLayout.isLayersLayout()) {
             actionBar.setOccupyStatusBar(false);
         }
         page1 = new FrameLayout(context);

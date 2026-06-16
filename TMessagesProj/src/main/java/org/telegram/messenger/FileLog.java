@@ -195,6 +195,8 @@ public class FileLog {
             privateFields.add("priority");
             privateFields.add("constructor");
             privateFields.add("constructorName");
+            privateFields.add("parentRichText");
+            privateFields.add("parentBlock");
             for (int i = 0; i < 32; i++) {
                 privateFields.add("FLAG_" + i);
             }

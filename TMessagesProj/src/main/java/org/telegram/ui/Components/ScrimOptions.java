@@ -49,6 +49,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.R;
+import org.telegram.messenger.RichMessageLayout;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.Theme;
@@ -366,6 +367,41 @@ public class ScrimOptions extends Dialog {
         }, 15);
     }
 
+    public static void makeGlobalBlurBitmaps(View cutToContainer, Utilities.Callback2<Bitmap, Bitmap> bitmaps) {
+        if (cutToContainer == null) {
+            makeGlobalBlurBitmaps(bitmaps);
+            return;
+        }
+        AndroidUtilities.makeGlobalBlurBitmap(bitmap -> {
+            if (cutToContainer.getWidth() > 0 && cutToContainer.getHeight() > 0) {
+                int[] pos = new int[2];
+                cutToContainer.getLocationOnScreen(pos);
+                final int x = Utilities.clamp((int) ((float) pos[0] / AndroidUtilities.displaySize.x * bitmap.getWidth()), bitmap.getWidth(), 0);
+                final int y = Utilities.clamp((int) ((float) pos[1] / (AndroidUtilities.displaySize.y + AndroidUtilities.statusBarHeight + AndroidUtilities.navigationBarHeight) * bitmap.getHeight()), bitmap.getHeight(), 0);
+                final int w = Utilities.clamp((int) ((float) (cutToContainer.getWidth()) / AndroidUtilities.displaySize.x * bitmap.getWidth()), bitmap.getWidth() - x, 0);
+                final int h = Utilities.clamp((int) ((float) (cutToContainer.getHeight()) / (AndroidUtilities.displaySize.y + AndroidUtilities.statusBarHeight + AndroidUtilities.navigationBarHeight) * bitmap.getHeight()), bitmap.getHeight() - y, 0);
+                if ((x != 0 || y != 0 || w != bitmap.getWidth() || h != bitmap.getHeight()) && w > 0 && h > 0) {
+                    bitmap = Bitmap.createBitmap(bitmap, x, y, w, h);
+                }
+            }
+
+            final ColorMatrix colorMatrixBg = new ColorMatrix();
+            AndroidUtilities.adjustSaturationColorMatrix(colorMatrixBg, Theme.isCurrentThemeDark() ? .04f : +.25f);
+            AndroidUtilities.adjustBrightnessColorMatrix(colorMatrixBg, Theme.isCurrentThemeDark() ? -.04f : -.07f);
+            final Bitmap bitmapBg = AndroidUtilities.applyColorMatrix(bitmap, colorMatrixBg);
+            bitmapBg.setHasAlpha(false);
+
+            final ColorMatrix colorMatrixOptions = new ColorMatrix();
+            colorMatrixOptions.setSaturation(Theme.isCurrentThemeDark() ? 2 : 3);
+            AndroidUtilities.adjustBrightnessColorMatrix(colorMatrixOptions, Theme.isCurrentThemeDark() ? -.2f : -.07f);
+            final Bitmap bitmapOptions = AndroidUtilities.applyColorMatrix(bitmap, colorMatrixOptions);
+            bitmapOptions.setHasAlpha(false);
+
+            bitmap.recycle();
+            bitmaps.run(bitmapBg, bitmapOptions);
+        }, 15);
+    }
+
     private void checkBitmapMatrix() {
         Blur3Utils.checkBitmapSourceMatrixScale(iBlur3SourceBitmap, windowView);
         if (optionsView != null) {
@@ -576,6 +612,18 @@ public class ScrimOptions extends Dialog {
 
                     layoutOriginalWidth = textlayout.getWidth();
                 }
+            }
+        }
+
+        if (layout == null && messageObject != null && messageObject.richLayout != null) {
+            final RichMessageLayout.FoundLink found = messageObject.richLayout.findLink(link);
+            if (found != null) {
+                layout = found.layout;
+                start = found.start;
+                end = found.end;
+                layoutOriginalWidth = found.originalWidth;
+                x = cell.getTextX() + found.x;
+                y = cell.getTextY() + found.y;
             }
         }
 

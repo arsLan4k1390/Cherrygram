@@ -258,10 +258,12 @@ public class RadialProgress2 {
             return;
         }
         mediaActionDrawable.setIcon(icon, animated);
-        if (!animated) {
-            parent.invalidate();
-        } else {
-            invalidateParent();
+        if (parent != null) {
+            if (!animated) {
+                parent.invalidate();
+            } else {
+                invalidateParent();
+            }
         }
     }
 

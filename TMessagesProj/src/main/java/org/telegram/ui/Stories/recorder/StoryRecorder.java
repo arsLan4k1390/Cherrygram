@@ -112,10 +112,12 @@ import org.telegram.messenger.Utilities;
 import org.telegram.messenger.VideoEditedInfo;
 import org.telegram.messenger.camera.CameraController;
 import org.telegram.messenger.camera.CameraView;
+import org.telegram.messenger.utils.WindowVisibilityManager;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_stories;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.AlertDialog;
@@ -219,12 +221,16 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         instance = null;
     }
 
+    private final WindowVisibilityManager.Controller activityVisibilityController;
+
     public static boolean isVisible() {
         return instance != null && instance.isShown;
     }
     public StoryRecorder(Activity activity, int currentAccount) {
         this.activity = activity;
         this.currentAccount = currentAccount;
+
+        activityVisibilityController = LaunchActivity.obtainActivityVisibilityController();
 
         windowLayoutParams = new WindowManager.LayoutParams();
         windowLayoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
@@ -3381,7 +3387,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                             }
 
                             int storyId = -1;
-                            for (TLRPC.TL_updateStoryID u : findUpdates((TLRPC.Updates) res2, TLRPC.TL_updateStoryID.class)) {
+                            for (TL_update.TL_updateStoryID u : findUpdates((TLRPC.Updates) res2, TL_update.TL_updateStoryID.class)) {
                                 if (u.random_id == req2.random_id) {
                                     storyId = u.id;
                                     break;
@@ -7520,9 +7526,9 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         if (shouldBeVisible == isBackgroundVisible) {
             return;
         }
-        if (activity instanceof LaunchActivity) {
-            LaunchActivity launchActivity = (LaunchActivity) activity;
-            launchActivity.drawerLayoutContainer.setAllowDrawContent(shouldBeVisible);
+
+        if (activityVisibilityController != null) {
+            activityVisibilityController.setHidden(!shouldBeVisible);
         }
         isBackgroundVisible = shouldBeVisible;
     }

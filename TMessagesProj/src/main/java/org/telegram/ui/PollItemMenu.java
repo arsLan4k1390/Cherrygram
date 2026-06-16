@@ -83,6 +83,7 @@ import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundPro
 import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceBitmap;
 import org.telegram.ui.Components.blur3.utils.Blur3Utils;
 import org.telegram.ui.Components.chat.ViewPositionWatcher;
+import org.telegram.ui.Components.poll.PollUtils;
 import org.telegram.ui.Components.poll.RecentVotersCell;
 
 import java.util.ArrayList;
@@ -293,9 +294,8 @@ public class PollItemMenu extends Dialog {
         params.dimAmount = 0;
         params.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING;
-        params.flags &=~ WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
         params.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                 | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
                 | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
                 | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
@@ -525,7 +525,7 @@ public class PollItemMenu extends Dialog {
                         }
                         dismiss(true);
                     });
-                } else {
+                } else if (PollUtils.getVoteRestrictedFlags(messageObject) == 0) {
                     taskOptions.add(R.drawable.msg_select, LocaleController.getString(R.string.PollSubmitVotesNoCaps), () -> {
                         if (!allowMultiple) {
                             ArrayList<TLRPC.PollAnswer> answers = new ArrayList<>(1);

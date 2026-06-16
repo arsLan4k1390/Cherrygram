@@ -8,6 +8,9 @@
 
 package org.telegram.ui.ActionBar;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.AndroidUtilities.find;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -24,12 +27,14 @@ import org.telegram.ui.Adapters.FiltersView;
 import org.telegram.ui.Components.RLottieDrawable;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class ActionBarMenu extends LinearLayout {
 
     public boolean drawBlur = true;
     protected ActionBar parentActionBar;
     protected boolean isActionMode;
+    private boolean glassMode;
 
     private ArrayList<Integer> ids;
 
@@ -64,7 +69,7 @@ public class ActionBarMenu extends LinearLayout {
     }
 
     public ActionBarMenuItem addItem(int id, Drawable drawable) {
-        return addItem(id, 0, null, isActionMode ? parentActionBar.itemsActionModeBackgroundColor : parentActionBar.itemsBackgroundColor, drawable, AndroidUtilities.dp(48), null);
+        return addItem(id, 0, null, isActionMode ? parentActionBar.itemsActionModeBackgroundColor : parentActionBar.itemsBackgroundColor, drawable, dp(48), null);
     }
 
     public ActionBarMenuItem addItem(int id, int icon) {
@@ -84,7 +89,7 @@ public class ActionBarMenu extends LinearLayout {
     }
 
     public ActionBarMenuItem addItem(int id, int icon, int backgroundColor, Theme.ResourcesProvider resourcesProvider) {
-        return addItem(id, icon, null, backgroundColor, null, AndroidUtilities.dp(48), null, resourcesProvider);
+        return addItem(id, icon, null, backgroundColor, null, dp(48), null, resourcesProvider);
     }
 
     public ActionBarMenuItem addItemWithWidth(int id, int icon, int width) {
@@ -117,7 +122,7 @@ public class ActionBarMenu extends LinearLayout {
         if (text != null) {
             menuItem.textView.setText(text);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width != 0 ? width : ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            layoutParams.leftMargin = layoutParams.rightMargin = AndroidUtilities.dp(14);
+            layoutParams.leftMargin = layoutParams.rightMargin = dp(14);
             addView(menuItem, index, layoutParams);
         } else {
             if (drawable != null) {
@@ -150,11 +155,11 @@ public class ActionBarMenu extends LinearLayout {
     }
 
     public LazyItem lazilyAddItem(int id, int icon, Theme.ResourcesProvider resourcesProvider) {
-        return lazilyAddItem(id, icon, null, isActionMode ? parentActionBar.itemsActionModeBackgroundColor : parentActionBar.itemsBackgroundColor, null, AndroidUtilities.dp(48), null, resourcesProvider);
+        return lazilyAddItem(id, icon, null, isActionMode ? parentActionBar.itemsActionModeBackgroundColor : parentActionBar.itemsBackgroundColor, null, dp(48), null, resourcesProvider);
     }
 
     public LazyItem lazilyAddItem(int id, Drawable drawable, Theme.ResourcesProvider resourcesProvider) {
-        return lazilyAddItem(id, 0, null, isActionMode ? parentActionBar.itemsActionModeBackgroundColor : parentActionBar.itemsBackgroundColor, drawable, AndroidUtilities.dp(48), null, resourcesProvider);
+        return lazilyAddItem(id, 0, null, isActionMode ? parentActionBar.itemsActionModeBackgroundColor : parentActionBar.itemsBackgroundColor, drawable, dp(48), null, resourcesProvider);
     }
 
     public LazyItem lazilyAddItem(int id, int icon, CharSequence text, int backgroundColor, Drawable drawable, int width, CharSequence title, Theme.ResourcesProvider resourcesProvider) {
@@ -622,6 +627,59 @@ public class ActionBarMenu extends LinearLayout {
     private Runnable onLayoutListener;
     public void setOnLayoutListener(Runnable listener) {
         this.onLayoutListener = listener;
+    }
+
+    public void setGlassMode(boolean glassMode) {
+        this.glassMode = glassMode;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (glassMode) {
+            for (int a = 0, N = getChildCount(); a < N; a++) {
+                final View view = getChildAt(a);
+                if (view instanceof ActionBarMenuItem) {
+                    final ViewGroup.LayoutParams lp = view.getLayoutParams();
+                    if (lp instanceof MarginLayoutParams) {
+                        MarginLayoutParams mlp = (MarginLayoutParams) lp;
+                        mlp.leftMargin = -dp(5);
+                        mlp.rightMargin = -dp(5);
+                    }
+                }
+            }
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private View widthAnchorView;
+
+    public void setWidthAnchorView(View widthAnchorView) {
+        this.widthAnchorView = widthAnchorView;
+    }
+
+    public int getItemsWidth() {
+        float mLeft = Float.POSITIVE_INFINITY;
+        float mRight = Float.NEGATIVE_INFINITY;
+        boolean found = false;
+
+
+        for (int a = 0, N = getChildCount(); a < N; a++) {
+            final View view = getChildAt(a);
+            if (view instanceof ActionBarMenuItem && view.getVisibility() == View.VISIBLE) {
+                final float left = view.getX();
+                final float right = left + view.getWidth();
+                mLeft = Math.min(mLeft, left);
+                mRight = Math.max(mRight, right);
+                found = true;
+            }
+        }
+
+        if (widthAnchorView != null) {
+            mLeft = widthAnchorView.getX();
+            mRight = getWidth() + dp(5);
+        }
+
+        return found ? (int)(mRight - mLeft) : 0;
     }
 
     @Override

@@ -97,7 +97,7 @@ public class PhotoPickerSearchActivity extends BaseFragment {
         actionBar.setItemsColor(Theme.getColor(Theme.key_dialogTextBlack), false);
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_dialogButtonSelector), false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (AndroidUtilities.isTablet()) {
+        if (parentLayout != null && parentLayout.isLayersLayout()) {
             actionBar.setOccupyStatusBar(false);
         }
         actionBar.setExtraHeight(AndroidUtilities.dp(44));

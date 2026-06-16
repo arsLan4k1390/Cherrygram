@@ -198,7 +198,7 @@ public class ProxySettingsActivity extends BaseFragment {
         actionBar.setTitle(LocaleController.getString(R.string.ProxyDetails));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(false);
-        if (AndroidUtilities.isTablet()) {
+        if (parentLayout != null && parentLayout.isLayersLayout()) {
             actionBar.setOccupyStatusBar(false);
         }
 

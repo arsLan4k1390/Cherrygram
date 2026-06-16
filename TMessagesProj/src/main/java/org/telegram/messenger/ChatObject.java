@@ -25,6 +25,7 @@ import org.telegram.messenger.voip.VoIPService;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_phone;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.GroupCallActivity;
 
 import java.lang.annotation.Retention;
@@ -264,7 +265,7 @@ public class ChatObject {
         private boolean typingUpdateRunnableScheduled;
         private int lastLoadGuid;
         private HashSet<Integer> loadingGuids = new HashSet<>();
-        private ArrayList<TLRPC.TL_updateGroupCallParticipants> updatesQueue = new ArrayList<>();
+        private ArrayList<TL_update.TL_updateGroupCallParticipants> updatesQueue = new ArrayList<>();
         private long updatesStartWaitTime;
 
         public TLRPC.Peer selfPeer;
@@ -892,7 +893,7 @@ public class ChatObject {
             }
         }
 
-        private int isValidUpdate(TLRPC.TL_updateGroupCallParticipants update) {
+        private int isValidUpdate(TL_update.TL_updateGroupCallParticipants update) {
             if (call.version + 1 == update.version || call.version == update.version) {
                 return 0;
             } else if (call.version < update.version) {
@@ -927,7 +928,7 @@ public class ChatObject {
             if (updatesQueue != null && !updatesQueue.isEmpty()) {
                 boolean anyProceed = false;
                 for (int a = 0; a < updatesQueue.size(); a++) {
-                    TLRPC.TL_updateGroupCallParticipants update = updatesQueue.get(a);
+                    TL_update.TL_updateGroupCallParticipants update = updatesQueue.get(a);
                     int updateState = isValidUpdate(update);
                     if (updateState == 0) {
                         processParticipantsUpdate(update, true);
@@ -1020,7 +1021,7 @@ public class ChatObject {
             }));
         }
 
-        public void processParticipantsUpdate(TLRPC.TL_updateGroupCallParticipants update, boolean fromQueue) {
+        public void processParticipantsUpdate(TL_update.TL_updateGroupCallParticipants update, boolean fromQueue) {
             if (!fromQueue) {
                 boolean versioned = false;
                 for (int a = 0, N = update.participants.size(); a < N; a++) {
@@ -1264,7 +1265,7 @@ public class ChatObject {
             return true;
         }
 
-        public void processGroupCallUpdate(TLRPC.TL_updateGroupCall update) {
+        public void processGroupCallUpdate(TL_update.TL_updateGroupCall update) {
             processGroupCallUpdate(update.call);
         }
 

@@ -570,7 +570,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_dialogButtonSelector), false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
-        if (AndroidUtilities.isTablet()) {
+        if (parentLayout != null && parentLayout.isLayersLayout()) {
             actionBar.setOccupyStatusBar(false);
         }
         actionBar.setAddToContainer(false);

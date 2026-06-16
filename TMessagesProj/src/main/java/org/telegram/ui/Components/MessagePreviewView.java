@@ -58,6 +58,7 @@ import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatMessageCell;
+import org.telegram.ui.Cells.IMessageCell;
 import org.telegram.ui.Cells.TextSelectionHelper;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
@@ -193,21 +194,22 @@ public class MessagePreviewView extends FrameLayout {
 
         public boolean isReplyMessageCell(ChatMessageCell cell) {
             if (cell == null || cell.getMessageObject() == null) return false;
-            MessageObject replyMessage = getReplyMessage();
+            final MessageObject replyMessage = getReplyMessage();
             if (replyMessage == null) return false;
             return (cell.getMessageObject() == replyMessage || cell.getMessageObject().getId() == replyMessage.getId());
         }
 
-        public ChatMessageCell getReplyMessageCell() {
-            MessageObject replyMessage = getReplyMessage();
+        public View getReplyMessageCell() {
+            final MessageObject replyMessage = getReplyMessage();
             if (replyMessage == null) {
                 return null;
             }
             for (int i = 0; i < chatListView.getChildCount(); ++i) {
-                ChatMessageCell cell = (ChatMessageCell) chatListView.getChildAt(i);
+                final View child = chatListView.getChildAt(i);
+                final IMessageCell cell = (IMessageCell) child;
                 if (cell.getMessageObject() == null) continue;
                 if (cell.getMessageObject() == replyMessage || cell.getMessageObject().getId() == replyMessage.getId()) {
-                    return cell;
+                    return child;
                 }
             }
             return null;
@@ -215,6 +217,12 @@ public class MessagePreviewView extends FrameLayout {
 
         public MessageObject getReplyMessage() {
             return getReplyMessage(null);
+        }
+
+        public boolean isReplyToRichMessage() {
+            if (currentTab != TAB_REPLY) return false;
+            MessageObject msg = getReplyMessage();
+            return msg != null && msg.messageOwner != null && msg.messageOwner.rich_message != null;
         }
 
         public MessageObject getReplyMessage(MessageObject fallback) {
@@ -294,6 +302,7 @@ public class MessagePreviewView extends FrameLayout {
 
                 @Override
                 protected boolean canCopy() {
+                    if (isReplyToRichMessage()) return false;
                     return messagePreviewParams == null || !messagePreviewParams.noforwards;
                 }
 
@@ -312,7 +321,7 @@ public class MessagePreviewView extends FrameLayout {
 
                 @Override
                 protected boolean canShowQuote() {
-                    return currentTab == TAB_REPLY && !messagePreviewParams.isSecret;
+                    return currentTab == TAB_REPLY && !messagePreviewParams.isSecret && !isReplyToRichMessage();
                 }
 
                 @Override
@@ -369,7 +378,7 @@ public class MessagePreviewView extends FrameLayout {
                 @Override
                 public boolean drawChild(Canvas canvas, View child, long drawingTime) {
                     if (child instanceof ChatMessageCell) {
-                        ChatMessageCell cell = (ChatMessageCell) child;
+                        final ChatMessageCell cell = (ChatMessageCell) child;
                         boolean r = super.drawChild(canvas, child, drawingTime);
                         cell.drawCheckBox(canvas);
                         canvas.save();
@@ -396,8 +405,9 @@ public class MessagePreviewView extends FrameLayout {
                         cell.getTransitionParams().recordDrawingStatePreview();
                         canvas.restore();
                         return r;
+                    } else {
+                        return super.drawChild(canvas, child, drawingTime);
                     }
-                    return true;
                 }
 
                 @Override
@@ -429,7 +439,7 @@ public class MessagePreviewView extends FrameLayout {
                         final int endInCell = scrollToQuoteEndY;
                         shouldScrollToQuote = false;
                         post(() -> {
-                            ChatMessageCell cell = getReplyMessageCell();
+                            View cell = getReplyMessageCell();
                             if (cell == null) {
                                 return;
                             }
@@ -467,8 +477,6 @@ public class MessagePreviewView extends FrameLayout {
                                 continue;
                             }
                             lastDrawnGroup = group;
-                            MessageObject.GroupedMessagePosition position = cell.getCurrentPosition();
-                            MessageBackgroundDrawable backgroundDrawable = cell.getBackgroundDrawable();
                         }
                     }
                     MessageObject.GroupedMessages scrimGroup = null;
@@ -667,8 +675,11 @@ public class MessagePreviewView extends FrameLayout {
                     super.onScrolled(recyclerView, dx, dy);
 
                     for (int i = 0; i < chatListView.getChildCount(); i++) {
-                        ChatMessageCell cell = (ChatMessageCell) chatListView.getChildAt(i);
-                        cell.setParentViewSize(chatPreviewContainer.getMeasuredWidth(), chatPreviewContainer.getBackgroundSizeY());
+                        final View child = chatListView.getChildAt(i);
+                        if (child instanceof ChatMessageCell) {
+                            final ChatMessageCell cell = (ChatMessageCell) child;
+                            cell.setParentViewSize(chatPreviewContainer.getMeasuredWidth(), chatPreviewContainer.getBackgroundSizeY());
+                        }
                     }
 
                     if (textSelectionHelper != null) {
@@ -692,8 +703,11 @@ public class MessagePreviewView extends FrameLayout {
                     } else {
                         messages.selectedIds.put(id, newSelected);
                     }
-                    ChatMessageCell chatMessageCell = (ChatMessageCell) view;
-                    chatMessageCell.setChecked(newSelected, newSelected, true);
+                    if (view instanceof ChatMessageCell) {
+                        final ChatMessageCell chatMessageCell = (ChatMessageCell) view;
+                        chatMessageCell.setChecked(newSelected, newSelected, true);
+                    }
+
                     updateSubtitle(true);
                 }
             });
@@ -921,7 +935,10 @@ public class MessagePreviewView extends FrameLayout {
                                     messagePreviewParams.quoteStart = 0;
                                     messagePreviewParams.quoteEnd = Math.min(MessagesController.getInstance(currentAccount).quoteLengthMax, replyMessage.messageOwner.message.length());
                                     messagePreviewParams.quote = ChatActivity.ReplyQuote.from(replyMessage, messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
-                                    textSelectionHelper.select(getReplyMessageCell(), messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
+                                    final View cell = getReplyMessageCell();
+                                    if (cell instanceof ChatMessageCell) {
+                                        textSelectionHelper.select((ChatMessageCell) cell, messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
+                                    }
                                 }
                                 if (!showOutdatedQuote) {
                                     menu.getSwipeBack().openForeground(menuBack);
@@ -978,13 +995,23 @@ public class MessagePreviewView extends FrameLayout {
 
             } else if (tab == TAB_FORWARD && messagePreviewParams.forwardMessages != null) {
 
+                boolean canHideSenderName = true;
+                for (int i = 0; i < messagePreviewParams.forwardMessages.messages.size(); ++i) {
+                    if (messagePreviewParams.forwardMessages.messages.get(i).type == MessageObject.TYPE_ARTICLE) {
+                        canHideSenderName = false;
+                        break;
+                    }
+                }
+
                 ToggleButton sendersNameButton = new ToggleButton(
                     context,
                     R.raw.name_hide, messagePreviewParams.multipleUsers ? LocaleController.getString(R.string.ShowSenderNames) : LocaleController.getString(R.string.ShowSendersName),
                     R.raw.name_show, messagePreviewParams.multipleUsers ? LocaleController.getString(R.string.HideSenderNames) : LocaleController.getString(R.string.HideSendersName),
                     resourcesProvider
                 );
-                menu.addView(sendersNameButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+                if (canHideSenderName) {
+                    menu.addView(sendersNameButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+                }
 
                 final ToggleButton captionButton;
                 if (messagePreviewParams.hasCaption) {
@@ -1026,11 +1053,6 @@ public class MessagePreviewView extends FrameLayout {
                 deleteLink.setOnClickListener(v -> removeForward());
                 deleteLink.setSelectorColor(Theme.multAlpha(Theme.getColor(Theme.key_text_RedRegular), .12f));
                 menu.addView(deleteLink, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
-
-//                ActionBarMenuSubItem sendMessagesView = new ActionBarMenuSubItem(context, false, true, resourcesProvider);
-//                sendMessagesView.setTextAndIcon(LocaleController.getString(R.string.ForwardSendMessages), R.drawable.msg_send);
-//                menu.addView(sendMessagesView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
-//                sendMessagesView.setOnClickListener(View -> didSendPressed());
 
                 sendersNameButton.setState(messagePreviewParams.hideForwardSendersName, false);
                 sendersNameButton.setOnClickListener(view -> {
@@ -1364,13 +1386,16 @@ public class MessagePreviewView extends FrameLayout {
             int size = MeasureSpec.getSize(widthMeasureSpec) + MeasureSpec.getSize(heightMeasureSpec) << 16;
             if (lastSize != size) {
                 for (int i = 0; i < messages.previewMessages.size(); i++) {
+                    final MessageObject pm = messages.previewMessages.get(i);
+                    int pw;
                     if (isLandscapeMode) {
-                        messages.previewMessages.get(i).parentWidth = chatPreviewContainer.getLayoutParams().width;
+                        pw = chatPreviewContainer.getLayoutParams().width;
                     } else {
-                        messages.previewMessages.get(i).parentWidth = MeasureSpec.getSize(widthMeasureSpec) - dp(16);
+                        pw = MeasureSpec.getSize(widthMeasureSpec) - dp(16);
                     }
-                    messages.previewMessages.get(i).resetLayout();
-                    messages.previewMessages.get(i).forceUpdate = true;
+                    pm.parentWidth = pw;
+                    pm.resetLayout();
+                    pm.forceUpdate = true;
                     if (adapter != null) {
                         adapter.notifyDataSetChanged();
                     }
@@ -1529,7 +1554,7 @@ public class MessagePreviewView extends FrameLayout {
             @NonNull
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                ChatMessageCell chatMessageCell = new ChatMessageCell(parent.getContext(), currentAccount, false, sharedResources, resourcesProvider) {
+                final ChatMessageCell cell = new ChatMessageCell(parent.getContext(), currentAccount, false, sharedResources, resourcesProvider) {
                     @Override
                     public void invalidate() {
                         super.invalidate();
@@ -1554,9 +1579,9 @@ public class MessagePreviewView extends FrameLayout {
                         updateLinkHighlight(this);
                     }
                 };
-                chatMessageCell.setClipChildren(false);
-                chatMessageCell.setClipToPadding(false);
-                chatMessageCell.setDelegate(new ChatMessageCell.ChatMessageCellDelegate() {
+                cell.setClipChildren(false);
+                cell.setClipToPadding(false);
+                cell.setDelegate(new ChatMessageCell.ChatMessageCellDelegate() {
                     @Override
                     public TextSelectionHelper.ChatListTextSelectionHelper getTextSelectionHelper() {
                         return textSelectionHelper;
@@ -1611,7 +1636,12 @@ public class MessagePreviewView extends FrameLayout {
                         return messagePreviewParams.webpage == null || messagePreviewParams.webpage instanceof TLRPC.TL_webPagePending;
                     }
                 });
-                return new RecyclerListView.Holder(chatMessageCell);
+                return new RecyclerListView.Holder(cell);
+            }
+
+            @Override
+            public int getItemViewType(int position) {
+                return 0;
             }
 
             @Override
@@ -1619,26 +1649,26 @@ public class MessagePreviewView extends FrameLayout {
                 if (messages == null) {
                     return;
                 }
+                if (holder.getItemViewType() == 0) {
+                    final ChatMessageCell cell = (ChatMessageCell) holder.itemView;
+                    cell.setInvalidateSpoilersParent(messages.hasSpoilers);
+                    cell.setParentViewSize(chatListView.getMeasuredWidth(), chatListView.getMeasuredHeight());
+                    final int id = cell.getMessageObject() != null ? cell.getMessageObject().getId() : 0;
+                    if (currentTab == TAB_LINK) {
+                        messagePreviewParams.checkCurrentLink(messages.previewMessages.get(position));
+                    }
+                    cell.setMessageObject(messages.previewMessages.get(position), messages.groupedMessagesMap.get(messages.previewMessages.get(position).getGroupId()), true, true, false);
+                    if (currentTab == TAB_FORWARD) {
+                        cell.setDelegate(new ChatMessageCell.ChatMessageCellDelegate() {
 
-                ChatMessageCell cell = (ChatMessageCell) holder.itemView;
-                cell.setInvalidateSpoilersParent(messages.hasSpoilers);
-                cell.setParentViewSize(chatListView.getMeasuredWidth(), chatListView.getMeasuredHeight());
-                int id = cell.getMessageObject() != null ? cell.getMessageObject().getId() : 0;
-                if (currentTab == TAB_LINK) {
-                    messagePreviewParams.checkCurrentLink(messages.previewMessages.get(position));
-                }
-                cell.setMessageObject(messages.previewMessages.get(position), messages.groupedMessagesMap.get(messages.previewMessages.get(position).getGroupId()), true, true, false);
-                if (currentTab == TAB_FORWARD) {
-                    cell.setDelegate(new ChatMessageCell.ChatMessageCellDelegate() {
-
-                    });
-                }
-
-                if (messages.previewMessages.size() > 1) {
-                    cell.setCheckBoxVisible(currentTab == TAB_FORWARD, false);
-                    boolean animated = id == messages.previewMessages.get(position).getId();
-                    boolean checked = messages.selectedIds.get(messages.previewMessages.get(position).getId(), false);
-                    cell.setChecked(checked, checked, animated);
+                        });
+                    }
+                    if (messages.previewMessages.size() > 1) {
+                        cell.setCheckBoxVisible(currentTab == TAB_FORWARD, false);
+                        final boolean animated = id == messages.previewMessages.get(position).getId();
+                        final boolean checked = messages.selectedIds.get(messages.previewMessages.get(position).getId(), false);
+                        cell.setChecked(checked, checked, animated);
+                    }
                 }
             }
 
@@ -1647,23 +1677,25 @@ public class MessagePreviewView extends FrameLayout {
                 if (messages == null || currentTab == TAB_FORWARD) {
                     return;
                 }
-                ChatMessageCell messageCell = (ChatMessageCell) holder.itemView;
-                if (currentTab == TAB_REPLY) {
-                    MessageObject.GroupedMessages groupedMessages = getValidGroupedMessage(messageCell.getMessageObject());
-                    messageCell.setDrawSelectionBackground(groupedMessages == null);
-                    messageCell.setChecked(true, groupedMessages == null, false);
+                if (holder.itemView instanceof ChatMessageCell) {
+                    final ChatMessageCell messageCell = (ChatMessageCell) holder.itemView;
+                    if (currentTab == TAB_REPLY) {
+                        final MessageObject.GroupedMessages groupedMessages = getValidGroupedMessage(messageCell.getMessageObject());
+                        messageCell.setDrawSelectionBackground(groupedMessages == null);
+                        messageCell.setChecked(true, groupedMessages == null, false);
 
-                    if (!messagePreviewParams.isSecret && messagePreviewParams.quote != null && isReplyMessageCell(messageCell) && !textSelectionHelper.isInSelectionMode()) {
-                        textSelectionHelper.select(messageCell, messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
-                        if (firstAttach) {
-                            scrollToQuoteStartY = offset(messageCell, messagePreviewParams.quoteStart, false);
-                            scrollToQuoteEndY = offset(messageCell, messagePreviewParams.quoteEnd, true);
-                            shouldScrollToQuote = true;
-                            firstAttach = false;
+                        if (!messagePreviewParams.isSecret && messagePreviewParams.quote != null && isReplyMessageCell(messageCell) && !textSelectionHelper.isInSelectionMode()) {
+                            textSelectionHelper.select(messageCell, messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
+                            if (firstAttach) {
+                                scrollToQuoteStartY = offset(messageCell, messagePreviewParams.quoteStart, false);
+                                scrollToQuoteEndY = offset(messageCell, messagePreviewParams.quoteEnd, true);
+                                shouldScrollToQuote = true;
+                                firstAttach = false;
+                            }
                         }
+                    } else {
+                        messageCell.setDrawSelectionBackground(false);
                     }
-                } else {
-                    messageCell.setDrawSelectionBackground(false);
                 }
             }
 
@@ -2266,7 +2298,10 @@ public class MessagePreviewView extends FrameLayout {
                             messagePreviewParams.quoteStart = 0;
                             messagePreviewParams.quoteEnd = Math.min(MessagesController.getInstance(currentAccount).quoteLengthMax, msg.messageOwner.message.length());
                             messagePreviewParams.quote = ChatActivity.ReplyQuote.from(msg, messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
-                            page.textSelectionHelper.select(page.getReplyMessageCell(), messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
+                            final View cell = page.getReplyMessageCell();
+                            if (cell instanceof ChatMessageCell) {
+                                page.textSelectionHelper.select((ChatMessageCell) cell, messagePreviewParams.quoteStart, messagePreviewParams.quoteEnd);
+                            }
                         }
                     } else {
                         messagePreviewParams.quote = null;

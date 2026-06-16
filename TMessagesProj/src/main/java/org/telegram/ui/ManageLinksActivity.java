@@ -925,7 +925,6 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                     break;
                 case 11:
                     TextInfoPrivacyCell infoCell = (TextInfoPrivacyCell) holder.itemView;
-                    infoCell.setBackground(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     if (position == linksInfoRow) {
                         final TLRPC.ChatFull chatFull = getMessagesController().getChatFull(currentChatId);
                         final TLRPC.Chat chat = getMessagesController().getChat(currentChatId);
@@ -1394,18 +1393,20 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                     }
                 }
             }
+
+            final SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(joinedString);
             if (invite.permanent && !invite.revoked) {
-                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(joinedString);
                 DotDividerSpan dotDividerSpan = new DotDividerSpan();
                 dotDividerSpan.setTopPadding(dp(1.5f));
                 spannableStringBuilder.append("  .  ").setSpan(dotDividerSpan, spannableStringBuilder.length() - 3, spannableStringBuilder.length() - 2, 0);
                 spannableStringBuilder.append(getString(R.string.Permanent));
-                subtitleView.setText(spannableStringBuilder);
             } else if (invite.expired || invite.revoked) {
                 if (invite.revoked && invite.usage == 0) {
                     joinedString = getString(invite.subscription_pricing != null ? R.string.NoOneSubscribed : R.string.NoOneJoined);
+                    spannableStringBuilder.clear();
+                    spannableStringBuilder.append(joinedString);
                 }
-                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(joinedString);
+
                 DotDividerSpan dotDividerSpan = new DotDividerSpan();
                 dotDividerSpan.setTopPadding(dp(1.5f));
                 spannableStringBuilder.append("  .  ").setSpan(dotDividerSpan, spannableStringBuilder.length() - 3, spannableStringBuilder.length() - 2, 0);
@@ -1414,9 +1415,7 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                 } else {
                     spannableStringBuilder.append(getString(invite.revoked ? R.string.Revoked : R.string.Expired));
                 }
-                subtitleView.setText(spannableStringBuilder);
             } else if (invite.expire_date > 0) {
-                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(joinedString);
                 DotDividerSpan dotDividerSpan = new DotDividerSpan();
                 dotDividerSpan.setTopPadding(dp(1.5f));
                 spannableStringBuilder.append("  .  ").setSpan(dotDividerSpan, spannableStringBuilder.length() - 3, spannableStringBuilder.length() - 2, 0);
@@ -1436,10 +1435,16 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                     spannableStringBuilder.append(String.format(Locale.ENGLISH, "%02d", h)).append(String.format(Locale.ENGLISH, ":%02d", m)).append(String.format(Locale.ENGLISH, ":%02d", s));
                     timerRunning = true;
                 }
-                subtitleView.setText(spannableStringBuilder);
-            } else {
-                subtitleView.setText(joinedString);
             }
+
+            if (invite.request_needed) {
+                DotDividerSpan dotDividerSpan = new DotDividerSpan();
+                dotDividerSpan.setTopPadding(dp(1.5f));
+                spannableStringBuilder.append("  .  ").setSpan(dotDividerSpan, spannableStringBuilder.length() - 3, spannableStringBuilder.length() - 2, 0);
+                spannableStringBuilder.append(getString(R.string.ApprovalRequired));
+            }
+
+            subtitleView.setText(spannableStringBuilder);
         }
     }
 

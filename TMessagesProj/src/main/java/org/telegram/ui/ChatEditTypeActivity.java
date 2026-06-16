@@ -12,6 +12,7 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -36,6 +37,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -67,6 +69,7 @@ import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
+import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.CircularProgressDrawable;
 import org.telegram.ui.Components.CrossfadeDrawable;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -131,6 +134,7 @@ public class ChatEditTypeActivity extends BaseFragment implements NotificationCe
 
     private boolean isPrivate;
 
+    private boolean applyToAllInviteLinks;
     private TLRPC.Chat currentChat;
     private TLRPC.ChatFull info;
     private long chatId;
@@ -397,7 +401,7 @@ public class ChatEditTypeActivity extends BaseFragment implements NotificationCe
         editText.setMaxLines(1);
         editText.setLines(1);
         editText.setEnabled(false);
-        editText.setBackgroundDrawable(null);
+        editText.setBackground(null);
         editText.setPadding(0, 0, 0, 0);
         editText.setSingleLine(true);
         editText.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
@@ -422,7 +426,7 @@ public class ChatEditTypeActivity extends BaseFragment implements NotificationCe
         usernameTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         usernameTextView.setMaxLines(1);
         usernameTextView.setLines(1);
-        usernameTextView.setBackgroundDrawable(null);
+        usernameTextView.setBackground(null);
         usernameTextView.setPadding(0, 0, 0, 0);
         usernameTextView.setSingleLine(true);
         usernameTextView.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
@@ -584,8 +588,43 @@ public class ChatEditTypeActivity extends BaseFragment implements NotificationCe
         manageLinksInfoCell = new TextInfoPrivacyCell(context, 12, resourceProvider);
         linearLayout.addView(manageLinksInfoCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        joinContainer = new JoinToSendSettingsView(context, currentChat);
-        joinContainer.showJoinToSend(info != null && info.linked_chat_id != 0);
+        joinContainer = new JoinToSendSettingsView(context, currentChat) {
+            @Override
+            public boolean onJoinRequestToggle(boolean newValue, Runnable cancel) {
+                if (!isPrivate || info == null) {
+                    return true;
+                }
+
+                final int linksCount = info.invitesCount;
+                if (linksCount == 0) {
+                    return true;
+                }
+
+                final String key;
+                if (isChannel) {
+                    key = newValue ? "ApproveNewMembersEnableForLinksChannel" : "ApproveNewMembersDisableForLinksChannel";
+                } else {
+                    key = newValue ? "ApproveNewMembersEnableForLinks" : "ApproveNewMembersDisableForLinks";
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context, resourceProvider);
+                builder.setTitle(LocaleController.getString(R.string.ApproveNewMembersApplyToLinksTitle));
+                builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatPluralString(key, linksCount)));
+                builder.setPositiveButton(LocaleController.getString(R.string.ApproveNewMembersApplyToLinksApply), (dialogInterface, i) -> {
+                    setJoinRequest(newValue);
+                    applyToAllInviteLinks = true;
+                });
+                builder.setNegativeButton(LocaleController.getString(R.string.ApproveNewMembersApplyToLinksDontApply), (dialogInterface, i) -> {
+                    setJoinRequest(newValue);
+                    applyToAllInviteLinks = false;
+                });
+                AlertDialog dialog = builder.create();
+                showDialog(dialog);
+                return false;
+            }
+        };
+        joinContainer.showJoinToSend(info != null && info.linked_chat_id != 0 && !isChannel);
+        joinContainer.setFullInfo(this, info);
         linearLayout.addView(joinContainer);
 
         saveContainer = new LinearLayout(context);
@@ -698,13 +737,13 @@ public class ChatEditTypeActivity extends BaseFragment implements NotificationCe
     }
 
     private boolean tryUpdateJoinSettings() {
-        if (isChannel || joinContainer == null) {
+        if (joinContainer == null) {
             return true;
         }
         if (getParentActivity() == null) {
             return false;
         }
-        boolean needToMigrate = !ChatObject.isChannel(currentChat) && (joinContainer.isJoinToSend || joinContainer.isJoinRequest);
+        boolean needToMigrate = !isChannel && !ChatObject.isChannel(currentChat) && (joinContainer.isJoinToSend || joinContainer.isJoinRequest);
         if (needToMigrate) {
             getMessagesController().convertToMegaGroup(getParentActivity(), chatId, this, param -> {
                 if (param != 0) {
@@ -718,8 +757,10 @@ public class ChatEditTypeActivity extends BaseFragment implements NotificationCe
             if (currentChat.join_to_send != joinContainer.isJoinToSend) {
                 getMessagesController().toggleChatJoinToSend(chatId, currentChat.join_to_send = joinContainer.isJoinToSend, null, null);
             }
-            if (currentChat.join_request != joinContainer.isJoinRequest) {
-                getMessagesController().toggleChatJoinRequest(chatId, currentChat.join_request = joinContainer.isJoinRequest, null, null);
+            if (currentChat.join_request != joinContainer.isJoinRequest || applyToAllInviteLinks) {
+                getMessagesController().toggleChatJoinRequest(chatId, 0,
+                    currentChat.join_request = joinContainer.isJoinRequest,
+                    applyToAllInviteLinks, false, null, null);
             }
             return true;
         }
@@ -1067,7 +1108,7 @@ public class ChatEditTypeActivity extends BaseFragment implements NotificationCe
                         break;
                     case VIEW_TYPE_HELP:
                         ((TextInfoPrivacyCell) holder.itemView).setText(LocaleController.getString(R.string.UsernamesChannelHelp));
-                        ((TextInfoPrivacyCell) holder.itemView).setBackgroundDrawable(Theme.getThemedDrawableByKey(getContext(), R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+                        ((TextInfoPrivacyCell) holder.itemView).setBackground(Theme.getThemedDrawableByKey(getContext(), R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                         break;
                 }
             }
@@ -1373,8 +1414,8 @@ public class ChatEditTypeActivity extends BaseFragment implements NotificationCe
         radioButtonCell2.setChecked(isPrivate, true);
         usernameTextView.clearFocus();
         if (joinContainer != null) {
-            joinContainer.setVisibility(!isChannel && !isPrivate ? View.VISIBLE : View.GONE);
-            joinContainer.showJoinToSend(info != null && info.linked_chat_id != 0);
+            joinContainer.setVisibility(!isChannel || isPrivate ? View.VISIBLE : View.GONE);
+            joinContainer.showJoinToSend(info != null && info.linked_chat_id != 0 && !isChannel);
         }
         if (usernamesListView != null) {
             usernamesListView.setVisibility(isPrivate || usernames.isEmpty() ? View.GONE : View.VISIBLE);

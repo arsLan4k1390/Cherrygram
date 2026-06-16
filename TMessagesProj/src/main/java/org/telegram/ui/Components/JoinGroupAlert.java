@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BotGuardHelper;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.FileLoader;
@@ -66,11 +67,16 @@ public class JoinGroupAlert extends BottomSheet {
         setApplyTopPadding(false);
         fixNavigationBar(chatInvite == null || chatInvite.request_needed ? getThemedColor(Theme.key_dialogBackground) : getThemedColor(Theme.key_windowBackgroundWhite));
 
+        final long dialogId;
         fragment = parentFragment;
         if (obj instanceof TLRPC.ChatInvite) {
             chatInvite = (TLRPC.ChatInvite) obj;
+            dialogId = chatInvite.chat != null ? -chatInvite.chat.id : 0;
         } else if (obj instanceof TLRPC.Chat) {
             currentChat = (TLRPC.Chat) obj;
+            dialogId = currentChat.id;
+        } else {
+            dialogId = 0;
         }
         hash = group;
 
@@ -188,7 +194,7 @@ public class JoinGroupAlert extends BottomSheet {
             requestFrameLayout.addView(requestProgressView, LayoutHelper.createFrame(48, 48, Gravity.CENTER));
 
             requestTextView = new TextView(getContext());
-            requestTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(8), getThemedColor(Theme.key_featuredStickers_addButton), getThemedColor(Theme.key_featuredStickers_addButtonPressed)));
+            requestTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(24), getThemedColor(Theme.key_featuredStickers_addButton), getThemedColor(Theme.key_featuredStickers_addButtonPressed)));
             requestTextView.setEllipsize(TextUtils.TruncateAt.END);
             requestTextView.setGravity(Gravity.CENTER);
             requestTextView.setSingleLine(true);
@@ -224,6 +230,22 @@ public class JoinGroupAlert extends BottomSheet {
                     final TLRPC.TL_messages_importChatInvite request = new TLRPC.TL_messages_importChatInvite();
                     request.hash = hash;
                     ConnectionsManager.getInstance(currentAccount).sendRequest(request, (response, error) -> {
+                        final TLRPC.Updates updates;
+                        if (response instanceof TLRPC.TL_chatInviteJoinResultOk) {
+                            updates = ((TLRPC.TL_chatInviteJoinResultOk) response).updates;
+                            MessagesController.getInstance(currentAccount).processUpdates(updates, false);
+                        } else if (response instanceof TLRPC.TL_chatInviteJoinResultWebView) {
+                            TLRPC.TL_chatInviteJoinResultWebView resultWebView = (TLRPC.TL_chatInviteJoinResultWebView) response;
+                            AndroidUtilities.runOnUIThread(() -> {
+                                MessagesController.getInstance(currentAccount).putUsers(resultWebView.users, false);
+                                BotGuardHelper.getInstance(currentAccount).openGuardBotWebApp(dialogId,
+                                        resultWebView.bot_id, resultWebView.webview);
+                            });
+                            updates = null;
+                        } else {
+                            updates = null;
+                        }
+
                         AndroidUtilities.runOnUIThread(() -> {
                             if (fragment == null || fragment.getParentActivity() == null) {
                                 return;
@@ -317,18 +339,28 @@ public class JoinGroupAlert extends BottomSheet {
                 dismiss();
                 final TLRPC.TL_messages_importChatInvite req = new TLRPC.TL_messages_importChatInvite();
                 req.hash = hash;
-                ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> {
-                    if (error == null) {
-                        TLRPC.Updates updates = (TLRPC.Updates) response;
+                ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, null, (response, error) -> {
+                    final TLRPC.Updates updates;
+                    if (response instanceof TLRPC.TL_chatInviteJoinResultOk) {
+                        updates = ((TLRPC.TL_chatInviteJoinResultOk) response).updates;
                         MessagesController.getInstance(currentAccount).processUpdates(updates, false);
+                    } else if (response instanceof TLRPC.TL_chatInviteJoinResultWebView) {
+                        TLRPC.TL_chatInviteJoinResultWebView resultWebView = (TLRPC.TL_chatInviteJoinResultWebView) response;
+                        AndroidUtilities.runOnUIThread(() -> {
+                            MessagesController.getInstance(currentAccount).putUsers(resultWebView.users, false);
+                            BotGuardHelper.getInstance(currentAccount).openGuardBotWebApp(dialogId,
+                                    resultWebView.bot_id, resultWebView.webview);
+                        });
+                        updates = null;
+                    } else {
+                        updates = null;
                     }
                     AndroidUtilities.runOnUIThread(() -> {
                         if (fragment == null || fragment.getParentActivity() == null) {
                             return;
                         }
                         if (error == null) {
-                            final TLRPC.Updates updates = (TLRPC.Updates) response;
-                            if (!updates.chats.isEmpty()) {
+                            if (updates != null && !updates.chats.isEmpty()) {
                                 final TLRPC.Chat chat = updates.chats.get(0);
                                 chat.left = false;
                                 chat.kicked = false;

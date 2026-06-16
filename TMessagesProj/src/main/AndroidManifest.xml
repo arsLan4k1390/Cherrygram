@@ -395,6 +395,7 @@
                   android:excludeFromRecents="true"
                 android:theme="@style/Theme.TMessages.TransparentWithAlerts"/>
 
+        <!--
         <receiver
             android:name=".AutoMessageHeardReceiver"
             android:exported="false">
@@ -402,6 +403,7 @@
                 <action android:name="org.telegram.messenger.ACTION_MESSAGE_HEARD"/>
             </intent-filter>
         </receiver>
+        -->
 
         <receiver
             android:name=".CopyCodeReceiver"
@@ -416,14 +418,6 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.app.action.NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED"/>
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".AutoMessageReplyReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="org.telegram.messenger.ACTION_MESSAGE_REPLY"/>
             </intent-filter>
         </receiver>
 
@@ -526,15 +520,15 @@
             android:enabled="true"
             android:foregroundServiceType="mediaPlayback"
         />
-<!--        <service-->
-<!--            android:name=".MusicBrowserService"-->
-<!--            android:exported="true"-->
-<!--            android:foregroundServiceType="mediaPlayback"-->
-<!--        >-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.media.browse.MediaBrowserService"/>-->
-<!--            </intent-filter>-->
-<!--        </service>-->
+        <service
+            android:name=".MusicBrowserService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+        >
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService"/>
+            </intent-filter>
+        </service>
         <service
             android:name=".voip.TelegramConnectionService"
             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
@@ -577,6 +571,15 @@
         </receiver>
 
         <receiver android:name=".WearReplyReceiver" android:enabled="true"/>
+
+        <service
+            android:name=".WearAuthListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/tg-wear-auth/" />
+            </intent-filter>
+        </service>
 
         <receiver android:name=".StopLiveLocationReceiver" android:enabled="true"/>
 
@@ -671,8 +674,24 @@
 
         <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
 
-<!--        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" android:resource="@drawable/ic_player" />-->
-<!--        <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />-->
+        <!--
+        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" android:resource="@drawable/ic_player" />
+        <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
+
+        <service
+            android:name="org.telegram.messenger.car.TelegramCarAppService"
+            android:exported="true"
+            android:foregroundServiceType="connectedDevice">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.MESSAGING" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="5" />
+        -->
 
         <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="face,barcode" />
 

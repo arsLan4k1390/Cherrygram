@@ -449,8 +449,9 @@ public class MessagePreviewParams {
         message.peer_id = messageObject.messageOwner.peer_id;
         message.from_id = messageObject.messageOwner.from_id;
         message.message = messageObject.messageOwner.message;
+        message.rich_message = messageObject.messageOwner.rich_message;
         message.media = messageObject.messageOwner.media;
-        message.action =  messageObject.messageOwner.action;
+        message.action = messageObject.messageOwner.action;
         message.edit_date = 0;
         if (messageObject.messageOwner.entities != null) {
             message.entities.addAll(messageObject.messageOwner.entities);

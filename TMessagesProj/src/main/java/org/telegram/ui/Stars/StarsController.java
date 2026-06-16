@@ -58,6 +58,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.Vector;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_stars;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -1602,14 +1603,14 @@ public class StarsController {
                 });
 
                 long dialogId = 0;
-                if (result.updates.update instanceof TLRPC.TL_updateChannel) {
-                    TLRPC.TL_updateChannel upd = (TLRPC.TL_updateChannel) result.updates.update;
+                if (result.updates.update instanceof TL_update.TL_updateChannel) {
+                    TL_update.TL_updateChannel upd = (TL_update.TL_updateChannel) result.updates.update;
                     dialogId = -upd.channel_id;
                 }
                 if (result.updates.updates != null) {
                     for (int i = 0; i < result.updates.updates.size(); ++i) {
-                        if (result.updates.updates.get(i) instanceof TLRPC.TL_updateChannel) {
-                            TLRPC.TL_updateChannel upd = (TLRPC.TL_updateChannel) result.updates.updates.get(i);
+                        if (result.updates.updates.get(i) instanceof TL_update.TL_updateChannel) {
+                            TL_update.TL_updateChannel upd = (TL_update.TL_updateChannel) result.updates.updates.get(i);
                             dialogId = -upd.channel_id;
                         }
                     }

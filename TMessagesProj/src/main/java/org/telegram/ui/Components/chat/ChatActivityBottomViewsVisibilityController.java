@@ -14,7 +14,7 @@ public class ChatActivityBottomViewsVisibilityController implements ReplaceAnima
     private final ReplaceAnimator<Integer> replaceAnimator;
 
     public ChatActivityBottomViewsVisibilityController(Runnable onValuesChanged) {
-        this.replaceAnimator = new ReplaceAnimator<>(this, AnimatorUtils.DECELERATE_INTERPOLATOR, 320);
+        this.replaceAnimator = new ReplaceAnimator<>(this, AnimatorUtils.DECELERATE_INTERPOLATOR, 240);
         this.onValuesChanged = onValuesChanged;
     }
 

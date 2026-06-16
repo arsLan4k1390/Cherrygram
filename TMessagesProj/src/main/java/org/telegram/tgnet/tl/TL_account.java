@@ -1,12 +1,13 @@
 package org.telegram.tgnet.tl;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import org.telegram.tgnet.InputSerializedData;
 import org.telegram.tgnet.OutputSerializedData;
 import org.telegram.tgnet.TLMethod;
 import org.telegram.tgnet.TLObject;
-import org.telegram.tgnet.TLParseException;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.Vector;
 
@@ -2935,12 +2936,15 @@ public class TL_account {
     }
 
     public static class TL_connectedBot extends TLObject {
-        public static final int constructor = 0xcd64636c;
+        public static final int constructor = 0x33ed001;
 
         public int flags;
         public long bot_id;
         public TL_businessBotRecipients recipients;
         public TL_businessBotRights rights;
+        public String device;
+        public int date;
+        public String location;
 
         public static TL_connectedBot TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
             final TL_connectedBot result = constructor != TL_connectedBot.constructor ? null : new TL_connectedBot();
@@ -2953,6 +2957,15 @@ public class TL_account {
             bot_id = stream.readInt64(exception);
             recipients = TL_businessBotRecipients.TLdeserialize(stream, stream.readInt32(exception), exception);
             rights = TL_businessBotRights.TLdeserialize(stream, stream.readInt32(exception), exception);
+            if (hasFlag(flags, FLAG_0)) {
+                device = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                date = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                location = stream.readString(exception);
+            }
         }
 
         @Override
@@ -2962,6 +2975,31 @@ public class TL_account {
             stream.writeInt64(bot_id);
             recipients.serializeToStream(stream);
             rights.serializeToStream(stream);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeString(device);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                stream.writeInt32(date);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                stream.writeString(location);
+            }
+        }
+    }
+
+    public static class confirmBotConnection extends TLMethod<TLRPC.Bool> {
+        public static final int constructor = 0x67ed1f68;
+
+        public TLRPC.InputUser bot_id;
+
+        @Override
+        public TLRPC.Bool deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return TLRPC.Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        @Override
+        public void serializeToStream(OutputSerializedData stream) {
+            bot_id.serializeToStream(stream);
         }
     }
 
@@ -4261,6 +4299,190 @@ public class TL_account {
             if (hasFlag(flags, FLAG_0)) {
                 stream.writeInt64(from_auth_key_id);
             }
+        }
+    }
+
+    public static abstract class WebBrowserSettings extends TLObject {
+
+        public static WebBrowserSettings TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+            return TLdeserialize(WebBrowserSettings.class, fromConstructor(constructor), stream, constructor, exception);
+        }
+
+        private static WebBrowserSettings fromConstructor(int constructor) {
+            switch (constructor) {
+                case TL_webBrowserSettingsNotModified.constructor:
+                    return new TL_webBrowserSettingsNotModified();
+                case TL_webBrowserSettings.constructor:
+                    return new TL_webBrowserSettings();
+                default:
+                    return null;
+            }
+        }
+    }
+
+    public static class TL_webBrowserSettingsNotModified extends WebBrowserSettings {
+        public static final int constructor =  0xC31C8F4E;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+        }
+    }
+
+    public static class TL_webBrowserSettings extends WebBrowserSettings {
+        public static final int constructor = 0x79EB8CB3;
+
+        public int flags;
+        public boolean open_external_browser;
+        public boolean display_close_button;
+        public ArrayList<WebDomainException> external_exceptions = new ArrayList<>();
+        public ArrayList<WebDomainException> inapp_exceptions = new ArrayList<>();
+        public long hash;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            open_external_browser = hasFlag(flags, FLAG_0);
+            display_close_button = hasFlag(flags, FLAG_1);
+            external_exceptions = Vector.deserialize(stream, WebDomainException::TLdeserialize, exception);
+            inapp_exceptions = Vector.deserialize(stream, WebDomainException::TLdeserialize, exception);
+            hash = stream.readInt64(exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, open_external_browser);
+            flags = setFlag(flags, FLAG_1, display_close_button);
+            stream.writeInt32(flags);
+            Vector.serialize(stream, external_exceptions);
+            Vector.serialize(stream, inapp_exceptions);
+            stream.writeInt64(hash);
+        }
+    }
+
+    public static class WebDomainException extends TLObject {
+        public static final int constructor = 0x933CA597;
+
+        public int flags;
+        public String domain;
+        public String url;
+        public String title;
+        public long favicon;
+
+        public static WebDomainException TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+            final WebDomainException result = constructor != WebDomainException.constructor ? null : new WebDomainException();
+            return TLdeserialize(WebDomainException.class, result, stream, constructor, exception);
+        }
+
+        @Override
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            domain = stream.readString(exception);
+            url = stream.readString(exception);
+            title = stream.readString(exception);
+            if (hasFlag(flags, FLAG_0)) {
+                favicon = stream.readInt64(exception);
+            }
+        }
+
+        @Override
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(flags);
+            stream.writeString(domain);
+            stream.writeString(url);
+            stream.writeString(title);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeInt64(favicon);
+            }
+        }
+
+        public static boolean equalsByDomain(WebDomainException a, WebDomainException b) {
+            if (a == b) {
+                return true;
+            }
+            if (a == null || b == null) {
+                return false;
+            }
+            return TextUtils.equals(a.domain.toLowerCase(), b.domain.toLowerCase());
+                //&& TextUtils.equals(a.title, b.title)
+                //&& TextUtils.equals(a.url, b.url);
+        }
+    }
+
+    public static class getWebBrowserSettings extends TLMethod<WebBrowserSettings> {
+        public static final int constructor = 0x56655768;
+
+        public long hash;
+
+        public WebBrowserSettings deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return WebBrowserSettings.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(hash);
+        }
+    }
+
+    public static class updateWebBrowserSettings extends TLMethod<WebBrowserSettings> {
+        public static final int constructor = 0x9adf82fe;
+
+        public int flags;
+        public boolean open_external_browser;
+        public boolean display_close_button;
+
+        public WebBrowserSettings deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return WebBrowserSettings.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            open_external_browser = hasFlag(flags, FLAG_0);
+            display_close_button = hasFlag(flags, FLAG_1);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, open_external_browser);
+            flags = setFlag(flags, FLAG_1, display_close_button);
+            stream.writeInt32(flags);
+        }
+    }
+
+    public static class toggleWebBrowserSettingsException extends TLMethod<TLRPC.Updates> {
+        public static final int constructor = 0x60ed4229;
+
+        public int flags;
+        public boolean open_external_browser;
+        public boolean delete;
+        public String url;
+
+        public TLRPC.Updates deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return TLRPC.Updates.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_1, delete);
+            stream.writeInt32(flags);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeBool(open_external_browser);
+            }
+            stream.writeString(url);
+        }
+    }
+
+    public static class deleteWebBrowserSettingsExceptions extends TLMethod<WebBrowserSettings> {
+        public static final int constructor = 0x86a0765d;
+
+        public WebBrowserSettings deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return WebBrowserSettings.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
         }
     }
 

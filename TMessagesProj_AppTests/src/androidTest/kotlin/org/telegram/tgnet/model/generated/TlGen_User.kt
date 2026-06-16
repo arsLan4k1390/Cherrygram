@@ -52,6 +52,7 @@ public sealed class TlGen_User : TlGen_Object {
     public val bot_forum_can_manage_topics: Boolean,
     public val bot_can_manage_bots: Boolean,
     public val bot_guestchat: Boolean,
+    public val bot_guard: Boolean,
     public val id: Long,
     public val access_hash: Long?,
     public val first_name: String?,
@@ -132,6 +133,7 @@ public sealed class TlGen_User : TlGen_Object {
         if (bot_forum_can_manage_topics) result = result or 131072U
         if (bot_can_manage_bots) result = result or 262144U
         if (bot_guestchat) result = result or 524288U
+        if (bot_guard) result = result or 1048576U
         return result
       }
 

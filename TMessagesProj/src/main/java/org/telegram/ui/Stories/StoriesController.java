@@ -54,6 +54,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.Vector;
 import org.telegram.tgnet.tl.TL_bots;
 import org.telegram.tgnet.tl.TL_stories;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -63,7 +64,6 @@ import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
 import org.telegram.ui.Components.Reactions.ReactionImageHolder;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
-import org.telegram.ui.FilterCreateActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.StatisticActivity;
@@ -2424,8 +2424,8 @@ public class StoriesController {
                                 storyItem.media = updateStory.story.media;
                             }
                         }
-                        if (updates.updates.get(i) instanceof TLRPC.TL_updateStoryID) {
-                            TLRPC.TL_updateStoryID updateStory = (TLRPC.TL_updateStoryID) updates.updates.get(i);
+                        if (updates.updates.get(i) instanceof TL_update.TL_updateStoryID) {
+                            TL_update.TL_updateStoryID updateStory = (TL_update.TL_updateStoryID) updates.updates.get(i);
                             if (storyItem == null) {
                                 storyItem = new TL_stories.TL_storyItem();
                                 storyItem.date = ConnectionsManager.getInstance(currentAccount).getCurrentTime();

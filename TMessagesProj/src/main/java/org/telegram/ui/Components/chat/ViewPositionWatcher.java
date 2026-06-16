@@ -193,6 +193,11 @@ public final class ViewPositionWatcher implements
         return tmpRectF2.top;
     }
 
+    public static float computeXCoordinateInParent(@NonNull View view, @NonNull ViewGroup parentView) {
+        computeRectInParent(view, parentView, tmpRectF2);
+        return tmpRectF2.left;
+    }
+
     private static RectF tmpRectF2 = new RectF();
     public static boolean computeCoordinatesInParent(@NonNull View view,
                                                    @NonNull ViewGroup parentView, PointF out) {

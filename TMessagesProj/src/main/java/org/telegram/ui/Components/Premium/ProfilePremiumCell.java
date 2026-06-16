@@ -7,7 +7,7 @@ import android.graphics.Canvas;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LiteMode;
-import org.telegram.messenger.utils.FrameTickScheduler;
+import org.telegram.messenger.utils.Choreographer60FpsContent;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Stars.StarsReactionsSheet;
@@ -45,9 +45,9 @@ public class ProfilePremiumCell extends TextCell {
         if (LiteMode.isEnabled(LiteMode.FLAG_PARTICLES)) {
             particles.process();
             particles.draw(canvas, Theme.getColor(colorKey));
-            FrameTickScheduler.subscribe(invalidateRunnable, 15);
+            Choreographer60FpsContent.getInstance().addFrameCallback(invalidateRunnable, 15);
         } else {
-            FrameTickScheduler.unsubscribe(invalidateRunnable);
+            Choreographer60FpsContent.getInstance().removeFrameCallback(invalidateRunnable);
         }
         super.dispatchDraw(canvas);
     }
@@ -55,6 +55,6 @@ public class ProfilePremiumCell extends TextCell {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        FrameTickScheduler.unsubscribe(invalidateRunnable);
+        Choreographer60FpsContent.getInstance().removeFrameCallback(invalidateRunnable);
     }
 }

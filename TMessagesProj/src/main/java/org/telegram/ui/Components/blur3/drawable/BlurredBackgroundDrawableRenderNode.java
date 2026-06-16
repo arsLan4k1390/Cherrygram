@@ -47,9 +47,9 @@ public class BlurredBackgroundDrawableRenderNode extends BlurredBackgroundDrawab
     }
 
     @Override
-    public void setClipToOutline(boolean clipToOutline) {
-        super.setClipToOutline(clipToOutline);
+    public BlurredBackgroundDrawable setClipToOutline(boolean clipToOutline) {
         renderNode.setClipToOutline(clipToOutline);
+        return super.setClipToOutline(clipToOutline);
     }
 
     private LiquidGlassEffect liquidGlassEffect;

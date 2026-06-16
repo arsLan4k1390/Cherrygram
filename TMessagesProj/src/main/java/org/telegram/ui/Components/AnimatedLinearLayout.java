@@ -39,7 +39,6 @@ public class AnimatedLinearLayout extends LinearLayout {
         return holder != null && holder.isVisible;
     }
 
-
     public void setPriority(View child, int priority) {
         final Holder holder = viewHolders.get(child);
         if (holder != null) {

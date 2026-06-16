@@ -99,6 +99,7 @@ import org.telegram.tgnet.tl.TL_stars;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.SimpleTextView;
@@ -269,11 +270,11 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 int firstViewHeight;
                 if (StarsIntroActivity.this.isLandscapeMode) {
-                    firstViewHeight = StarsIntroActivity.this.statusBarHeight + actionBar.getMeasuredHeight() - AndroidUtilities.dp(16);
+                    firstViewHeight = StarsIntroActivity.this.statusBarHeight + actionBar.getMeasuredHeight() - dp(16);
                 } else {
-                    int h = AndroidUtilities.dp(140) + statusBarHeight;
-                    if (backgroundView.getMeasuredHeight() + AndroidUtilities.dp(24) > h) {
-                        h = backgroundView.getMeasuredHeight() + AndroidUtilities.dp(24);
+                    int h = dp(140) + statusBarHeight;
+                    if (backgroundView.getMeasuredHeight() + dp(24) > h) {
+                        h = backgroundView.getMeasuredHeight() + dp(24);
                     }
                     firstViewHeight = h;
                 }
@@ -283,11 +284,10 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         };
 
         super.createView(context);
+        if (parentLayout != null && parentLayout.isRightLayout()) {
+            actionBar.setBackButtonImage(R.drawable.ic_ab_close);
+        }
 
-//        balanceView = new StarsBalanceView(context, currentAccount);
-//        actionBar.addView(balanceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT | Gravity.BOTTOM));
-
-//        yOffset = dp(16);
         aboveTitleView = new FrameLayout(context);
         aboveTitleView.setClickable(true);
         iconTextureView = new GLIconTextureView(context, GLIconRenderer.DIALOG_STYLE, Icon3D.TYPE_GOLDEN_STAR);

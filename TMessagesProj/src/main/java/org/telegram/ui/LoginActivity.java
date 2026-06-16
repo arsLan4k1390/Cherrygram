@@ -146,6 +146,7 @@ import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -833,7 +834,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     private boolean isCustomKeyboardForceDisabled() {
-        return AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y || AndroidUtilities.isTablet() || AndroidUtilities.isAccessibilityTouchExplorationEnabled();
+        return /*AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y || AndroidUtilities.isTablet() || */ AndroidUtilities.isAccessibilityTouchExplorationEnabled();
     }
 
     private boolean isCustomKeyboardVisible() {
@@ -1663,6 +1664,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         MessagesController.getInstance(currentAccount).checkPromoInfo(true);
         ConnectionsManager.getInstance(currentAccount).updateDcSettings();
         MessagesController.getInstance(currentAccount).loadAppConfig();
+        MessagesController.getInstance(currentAccount).loadWebBrowserConfig();
         MessagesController.getInstance(currentAccount).checkPeerColors(false);
 
         if (res.future_auth_token != null) {
@@ -10495,7 +10497,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                                             req2.purpose = purpose;
                                                             getConnectionsManager().sendRequest(req2, (response, error) -> {
                                                                 if (response instanceof TLRPC.Updates) {
-                                                                    for (TLRPC.TL_updateSentPhoneCode u : findUpdatesAndRemove((TLRPC.Updates) response, TLRPC.TL_updateSentPhoneCode.class)) {
+                                                                    for (TL_update.TL_updateSentPhoneCode u : findUpdatesAndRemove((TLRPC.Updates) response, TL_update.TL_updateSentPhoneCode.class)) {
                                                                         AndroidUtilities.runOnUIThread(() -> {
                                                                             paid = true;
                                                                             LoginActivity fragment = LaunchActivity.findFragment(LoginActivity.class);

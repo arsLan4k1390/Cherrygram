@@ -40,8 +40,6 @@ public class DrawerLayoutContainer extends FrameLayout {
 
     private boolean inLayout;
 
-    public boolean allowDrawContent = true;
-
     private boolean firstLayout = true;
 
     private boolean keyboardVisibility;
@@ -85,13 +83,6 @@ public class DrawerLayoutContainer extends FrameLayout {
 
     public void setParentActionBarLayout(INavigationLayout layout) {
         parentActionBarLayout = layout;
-    }
-
-    public void setAllowDrawContent(boolean value) {
-        if (allowDrawContent != value) {
-            allowDrawContent = value;
-            invalidate();
-        }
     }
 
     public boolean isDrawCurrentPreviewFragmentAbove() {
@@ -193,14 +184,6 @@ public class DrawerLayoutContainer extends FrameLayout {
     public void setBehindKeyboardColor(int color) {
         behindKeyboardColor = color;
         invalidate();
-    }
-
-    @Override
-    protected boolean drawChild(@NonNull Canvas canvas, View child, long drawingTime) {
-        if (!allowDrawContent) {
-            return false;
-        }
-        return super.drawChild(canvas, child, drawingTime);
     }
 
     @Override

@@ -252,6 +252,10 @@ public class LinkSpanDrawable<S extends CharacterStyle> {
             mParent = parentView;
         }
 
+        public void setParent(View parentView) {
+            mParent = parentView;
+        }
+
         private Runnable additionalInvalidate;
         public void setAdditionalInvalidate(Runnable additionalInvalidate) {
             this.additionalInvalidate = additionalInvalidate;
