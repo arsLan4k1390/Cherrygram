@@ -38,8 +38,12 @@ object SSLUtils {
         sslContext.socketFactory
     }
 
-    fun openSecureConnection(url: URL): HttpURLConnection {
-        val connection = url.openConnection()
+    fun openSecureConnection(url: URL): HttpURLConnection? {
+        if (url.protocol != "https") {
+            return null
+        }
+
+        val connection = url.openConnection() as HttpURLConnection
 
         if (connection is HttpsURLConnection) {
             connection.sslSocketFactory = socketFactory
@@ -47,8 +51,9 @@ object SSLUtils {
 
         connection.connectTimeout = 10000
         connection.readTimeout = 10000
+//        connection.instanceFollowRedirects = false
 
-        return connection as HttpURLConnection
+        return connection
     }
 
 }

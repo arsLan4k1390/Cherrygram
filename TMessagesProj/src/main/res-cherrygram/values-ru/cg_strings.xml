@@ -219,6 +219,7 @@
     <string name="AP_SystemEmoji">Системные эмодзи</string>
     <string name="AP_ShowPencilIcon">Иконка карандаша для изменённых сообщений</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
+    <string name="AP_CenterTitle_AdaptiveWidth">Адаптивная ширина пузыря</string>
     <string name="AP_HideSearchBar">Скрыть поле поиска в чатах</string>
     <string name="AP_DisableDividers">Отключить разделители</string>
     <string name="AP_SystemFonts">Системный шрифт</string>
@@ -247,7 +248,7 @@
     <string name="CP_DisableReactionAnim">Отключить анимацию реакций</string>
     <string name="CP_DisableReactionAnim_Desc">(во время реакции на сообщение)</string>
     <string name="CP_DisablePremiumStatuses">Отключить Premium статусы</string>
-    <string name="CP_DisablePremiumStatuses_Desc">Это отключит эмодзи-статусы везде, кроме бокового меню</string>
+    <string name="CP_DisablePremiumStatuses_Desc">Это отключит эмодзи-статусы везде</string>
     <string name="CP_DisablePremStickAnim">Отключить нажатия на Premium стикеры</string>
     <string name="CP_DisablePremStickAnim_Desc">Ничего не будет происходить если Вы будете нажимать на Premium стикер</string>
     <string name="CP_DisablePremStickAutoPlay">Отключить автовоспроизведение Premium стикеров</string>

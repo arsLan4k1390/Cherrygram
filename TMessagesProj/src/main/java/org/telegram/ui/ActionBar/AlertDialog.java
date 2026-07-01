@@ -1266,7 +1266,8 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
         if (customView == null || !checkFocusable || !canTextInput(customView)) {
             params.flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
         } else {
-            params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE;
+            params.flags &= ~WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
+            params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
         }
         if (Build.VERSION.SDK_INT >= 28) {
             params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;

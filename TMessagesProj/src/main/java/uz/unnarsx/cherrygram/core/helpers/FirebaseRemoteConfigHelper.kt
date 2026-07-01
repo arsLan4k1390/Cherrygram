@@ -9,6 +9,8 @@
 
 package uz.unnarsx.cherrygram.core.helpers
 
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.coroutines.tasks.await
 import org.telegram.messenger.ApplicationLoader
@@ -23,17 +25,26 @@ object FirebaseRemoteConfigHelper {
 
     private val defaults = mapOf(
         Constants.show_ads_screen_in_settings to true,
-        Constants.Videomessages_Resolution to 512L,
-        Constants.allow_use_safestars to true,
-        Constants.allow_use_safesurf to true,
+        Constants.videomessages_resolution to 512L,
+
         Constants.humo_card_number to "9860100128256904",
         Constants.tbank_card_number to "9860100128256904",
+
+        Constants.allow_use_safestars to true,
+        Constants.allow_use_safesurf to true,
         Constants.safe_stars_URL to "https://safe-stars.com/?partner=cherrygram",
         Constants.safe_stars_URL_RU to "https://safe-stars.com/ru/?partner=cherrygram",
-        Constants.safe_surf_URL to "https://t.me/safe_surfbot?start=cherry"
+        Constants.safe_surf_URL to "https://t.me/safe_surfbot?start=cherry",
+
+        Constants.show_proxy_in_settings to false,
+        Constants.proxy_link_in_settings to "https://t.me/proxy?server=45.67.131.84&port=8443&secret=ee0123456789abcdef0123456789abcdef7777772e676f6f676c652e636f6d",
     )
 
     fun init() {
+        Firebase.analytics.setUserProperty("cherrygram_version", CGResourcesHelper.getCherryVersion())
+        Firebase.analytics.setUserProperty("code_version", CGResourcesHelper.getCodeVersion())
+        Firebase.analytics.setUserProperty("source_code_version", CGResourcesHelper.getSourceCodeVersion())
+
         remoteConfig.setDefaultsAsync(defaults)
     }
 
@@ -86,13 +97,17 @@ object FirebaseRemoteConfigHelper {
     fun applyConfig() {
         checkAdsScreenInSettings()
         checkVideoMessagesResolution()
-        checkSafeStars()
-        checkSafeSurf()
+
         checkHumoCardNumber()
         checkTBankCardNumber()
+
+        checkSafeStars()
+        checkSafeSurf()
         checkSafeStarsURL()
         checkSafeStarsURL_RU()
         checkSafeSurfURL()
+
+        checkProxyInSettings()
     }
 
     private fun checkAdsScreenInSettings() {
@@ -109,11 +124,11 @@ object FirebaseRemoteConfigHelper {
 
     private fun checkVideoMessagesResolution() {
         val oldResolutionValue = CherrygramCameraConfig.videoMessagesResolution
-        val newResolutionValue = getInt(Constants.Videomessages_Resolution, 512)
+        val newResolutionValue = getInt(Constants.videomessages_resolution, 512)
 
-        CherrygramLogger.d { "RemoteConfig: ${Constants.Videomessages_Resolution} value = $newResolutionValue" }
+        CherrygramLogger.d { "RemoteConfig: ${Constants.videomessages_resolution} value = $newResolutionValue" }
         if (oldResolutionValue != newResolutionValue) {
-            CherrygramLogger.d { "RemoteConfig: ${Constants.Videomessages_Resolution} changed $oldResolutionValue -> $newResolutionValue" }
+            CherrygramLogger.d { "RemoteConfig: ${Constants.videomessages_resolution} changed $oldResolutionValue -> $newResolutionValue" }
         }
 
         CherrygramCameraConfig.videoMessagesResolution = newResolutionValue
@@ -201,6 +216,29 @@ object FirebaseRemoteConfigHelper {
         }
 
         CherrygramCoreConfig.safe_surf_URL = newSafeSurfURL
+    }
+
+    private fun checkProxyInSettings() {
+        val oldProxyURL = CherrygramCoreConfig.proxyURL
+        val newProxyURL = getString(Constants.proxy_link_in_settings)
+
+        CherrygramLogger.d { "RemoteConfig: ${Constants.proxy_link_in_settings} value = $newProxyURL" }
+        if (oldProxyURL != newProxyURL) {
+            CherrygramLogger.d { "RemoteConfig: ${Constants.proxy_link_in_settings} changed $oldProxyURL -> $newProxyURL" }
+        }
+
+        CherrygramCoreConfig.proxyURL = newProxyURL
+
+
+        val oldProxyInSettings = CherrygramCoreConfig.showProxyInSettings
+        val newProxyInSettings = getBoolean(Constants.show_proxy_in_settings, true)
+
+        CherrygramLogger.d { "RemoteConfig: ${Constants.show_proxy_in_settings} value = $newProxyInSettings" }
+        if (oldProxyInSettings != newProxyInSettings) {
+            CherrygramLogger.d { "RemoteConfig: ${Constants.show_proxy_in_settings} changed $oldProxyInSettings -> $newProxyInSettings" }
+        }
+
+        CherrygramCoreConfig.showProxyInSettings = newProxyInSettings
     }
 
 }

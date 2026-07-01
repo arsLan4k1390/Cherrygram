@@ -18,11 +18,11 @@ import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
-import org.telegram.ui.web.RestrictedDomainsList
 import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
 import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.preferences.boolean
@@ -118,6 +118,9 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var safe_stars_URL_RU by sharedPreferences.string("CP_SafeStarsURL_RU", "https://safe-stars.com/ru/?partner=cherrygram")
     var allowSafeSurf by sharedPreferences.boolean("CG_AllowSafeSurfUI", true)
     var safe_surf_URL by sharedPreferences.string("CP_SafeSurfURL", "https://t.me/safe_surfbot?start=cherry")
+
+    var showProxyInSettings by sharedPreferences.boolean("CG_ShowProxyInSettings", false)
+    var proxyURL by sharedPreferences.string("CP_ProxyURL", "https://t.me/proxy?server=78.17.39.137&port=443&secret=ee7ae12ad5e1268d51eccdc0d1acb595ea74656c6567612e6d65")
     /** Misc finish */
 
     /** Cherrygram build types start */
@@ -176,8 +179,23 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
             migratePreferences()
 
             if (allowSafeStars) {
-                if (!RestrictedDomainsList.getInstance().isRestricted("safestars.pro")) {
-                    RestrictedDomainsList.getInstance().setRestricted(true, "safestars.pro")
+                val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
+
+                val exceptions = messagesController.getWebBrowserExceptionsList(false)
+
+                delay(10000)
+                val inAppBrowserEnabled = messagesController.isWebBrowserInAppEnabled
+
+                val hasSafeStarsPro = exceptions.any { it.domain.equals("safestars.pro", ignoreCase = true) }
+                if (!hasSafeStarsPro) {
+                    messagesController.addWebBrowserException("safestars.pro", inAppBrowserEnabled)
+                }
+
+                delay(15000)
+
+                val hasSafeStarsCom = exceptions.any { it.domain.equals("safe-stars.com", ignoreCase = true) }
+                if (!hasSafeStarsCom) {
+                    messagesController.addWebBrowserException("safe-stars.com", inAppBrowserEnabled)
                 }
             }
 

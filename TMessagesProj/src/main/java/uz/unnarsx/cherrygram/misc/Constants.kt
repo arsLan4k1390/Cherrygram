@@ -83,14 +83,19 @@ object Constants {
 
     /** Firebase remote Config start */
     const val show_ads_screen_in_settings = "show_ads_screen_in_settings"
-    const val Videomessages_Resolution = "videomessages_resolution"
-    const val allow_use_safestars = "allow_use_safestars"
-    const val allow_use_safesurf = "allow_use_safesurf"
+    const val videomessages_resolution = "videomessages_resolution"
+
     const val humo_card_number = "humo_card_number"
     const val tbank_card_number = "tbank_card_number"
+
+    const val allow_use_safestars = "allow_use_safestars"
+    const val allow_use_safesurf = "allow_use_safesurf"
     const val safe_stars_URL = "safe_stars_URL"
     const val safe_stars_URL_RU = "safe_stars_URL_RU"
     const val safe_surf_URL = "safe_surf_URL"
+
+    const val show_proxy_in_settings = "show_proxy_in_settings"
+    const val proxy_link_in_settings = "proxy_link_in_settings"
     /** Firebase remote Config finish */
 
 }

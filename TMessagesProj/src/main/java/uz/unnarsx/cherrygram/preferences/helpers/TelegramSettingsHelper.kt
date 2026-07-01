@@ -40,6 +40,7 @@ import org.telegram.ui.LoginActivity
 import org.telegram.ui.LogoutActivity
 import org.telegram.ui.PhotoViewer
 import org.telegram.ui.SettingsActivity
+import org.telegram.ui.UserInfoActivity
 import uz.unnarsx.cherrygram.chats.CGChatMenuInjector
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
@@ -83,6 +84,15 @@ class TelegramSettingsHelper(
 
     fun showItemOptions(button: View) {
         val o = ItemOptions.makeOptions(fragment, button)
+
+        o.add(
+            R.drawable.msg_edit,
+            getString(R.string.EditInfo)
+        ) {
+            fragment.presentFragment(UserInfoActivity())
+        }
+
+        o.addGap()
 
         o.add(
             R.drawable.msg_leave,

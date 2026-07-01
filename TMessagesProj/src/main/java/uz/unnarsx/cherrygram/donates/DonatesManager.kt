@@ -119,7 +119,7 @@ object DonatesManager {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(urlString)
-                val connection = openSecureConnection(url)
+                val connection = openSecureConnection(url) ?: return@withContext
 
                 val reader = InputStreamReader(connection.inputStream)
                 val tempUserIds = mutableSetOf<Long>()
@@ -317,7 +317,7 @@ object DonatesManager {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(urlString)
-                val connection = openSecureConnection(url)
+                val connection = openSecureConnection(url) ?: return@withContext
 
                 val tempMap = mutableMapOf<Long, BadgeHelper.UserColor>()
                 InputStreamReader(connection.inputStream).buffered().useLines { lines ->
@@ -432,7 +432,7 @@ object DonatesManager {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(TON_RATE_URL)
-                val connection = openSecureConnection(url)
+                val connection = openSecureConnection(url) ?: return@withContext
 
                 val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
                 val json = JSONObject(jsonString)

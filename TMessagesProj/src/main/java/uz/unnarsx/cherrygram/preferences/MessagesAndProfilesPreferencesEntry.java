@@ -319,7 +319,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
                                     drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
                                 }
-                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getParentActivity(), getUserConfig().getClientUserId(), 0));
+                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getResourceProvider(), getParentActivity(), getUserConfig().getClientUserId(), 0));
                             } else if (position == birthdayPreviewRow) {
                                 TLRPC.UserFull meFull = getMessagesController().getUserFull(me.id);
                                 if (meFull != null && meFull.birthday != null) {

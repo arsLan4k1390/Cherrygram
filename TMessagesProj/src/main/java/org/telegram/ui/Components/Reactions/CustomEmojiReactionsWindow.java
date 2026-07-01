@@ -41,6 +41,7 @@ import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
@@ -112,7 +113,17 @@ public class CustomEmojiReactionsWindow {
         this.reactions = reactions;
         this.baseFragment = baseFragment;
         this.resourcesProvider = resourcesProvider;
-        Context context = baseFragment != null ? baseFragment.getContext() : reactionsContainerLayout.getContext();
+//        Context context = baseFragment != null ? baseFragment.getContext() : reactionsContainerLayout.getContext();
+        Context context = null;
+        if (baseFragment != null) {
+            context = baseFragment.getContext();
+        }
+        if (context == null && reactionsContainerLayout != null) {
+            context = reactionsContainerLayout.getContext();
+        }
+        if (context == null) {
+            context = ApplicationLoader.applicationContext;
+        }
         windowView = new FrameLayout(context) {
             @Override
             public boolean dispatchKeyEvent(KeyEvent event) {

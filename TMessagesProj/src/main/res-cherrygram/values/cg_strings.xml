@@ -222,6 +222,7 @@
     <string name="AP_SystemEmoji">System emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title</string>
+    <string name="AP_CenterTitle_AdaptiveWidth">Adaptive bubble width</string>
     <string name="AP_HideSearchBar">Hide search bar in chats</string>
     <string name="AP_DisableDividers">Disable dividers</string>
     <string name="AP_SystemFonts">System fonts</string>
@@ -250,7 +251,7 @@
     <string name="CP_DisableReactionAnim">Disable reaction animation</string>
     <string name="CP_DisableReactionAnim_Desc">(when reacting to a message)</string>
     <string name="CP_DisablePremiumStatuses">Disable premium statuses</string>
-    <string name="CP_DisablePremiumStatuses_Desc">This will disable premium statuses everywhere, except drawer</string>
+    <string name="CP_DisablePremiumStatuses_Desc">This will disable premium statuses everywhere</string>
     <string name="CP_DisablePremStickAnim">Disable taps on premium stickers</string>
     <string name="CP_DisablePremStickAnim_Desc">Nothing will happen if you tap on premium sticker</string>
     <string name="CP_DisablePremStickAutoPlay">Disable premium stickers auto-play</string>

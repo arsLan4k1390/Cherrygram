@@ -6,6 +6,7 @@ import android.util.SparseArray;
 
 import org.telegram.messenger.utils.tlutils.TlUtils;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.Components.poll.attached.PollAttachedMediaLink;
 import org.telegram.ui.Components.poll.attached.PollAttachedMediaLocation;
 import org.telegram.ui.Components.poll.attached.PollAttachedMediaSticker;
 
@@ -163,7 +164,12 @@ public class PollAttachedMediaPack {
             final int index = medias.keyAt(a);
             final PollAttachedMedia media = medias.valueAt(a);
 
-            if (media instanceof PollAttachedMediaLocation) {
+            if (media instanceof PollAttachedMediaLink) {
+                TLRPC.TL_inputMediaWebPage inputMediaWebPage = new TLRPC.TL_inputMediaWebPage();
+                inputMediaWebPage.url = ((PollAttachedMediaLink) media).url;
+                inputMediaWebPage.optional = true;
+                setInputMedia(inputMediaPoll, index, inputMediaWebPage);
+            } else if (media instanceof PollAttachedMediaLocation) {
                 setInputMedia(inputMediaPoll, index, TlUtils.toInputMediaGeo(((PollAttachedMediaLocation) media).media));
             } else if (media instanceof PollAttachedMediaSticker) {
                 final PollAttachedMediaSticker sticker = (PollAttachedMediaSticker) media;
@@ -183,7 +189,12 @@ public class PollAttachedMediaPack {
             final int index = medias.keyAt(a);
             final PollAttachedMedia media = medias.valueAt(a);
 
-            if (media instanceof PollAttachedMediaLocation) {
+            if (media instanceof PollAttachedMediaLink) {
+                TLRPC.TL_messageMediaWebPage webPage = new TLRPC.TL_messageMediaWebPage();
+                webPage.webpage = new TLRPC.TL_webPage();
+                webPage.webpage.url = webPage.webpage.display_url = ((PollAttachedMediaLink) media).url;
+                setMessageMedia(messageMediaPoll, index, webPage);
+            } else if (media instanceof PollAttachedMediaLocation) {
                 setMessageMedia(messageMediaPoll, index, ((PollAttachedMediaLocation) media).media);
             } else if (media instanceof PollAttachedMediaSticker) {
                 final PollAttachedMediaSticker sticker = (PollAttachedMediaSticker) media;

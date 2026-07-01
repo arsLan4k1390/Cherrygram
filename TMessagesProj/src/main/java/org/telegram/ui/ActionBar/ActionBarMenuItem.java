@@ -2602,4 +2602,27 @@ public class ActionBarMenuItem extends FrameLayout {
         cell.setLayoutParams(layoutParams);
         return cell;
     }
+
+    /** Cherrygram start */
+    private boolean forceHidden;
+
+    public void setForceHidden(boolean value) { // Used to get bounce and avatarOptionsMenuItem get worked
+        if (forceHidden != value) {
+            forceHidden = value;
+            if (forceHidden) {
+                super.setVisibility(GONE);
+            }
+        }
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.setVisibility(visibility ? VISIBLE : GONE);
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(forceHidden ? GONE : visibility);
+    }
+    /** Cherrygram finish */
+
 }

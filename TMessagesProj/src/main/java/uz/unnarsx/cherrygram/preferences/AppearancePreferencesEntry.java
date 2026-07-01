@@ -15,6 +15,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
@@ -157,7 +158,7 @@ public class AppearancePreferencesEntry extends UniversalFragment {
                 if (getParentActivity() instanceof LaunchActivity) {
                     ((LaunchActivity) getParentActivity()).reloadResources();
                 }
-                Theme.reloadAllResources(getParentActivity());
+                Theme.reloadAllResources(getContext() != null ? getContext() : ApplicationLoader.applicationContext);
 
                 getParentLayout().rebuildAllFragmentViews(false, false);
             });

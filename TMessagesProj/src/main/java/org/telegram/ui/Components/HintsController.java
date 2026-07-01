@@ -17,11 +17,19 @@ public class HintsController {
         ChannelSuggestHint("channelsuggesthint", 3, 0.2f),
         ChannelGiftHint("channelgifthint", 3, 0.2f),
         GroupEmojiPackHintShown("groupEmojiPackShownHint", 1, 1),
-        AccountSwitchHint("accountswitchhint", 3, 1f);
+        AccountSwitchHint("accountswitchhint", 3, 1f),
+        
+        GuestBotPrivacy(3, 1f);
 
         private final String name;
         private final int showsLimit;
         private final float probability;
+
+        Hint(int showsLimit, float probability) {
+            this.name = "hints_controller_" + this;
+            this.showsLimit = showsLimit;
+            this.probability = probability;
+        }
 
         Hint(String name, int showsLimit, float probability) {
             this.name = name;

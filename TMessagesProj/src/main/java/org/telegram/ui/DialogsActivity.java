@@ -3136,7 +3136,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             @Override
             public void closeSearchField(boolean closeKeyboard) {
                 fragmentSearchField.editText.getText().clear();
-                if (closeKeyboard) {
+                if (closeKeyboard && fragmentSearchField.editText.isFocused()) {
                     AndroidUtilities.hideKeyboard(fragmentSearchField.editText);
                 }
                 fragmentSearchField.editText.clearFocus();
@@ -4922,10 +4922,16 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             commentView = new ChatActivityEnterView(getParentActivity(), contentView, null, false) {
                 @Override
                 protected void onChangedIslandTotalHeight(float h) {
-                    chatInputViewsContainer.setInputBubbleHeight(h);
+//                    if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()) {
+//                        chatInputViewsContainer.setInputBubbleHeight(dp(44));
+//                        getEditField().setMaxLines(1);
+//                    } else {
+                        chatInputViewsContainer.setInputBubbleHeight(h);
+//                    }
                     checkUi_chatListViewPaddingsBottom();
                     blur3_InvalidateBlur();
                     checkUi_fadeView();
+                    if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()) checkUi_filterTabsVisible();
                 }
 
                 @Override
@@ -5287,7 +5293,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             }).addIf(!muted && dialogId > 0, R.drawable.msg_mute, LocaleController.getString(R.string.NotificationsStoryMute2), () -> {
                                 MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("stories_" + key, false).apply();
                                 getNotificationsController().updateServerNotificationsSettings(dialogId, 0);
-                                String name = user == null ? "" : user.first_name.trim();
+                                String name = (user == null || user.first_name == null) ? "" : user.first_name.trim();
                                 int index = name.indexOf(" ");
                                 if (index > 0) {
                                     name = name.substring(0, index);
@@ -5296,7 +5302,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             }).makeMultiline(false).addIf(muted && dialogId > 0, R.drawable.msg_unmute, LocaleController.getString(R.string.NotificationsStoryUnmute2), () -> {
                                 MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("stories_" + key, true).apply();
                                 getNotificationsController().updateServerNotificationsSettings(dialogId, 0);
-                                String name = user == null ? "" : user.first_name.trim();
+                                String name = (user == null || user.first_name == null) ? "" : user.first_name.trim();
                                 int index = name.indexOf(" ");
                                 if (index > 0) {
                                     name = name.substring(0, index);
@@ -11505,6 +11511,18 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
 
             @Override
+            public boolean canSetTimer() {
+                if (selectedDialogs.isEmpty()) return false;
+                final MessagesController mc = getMessagesController();
+                for (long did : selectedDialogs) {
+                    if (!DialogObject.isUserDialog(did)) return false;
+                    final TLRPC.User u = mc.getUser(did);
+                    if (u == null || u.bot || UserObject.isUserSelf(u)) return false;
+                }
+                return true;
+            }
+
+            @Override
             public CharSequence getTitleFor(int index) {
                 if (sharedMediaEntries == null || sharedMediaEntries.isEmpty()) return null;
                 final int total = sharedMediaEntries.size();
@@ -13819,6 +13837,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             checkUi_searchFieldVisibility();
         } else if (id == ANIMATOR_ID_FORWARD_BUTTON_VISIBLE) {
             checkUi_forwardCommentFieldVisible();
+            if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()) checkUi_filterTabsVisible();
         } else if (id == ANIMATOR_ID_FILTER_TABS_VISIBLE) {
             checkUi_filterTabsVisible();
             checkUi_searchFiltersVisibility();

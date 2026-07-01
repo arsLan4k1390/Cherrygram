@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram.preferences.tabs;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
+import static org.telegram.ui.ChatEditActivity.applyNewSpan;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -125,7 +126,7 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
             items.add(UItem.asShadow(getString(R.string.CP_MainTabs_Layout_Desc)));
 
             items.add(UItem.asHeader(getString(R.string.ActionsChartTitle)));
-            items.add(SettingsHelper.asSwitchCG(forceOpenChats, getString(R.string.CP_MainTabs_ForceOpenChats), getString(R.string.CP_MainTabs_ForceOpenChats_Desc))
+            items.add(SettingsHelper.asSwitchCG(forceOpenChats, applyNewSpan(getString(R.string.CP_MainTabs_ForceOpenChats)), getString(R.string.CP_MainTabs_ForceOpenChats_Desc))
                     .setChecked(CherrygramAppearanceConfig.INSTANCE.getMainTabsForceOpenChats())
             );
         }

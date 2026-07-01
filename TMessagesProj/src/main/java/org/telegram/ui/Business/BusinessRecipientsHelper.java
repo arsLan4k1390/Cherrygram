@@ -3,7 +3,10 @@ package org.telegram.ui.Business;
 import static org.telegram.messenger.LocaleController.formatString;
 import static org.telegram.messenger.LocaleController.getString;
 
+import android.content.Context;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BotWebViewVibrationEffect;
@@ -16,20 +19,37 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalRecyclerView;
+import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.UsersSelectActivity;
 
 import java.util.ArrayList;
 
 public class BusinessRecipientsHelper {
 
+    public final Context context;
+    public final int currentAccount;
+    public final Theme.ResourcesProvider resourcesProvider;
+    @Nullable
     public final BaseFragment fragment;
     public final Runnable update;
+
     public BusinessRecipientsHelper(BaseFragment fragment, Runnable update) {
+        this.context = fragment.getContext();
+        this.currentAccount = fragment.getCurrentAccount();
         this.fragment = fragment;
         this.update = update;
+        this.resourcesProvider = fragment.getResourceProvider();
+    }
+    public BusinessRecipientsHelper(Context context, int currentAccount, Runnable update, Theme.ResourcesProvider resourcesProvider) {
+        this.context = context;
+        this.currentAccount = currentAccount;
+        this.fragment = null;
+        this.update = update;
+        this.resourcesProvider = resourcesProvider;
     }
 
     public int includeFlags, excludeFlags;
@@ -55,7 +75,7 @@ public class BusinessRecipientsHelper {
         if (currentValue == null) return true;
         if (currentValue.exclude_selected != exclude) return true;
         if ((currentValue.flags &~ (32 | 16)) != getFlags()) return true;
-        ArrayList<Long> array = exclude ? neverShow : alwaysShow;
+        final ArrayList<Long> array = exclude ? neverShow : alwaysShow;
         if (array.size() != currentValue.users.size()) return true;
         for (int i = 0; i < array.size(); ++i) {
             if (!currentValue.users.contains(array.get(i))) {
@@ -63,9 +83,9 @@ public class BusinessRecipientsHelper {
             }
         }
         if (bot && !exclude) {
-            if (neverShow.size() != currentValue.users.size()) return true;
+            if (neverShow.size() != currentValue.exclude_users.size()) return true;
             for (int i = 0; i < neverShow.size(); ++i) {
-                if (!currentValue.users.contains(neverShow.get(i))) {
+                if (!currentValue.exclude_users.contains(neverShow.get(i))) {
                     return true;
                 }
             }
@@ -373,12 +393,11 @@ public class BusinessRecipientsHelper {
             update.run();
             return true;
         } else if (item.viewType == UniversalAdapter.VIEW_TYPE_FILTER_CHAT) {
-            if (fragment == null) return false;
             final boolean include = item.include;
             final int flag = item.chatType == null ? 0 : getFlag(item.chatType);
-            final String name = flag == 0 ? fragment.getMessagesController().getPeerName(item.dialogId) : getFlagName(flag);
-            fragment.showDialog(
-                new AlertDialog.Builder(fragment.getContext(), fragment.getResourceProvider())
+            final String name = flag == 0 ? MessagesController.getInstance(currentAccount).getPeerName(item.dialogId) : getFlagName(flag);
+            final AlertDialog dialog =
+                new AlertDialog.Builder(context, resourcesProvider)
                     .setTitle(getString(!include ? R.string.BusinessRecipientsRemoveExcludeTitle : R.string.BusinessRecipientsRemoveIncludeTitle))
                     .setMessage(formatString(!include ? R.string.BusinessRecipientsRemoveExcludeMessage : R.string.BusinessRecipientsRemoveIncludeMessage, name))
                     .setPositiveButton(getString(R.string.Remove), (di, w) -> {
@@ -394,8 +413,12 @@ public class BusinessRecipientsHelper {
                         update.run();
                     })
                     .setNegativeButton(getString(R.string.Cancel), null)
-                    .create()
-            );
+                    .create();
+            if (fragment != null) {
+                fragment.showDialog(dialog);
+            } else {
+                dialog.show();
+            }
             return true;
         }
         return false;
@@ -432,8 +455,8 @@ public class BusinessRecipientsHelper {
     }
 
     private void selectChatsFor(boolean include) {
-        ArrayList<Long> arrayList = include ? alwaysShow : neverShow;
-        UsersSelectActivity fragment = new UsersSelectActivity(include, arrayList, getFlags()).asPrivateChats();
+        final ArrayList<Long> arrayList = include ? alwaysShow : neverShow;
+        final UsersSelectActivity fragment = new UsersSelectActivity(include, arrayList, getFlags()).asPrivateChats();
         fragment.noChatTypes = bot && !exclude && !include;
         fragment.allowSelf = false;
         fragment.doNotNewChats = !include && doNotExcludeNewChats;
@@ -455,7 +478,16 @@ public class BusinessRecipientsHelper {
             }
             update.run();
         });
-        this.fragment.presentFragment(fragment);
+        if (this.fragment != null) {
+            this.fragment.presentFragment(fragment);
+        } else {
+            final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
+            if (lastFragment == null) return;
+            final BaseFragment.BottomSheetParams bottomSheetParams = new BaseFragment.BottomSheetParams();
+            bottomSheetParams.transitionFromLeft = true;
+            bottomSheetParams.allowNestedScroll = false;
+            lastFragment.showAsSheet(fragment, bottomSheetParams);
+        }
     }
 
 }

@@ -53,6 +53,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_phone;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -66,7 +67,6 @@ import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.CheckBoxCell;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.LoadingCell;
-import org.telegram.ui.Cells.LocationCell;
 import org.telegram.ui.Cells.ProfileSearchCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
@@ -1195,7 +1195,7 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 		getConnectionsManager().sendRequest(req, (response, error) -> {
 			if (response != null) {
 				TLRPC.TL_messages_affectedFoundMessages res = (TLRPC.TL_messages_affectedFoundMessages) response;
-				TLRPC.TL_updateDeleteMessages updateDeleteMessages = new TLRPC.TL_updateDeleteMessages();
+				TL_update.TL_updateDeleteMessages updateDeleteMessages = new TL_update.TL_updateDeleteMessages();
 				updateDeleteMessages.messages = res.messages;
 				updateDeleteMessages.pts = res.pts;
 				updateDeleteMessages.pts_count = res.pts_count;
@@ -1926,7 +1926,7 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 							MessagesController.getInstance(account).putChats(updates.chats, false);
 
 							TLRPC.GroupCall groupCall = null;
-							for (TLRPC.TL_updateGroupCall u : findUpdatesAndRemove(updates, TLRPC.TL_updateGroupCall.class)) {
+							for (TL_update.TL_updateGroupCall u : findUpdatesAndRemove(updates, TL_update.TL_updateGroupCall.class)) {
 								groupCall = u.call;
 							}
 
@@ -1975,7 +1975,7 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 				MessagesController.getInstance(currentAccount).putChats(updates.chats, false);
 
 				TLRPC.GroupCall groupCall = null;
-				for (TLRPC.TL_updateGroupCall u : findUpdatesAndRemove(updates, TLRPC.TL_updateGroupCall.class)) {
+				for (TL_update.TL_updateGroupCall u : findUpdatesAndRemove(updates, TL_update.TL_updateGroupCall.class)) {
 					groupCall = u.call;
 				}
 				progressDialog.dismiss();

@@ -10,6 +10,7 @@
 package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
+import static org.telegram.ui.Cells.TextCell.applyNewSpan;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -51,25 +52,25 @@ import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class ChatsPreferencesEntry extends UniversalFragment {
 
-    private final int centerTitleRow = 1, unreadBadgeRow = 2, chatMenuShortcutsRow = 3;
+    private final int centerTitleRow = 1, centerTitleAdaptiveWidthRow = 2, unreadBadgeRow = 3, chatMenuShortcutsRow = 4;
 
-    private final int customBackgroundInChatsRow = 4, snowflakesRow = 5;
+    private final int customBackgroundInChatsRow = 5, snowflakesRow = 6;
 
-    private final int hideBottomBarRow = 6, sendAsChannelButtonRow = 7, recentEmojisStickersRow = 8;
+    private final int hideBottomBarRow = 7, sendAsChannelButtonRow = 8, recentEmojisStickersRow = 9;
 
-    private final int messagesPreferencesRow = 9;
+    private final int messagesPreferencesRow = 10;
 
-    private final int customChatRow = 10;
+    private final int customChatRow = 11;
 
-    private final int autoQuoteRow = 11, disableSwipeToNextRow = 12, disableVibrationRow = 13, openLinksInIV = 14;
+    private final int autoQuoteRow = 12, disableSwipeToNextRow = 13, disableVibrationRow = 14, openLinksInIV = 15;
 
-    private final int hideKbdSliderRow = 15;
+    private final int hideKbdSliderRow = 16;
 
-    private final int playVideoOnVolumeBtnRow = 16, autoPauseVideoRow = 17;
+    private final int playVideoOnVolumeBtnRow = 17, autoPauseVideoRow = 18;
 
-    private final int videoSeekSliderRow = 18;
+    private final int videoSeekSliderRow = 19;
 
-    private final int notificationSoundRow = 19, vibrateInChatsRow = 20;
+    private final int notificationSoundRow = 20, vibrateInChatsRow = 21;
 
     @Override
     protected CharSequence getTitle() {
@@ -90,6 +91,11 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         items.add(SettingsHelper.asSwitchCG(centerTitleRow, getString(R.string.AP_CenterTitle))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getCenterChatTitle())
         );
+        if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) {
+            items.add(SettingsHelper.asSwitchCG(centerTitleAdaptiveWidthRow, applyNewSpan(getString(R.string.AP_CenterTitle_AdaptiveWidth)))
+                    .setChecked(CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth())
+            );
+        }
         items.add(SettingsHelper.asSwitchCG(unreadBadgeRow, getString(R.string.CP_UnreadBadgeOnBackButton), getString(R.string.CP_UnreadBadgeOnBackButton_Desc))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton())
         );
@@ -195,7 +201,10 @@ public class ChatsPreferencesEntry extends UniversalFragment {
             CherrygramChatsConfig.INSTANCE.setCenterChatTitle(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
 
-            getParentLayout().rebuildAllFragmentViews(false, false);
+            listView.adapter.update(true);
+        } else if (item.id == centerTitleAdaptiveWidthRow) {
+            CherrygramChatsConfig.INSTANCE.setCenterChatTitle_AdaptiveWidth(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth());
+            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth());
         } else if (item.id == unreadBadgeRow) {
             CherrygramChatsConfig.INSTANCE.setUnreadBadgeOnBackButton(!CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton());

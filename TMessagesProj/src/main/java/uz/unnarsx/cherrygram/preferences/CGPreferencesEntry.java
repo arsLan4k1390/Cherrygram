@@ -17,6 +17,7 @@ import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.Theme;
@@ -32,6 +33,7 @@ import org.telegram.ui.SettingsActivity;
 import java.util.ArrayList;
 
 import kotlin.Pair;
+import uz.unnarsx.cherrygram.chats.CGChatMenuInjector;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
@@ -48,12 +50,12 @@ public class CGPreferencesEntry extends UniversalFragment {
     private final int cameraRow = 4;
     private final int experimentalRow = 5;
     private final int privacyRow = 6;
+    private final int aboutRow = 7;
 
-    private final int supportRow = 7;
-
-    private final int aboutRow = 8;
-
+    private final int supportRow = 8;
     private final int watchADSRow = 9;
+
+    private final int proxyRow = 10;
 
     public ActionBarMenuItem otherItem;
 
@@ -160,6 +162,16 @@ public class CGPreferencesEntry extends UniversalFragment {
                         getString(R.string.DP_Support)
                 )
         );
+        if (CherrygramCoreConfig.INSTANCE.getShowProxyInSettings() && CGChatMenuInjector.INSTANCE.showProxyButton()) {
+            items.add(
+                    SettingsActivity.SettingCell.Factory.of(
+                            proxyRow,
+                            IconBackgroundColors.BLUE_DEEP.top, IconBackgroundColors.BLUE_DEEP.bottom,
+                            R.drawable.settings_language,
+                            getString(R.string.Proxy)
+                    )
+            );
+        }
         if (CherrygramCoreConfig.INSTANCE.getShowAdsScreenInSettings()) {
             items.add(
                     SettingsActivity.SettingCell.Factory.of(
@@ -187,12 +199,14 @@ public class CGPreferencesEntry extends UniversalFragment {
             CherrygramPreferencesNavigator.INSTANCE.createExperimental(this);
         } else if (item.id == privacyRow) {
             CherrygramPreferencesNavigator.INSTANCE.createPrivacy(this);
-        } else if (item.id == supportRow) {
-            CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
         } else if (item.id == aboutRow) {
             CherrygramPreferencesNavigator.INSTANCE.createAbout(this);
+        } else if (item.id == supportRow) {
+            CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
         } else if (item.id == watchADSRow) {
             CherrygramPreferencesNavigator.INSTANCE.createADS(this);
+        } else if (item.id == proxyRow) {
+            Browser.openUrl(getContext(), CherrygramCoreConfig.INSTANCE.getProxyURL());
         }
     }
 

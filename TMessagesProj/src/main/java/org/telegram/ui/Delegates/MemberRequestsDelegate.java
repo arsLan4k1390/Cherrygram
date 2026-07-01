@@ -134,7 +134,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
     public FrameLayout getRootLayout() {
         if (rootLayout == null) {
             rootLayout = new FrameLayout(fragment.getParentActivity());
-            rootLayout.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, fragment.getResourceProvider()));
+            rootLayout.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray, fragment.getResourceProvider()));
 
             loadingView = getLoadingView();
             rootLayout.addView(loadingView, MATCH_PARENT, MATCH_PARENT);
@@ -148,6 +148,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
             LinearLayoutManager layoutManager = new LinearLayoutManager(fragment.getParentActivity());
             recyclerView = new RecyclerListView(fragment.getParentActivity());
             recyclerView.setAdapter(adapter);
+            recyclerView.setSections();
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setOnItemClickListener(this::onItemClick);
             recyclerView.setOnScrollListener(listScrollListener);
@@ -162,6 +163,10 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
             recyclerView.setItemAnimator(itemAnimator);
         }
         return rootLayout;
+    }
+
+    public RecyclerListView getRecyclerView() {
+        return recyclerView;
     }
 
     public void setShowLastItemDivider(boolean showLastItemDivider) {
@@ -638,12 +643,10 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                 default:
                 case 0:
                     MemberRequestCell cell = new MemberRequestCell(parent.getContext(), MemberRequestsDelegate.this, isChannel);
-                    cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, fragment.getResourceProvider()));
                     view = cell;
                     break;
                 case 1:
                     view = new View(parent.getContext());
-                    view.setBackground(Theme.getThemedDrawableByKey(parent.getContext(), R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     break;
                 case 2:
                     view = new View(parent.getContext()) {
@@ -652,6 +655,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                             super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(dp(52), MeasureSpec.EXACTLY));
                         }
                     };
+                    view.setTag(RecyclerListView.TAG_NOT_SECTION);
                     break;
                 case 3:
                     view = new View(parent.getContext());
@@ -674,6 +678,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                     loadingView.setMemberRequestButton(isChannel);
                     loadingView.setIsSingleCell(true);
                     loadingView.setItemsCount(1);
+                    loadingView.setTag(RecyclerListView.TAG_NOT_SECTION);
                     view = loadingView;
                     break;
             }

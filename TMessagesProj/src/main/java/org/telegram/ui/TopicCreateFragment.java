@@ -37,6 +37,7 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_forum;
 import org.telegram.tgnet.tl.TL_stars;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -165,8 +166,8 @@ public class TopicCreateFragment extends BaseFragment {
                         if (response != null) {
                             TLRPC.Updates updates = (TLRPC.Updates) response;
                             for (int i = 0; i < updates.updates.size(); i++) {
-                                if (updates.updates.get(i) instanceof TLRPC.TL_updateMessageID) {
-                                    TLRPC.TL_updateMessageID updateMessageID = (TLRPC.TL_updateMessageID) updates.updates.get(i);
+                                if (updates.updates.get(i) instanceof TL_update.TL_updateMessageID) {
+                                    TL_update.TL_updateMessageID updateMessageID = (TL_update.TL_updateMessageID) updates.updates.get(i);
                                     TLRPC.TL_messageActionTopicCreate actionMessage = new TLRPC.TL_messageActionTopicCreate();
                                     actionMessage.title = topicName;
                                     TLRPC.TL_messageService message = new TLRPC.TL_messageService();

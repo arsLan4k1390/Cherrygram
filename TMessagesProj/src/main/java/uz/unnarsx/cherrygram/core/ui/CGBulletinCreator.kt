@@ -41,7 +41,7 @@ object CGBulletinCreator {
 
     fun createDebugSuccessBulletin(fragment: BaseFragment) {
         BulletinFactory.of(fragment)
-            .createSuccessBulletin(getString(R.string.OK))
+            .createSuccessBulletin(getString(R.string.YourPasswordSuccess))
             .setDuration(Bulletin.DURATION_LONG)
             .show()
     }

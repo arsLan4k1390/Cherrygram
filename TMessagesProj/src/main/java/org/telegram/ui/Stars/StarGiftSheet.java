@@ -62,9 +62,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
@@ -91,7 +89,6 @@ import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BillingController;
 import org.telegram.messenger.BirthdayController;
 import org.telegram.messenger.BotWebViewVibrationEffect;
-import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ChatThemeController;
 import org.telegram.messenger.DialogObject;
@@ -114,6 +111,7 @@ import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_stars;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -148,7 +146,6 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LinkSpanDrawable;
 import org.telegram.ui.Components.LoadingSpan;
-import org.telegram.ui.Components.PostsSearchContainer;
 import org.telegram.ui.Components.Premium.LimitPreviewView;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
@@ -161,7 +158,6 @@ import org.telegram.ui.Components.ShareAlert;
 import org.telegram.ui.Components.TableView;
 import org.telegram.ui.Components.Text;
 import org.telegram.ui.Components.TextHelper;
-import org.telegram.ui.Components.ThanosEffect;
 import org.telegram.ui.Components.ViewPagerFixed;
 import org.telegram.ui.Components.spoilers.SpoilersTextView;
 import org.telegram.ui.DialogsActivity;
@@ -184,7 +180,6 @@ import org.telegram.ui.TwoStepVerificationSetupActivity;
 import org.telegram.ui.bots.AffiliateProgramFragment;
 import org.telegram.ui.bots.BotWebViewSheet;
 
-import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -917,7 +912,7 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
             ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
                 if (res != null) {
                     MessageObject messageObject = null;
-                    for (TLRPC.TL_updateNewMessage upd : findUpdates(res, TLRPC.TL_updateNewMessage.class)) {
+                    for (TL_update.TL_updateNewMessage upd : findUpdates(res, TL_update.TL_updateNewMessage.class)) {
                         if (upd.message != null && upd.message.action instanceof TLRPC.TL_messageActionStarGiftUnique) {
                             messageObject = new MessageObject(currentAccount, upd.message, false, false);
                             break;
@@ -6039,15 +6034,15 @@ public class StarGiftSheet extends BottomSheetWithRecyclerListView implements No
             return 0;
         }
         TLRPC.Message message = null;
-        if (updates.update instanceof TLRPC.TL_updateNewMessage) {
-            message = ((TLRPC.TL_updateNewMessage) updates.update).message;
+        if (updates.update instanceof TL_update.TL_updateNewMessage) {
+            message = ((TL_update.TL_updateNewMessage) updates.update).message;
 //        } else if (updates.update instanceof TLRPC.TL_updateEditMessage) {
 //            message = ((TLRPC.TL_updateEditMessage) updates.update).message;
         } else if (updates.updates != null) {
             for (int i = 0; i < updates.updates.size(); ++i) {
                 final TLRPC.Update update = updates.updates.get(i);
-                if (update instanceof TLRPC.TL_updateNewMessage) {
-                    message = ((TLRPC.TL_updateNewMessage) update).message;
+                if (update instanceof TL_update.TL_updateNewMessage) {
+                    message = ((TL_update.TL_updateNewMessage) update).message;
                     break;
                 }// else if (update instanceof TLRPC.TL_updateEditMessage) {
 //                    message = ((TLRPC.TL_updateEditMessage) update).message;

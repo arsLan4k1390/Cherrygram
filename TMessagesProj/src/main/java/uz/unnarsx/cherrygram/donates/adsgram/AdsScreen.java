@@ -47,11 +47,12 @@ public class AdsScreen extends UniversalFragment {
 
     private AdsGramCell compactBannerCell;
     private AdsGramResponse adsGramResponseForCompactBanner;
-    private static final String compact_banner_id = "30776";
+    public static final String compact_banner_id = "30776";
 
     private AdsGramCell largeBannerCell;
     private AdsGramResponse adsGramResponseForLargeBanner;
-    private static final String large_banner_id = "30775";
+    public static final String large_banner_id = "30775";
+    public static final String large_banner_in_chats_id = "35471";
 
     @Override
     protected CharSequence getTitle() {
@@ -169,7 +170,16 @@ public class AdsScreen extends UniversalFragment {
         compactBannerCell = null;
         largeBannerCell = null;
 
-        int randomType = new Random().nextInt(3);
+        int randomType = new Random().nextInt(2);
+
+        expectedAds = 1;
+        if (randomType == 0) {
+            loadCompactAd();
+        } else {
+            loadLargeAd();
+        }
+
+        /*int randomType = new Random().nextInt(3);
 
         if (randomType == 0) {
             expectedAds = 1;
@@ -181,7 +191,7 @@ public class AdsScreen extends UniversalFragment {
             expectedAds = 2;
             loadCompactAd();
             loadLargeAd();
-        }
+        }*/
     }
 
     private void loadCompactAd() {
@@ -189,6 +199,10 @@ public class AdsScreen extends UniversalFragment {
                 compact_banner_id,
                 dp(100),
                 response -> {
+                    if (getContext() == null || getParentActivity() == null) {
+                        return;
+                    }
+
                     adsGramResponseForCompactBanner = response;
 
                     compactBannerCell = new AdsGramCell(getContext(), this, AdsGramCell.ViewType.BANNER_COMPACT);
@@ -203,6 +217,10 @@ public class AdsScreen extends UniversalFragment {
                 large_banner_id,
                 dp(250),
                 response -> {
+                    if (getContext() == null || getParentActivity() == null) {
+                        return;
+                    }
+
                     adsGramResponseForLargeBanner = response;
 
                     largeBannerCell = new AdsGramCell(getContext(), this, AdsGramCell.ViewType.BANNER_LARGE);
@@ -213,6 +231,10 @@ public class AdsScreen extends UniversalFragment {
     }
 
     private void loadSingleAd(String blockId, int adHeight, Consumer<AdsGramResponse> callback) {
+        if (getContext() == null || getParentActivity() == null) {
+            return;
+        }
+
         AdsGramApi adsGramApi = new AdsGramApi(getContext());
 
         AdsGramApi.fetchRealIp(ip -> {

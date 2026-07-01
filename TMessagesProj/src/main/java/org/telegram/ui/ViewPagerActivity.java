@@ -1,9 +1,14 @@
 package org.telegram.ui;
 
+import static org.telegram.messenger.AndroidUtilities.dpf2;
+
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Path;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -24,9 +29,8 @@ public abstract class ViewPagerActivity extends BaseFragment {
     protected final SparseArray<FragmentState> fragmentsArr = new SparseArray<>();
 
     protected FrameLayout contentView;
-    protected ViewPagerFixed viewPager;
+    protected ViewPagerActivityPagerLayout viewPager;
     private int initialFragmentPosition = -1;
-
 
     abstract protected int getStartPosition();
 
@@ -410,10 +414,35 @@ public abstract class ViewPagerActivity extends BaseFragment {
         }
     }
 
-    private class ViewPagerActivityPagerLayout extends ViewPagerFixed {
+    public class ViewPagerActivityPagerLayout extends ViewPagerFixed {
 
         public ViewPagerActivityPagerLayout(@NonNull Context context) {
             super(context);
+        }
+
+        private boolean tabletLayout;
+        public void setTabletLayout(boolean tabletLayout) {
+            if (this.tabletLayout == tabletLayout) return;
+            this.tabletLayout = tabletLayout;
+            invalidate();
+        }
+
+        private final Path clipPath = new Path();
+
+        @Override
+        protected void dispatchDraw(@NonNull Canvas canvas) {
+            if (tabletLayout) {
+                clipPath.rewind();
+                final float r = dpf2(24);
+                AndroidUtilities.rectTmp.set(0, AndroidUtilities.statusBarHeight, getWidth(), getHeight());
+                clipPath.addRoundRect(AndroidUtilities.rectTmp, r, r, Path.Direction.CW);
+                canvas.save();
+                canvas.clipPath(clipPath);
+            }
+            super.dispatchDraw(canvas);
+            if (tabletLayout) {
+                canvas.restore();
+            }
         }
 
         @Override
@@ -455,6 +484,16 @@ public abstract class ViewPagerActivity extends BaseFragment {
         @Override
         protected long getManualScrollDuration() {
             return 320L;
+        }
+
+        @Override
+        public void setLayoutParams(ViewGroup.LayoutParams params) {
+            super.setLayoutParams(params);
+        }
+
+        @Override
+        protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+            super.onLayout(changed, left, top, right, bottom);
         }
     }
 

@@ -41,7 +41,7 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.SvgHelper;
 import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.utils.FrameTickScheduler;
+import org.telegram.messenger.utils.Choreographer60FpsContent;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.NativeByteBuffer;
 import org.telegram.tgnet.TLRPC;
@@ -84,6 +84,7 @@ public class AnimatedEmojiDrawable extends Drawable {
     public static final int CACHE_TYPE_FORUM_TOPIC_PULL_DOWN = 22;
     public static final int CACHE_TYPE_MESSAGE_EFFECT_MINI = 23;
     public static final int CACHE_TYPE_ALERT_PREVIEW_LARGE_140 = 24;
+    public static final int CACHE_TYPE_ALERT_PREVIEW_LARGE_50 = 27;
     public static final int CACHE_TYPE_TOGGLEABLE_EDIT = 25;
     public static final int CACHE_TYPE_NOANIMATE_FOLDER = 26;
 
@@ -519,6 +520,8 @@ public class AnimatedEmojiDrawable extends Drawable {
             sizedp = 100;
         } else if (cacheType == CACHE_TYPE_FORUM_TOPIC_LARGE || cacheType == CACHE_TYPE_FORUM_TOPIC_PULL_DOWN) {
             sizedp = 56;
+        } else if (cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE_50) {
+            sizedp = 50;
         } else if (cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE_140) {
             sizedp = 140;
         } else if (this.cacheType == CACHE_TYPE_MESSAGE_EFFECT_MINI) {
@@ -599,7 +602,7 @@ public class AnimatedEmojiDrawable extends Drawable {
         if (cacheType == CACHE_TYPE_ALERT_PREVIEW_STATIC || cacheType == CACHE_TYPE_ALERT_PREVIEW_STATIC_WITH_THUMB) {
             onlyStaticPreview = true;
         }
-        if (cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE_140) {
+        if (cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE_140 || cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE_50) {
             onlyStaticPreview = false;
         }
         String filter = sizedp + "_" + sizedp;
@@ -684,7 +687,7 @@ public class AnimatedEmojiDrawable extends Drawable {
         if (cacheType == CACHE_TYPE_ALERT_PREVIEW_STATIC || cacheType == CACHE_TYPE_ALERT_PREVIEW_STATIC_WITH_THUMB || cacheType == CACHE_TYPE_ALERT_PREVIEW || cacheType == CACHE_TYPE_ALERT_PREVIEW_TAB_STRIP || cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE || cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE_140) {
             imageReceiver.setLayerNum(7);
         }
-        if (cacheType == CACHE_TYPE_ALERT_EMOJI_STATUS || cacheType == CACHE_TYPE_ALERT_STANDARD_EMOJI) {
+        if (cacheType == CACHE_TYPE_ALERT_EMOJI_STATUS || cacheType == CACHE_TYPE_ALERT_STANDARD_EMOJI || cacheType == AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_LARGE_50) {
             imageReceiver.setLayerNum(6656);
         }
         imageReceiver.setAspectFit(true);
@@ -699,7 +702,7 @@ public class AnimatedEmojiDrawable extends Drawable {
         }
         imageReceiver.setAllowDecodeSingleFrame(true);
         int roundRadius = 0;
-        if (cacheType == CACHE_TYPE_ALERT_PREVIEW_TAB_STRIP || cacheType == CACHE_TYPE_TAB_STRIP) {
+        if (cacheType == CACHE_TYPE_ALERT_PREVIEW_TAB_STRIP || cacheType == CACHE_TYPE_TAB_STRIP || cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE_50) {
             roundRadius = dp(6);
         } else if (cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE_140) {
             roundRadius = dp(14);
@@ -936,13 +939,15 @@ public class AnimatedEmojiDrawable extends Drawable {
     private static final Runnable cleanup = () -> {
         AndroidUtilities.cancelRunOnUIThread(AnimatedEmojiDrawable.cleanup);
         try {
-            for (int i = 0; i < globalEmojiCache.size(); ++i) {
-                final LongSparseArray<AnimatedEmojiDrawable> array = globalEmojiCache.valueAt(i);
-                for (int j = 0; j < array.size(); ++j) {
-                    final AnimatedEmojiDrawable drawable = array.valueAt(j);
-                    if (!drawable.attached) {
-                        array.removeAt(j);
-                        j--;
+            if (globalEmojiCache != null) {
+                for (int i = 0; i < globalEmojiCache.size(); ++i) {
+                    final LongSparseArray<AnimatedEmojiDrawable> array = globalEmojiCache.valueAt(i);
+                    for (int j = 0; j < array.size(); ++j) {
+                        final AnimatedEmojiDrawable drawable = array.valueAt(j);
+                        if (!drawable.attached) {
+                            array.removeAt(j);
+                            j--;
+                        }
                     }
                 }
             }
@@ -1227,9 +1232,9 @@ public class AnimatedEmojiDrawable extends Drawable {
                 particles.setBounds(bounds);
                 particles.process();
                 particles.draw(canvas, Theme.multAlpha(lastColor == null ? 0xFFFFFFFF : lastColor, particlesAlpha));
-                FrameTickScheduler.subscribe(invalidateRunnable, 15);
+                Choreographer60FpsContent.getInstance().addFrameCallback(invalidateRunnable, 15);
             } else {
-                FrameTickScheduler.unsubscribe(invalidateRunnable);
+                Choreographer60FpsContent.getInstance().removeFrameCallback(invalidateRunnable);
             }
             if (drawables[1] != null && progress < 1) {
                 drawables[1].setAlpha((int) (alpha * (1f - progress)));

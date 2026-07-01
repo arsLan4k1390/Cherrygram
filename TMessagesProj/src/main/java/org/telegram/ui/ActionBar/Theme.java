@@ -2010,6 +2010,10 @@ public class Theme {
         );
     }
 
+    public static int capAlpha(int color, float maxAlpha) {
+        return ColorUtils.setAlphaComponent(color, MathUtils.clamp(Color.alpha(color), 0, (int) (0xFF * maxAlpha)));
+    }
+
     public static int multAlpha(int color, float multiply) {
         if (multiply == 1f)
             return color;
@@ -10625,6 +10629,11 @@ public class Theme {
 
     public static Drawable getThemeDrawable(String drawableKey) {
         return defaultChatDrawables.get(drawableKey);
+    }
+
+    public static Drawable getThemeDrawable(String key, Theme.ResourcesProvider resourcesProvider) {
+        Drawable drawable = resourcesProvider != null ? resourcesProvider.getDrawable(key) : null;
+        return drawable != null ? drawable : defaultChatDrawables.get(key);
     }
 
     public static int getThemeDrawableColorKey(String drawableKey) {

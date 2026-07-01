@@ -131,6 +131,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.Vector;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_phone;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
@@ -3812,25 +3813,25 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                                     MessagesController.getInstance(currentAccount).processUpdates(updates, false);
                                     AndroidUtilities.runOnUIThread(() -> {
                                         int msg_id = 0;
-                                        if (updates.update instanceof TLRPC.TL_updateNewMessage) {
-                                            final TLRPC.TL_updateNewMessage updateNewMessage = (TLRPC.TL_updateNewMessage) updates.update;
+                                        if (updates.update instanceof TL_update.TL_updateNewMessage) {
+                                            final TL_update.TL_updateNewMessage updateNewMessage = (TL_update.TL_updateNewMessage) updates.update;
                                             if (updateNewMessage.message != null && updateNewMessage.message.action instanceof TLRPC.TL_messageActionConferenceCall) {
                                                 msg_id = updateNewMessage.message.id;
                                             }
-                                        } else if (updates.update instanceof TLRPC.TL_updateMessageID) {
-                                            final TLRPC.TL_updateMessageID u = (TLRPC.TL_updateMessageID) updates.update;
+                                        } else if (updates.update instanceof TL_update.TL_updateMessageID) {
+                                            final TL_update.TL_updateMessageID u = (TL_update.TL_updateMessageID) updates.update;
                                             msg_id = u.id;
                                         } else if (updates.updates != null) {
                                             for (int i = 0; i < updates.updates.size(); ++i) {
                                                 final TLRPC.Update u = updates.updates.get(i);
-                                                if (u instanceof TLRPC.TL_updateNewMessage) {
-                                                    final TLRPC.TL_updateNewMessage updateNewMessage = (TLRPC.TL_updateNewMessage) u;
+                                                if (u instanceof TL_update.TL_updateNewMessage) {
+                                                    final TL_update.TL_updateNewMessage updateNewMessage = (TL_update.TL_updateNewMessage) u;
                                                     if (updateNewMessage.message != null && updateNewMessage.message.action instanceof TLRPC.TL_messageActionConferenceCall) {
                                                         msg_id = updateNewMessage.message.id;
                                                         break;
                                                     }
-                                                } else if (u instanceof TLRPC.TL_updateMessageID) {
-                                                    msg_id = ((TLRPC.TL_updateMessageID) u).id;
+                                                } else if (u instanceof TL_update.TL_updateMessageID) {
+                                                    msg_id = ((TL_update.TL_updateMessageID) u).id;
                                                     break;
                                                 }
                                             }
@@ -5684,8 +5685,8 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                         TLRPC.Updates updates = (TLRPC.Updates) response;
                         for (int a = 0; a < updates.updates.size(); a++) {
                             TLRPC.Update update = updates.updates.get(a);
-                            if (update instanceof TLRPC.TL_updateGroupCall) {
-                                TLRPC.TL_updateGroupCall updateGroupCall = (TLRPC.TL_updateGroupCall) update;
+                            if (update instanceof TL_update.TL_updateGroupCall) {
+                                TL_update.TL_updateGroupCall updateGroupCall = (TL_update.TL_updateGroupCall) update;
                                 AndroidUtilities.runOnUIThread(() -> {
                                     call = new ChatObject.Call();
                                     call.call = new TLRPC.TL_groupCall();

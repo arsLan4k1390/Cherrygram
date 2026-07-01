@@ -14,6 +14,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.PatternMatcher;
@@ -148,11 +149,16 @@ public class MonetHelper {
         if (id == 0) {
             return 0;
         }
-        var color = context.getColor(id);
-        if (alpha != -1) {
-            color = ColorUtils.setAlphaComponent(color, alpha);
+        try {
+            var color = context.getColor(id);
+            if (alpha != -1) {
+                color = ColorUtils.setAlphaComponent(color, alpha);
+            }
+            return color;
+        } catch (Resources.NotFoundException e) {
+            CherrygramLogger.e(() -> "Color resource not found. key=" + key + ", id=" + id + ", rawColor=" + rawColor, e);
+            return 0;
         }
-        return color;
     }
 
     @SuppressLint("NewApi")
