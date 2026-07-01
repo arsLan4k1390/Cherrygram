@@ -639,6 +639,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     protected Activity parentActivity;
     private final boolean main;
     private boolean isLayersLayout;
+    private boolean isRightLayout;
 
     public List<BaseFragment> fragmentsStack;
     public List<BackButtonMenu.PulledDialog> pulledDialogs;
@@ -674,6 +675,20 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
     public void setIsLayersLayout() {
         isLayersLayout = true;
+    }
+
+    public void setIsRightLayout() {
+        isRightLayout = true;
+    }
+
+    @Override
+    public boolean isRightLayout() {
+        return isRightLayout;
+    }
+
+    @Override
+    public boolean isLayersLayout() {
+        return isLayersLayout;
     }
 
     @Override
@@ -1015,7 +1030,17 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     @Override
     protected void dispatchDraw(Canvas canvas) {
         withShadow = true;
+        if (isLayersLayout) {
+            canvas.save();
+            final float r = dp(24);
+            AndroidUtilities.rectTmp.set(0, 0, getWidth(), getHeight());
+            clipPath.addRoundRect(AndroidUtilities.rectTmp, r, r, Path.Direction.CW);
+            canvas.clipPath(clipPath);
+        }
         super.dispatchDraw(canvas);
+        if (isLayersLayout) {
+            canvas.restore();
+        }
     }
 
     private final AnimatedFloat hasSheetsAnimator = new AnimatedFloat(this, 280, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -1082,6 +1107,14 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                     radii[2] = radii[3] = topRight == null ? 0 : topRight.getRadius();
                     radii[4] = radii[5] = bottomRight == null ? 0 : bottomRight.getRadius();
                     radii[6] = radii[7] = bottomLeft == null ? 0 : bottomLeft.getRadius();
+
+                    if (isRightLayout) {
+                        final float factor = Utilities.clamp01(Math.abs(translationX) / dpf2(12));
+                        radii[0] *= factor;
+                        radii[1] *= factor;
+                        radii[6] *= factor;
+                        radii[7] *= factor;
+                    }
 
                     clipPath.rewind();
                     clipPath.addRoundRect(AndroidUtilities.rectTmp, radii, Path.Direction.CW);
@@ -2331,6 +2364,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 };
                 ArrayList<Animator> animators = new ArrayList<>();
                 animators.add(ObjectAnimator.ofFloat(this, View.ALPHA, 0.0f, 1.0f));
+                animators.add(ObjectAnimator.ofFloat(this, View.SCALE_X, 0.9f, 1.0f));
+                animators.add(ObjectAnimator.ofFloat(this, View.SCALE_Y, 0.9f, 1.0f));
                 if (backgroundView != null) {
                     backgroundView.setVisibility(VISIBLE);
                     animators.add(ObjectAnimator.ofFloat(backgroundView, View.ALPHA, 0.0f, 1.0f));
@@ -2341,7 +2376,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 fragment.onTransitionAnimationStart(true, false);
                 currentAnimation = new AnimatorSet();
                 currentAnimation.playTogether(animators);
-                currentAnimation.setInterpolator(accelerateDecelerateInterpolator);
+                currentAnimation.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
                 currentAnimation.setDuration(200);
                 currentAnimation.addListener(new AnimatorListenerAdapter() {
                     @Override
@@ -2943,6 +2978,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
                 ArrayList<Animator> animators = new ArrayList<>();
                 animators.add(ObjectAnimator.ofFloat(this, View.ALPHA, 1.0f, 0.0f));
+                animators.add(ObjectAnimator.ofFloat(this, View.SCALE_X, 1.0f, 0.9f));
+                animators.add(ObjectAnimator.ofFloat(this, View.SCALE_Y, 1.0f, 0.9f));
                 if (backgroundView != null) {
                     animators.add(ObjectAnimator.ofFloat(backgroundView, View.ALPHA, 1.0f, 0.0f));
                 }
@@ -3766,7 +3803,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             ViewCompat.dispatchApplyWindowInsets(child, WindowInsetsCompat.CONSUMED);
             return;
         }
-
 
         final Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
         final Insets systemWithImeInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars()

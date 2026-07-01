@@ -5,14 +5,12 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.DynamicDrawableSpan;
 import android.util.LongSparseArray;
-import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import androidx.annotation.Nullable;
@@ -21,6 +19,8 @@ import org.telegram.messenger.utils.tlutils.TlUtils;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_forum;
+import org.telegram.tgnet.tl.TL_iv;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.TypingDotsDrawable;
@@ -45,6 +45,38 @@ public class BotForumHelper extends BaseController {
 
         message.entities = text.entities;
         message.flags |= 128;
+
+        message.date = getConnectionsManager().getCurrentTime();
+
+        message.reply_to = new TLRPC.TL_messageReplyHeader();
+        message.flags |= 16;
+
+        message.reply_to.forum_topic = true;
+        message.reply_to.reply_to_top_id = topicId;
+        message.reply_to.flags |= 2;
+
+        message.media = new TLRPC.TL_messageMediaEmpty();
+        message.flags |= 512;
+
+        MessageObject messageObject = new MessageObject(currentAccount, message, false, true);
+        messageObject.isBotPendingDraft = true;
+        messageObject.resetLayout();
+
+        return messageObject;
+    }
+
+    private MessageObject createDraftMessage(long userId, int topicId, long randomId, int messageId, TL_iv.RichMessage rich_message) {
+        TLRPC.Message message = new TLRPC.TL_message();
+        message.dialog_id = userId;
+        message.peer_id = getMessagesController().getPeer(userId);
+        message.from_id = getMessagesController().getPeer(userId);
+        message.id = message.local_id = messageId;
+        message.random_id = randomId;
+
+        message.message = "";
+
+        message.flags |= TLObject.FLAG_13;
+        message.rich_message = rich_message;
 
         message.date = getConnectionsManager().getCurrentTime();
 
@@ -114,6 +146,52 @@ public class BotForumHelper extends BaseController {
             new BotForumTextDraftUpdateNotification(userId, topicId, draftMessage.messageObject, isNew));
     }
 
+    public void onBotForumDraftUpdate(long userId, int topicId, long randomId, TL_iv.RichMessage text) {
+        FileLog.d("[BotForum] onDraftNewDraft (rich_message) " + userId + " " + topicId + " " + randomId);
+
+        LongSparseArray<BotDraftMessage> drafts = botTextDraftsByRandomIds.get(userId, topicId);
+        long[] toRemove = null;
+        if (drafts != null && drafts.size() > 0) {
+            toRemove = new long[drafts.size()];
+            for (int a = 0, N = drafts.size(); a < N; a++) {
+                toRemove[a] = drafts.keyAt(a);
+            }
+        }
+
+        BotDraftMessage draftMessage = botTextDraftsByRandomIds.get(userId, topicId, randomId);
+        if (draftMessage == null) {
+            draftMessage = new BotDraftMessage(userId, topicId, randomId, getUserConfig().getNewMessageId());
+            botTextDraftsByRandomIds.put(userId, topicId, randomId, draftMessage);
+        }
+
+        if (toRemove != null) {
+            for (long id: toRemove) {
+                if (id == randomId) {
+                    continue;
+                }
+                BotDraftMessage deletedMessage = drafts.get(id);
+                if (deletedMessage.selfDestruct != null) {
+                    AndroidUtilities.cancelRunOnUIThread(deletedMessage.selfDestruct);
+                }
+                onBotForumDraftTimeout(userId, topicId, id);
+            }
+        }
+
+        final boolean isNew = draftMessage.messageObject == null;
+        if (draftMessage.selfDestruct != null) {
+            AndroidUtilities.cancelRunOnUIThread(draftMessage.selfDestruct);
+        }
+
+        draftMessage.selfDestruct = () -> onBotForumDraftTimeout(userId, topicId, randomId);
+        draftMessage.richMessage = text;
+        draftMessage.messageObject = createDraftMessage(userId, topicId, randomId, draftMessage.localMessageId, text);
+
+        AndroidUtilities.runOnUIThread(draftMessage.selfDestruct, getAppGlobalConfig().messageTypingDraftTtl.get(TimeUnit.MILLISECONDS));
+
+        getNotificationCenter().postNotificationName(NotificationCenter.botForumDraftUpdate,
+                new BotForumTextDraftUpdateNotification(userId, topicId, draftMessage.messageObject, isNew));
+    }
+
     public boolean hasBotForumDrafts(long userId, int topicId) {
         LongSparseArray<BotDraftMessage> messages = botTextDraftsByRandomIds.get(userId, topicId);
         return messages != null && messages.size() > 0;
@@ -132,7 +210,7 @@ public class BotForumHelper extends BaseController {
                 bestDraftMessage = draftMessage;
             }
 
-            if (message.startsWith(draftMessage.text.text)) {
+            if (message != null && draftMessage.text != null && message.startsWith(draftMessage.text.text)) {
                 bestDraftMessage = draftMessage;
                 break;
             }
@@ -173,6 +251,7 @@ public class BotForumHelper extends BaseController {
 
         private Runnable selfDestruct;
         private TLRPC.TL_textWithEntities text;
+        private TL_iv.RichMessage richMessage;
         private MessageObject messageObject;
 
         private BotDraftMessage(long userId, int topicId, long randomId, int localMessageId) {
@@ -296,10 +375,10 @@ public class BotForumHelper extends BaseController {
 
             getMessagesController().processUpdates(updates, false);
 
-            TLRPC.TL_updateMessageID updateMessageID = null;
+            TL_update.TL_updateMessageID updateMessageID = null;
             for (TLRPC.Update update: updates.updates) {
-                if (update instanceof TLRPC.TL_updateMessageID) {
-                    updateMessageID = (TLRPC.TL_updateMessageID) update;
+                if (update instanceof TL_update.TL_updateMessageID) {
+                    updateMessageID = (TL_update.TL_updateMessageID) update;
                     break;
                 }
             }

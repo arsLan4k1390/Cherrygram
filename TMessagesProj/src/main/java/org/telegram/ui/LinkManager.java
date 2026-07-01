@@ -33,12 +33,12 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_aicompose;
 import org.telegram.tgnet.tl.TL_phone;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.Components.AIEditorAlert;
 import org.telegram.ui.Components.AlertsCreator;
-import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CreateBotAlert;
 import org.telegram.ui.Components.Premium.boosts.UserSelectorBottomSheet;
@@ -435,7 +435,7 @@ public class LinkManager {
                                     MessagesController.getInstance(currentAccount).putChats(updates.chats, false);
 
                                     TLRPC.GroupCall groupCall = null;
-                                    for (TLRPC.TL_updateGroupCall u : findUpdatesAndRemove(updates, TLRPC.TL_updateGroupCall.class)) {
+                                    for (TL_update.TL_updateGroupCall u : findUpdatesAndRemove(updates, TL_update.TL_updateGroupCall.class)) {
                                         groupCall = u.call;
                                     }
 
@@ -1409,7 +1409,7 @@ public class LinkManager {
             } else if (err != null) {
                 if ("AICOMPOSE_TONE_SLUG_INVALID".equalsIgnoreCase(err.text)) {
                     getBulletinFactory()
-                        .createSimpleBulletin(R.raw.error, "AI Style not found.")
+                        .createSimpleBulletin(R.raw.error, getString(R.string.AIEditorStyleNotFound))
                         .show();
                 } else {
                     getBulletinFactory().showForError(err);

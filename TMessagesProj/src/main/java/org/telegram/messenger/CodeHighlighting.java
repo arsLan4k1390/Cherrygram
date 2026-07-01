@@ -137,7 +137,7 @@ public class CodeHighlighting {
             super(text);
         }
 
-        private boolean ready;
+        public boolean ready = false;
         public void unlock() {
             this.ready = true;
         }
@@ -169,6 +169,43 @@ public class CodeHighlighting {
         @Override
         public int getSpanFlags(Object what) {
             if (!ready) return 0;
+            return super.getSpanFlags(what);
+        }
+    }
+    public static class LockedWithFallbackSpannableString extends LockedSpannableString {
+        public SpannableStringBuilder fallback;
+        public LockedWithFallbackSpannableString(CharSequence text, SpannableStringBuilder fallback) {
+            super(text);
+            this.fallback = fallback;
+        }
+
+        @Override
+        public <T> T[] getSpans(int queryStart, int queryEnd, Class<T> kind) {
+            if (!ready && fallback != null) return fallback.getSpans(queryStart, queryEnd, kind);
+            return super.getSpans(queryStart, queryEnd, kind);
+        }
+
+        @Override
+        public int nextSpanTransition(int start, int limit, Class kind) {
+            if (!ready && fallback != null) return fallback.nextSpanTransition(start, limit, kind);
+            return super.nextSpanTransition(start, limit, kind);
+        }
+
+        @Override
+        public int getSpanStart(Object what) {
+            if (!ready && fallback != null) return fallback.getSpanStart(what);
+            return super.getSpanStart(what);
+        }
+
+        @Override
+        public int getSpanEnd(Object what) {
+            if (!ready && fallback != null) return fallback.getSpanEnd(what);
+            return super.getSpanEnd(what);
+        }
+
+        @Override
+        public int getSpanFlags(Object what) {
+            if (!ready && fallback != null) return fallback.getSpanFlags(what);
             return super.getSpanFlags(what);
         }
     }

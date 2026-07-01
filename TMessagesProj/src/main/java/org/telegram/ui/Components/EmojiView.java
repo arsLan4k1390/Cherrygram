@@ -7850,6 +7850,7 @@ public class EmojiView extends FrameLayout implements
 
         private final ArrayList<MediaDataController.KeywordResult> result = new ArrayList<>();
         private final ArrayList<MediaDataController.KeywordResult> resultPre = new ArrayList<>();
+        private final ArrayList<MediaDataController.KeywordResult> resultGlobal = new ArrayList<>();
         private final ArrayList<EmojiPackInfo> packs = new ArrayList<>();
         private String lastSearchEmojiString;
         private String lastSearchAlias;
@@ -7960,6 +7961,13 @@ public class EmojiView extends FrameLayout implements
             }
         }
 
+        private int globalSectionStart() {
+            int start = 1; // searchfield
+            if (!packs.isEmpty()) start += 2; // packs row + local header
+            else if (!result.isEmpty()) start += 1; // local header only
+            start += result.size();
+            return start;
+        }
 
         @Override
         public int getItemCount() {
@@ -7967,18 +7975,26 @@ public class EmojiView extends FrameLayout implements
                 return 3 + selectedPackStickers.size() + 1;
             }
 
-            if (result.isEmpty() && packs.isEmpty() && !searchWas) {
+            if (result.isEmpty() && resultGlobal.isEmpty() && packs.isEmpty() && !searchWas) {
                 return getRecentEmoji().size() + 1;
             }
-            if (!result.isEmpty() || !packs.isEmpty()) {
-                return result.size() + 1;
+            if (!result.isEmpty() || !resultGlobal.isEmpty() || !packs.isEmpty()) {
+                int count = 1; // searchfield
+                if (!packs.isEmpty()) count += 2; // packs + local header
+                else if (!result.isEmpty()) count += 1; // local header only
+                count += result.size();
+                if (!resultGlobal.isEmpty()) {
+                    count += 1; // global header
+                    count += resultGlobal.size();
+                }
+                return count;
             }
             return 2;
         }
 
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
-            return holder.getItemViewType() == 0 || holder.getItemViewType() == VIEW_TYPE_PACKS;
+            return holder.getItemViewType() == VIEW_TYPE_EMOJI || holder.getItemViewType() == VIEW_TYPE_PACKS;
         }
 
         @Override
@@ -8130,6 +8146,8 @@ public class EmojiView extends FrameLayout implements
                     position--;
                     if (!packs.isEmpty() || selectedPackId != 0) {
                         position -= 2;
+                    } else if (!result.isEmpty()) {
+                        position -= 1;
                     }
 
                     Long customEmojiId = null;
@@ -8138,17 +8156,17 @@ public class EmojiView extends FrameLayout implements
                     if (selectedPackId != 0) {
                         document = selectedPackStickers.get(position);
                         recent = false;
-                    } else if (result.isEmpty() && !searchWas) {
+                    } else if (result.isEmpty() && resultGlobal.isEmpty() && !searchWas) {
                         coloredCode = code = getRecentEmoji().get(position);
                         recent = true;
                     } else {
-                        //if (position >= 0 && position < packs.size()) {
-                        //    document = packs.get(position);
-                        //} else {
-                        //    position -= packs.size();
-                            coloredCode = code = result.get(position).emoji;
-                        //}
                         recent = false;
+                        if (position < result.size()) {
+                            coloredCode = code = result.get(position).emoji;
+                        } else {
+                            int globalIndex = position - result.size() - 1;
+                            coloredCode = code = resultGlobal.get(globalIndex).emoji;
+                        }
                     }
 
                     if (code != null && code.startsWith("animated_")) {
@@ -8188,6 +8206,8 @@ public class EmojiView extends FrameLayout implements
                     StickerSetNameCell cell = (StickerSetNameCell) holder.itemView;
                     if (selectedPackId != 0) {
                         cell.setText(formatPluralString("EmojiCount", selectedPackStickers.size()), 0);
+                    } else if (position == globalSectionStart()) {
+                        cell.setText(getString(R.string.StickerOrEmojiGlobalSearchResult), 0);
                     } else {
                         cell.setText(getString(R.string.StickerOrEmojiSearchResult), 0);
                     }
@@ -8214,7 +8234,7 @@ public class EmojiView extends FrameLayout implements
 
             if (position == 0) {
                 return VIEW_TYPE_SEARCHFIELD;
-            } else if (position == 1 && searchWas && result.isEmpty() && packs.isEmpty()) {
+            } else if (position == 1 && searchWas && result.isEmpty() && resultGlobal.isEmpty() && packs.isEmpty()) {
                 return VIEW_TYPE_HELP;
             }
             if (!packs.isEmpty()) {
@@ -8224,6 +8244,11 @@ public class EmojiView extends FrameLayout implements
                 if (position == 2) {
                     return VIEW_TYPE_HEADER;
                 }
+            } else if (!result.isEmpty() && position == 1) {
+                return VIEW_TYPE_HEADER;
+            }
+            if (!resultGlobal.isEmpty() && position == globalSectionStart()) {
+                return VIEW_TYPE_HEADER;
             }
             return VIEW_TYPE_EMOJI;
         }
@@ -8263,10 +8288,9 @@ public class EmojiView extends FrameLayout implements
                         emojiSearchField.showProgress(true);
                         searchEmoji(() -> {
                             emojiSearchField.showProgress(false);
-                            isCompleted = (result.size() - resultPre.size()) >= searchResult.size();
-                            result.clear();
-                            result.addAll(resultPre);
-                            result.addAll(searchResult);
+                            isCompleted = (resultGlobal.size()) >= searchResult.size();
+                            resultGlobal.clear();
+                            resultGlobal.addAll(searchResult);
                             notifyDataSetChanged();
                         }, searchResult, true);
                     }
@@ -8316,8 +8340,7 @@ public class EmojiView extends FrameLayout implements
                                             next.run();
                                         });
                                     },
-                                next -> {
-                                    if (Emoji.fullyConsistsOfEmojis(query)) {
+                                    next -> {
                                         MediaDataController.getInstance(currentAccount).getEmojiSuggestions(lastSearchKeyboardLanguage, lastSearchEmojiString, false, (param, alias) -> {
                                             if (!query.equals(lastSearchEmojiString)) {
                                                 return;
@@ -8327,9 +8350,6 @@ public class EmojiView extends FrameLayout implements
 
                                             next.run();
                                         }, null, SharedConfig.suggestAnimatedEmoji || UserConfig.getInstance(currentAccount).isPremium(), false, true, 25);
-                                    } else {
-                                        next.run();
-                                    }
                                 },
                                 next -> {
                                     if (SharedConfig.suggestAnimatedEmoji || UserConfig.getInstance(currentAccount).isPremium()) {
@@ -8397,7 +8417,8 @@ public class EmojiView extends FrameLayout implements
                                     }
                                     result.clear();
                                     result.addAll(resultPre);
-                                    result.addAll(searchResult);
+                                    resultGlobal.clear();
+                                    resultGlobal.addAll(searchResult);
                                     packs.clear();
 
                                     final LongSparseIntArray f = new LongSparseIntArray();
@@ -9177,6 +9198,8 @@ public class EmojiView extends FrameLayout implements
         private ArrayList<ArrayList<TLRPC.Document>> emojiArrays = new ArrayList<>();
         private ArrayList<EmojiPackInfo> foundEmojiPacks = new ArrayList<>();
 
+        private ArrayList<TLRPC.Document> globalSearchArray = new ArrayList<>();
+
         private int reqId;
         private int reqId2;
 
@@ -9203,9 +9226,7 @@ public class EmojiView extends FrameLayout implements
                     return;
                 }
 
-                if (!emojiStickersArray.isEmpty() && !emojiArrays.contains(emojiStickersArray)) {
-                    emojiArrays.add(emojiStickersArray);
-                }
+                emojiArrays.remove(emojiStickersArray);
 
                 StickersSearchGridAdapter.this.localPacks = localPacks;
                 StickersSearchGridAdapter.this.localPacksByShortName = localPacksByShortName;
@@ -9213,6 +9234,7 @@ public class EmojiView extends FrameLayout implements
                 StickersSearchGridAdapter.this.emojiStickers = emojiStickers;
                 StickersSearchGridAdapter.this.emojiArrays = emojiArrays;
                 StickersSearchGridAdapter.this.foundEmojiPacks = foundEmojiPacks;
+                StickersSearchGridAdapter.this.globalSearchArray = new ArrayList<>(emojiStickersArray);
                 stickersSearchField.showProgress(false);
 
                 if (stickersGridView.getAdapter() != stickersSearchGridAdapter) {
@@ -9261,7 +9283,7 @@ public class EmojiView extends FrameLayout implements
                         MediaDataController.getInstance(currentAccount).fetchNewEmojiKeywords(newLanguage);
                     }
                     lastSearchKeyboardLanguage = newLanguage;
-                    MediaDataController.getInstance(currentAccount).getEmojiSuggestions(lastSearchKeyboardLanguage, searchQuery, false, (param, alias) -> {
+                    MediaDataController.getInstance(currentAccount).getEmojiSuggestions(lastSearchKeyboardLanguage, searchQuery, true, (param, alias) -> {
                         if (emojiSearchId != lastId) {
                             return;
                         }
@@ -9487,8 +9509,8 @@ public class EmojiView extends FrameLayout implements
 
                             this::searchStickerSets,
                             this::searchStickerSetsByName,
-                            // this::addFromAllStickers,
-                            // this::addFromSuggestions,
+                            this::addFromAllStickers,
+                            this::addFromSuggestions,
                             this::addLocalPacks,
                             this::searchStickers
                     );
@@ -9513,8 +9535,8 @@ public class EmojiView extends FrameLayout implements
 
                 stickersSearchField.showProgress(true);
                 Utilities.raceCallbacks(
-                    this::searchFinish,
-                    n -> searchStickerSets(n, true)
+                        this::searchFinish,
+                        n -> searchStickerSets(n, true)
                 );
             }
         };
@@ -9578,7 +9600,7 @@ public class EmojiView extends FrameLayout implements
 
             if (selectedPackId != 0 && selectedPackStickers.size() < selectedPackStickerSet.count) {
                 TLRPC.TL_messages_stickerSet messagesStickerSet = MediaDataController.getInstance(currentAccount)
-                    .getStickerSet(selectedPackStickerSet, false);
+                        .getStickerSet(selectedPackStickerSet, false);
                 if (messagesStickerSet != null) {
                     selectedPackStickers = messagesStickerSet.documents;
                 }
@@ -9631,7 +9653,7 @@ public class EmojiView extends FrameLayout implements
         @Override
         public int getItemCount() {
             if (totalItems != 1) {
-                return totalItems + 1; // + (selectedPackId != 0 ? 1 : 0);
+                return totalItems + 1;
             } else {
                 return 2;
             }
@@ -9654,6 +9676,7 @@ public class EmojiView extends FrameLayout implements
                 searchQuery = null;
                 localPacks.clear();
                 emojiStickers.clear();
+                globalSearchArray = new ArrayList<>();
                 if (stickersGridView.getAdapter() != stickersGridAdapter) {
                     stickersGridView.setAdapter(stickersGridAdapter);
                 }
@@ -9935,31 +9958,24 @@ public class EmojiView extends FrameLayout implements
                 return;
             }
 
-            for (int a = -1, emojiCount = (emojiArrays.isEmpty() ? 0 : 1); a < emojiCount; a++) {
-                if (a == -1) {
-                    cache.put(totalItems++, "search");
-                    startRow++;
+            final boolean hasLocalEmoji = !emojiArrays.isEmpty();
+            final boolean hasGlobalEmoji = globalSearchArray != null && !globalSearchArray.isEmpty();
 
-                    if (localCount > 0) {
-                        // cache.put(totalItems++, "Added packs");
-                        cache.put(foundPacksRow = totalItems++, "packs");
-                        startRow++;
+            cache.put(totalItems++, "search");
+            startRow++;
 
-                        if (emojiCount > 0) {
-                            cache.put(totalItems++, getString(R.string.StickerOrEmojiSearchResult));
-                            startRow++;
-                        }
-                    }
+            if (localCount > 0) {
+                cache.put(foundPacksRow = totalItems++, "packs");
+                startRow++;
+            }
 
-                    continue;
-                }
-
-                ArrayList<TLRPC.Document> documents;
-                int idx = a;
+            if (hasLocalEmoji) {
+                cache.put(totalItems++, getString(R.string.StickerOrEmojiSearchResult));
+                startRow++;
                 int documentsCount = 0;
                 String lastEmoji = "";
                 for (int i = 0, N = emojiArrays.size(); i < N; i++) {
-                    documents = emojiArrays.get(i);
+                    ArrayList<TLRPC.Document> documents = emojiArrays.get(i);
                     String emoji = emojiStickers.get(documents);
                     if (emoji != null && !lastEmoji.equals(emoji)) {
                         lastEmoji = emoji;
@@ -9985,6 +10001,40 @@ public class EmojiView extends FrameLayout implements
                 }
                 totalItems += count * stickersGridAdapter.stickersPerRow;
                 startRow += count;
+            }
+
+            if (hasGlobalEmoji) {
+                cache.put(totalItems++, getString(R.string.StickerOrEmojiGlobalSearchResult));
+                startRow++;
+
+                int documentsCount = 0;
+                String emoji = emojiStickers.get(globalSearchArray);
+                if (emoji != null) {
+                    positionToEmoji.put(totalItems, emoji);
+                }
+                for (int b = 0, size = globalSearchArray.size(); b < size; b++) {
+                    int num = documentsCount + totalItems;
+                    int row = startRow + documentsCount / stickersGridAdapter.stickersPerRow;
+
+                    TLRPC.Document document = globalSearchArray.get(b);
+                    cache.put(num, document);
+                    Object parent = MediaDataController.getInstance(currentAccount).getStickerSetById(MediaDataController.getStickerSetId(document));
+                    if (parent != null) {
+                        cacheParent.put(num, parent);
+                    }
+                    positionToRow.put(num, row);
+                    documentsCount++;
+                }
+                int count = (int) Math.ceil(documentsCount / (float) stickersGridAdapter.stickersPerRow);
+                for (int b = 0; b < count; b++) {
+                    rowStartPack.put(startRow + b, documentsCount);
+                }
+                totalItems += count * stickersGridAdapter.stickersPerRow;
+                startRow += count;
+            }
+
+            if (!hasLocalEmoji && !hasGlobalEmoji && localCount == 0) {
+                totalItems = 1;
             }
         }
     }

@@ -53,6 +53,7 @@ import java.util.Locale;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseCrashlyticsHelper;
@@ -345,6 +346,7 @@ public class ApplicationLoader extends Application {
         }
 
         NativeLoader.initNativeLibs(ApplicationLoader.applicationContext);
+
         try {
             ConnectionsManager.native_setJava(false);
         } catch (UnsatisfiedLinkError error) {
@@ -375,25 +377,34 @@ public class ApplicationLoader extends Application {
     }
 
     public static void startPushService() {
+        if (applicationContext == null) {
+            return;
+        }
+
         SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
+        if (preferences == null) {
+            return;
+        }
+
         boolean enabled;
         if (preferences.contains("pushService")) {
             enabled = preferences.getBoolean("pushService", true);
         } else {
             enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
         }
-        if (enabled) {
-            try {
+
+        try {
+            if (enabled) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && CherrygramCoreConfig.INSTANCE.getResidentNotification()) {
                     applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
                 } else {
                     applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
                 }
-            } catch (Throwable ignore) {
-
+            } else {
+                applicationContext.stopService(new Intent(applicationContext, NotificationsService.class));
             }
-        } else {
-            applicationContext.stopService(new Intent(applicationContext, NotificationsService.class));
+        } catch (Throwable e) {
+            CherrygramLogger.e(e);
         }
     }
 

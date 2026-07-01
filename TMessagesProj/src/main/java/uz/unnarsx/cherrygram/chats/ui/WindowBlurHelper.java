@@ -47,9 +47,6 @@ public class WindowBlurHelper {
                     RenderEffect.createBlurEffect(windowBlurRadius, windowBlurRadius, Shader.TileMode.DECAL)
             );
 
-            // --------------------------
-            // Dim (затемнение)
-            // --------------------------
             int alpha = (int) (Math.max(0f, Math.min(1f, windowDimAlpha)) * 255);
             root.setForeground(new ColorDrawable(alpha << 24));
 

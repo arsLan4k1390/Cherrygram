@@ -3,7 +3,6 @@ package org.telegram.messenger.video;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -11,8 +10,7 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
-import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Components.AnimatedFileDrawable;
+import org.telegram.ui.Components.AnimatedFileNative;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,7 +69,7 @@ public class VideoFramesRewinder {
             return;
         }
         stop.set(false);
-        ptr = AnimatedFileDrawable.createDecoder(file.getAbsolutePath(), meta, UserConfig.selectedAccount, 0, null, true);
+        ptr = AnimatedFileNative.createDecoder(file.getAbsolutePath(), meta, UserConfig.selectedAccount, 0, null, true);
     }
 
     private final ArrayList<Frame> freeFrames = new ArrayList<>();
@@ -106,7 +104,7 @@ public class VideoFramesRewinder {
             h = (int) (h * scale);
         }
         final long toMs = prepareToMs;
-        AnimatedFileDrawable.seekToMs(ptr, toMs - (long) (350 * prepareWithSpeed), meta, false);
+        AnimatedFileNative.seekToMs(ptr, toMs - (long) (350 * prepareWithSpeed), meta, false);
         long ms = meta[3];
         int triesCount = 0;
         for (int i = 0; meta[3] <= until.get() && i < maxFramesCount && !stop.get(); ++i) {
@@ -127,9 +125,9 @@ public class VideoFramesRewinder {
                 }
             }
             while (meta[3] + (long) Math.ceil(1000.0f / fps) < nextms) {
-                AnimatedFileDrawable.getVideoFrame(ptr, null, meta, true, 0, meta[4], false);
+                AnimatedFileNative.getVideoFrame(ptr, null, meta, true, 0, meta[4], false);
             }
-            if (0 == AnimatedFileDrawable.getVideoFrame(ptr, frame.bitmap, meta, true, 0, meta[4], false)) {
+            if (0 == AnimatedFileNative.getVideoFrame(ptr, frame.bitmap, meta, true, 0, meta[4], false)) {
                 triesCount++;
                 if (triesCount > 6) break;
                 continue;
@@ -237,7 +235,7 @@ public class VideoFramesRewinder {
             destroyAfterPrepare = true;
             return;
         }
-        AnimatedFileDrawable.destroyDecoder(ptr);
+        AnimatedFileNative.destroyDecoder(ptr);
         ptr = 0;
         destroyAfterPrepare = false;
         clearCurrent();

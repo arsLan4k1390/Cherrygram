@@ -58,6 +58,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.AlertDialogDecor;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.FloatingToolbar;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.LaunchActivity;
 
@@ -73,7 +74,6 @@ public class EditTextCaption extends EditTextBoldCursor {
     private int userNameLength;
     private int xOffset;
     private int yOffset;
-    private int triesCount = 0;
     private boolean copyPasteShowed;
     private int hintColor;
     private EditTextCaptionDelegate delegate;

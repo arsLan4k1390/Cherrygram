@@ -1253,7 +1253,9 @@ public class ItemOptions {
         } else if (animateToWidth != 0 && animateToHeight != 0) {
             scrimViewBounds.set(0, 0, animateToWidth, animateToHeight);
         } else {
-            scrimViewBounds.set(0, 0, scrimView.getMeasuredWidth(), scrimView.getMeasuredHeight());
+            if (scrimView != null) {
+                scrimViewBounds.set(0, 0, scrimView.getMeasuredWidth(), scrimView.getMeasuredHeight());
+            }
         }
         x += scrimViewBounds.left;
         y += scrimViewBounds.top;
@@ -1795,7 +1797,7 @@ public class ItemOptions {
             if (blur) {
                 blurPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
                 scrimView.setAlpha(0.0f);
-                ScrimOptions.makeGlobalBlurBitmaps((bitmapBg, bitmapOptions) -> {
+                ScrimOptions.makeGlobalBlurBitmaps(pointContainer, (bitmapBg, bitmapOptions) -> {
                     scrimView.setAlpha(1.0f);
                     blurBitmap = bitmapBg;
                     if (scrimBlur3SourceBitmap != null) {

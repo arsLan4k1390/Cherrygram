@@ -37,6 +37,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     /** Appearance start */
     var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
+    var centerChatTitle_AdaptiveWidth by sharedPreferences.boolean("AP_CenterChatTitle_AdaptiveWidth", true)
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
 
     /** Chat shortcuts start */

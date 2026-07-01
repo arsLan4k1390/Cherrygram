@@ -79,8 +79,8 @@ import org.telegram.messenger.SvgHelper;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
+import org.telegram.messenger.utils.Choreographer60FpsContent;
 import org.telegram.messenger.utils.DrawableUtils;
-import org.telegram.messenger.utils.FrameTickScheduler;
 import org.telegram.messenger.utils.tlutils.AmountUtils;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
@@ -2385,10 +2385,9 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             this.particlesAllowed = particlesAllowed;
 
             if (particlesAllowed) {
-                final int sparse = FrameTickScheduler.getFrameSparseness(15);
-                FrameTickScheduler.subscribe(invalidateRunnable = this::invalidateParticles, sparse, 0/*(tickIndex++) % sparse*/);
+                Choreographer60FpsContent.getInstance().addFrameCallback(invalidateRunnable = this::invalidateParticles, 15);
             } else {
-                FrameTickScheduler.unsubscribe(invalidateRunnable);
+                Choreographer60FpsContent.getInstance().removeFrameCallback(invalidateRunnable);
             }
             invalidateSelf();
         }

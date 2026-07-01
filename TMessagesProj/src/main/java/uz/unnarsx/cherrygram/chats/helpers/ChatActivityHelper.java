@@ -45,6 +45,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.R;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.browser.Browser;
@@ -891,6 +892,14 @@ public class ChatActivityHelper extends BaseController {
             return;
         }
         chatActivity.presentFragment(new ChatActivity(args));
+    }
+
+    public static int canSelectCount() {
+        return switch (SharedConfig.getDevicePerformanceClass()) {
+            case SharedConfig.PERFORMANCE_CLASS_HIGH -> 500;
+            case SharedConfig.PERFORMANCE_CLASS_AVERAGE -> 300;
+            default -> 100; // PERFORMANCE_CLASS_LOW
+        };
     }
 
 }

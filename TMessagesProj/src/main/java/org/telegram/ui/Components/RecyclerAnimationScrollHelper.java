@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.MessagesController;
 import org.telegram.ui.Cells.ChatMessageCell;
+import org.telegram.ui.Cells.IMessageCell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,8 +108,8 @@ public class RecyclerAnimationScrollHelper {
 
                 oldStableIds.put(itemId, child);
             }
-            if (child instanceof ChatMessageCell) {
-                ((ChatMessageCell) child).setAnimationRunning(true, true);
+            if (child instanceof IMessageCell) {
+                ((IMessageCell) child).setAnimationRunning(true, true);
             }
         }
 
@@ -150,8 +151,8 @@ public class RecyclerAnimationScrollHelper {
                     if (child.getBottom() > bottom)
                         bottom = child.getBottom();
 
-                    if (child instanceof ChatMessageCell) {
-                        ((ChatMessageCell) child).setAnimationRunning(true, false);
+                    if (child instanceof IMessageCell) {
+                        ((IMessageCell) child).setAnimationRunning(true, false);
                     }
 
                     if (adapter != null && (adapter.hasStableIds() || forceUseStableId)) {
@@ -160,8 +161,8 @@ public class RecyclerAnimationScrollHelper {
                             View view = oldStableIds.get(stableId);
                             if (view != null) {
                                 hasSameViews = true;
-                                if (view instanceof ChatMessageCell) {
-                                    ((ChatMessageCell) view).setAnimationRunning(false, false);
+                                if (view instanceof IMessageCell) {
+                                    ((IMessageCell) view).setAnimationRunning(false, false);
                                 }
                                 oldViews.remove(view);
                                 if (animationCallback != null) {
@@ -194,8 +195,8 @@ public class RecyclerAnimationScrollHelper {
                             animationCallback.ignoreView(view, true);
                         }
                     }
-                    if (view instanceof ChatMessageCell) {
-                        ((ChatMessageCell) view).setAnimationRunning(true, true);
+                    if (view instanceof IMessageCell) {
+                        ((IMessageCell) view).setAnimationRunning(true, true);
                     }
                 }
 
@@ -260,8 +261,8 @@ public class RecyclerAnimationScrollHelper {
                         recyclerView.fastScrollAnimationRunning = false;
 
                         for (View view : oldViews) {
-                            if (view instanceof ChatMessageCell) {
-                                ((ChatMessageCell) view).setAnimationRunning(false, true);
+                            if (view instanceof IMessageCell) {
+                                ((IMessageCell) view).setAnimationRunning(false, true);
                             }
                             view.setTranslationY(0);
                             layoutManager.stopIgnoringView(view);
@@ -288,15 +289,15 @@ public class RecyclerAnimationScrollHelper {
                         int n = recyclerView.getChildCount();
                         for (int i = 0; i < n; i++) {
                             View child = recyclerView.getChildAt(i);
-                            if (child instanceof ChatMessageCell) {
-                                ((ChatMessageCell) child).setAnimationRunning(false, false);
+                            if (child instanceof IMessageCell) {
+                                ((IMessageCell) child).setAnimationRunning(false, false);
                             }
                             child.setTranslationY(0);
                         }
 
                         for (View v : incomingViews) {
-                            if (v instanceof ChatMessageCell) {
-                                ((ChatMessageCell) v).setAnimationRunning(false, false);
+                            if (v instanceof IMessageCell) {
+                                ((IMessageCell) v).setAnimationRunning(false, false);
                             }
                             v.setTranslationY(0);
                         }
@@ -358,17 +359,17 @@ public class RecyclerAnimationScrollHelper {
     private void clear() {
         recyclerView.setVerticalScrollBarEnabled(true);
         recyclerView.fastScrollAnimationRunning = false;
-        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        final RecyclerView.Adapter adapter = recyclerView.getAdapter();
         if (adapter instanceof AnimatableAdapter)
             ((AnimatableAdapter) adapter).onAnimationEnd();
         animator = null;
 
         int n = recyclerView.getChildCount();
         for (int i = 0; i < n; i++) {
-            View child = recyclerView.getChildAt(i);
+            final View child = recyclerView.getChildAt(i);
             child.setTranslationY(0f);
-            if (child instanceof ChatMessageCell) {
-                ((ChatMessageCell) child).setAnimationRunning(false, false);
+            if (child instanceof IMessageCell) {
+                ((IMessageCell) child).setAnimationRunning(false, false);
             }
         }
     }

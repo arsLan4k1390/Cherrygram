@@ -10,9 +10,9 @@
 package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
+import static org.telegram.ui.Cells.TextCell.applyNewSpan;
 
 import android.content.Context;
-import android.os.Build;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -118,7 +118,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Videomessages)));
         if (CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 || CameraXUtils.isCurrentCameraCameraX()) {
-            items.add(SettingsHelper.asSwitchCG(cameraUseDualCameraRow, getString(R.string.CP_CameraDualCamera), getString(R.string.CP_CameraDualCamera_Desc))
+            items.add(SettingsHelper.asSwitchCG(cameraUseDualCameraRow, applyNewSpan(getString(R.string.CP_CameraDualCamera)), getString(R.string.CP_CameraDualCamera_Desc))
                     .setChecked(CherrygramCameraConfig.INSTANCE.getUseDualCamera())
             );
         }

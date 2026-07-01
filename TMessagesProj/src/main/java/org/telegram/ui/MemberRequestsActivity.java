@@ -71,6 +71,7 @@ public class MemberRequestsActivity extends BaseFragment {
         searchItem.setVisibility(View.GONE);
 
         FrameLayout rootLayout = delegate.getRootLayout();
+        actionBar.setAdaptiveBackground(delegate.getRecyclerView(), false);
         delegate.loadMembers();
 
         return fragmentView = rootLayout;

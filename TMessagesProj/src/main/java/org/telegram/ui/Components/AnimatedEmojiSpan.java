@@ -173,6 +173,12 @@ public class AnimatedEmojiSpan extends ReplacementSpan {
         }
     }
 
+    public AnimatedEmojiSpan setSize(int size) {
+        this.size = size;
+        return this;
+    }
+
+
     public static void applyFontMetricsForString(CharSequence text, Paint textPaint) {
         if (text instanceof Spannable) {
             AnimatedEmojiSpan[] spans = ((Spannable) text).getSpans(0, text.length(), AnimatedEmojiSpan.class);

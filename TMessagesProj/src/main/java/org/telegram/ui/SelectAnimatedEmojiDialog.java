@@ -128,7 +128,6 @@ import org.telegram.ui.Components.RecyclerAnimationScrollHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.SearchStateDrawable;
 import org.telegram.ui.Components.StickerCategoriesListView;
-import org.telegram.ui.Components.Text;
 import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stars.StarsReactionsSheet;
 
@@ -140,7 +139,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
@@ -2704,7 +2702,12 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                     Drawable drawable = emojiGridView.animatedEmojiDrawables.get(imageView.span.getDocumentId());
 
                     if (drawable == null) {
-                        drawable = AnimatedEmojiDrawable.make(currentAccount, getCacheType(), imageView.span.getDocumentId());
+                        int cacheType = getCacheType();
+                        if (cacheType == AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW && currentReaction.sticker) {
+                            cacheType = AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_LARGE_50;
+                        }
+
+                        drawable = AnimatedEmojiDrawable.make(currentAccount, cacheType, imageView.span.getDocumentId());
                         emojiGridView.animatedEmojiDrawables.put(imageView.span.getDocumentId(), (AnimatedEmojiDrawable) drawable);
                     }
                     imageView.setDrawable(drawable);

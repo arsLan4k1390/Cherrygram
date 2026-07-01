@@ -5,7 +5,6 @@ import static org.telegram.messenger.LocaleController.getString;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 
 import androidx.annotation.IntDef;
@@ -22,8 +21,8 @@ import org.json.JSONObject;
 import org.telegram.messenger.voip.VoIPGroupNotification;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.NativeByteBuffer;
-import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_update;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
+
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 @Keep
 public class PushListenerController {
@@ -242,7 +243,7 @@ public class PushListenerController {
                             return;
                         }
                         case "MESSAGE_ANNOUNCEMENT": {
-                            TLRPC.TL_updateServiceNotification update = new TLRPC.TL_updateServiceNotification();
+                            TL_update.TL_updateServiceNotification update = new TL_update.TL_updateServiceNotification();
                             update.popup = false;
                             update.flags = 2;
                             update.inbox_date = (int) (time / 1000);
@@ -379,13 +380,13 @@ public class PushListenerController {
                                 FileLog.d(tag + " received read notification max_id = " + max_id + " for dialogId = " + dialogId);
                             }
                             if (channel_id != 0) {
-                                TLRPC.TL_updateReadChannelInbox update = new TLRPC.TL_updateReadChannelInbox();
+                                TL_update.TL_updateReadChannelInbox update = new TL_update.TL_updateReadChannelInbox();
                                 update.channel_id = channel_id;
                                 update.max_id = max_id;
                                 update.still_unread_count = 0;
                                 updates.add(update);
                             } else {
-                                TLRPC.TL_updateReadHistoryInbox update = new TLRPC.TL_updateReadHistoryInbox();
+                                TL_update.TL_updateReadHistoryInbox update = new TL_update.TL_updateReadHistoryInbox();
                                 if (user_id != 0) {
                                     update.peer = new TLRPC.TL_peerUser();
                                     update.peer.user_id = user_id;
@@ -1708,6 +1709,7 @@ public class PushListenerController {
                                     return;
                                 }
                                 String token = task.getResult();
+                                CherrygramLogger.d(() -> "FCM token: " + token);
                                 if (!TextUtils.isEmpty(token)) {
                                     PushListenerController.sendRegistrationToServer(getPushType(), token);
                                 }

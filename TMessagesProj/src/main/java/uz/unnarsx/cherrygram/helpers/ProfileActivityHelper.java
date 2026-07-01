@@ -183,8 +183,13 @@ public class ProfileActivityHelper extends BaseController {
         long emojiDocumentId = UserObject.getProfileEmojiId(getMessagesController().getUser(dialogID));
 
         AnimatedEmojiDrawable.getDocumentFetcher(currentAccount).fetchDocument(emojiDocumentId, document -> AndroidUtilities.runOnUIThread(() -> {
+            if (fragment.getContext() == null || fragment.getParentActivity() == null) {
+                return;
+            }
+
             ArrayList<TLRPC.InputStickerSet> inputSets = new ArrayList<>(1);
             inputSets.add(MessageObject.getInputStickerSet(document));
+
             EmojiPacksAlert alert = new EmojiPacksAlert(fragment, fragment.getContext(), null, inputSets);
             alert.show();
         }));

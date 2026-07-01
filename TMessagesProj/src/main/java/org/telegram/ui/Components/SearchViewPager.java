@@ -76,6 +76,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
+
 public class SearchViewPager extends ViewPagerFixed implements FilteredSearchView.UiCallback, NotificationCenter.NotificationCenterDelegate, IBlur3Capture {
 
     protected final ViewPagerAdapter viewPagerAdapter;
@@ -1046,7 +1048,7 @@ public class SearchViewPager extends ViewPagerFixed implements FilteredSearchVie
         if (selectedFiles.containsKey(hashId)) {
             selectedFiles.remove(hashId);
         } else {
-            if (selectedFiles.size() >= 100) {
+            if (selectedFiles.size() >= ChatActivityHelper.canSelectCount()) {
                 return;
             }
             selectedFiles.put(hashId, message);

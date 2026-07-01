@@ -33,6 +33,7 @@ import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.ActionIntroActivity
 import org.telegram.ui.CallLogActivity
 import org.telegram.ui.CameraScanActivity
+import org.telegram.ui.Cells.TextCell.applyNewSpan
 import org.telegram.ui.ChannelCreateActivity
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.ChatActivityEnterView
@@ -46,6 +47,7 @@ import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager
 import uz.unnarsx.cherrygram.donates.DonatesManager
@@ -296,7 +298,7 @@ object CGChatMenuInjector {
     fun injectScanQR(io: ItemOptions, fragment: BaseFragment?) {
         io.add(
             R.drawable.msg_qrcode,
-            getString(R.string.AuthAnotherClient)
+            applyNewSpan(getString(R.string.AuthAnotherClient))
         ) {
             val activity = fragment?.parentActivity
 
@@ -322,13 +324,24 @@ object CGChatMenuInjector {
     fun injectCreateQR(io: ItemOptions, fragment: BaseFragment?) {
         io.add(
             R.drawable.msg_qrcode,
-            getString(R.string.CG_CreateQR)
+            applyNewSpan(getString(R.string.CG_CreateQR))
         ) {
             CreateQRSheet(fragment?.context, fragment, fragment?.resourceProvider).show()
         }
     }
 
     fun injectProxySettings(io: ItemOptions, fragment: BaseFragment) {
+        io.addGapIf(showProxyButton())
+        io.addIf(
+            showProxyButton(),
+            R.drawable.shield_network_solar,
+            getString(R.string.ProxySettings)
+        ) {
+            fragment.presentFragment(ProxyListActivity())
+        }
+    }
+
+    fun showProxyButton() : Boolean {
         var available = false
 
         for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
@@ -336,23 +349,15 @@ object CGChatMenuInjector {
             val phone = userConfig?.currentUser?.phone ?: continue
 
             if (
-                phone.startsWith("7") || // RU, KZ
+                phone.startsWith("7")/* || // RU, KZ
                 phone.startsWith("98") || // Iran
-                phone.startsWith("964") // Iraq
+                phone.startsWith("964") // Iraq*/
             ) {
                 available = true
                 break
             }
         }
-
-        io.addGapIf(available)
-        io.addIf(
-            available,
-            R.drawable.shield_network_solar,
-            getString(R.string.ProxySettings)
-        ) {
-            fragment.presentFragment(ProxyListActivity())
-        }
+        return available || CherrygramCoreConfig.isDevBuild()
     }
 
     private fun openCameraScanActivity(fragment: BaseFragment) {

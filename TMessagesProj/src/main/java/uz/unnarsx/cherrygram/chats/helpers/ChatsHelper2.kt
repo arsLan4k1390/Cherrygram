@@ -157,17 +157,17 @@ object ChatsHelper2 {
     }
 
     fun getActiveUsername(userId: Long): String {
-        val user: TLRPC.User = MessagesController.getInstance(UserConfig.selectedAccount).getUser(userId)
+        val user: TLRPC.User = MessagesController.getInstance(UserConfig.selectedAccount).getUser(userId) ?: return ""
+
         var username: String? = null
-        var usernames = ArrayList<TLRPC.TL_username?>()
-        usernames.addAll(user.usernames)
+
         if (!TextUtils.isEmpty(user.username)) {
             username = user.username
         }
-        usernames = ArrayList(user.usernames)
-        if (TextUtils.isEmpty(username)) {
-            for (i in usernames.indices) {
-                val u: TLRPC.TL_username? = usernames[i]
+
+        if (TextUtils.isEmpty(username) && user.usernames != null) {
+            val usernames = ArrayList(user.usernames)
+            for (u in usernames) {
                 if (u != null && u.active && !TextUtils.isEmpty(u.username)) {
                     username = u.username
                     break

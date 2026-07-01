@@ -159,7 +159,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import me.vkryl.core.BitwiseUtils;
 
-public class ChatActionCell extends BaseCell implements DownloadController.FileDownloadProgressListener, NotificationCenter.NotificationCenterDelegate {
+public class ChatActionCell extends BaseCell implements DownloadController.FileDownloadProgressListener, NotificationCenter.NotificationCenterDelegate, IMessageCell {
     private final static boolean USE_PREMIUM_GIFT_LOCAL_STICKER = false;
     private final static boolean USE_PREMIUM_GIFT_MONTHS_AS_EMOJI_NUMBERS = false;
 
@@ -1072,6 +1072,18 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
 
     public MessageObject getMessageObject() {
         return currentMessageObject;
+    }
+
+    @Override
+    public ReactionsLayoutInBubble getReactionsLayout() {
+        return reactionsLayoutInBubble;
+    }
+
+    @Override
+    public void didPressReactionFromLayout(TLRPC.ReactionCount reaction, boolean longpress, float x, float y) {
+        if (delegate != null) {
+            delegate.didPressReaction(this, reaction, longpress, x, y);
+        }
     }
 
     public ImageReceiver getPhotoImage() {
@@ -4085,6 +4097,10 @@ public class ChatActionCell extends BaseCell implements DownloadController.FileD
         return transitionParams;
     }
 
+    public float getDeltaTop() { return 0; }
+    public float getDeltaLeft() { return 0; }
+    public float getDeltaRight() { return 0; }
+    public float getDeltaBottom() { return 0; }
 
     public void setScrimReaction(Integer scrimViewReaction) {
         reactionsLayoutInBubble.setScrimReaction(scrimViewReaction);

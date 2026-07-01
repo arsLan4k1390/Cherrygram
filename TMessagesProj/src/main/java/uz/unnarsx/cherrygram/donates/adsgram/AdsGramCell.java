@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.R;
@@ -78,7 +79,8 @@ public class AdsGramCell extends FrameLayout {
     private Runnable showRunnable;
 
     public AdsGramCell(Context context, BaseFragment fragment, ViewType viewType) {
-        super(context);
+        super(context != null ? context : (fragment != null ? fragment.getContext() : ApplicationLoader.applicationContext));
+
         this.fragment = fragment;
         this.viewType = viewType;
 
@@ -95,13 +97,21 @@ public class AdsGramCell extends FrameLayout {
         setFocusable(true);
 
         if (viewType == ViewType.BANNER_LARGE) {
-            initBannerLayout(context);
+            initBannerLayout(getContextCG(context, fragment));
             setClickable(false);
             setOnClickListener(null);
         } else {
-            initCompactLayout(context);
+            initCompactLayout(getContextCG(context, fragment));
             setOnClickListener(v -> handleAdClick());
         }
+    }
+
+    private Context getContextCG(Context context, BaseFragment fragment) {
+        if (context != null) return context;
+        if (fragment != null && fragment.getContext() != null) return fragment.getContext();
+        if (getContext() != null) return getContext();
+
+        return ApplicationLoader.applicationContext;
     }
 
     private void initCompactLayout(Context context) {
@@ -411,5 +421,82 @@ public class AdsGramCell extends FrameLayout {
             CherrygramLogger.e(e);
         }
     }
+
+    /** ChatActivity start */
+    public static void handleAdClick(AdsGramResponse.BannerData bannerData, BaseFragment fragment) {
+        if (bannerData == null) {
+            return;
+        }
+
+        String clickUrl = bannerData.getAsset("url");
+
+        if (clickUrl == null) {
+            return;
+        }
+
+        /*String clickTracking = bannerData.getTracking("clickPixel");
+        openTracking(clickTracking);
+        CherrygramLogger.d("ADSgram", () -> "clickPixel request sent");*/
+
+        AlertDialog progressDialog = new AlertDialog(
+                fragment.getParentActivity(),
+                AlertDialog.ALERT_TYPE_SPINNER,
+                fragment.getResourceProvider()
+        );
+
+        AndroidUtilities.runOnUIThread(() -> {
+            try {
+                if (!fragment.getParentActivity().isFinishing()) progressDialog.show();
+            } catch (Exception e) {
+                CherrygramLogger.e(e);
+            }
+        });
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .followRedirects(false)
+                .followSslRedirects(false)
+                .build();
+
+        Request request = new Request.Builder().url(clickUrl).get().build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                CherrygramLogger.e(e);
+                dismissDialog(progressDialog, fragment);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                dismissDialog(progressDialog, fragment);
+                try (response) {
+                    String redirect = response.header("Location");
+                    if (redirect == null) return;
+
+                    AndroidUtilities.runOnUIThread(() -> {
+                        try {
+                            Browser.openAsInternalIntent(fragment.getContext(), redirect);
+                        } catch (Exception e) {
+                            CherrygramLogger.e(e);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private static void dismissDialog(AlertDialog dialog, BaseFragment fragment) {
+        AndroidUtilities.runOnUIThread(() -> {
+            try {
+                if (!fragment.getParentActivity().isFinishing() && dialog.isShowing()) dialog.dismiss();
+            } catch (Exception e) {
+                CherrygramLogger.e(e);
+            }
+        });
+    }
+    /** ChatActivity finish */
 
 }

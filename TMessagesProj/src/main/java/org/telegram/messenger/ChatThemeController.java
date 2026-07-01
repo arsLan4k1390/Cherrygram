@@ -18,6 +18,7 @@ import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.EmojiThemes;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.theme.ThemeKey;
@@ -595,7 +596,7 @@ public class ChatThemeController extends BaseController {
         getSharedPreferences().edit().clear().apply();
     }
 
-    public void processUpdate(TLRPC.TL_updatePeerWallpaper update) {
+    public void processUpdate(TL_update.TL_updatePeerWallpaper update) {
         if (update.peer instanceof TLRPC.TL_peerUser) {
             TLRPC.UserFull userFull = getMessagesController().getUserFull(update.peer.user_id);
             if (userFull != null) {
@@ -822,8 +823,8 @@ public class ChatThemeController extends BaseController {
                     pastWallpaper = chatFull.wallpaper;
                 }
                 for (int i = 0; i < res.updates.size(); i++) {
-                    if (res.updates.get(i) instanceof TLRPC.TL_updateNewMessage) {
-                        TLRPC.Message message = ((TLRPC.TL_updateNewMessage) res.updates.get(i)).message;
+                    if (res.updates.get(i) instanceof TL_update.TL_updateNewMessage) {
+                        TLRPC.Message message = ((TL_update.TL_updateNewMessage) res.updates.get(i)).message;
                         if (message.action instanceof TLRPC.TL_messageActionSetChatWallPaper) {
                             if (finalApplyOnRequest) {
                                 TLRPC.TL_messageActionSetChatWallPaper actionSetChatWallPaper = (TLRPC.TL_messageActionSetChatWallPaper) message.action;

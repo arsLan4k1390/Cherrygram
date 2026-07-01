@@ -42,7 +42,9 @@ import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.RichMessageLayout;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_iv;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedEmojiSpan;
@@ -232,6 +234,73 @@ public class SharedLinkCell extends FrameLayout {
         captionTextPaint.setTextSize(dp(13));
     }
 
+    private void gatherLink(String link) {
+        if (link == null || link.isEmpty()) return;
+        link = link.trim();
+        if (link.startsWith("#")) return;
+        CharSequence lobj;
+        if (!AndroidUtilities.charSequenceContains(link, "://") && link.toString().toLowerCase().indexOf("http") != 0 && link.toString().toLowerCase().indexOf("mailto") != 0) {
+            lobj = "http://" + link;
+        } else {
+            lobj = link;
+        }
+        links.add(SpannableString.valueOf(lobj));
+    }
+
+    private void gatherRichMessageLinks(TL_iv.RichText text) {
+        if (text instanceof TL_iv.textUrl) {
+            gatherLink(text.url);
+        } else if (text instanceof TL_iv.textAutoUrl) {
+            gatherLink(RichMessageLayout.getString(text));
+        } else if (text instanceof TL_iv.textEmail) {
+            gatherLink("mailto:" + ((TL_iv.textEmail) text).email);
+        } else if (text instanceof TL_iv.textAutoEmail) {
+            gatherLink("mailto:" + RichMessageLayout.getString(text));
+        } else if (text instanceof TL_iv.textConcat) {
+            for (int i = 0; i < text.texts.size(); ++i) {
+                gatherRichMessageLinks(text.texts.get(i));
+            }
+        } else if (
+            text instanceof TL_iv.textBold ||
+            text instanceof TL_iv.textItalic ||
+            text instanceof TL_iv.textUnderline ||
+            text instanceof TL_iv.textStrike ||
+            text instanceof TL_iv.textFixed ||
+            text instanceof TL_iv.textSubscript ||
+            text instanceof TL_iv.textSuperscript ||
+            text instanceof TL_iv.textMarked ||
+            text instanceof TL_iv.textAnchor
+        ) {
+            gatherRichMessageLinks(text.text);
+        }
+    }
+    private void gatherRichMessageLinks(TL_iv.PageBlock block) {
+        if (
+            block instanceof TL_iv.pageBlockParagraph ||
+            block instanceof TL_iv.pageBlockHeading1 ||
+            block instanceof TL_iv.pageBlockHeading2 ||
+            block instanceof TL_iv.pageBlockHeading3 ||
+            block instanceof TL_iv.pageBlockHeading4 ||
+            block instanceof TL_iv.pageBlockHeading5 ||
+            block instanceof TL_iv.pageBlockHeading6 ||
+            block instanceof TL_iv.pageBlockPreformatted ||
+            block instanceof TL_iv.pageBlockFooter ||
+            block instanceof TL_iv.pageBlockBlockquote ||
+            block instanceof TL_iv.pageBlockPullquote
+        ) {
+            gatherRichMessageLinks(block.text);
+        } else if (block instanceof TL_iv.pageBlockCover) {
+            gatherRichMessageLinks(((TL_iv.pageBlockCover) block).cover);
+        } else if (block instanceof TL_iv.pageBlockBlockquoteBlocks) {
+            gatherRichMessageLinks(((TL_iv.pageBlockBlockquoteBlocks) block).blocks);
+        }
+    }
+
+    private void gatherRichMessageLinks(ArrayList<TL_iv.PageBlock> blocks) {
+        for (final TL_iv.PageBlock block : blocks)
+            gatherRichMessageLinks(block);
+    }
+
     @SuppressLint("DrawAllocation")
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -354,6 +423,28 @@ public class SharedLinkCell extends FrameLayout {
         }
         if (webPageLink != null && links.isEmpty()) {
             links.add(webPageLink);
+        }
+        if (message != null && message.messageOwner != null && message.messageOwner.rich_message != null) {
+            gatherRichMessageLinks(message.messageOwner.rich_message.blocks);
+            if (!links.isEmpty()) {
+                final String link = links.get(0).toString();
+                if (title == null || title.length() == 0) {
+                    title = link.toString();
+                    Uri uri = Uri.parse(title);
+                    title = uri.getHost();
+                    if (title == null) {
+                        title = link.toString();
+                    }
+                    int index;
+                    if (title != null && (index = title.lastIndexOf('.')) >= 0) {
+                        title = title.substring(0, index);
+                        if ((index = title.lastIndexOf('.')) >= 0) {
+                            title = title.substring(index + 1);
+                        }
+                        title = title.substring(0, 1).toUpperCase() + title.substring(1);
+                    }
+                }
+            }
         }
 
         int dateWidth = 0;

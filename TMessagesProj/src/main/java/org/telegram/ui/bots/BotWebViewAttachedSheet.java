@@ -100,7 +100,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class BotWebViewAttachedSheet implements NotificationCenter.NotificationCenterDelegate, BaseFragment.AttachedSheet, BottomSheetTabsOverlay.Sheet {
-    public final static int TYPE_WEB_VIEW_BUTTON = 0, TYPE_SIMPLE_WEB_VIEW_BUTTON = 1, TYPE_BOT_MENU_BUTTON = 2, TYPE_WEB_VIEW_BOT_APP = 3, TYPE_WEB_VIEW_BOT_MAIN = 4;
+    public final static int
+            TYPE_WEB_VIEW_BUTTON = 0,
+            TYPE_SIMPLE_WEB_VIEW_BUTTON = 1,
+            TYPE_BOT_MENU_BUTTON = 2,
+            TYPE_WEB_VIEW_BOT_APP = 3,
+            TYPE_WEB_VIEW_BOT_MAIN = 4,
+            TYPE_WEB_VIEW_GUARD = 5;
 
     public final static int FLAG_FROM_INLINE_SWITCH = 1;
     public final static int FLAG_FROM_SIDE_MENU = 2;
@@ -147,7 +153,8 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
             TYPE_SIMPLE_WEB_VIEW_BUTTON,
             TYPE_BOT_MENU_BUTTON,
             TYPE_WEB_VIEW_BOT_APP,
-            TYPE_WEB_VIEW_BOT_MAIN
+            TYPE_WEB_VIEW_BOT_MAIN,
+            TYPE_WEB_VIEW_GUARD
     })
     public @interface WebViewType {}
 

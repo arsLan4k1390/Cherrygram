@@ -113,7 +113,7 @@ public class FoldersPreferencesEntry extends UniversalFragment {
 
             foldersPreviewCell.updateAllChatsTabName(true);
 
-            parentLayout.rebuildAllFragmentViews(false, false);
+            if (parentLayout != null) parentLayout.rebuildAllFragmentViews(false, false);
 
             getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
             getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
@@ -123,7 +123,7 @@ public class FoldersPreferencesEntry extends UniversalFragment {
 
             foldersPreviewCell.updateTabCounter(true);
 
-            parentLayout.rebuildAllFragmentViews(false, false);
+            if (parentLayout != null) parentLayout.rebuildAllFragmentViews(false, false);
 
             getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
         } else if (item.id == tabIconTypeRow) {
@@ -146,7 +146,7 @@ public class FoldersPreferencesEntry extends UniversalFragment {
                 foldersPreviewCell.updateTabIcons(true);
                 foldersPreviewCell.updateTabTitle(true);
 
-                parentLayout.rebuildAllFragmentViews(false, false);
+                if (parentLayout != null) parentLayout.rebuildAllFragmentViews(false, false);
 
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
             });
@@ -155,12 +155,12 @@ public class FoldersPreferencesEntry extends UniversalFragment {
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke());
 
             foldersPreviewCell.invalidate();
-            parentLayout.rebuildAllFragmentViews(false, false);
+            if (parentLayout != null) parentLayout.rebuildAllFragmentViews(false, false);
         } else if (item.id == folderNameAppHeaderRow) {
             CherrygramAppearanceConfig.INSTANCE.setFolderNameInHeader(!CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
 
-            parentLayout.rebuildAllFragmentViews(false, false);
+            if (parentLayout != null) parentLayout.rebuildAllFragmentViews(false, false);
 
             getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
         } else if (item.id == foldersAtBottomRow) {

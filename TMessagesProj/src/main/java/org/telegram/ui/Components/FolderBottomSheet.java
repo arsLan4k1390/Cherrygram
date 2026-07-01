@@ -56,6 +56,7 @@ import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.Vector;
 import org.telegram.tgnet.tl.TL_chatlists;
+import org.telegram.tgnet.tl.TL_update;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.INavigationLayout;
@@ -559,14 +560,14 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
                         ArrayList<TLRPC.Update> updates = ((TLRPC.Updates) res).updates;
                         if (!updates.isEmpty()) {
                             for (int i = 0; i < updates.size(); ++i) {
-                                if (updates.get(i) instanceof TLRPC.TL_updateDialogFilter) {
-                                    TLRPC.TL_updateDialogFilter upd = (TLRPC.TL_updateDialogFilter) updates.get(i);
+                                if (updates.get(i) instanceof TL_update.TL_updateDialogFilter) {
+                                    TL_update.TL_updateDialogFilter upd = (TL_update.TL_updateDialogFilter) updates.get(i);
                                     foundFilterId = upd.id;
                                     break;
                                 }
                             }
-                        } else if (((TLRPC.Updates) res).update instanceof TLRPC.TL_updateDialogFilter) {
-                            TLRPC.TL_updateDialogFilter upd = (TLRPC.TL_updateDialogFilter) ((TLRPC.Updates) res).update;
+                        } else if (((TLRPC.Updates) res).update instanceof TL_update.TL_updateDialogFilter) {
+                            TL_update.TL_updateDialogFilter upd = (TL_update.TL_updateDialogFilter) ((TLRPC.Updates) res).update;
                             foundFilterId = upd.id;
                         }
                     }

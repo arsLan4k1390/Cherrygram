@@ -226,6 +226,10 @@ public class WindowInsetsStateHolder implements WindowInsetsProvider, WindowInse
         }
     };
 
+    public int getInAppKeyboardHeight() {
+        return inAppKeyboardHeight;
+    }
+
     @Override
     public void resetInAppKeyboardHeight(boolean waitKeyboardOpen) {
         if (inAppKeyboardHeight == 0) {

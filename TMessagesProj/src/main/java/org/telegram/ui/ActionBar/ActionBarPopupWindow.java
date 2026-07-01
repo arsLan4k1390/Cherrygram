@@ -47,6 +47,7 @@ import androidx.annotation.Nullable;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
@@ -1151,7 +1152,7 @@ public class ActionBarPopupWindow extends PopupWindow {
         }
 
         public GapView(Context context, int color, int shadowColor) {
-            super(context);
+            super(context != null ? context : ApplicationLoader.applicationContext);
             this.shadowDrawable = Theme.getThemedDrawable(getContext(), R.drawable.greydivider, shadowColor);
             setBackgroundColor(color);
         }

@@ -46,7 +46,9 @@ import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.AlertDialog;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Business.BusinessChatbotController;
 import org.telegram.ui.Business.ChatbotsActivity;
 import org.telegram.ui.Business.LocationActivity;
 import org.telegram.ui.Business.OpeningHoursActivity;
@@ -79,6 +81,8 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
     private CharSequence bioInfo;
     private CharSequence birthdayInfo;
 
+    private ArrayList<TL_account.TL_connectedBot> bots = new ArrayList<>();
+
     @Override
     protected CharSequence getTitle() {
         return getString(R.string.EditAccountInfo2);
@@ -95,7 +99,9 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
         getNotificationCenter().addObserver(this, NotificationCenter.userInfoDidLoad);
         getNotificationCenter().addObserver(this, NotificationCenter.privacyRulesUpdated);
         getNotificationCenter().addObserver(this, NotificationCenter.updateInterfaces);
+        getNotificationCenter().addObserver(this, NotificationCenter.updatedChatbot);
         getContactsController().loadPrivacySettings();
+        BusinessChatbotController.getInstance(currentAccount).load(null);
         return super.onFragmentCreate();
     }
 
@@ -104,6 +110,7 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
         getNotificationCenter().removeObserver(this, NotificationCenter.userInfoDidLoad);
         getNotificationCenter().removeObserver(this, NotificationCenter.privacyRulesUpdated);
         getNotificationCenter().removeObserver(this, NotificationCenter.updateInterfaces);
+        getNotificationCenter().removeObserver(this, NotificationCenter.updatedChatbot);
         super.onFragmentDestroy();
         if (!wasSaved) {
             processDone(false);
@@ -253,6 +260,9 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
         listView.adapter.setApplyBackground(false);
         listView.setClipToPadding(false);
         actionBar.setAdaptiveBackground(listView);
+        if (parentLayout != null && parentLayout.isRightLayout()) {
+            actionBar.setBackButtonImage(R.drawable.ic_ab_close);
+        }
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -343,7 +353,7 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
         items.add(UItem.asHeader(getString(R.string.EditAccountInfoHeader)));
         if (user != null) {
             numberRow = items.size();
-            items.add(SettingsActivity.SettingCell.Factory.of(INFO_PHONE, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_calls, PhoneFormat.getInstance().format("+" + user.phone), getString(R.string.TapToChangePhone)));
+            items.add(SettingsActivity.SettingCell.Factory.of(INFO_PHONE, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_calls, PhoneFormat.getInstance().format("+" + user.phone), getString(R.string.PhoneNumber))); // TapToChangePhone
         }
         usernameRow = items.size();
         if (UserObject.getPublicUsername(user) != null) {
@@ -391,7 +401,19 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
         if (hadLocation) {
             items.add(SettingsActivity.SettingCell.Factory.of(BUTTON_LOCATION, IconBackgroundColors.RED.top, IconBackgroundColors.RED.bottom, R.drawable.filled_location, getString(R.string.EditProfileLocation)));
         }
-        items.add(SettingsActivity.SettingCell.Factory.of(BUTTON_AI, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.premium_ai_editor, applyNewSpan(getString(R.string.EditProfileChatAutomation))));
+        if (bots != null && !bots.isEmpty()) {
+            final StringBuilder value = new StringBuilder();
+            for (final TL_account.TL_connectedBot bot : bots) {
+                final TLRPC.User botUser = MessagesController.getInstance(currentAccount).getUser(bot.bot_id);
+                if (botUser != null) {
+                    if (value.length() > 0) value.append(", ");
+                    value.append(UserObject.getUserName(botUser));
+                }
+            }
+            items.add(SettingsActivity.SettingCell.Factory.of(BUTTON_AI, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.premium_ai_editor, getString(R.string.EditProfileChatAutomation), value));
+        } else {
+            items.add(SettingsActivity.SettingCell.Factory.of(BUTTON_AI, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.premium_ai_editor, applyNewSpan(getString(R.string.EditProfileChatAutomation))));
+        }
         items.add(UItem.asShadow(-3, getString(R.string.EditProfileChatAutomationInfo)));
         final boolean hasAddAccount = UserConfig.getActivatedAccountsCount() < UserConfig.MAX_ACCOUNT_COUNT;
         if (hasAddAccount) {
@@ -519,9 +541,9 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
             presentFragment(new OpeningHoursActivity());
         } else if (item.id == BUTTON_AI) {
             presentFragment(new ChatbotsActivity());
-        } else if (item.id == INFO_PHONE) {
+        } /*else if (item.id == INFO_PHONE) {
             presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANGE_PHONE_NUMBER));
-        } else if (item.id == INFO_USERNAME) {
+        }*/ else if (item.id == INFO_USERNAME) {
             presentFragment(new ChangeUsernameActivity());
         } else if (item.id == BUTTON_LOGOUT) {
             presentFragment(new LogoutActivity());
@@ -543,6 +565,12 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
             }
         } else if (id == NotificationCenter.privacyRulesUpdated) {
             updateBioInfo();
+            if (listView != null) {
+                listView.adapter.update(true);
+            }
+        } else if (id == NotificationCenter.updatedChatbot) {
+            final TL_account.connectedBots bots = BusinessChatbotController.getInstance(currentAccount).getValue();
+            this.bots = bots != null && bots.connected_bots != null ? bots.connected_bots : new ArrayList<>();
             if (listView != null) {
                 listView.adapter.update(true);
             }

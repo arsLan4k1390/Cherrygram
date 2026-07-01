@@ -72,7 +72,7 @@ object StickersManager {
         withContext(Dispatchers.IO) {
             try {
                 val url = URL(GITLAB_RAW_URL)
-                val connection = openSecureConnection(url)
+                val connection = openSecureConnection(url) ?: return@withContext
 
                 val reader = InputStreamReader(connection.inputStream)
                 val tempStickerSetIDs = mutableSetOf<Long>()

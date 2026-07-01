@@ -146,7 +146,7 @@ public class DataAutoDownloadActivity extends BaseFragment {
         } else if (currentType == 2) {
             actionBar.setTitle(LocaleController.getString(R.string.AutoDownloadOnRoamingData));
         }
-        if (AndroidUtilities.isTablet()) {
+        if (parentLayout != null && parentLayout.isLayersLayout()) {
             actionBar.setOccupyStatusBar(false);
         }
         actionBar.setAllowOverlayTitle(true);

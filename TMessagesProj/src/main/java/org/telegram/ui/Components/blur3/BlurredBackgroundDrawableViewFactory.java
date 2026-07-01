@@ -32,12 +32,17 @@ public class BlurredBackgroundDrawableViewFactory {
         this.parent = parent;
     }
 
+    private @Nullable ReferenceList<BlurredBackgroundDrawable> linkedDrawables;
     private @Nullable ReferenceList<View> linkedViews;
     private @Nullable ViewPositionWatcher viewPositionWatcher;
     private @Nullable ViewGroup parent;
 
     public void setLinkedViewsRef(@Nullable ReferenceList<View> linkedViews) {
         this.linkedViews = linkedViews;
+    }
+
+    public void setLinkedDrawablesRef(@Nullable ReferenceList<BlurredBackgroundDrawable> linkedDrawables) {
+        this.linkedDrawables = linkedDrawables;
     }
 
     public void invalidateAllLinkedViews() {
@@ -90,6 +95,10 @@ public class BlurredBackgroundDrawableViewFactory {
                 drawable.setSourceOffset(pos.left, pos.top);
                 view.invalidate();
             }, multiwindow);
+        }
+
+        if (linkedDrawables != null) {
+            linkedDrawables.add(drawable);
         }
 
         return drawable;

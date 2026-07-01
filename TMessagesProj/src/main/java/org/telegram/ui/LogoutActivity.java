@@ -81,7 +81,7 @@ public class LogoutActivity extends BaseFragment {
             passcodeRow = -1;
         }
         cacheRow = rowCount++;
-        phoneRow = rowCount++;
+//        phoneRow = rowCount++;
         supportRow = rowCount++;
         alternativeSectionRow = rowCount++;
         logoutRow = rowCount++;
@@ -94,7 +94,7 @@ public class LogoutActivity extends BaseFragment {
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setTitle(LocaleController.getString(R.string.LogOutTitle));
-        if (AndroidUtilities.isTablet()) {
+        if (parentLayout != null && parentLayout.isLayersLayout()) {
             actionBar.setOccupyStatusBar(false);
         }
         actionBar.setAllowOverlayTitle(true);

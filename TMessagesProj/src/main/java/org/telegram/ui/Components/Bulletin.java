@@ -9,6 +9,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -86,6 +87,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
+
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 public class Bulletin {
 
@@ -390,7 +393,11 @@ public class Bulletin {
                 });
             }
 
-            containerLayout.addView(parentLayout);
+            try {
+                containerLayout.addView(parentLayout);
+            } catch (Exception e) {
+                CherrygramLogger.e(e);
+            }
         }
         return this;
     }
@@ -2529,7 +2536,18 @@ public class Bulletin {
         @Override
         public void show() {
             if (!AndroidUtilities.isSafeToShow(getContext())) return;
-            super.show();
+
+            if (getContext() instanceof Activity activity) {
+                if (activity.isFinishing() || activity.isDestroyed()) {
+                    return;
+                }
+            }
+
+            try {
+                super.show();
+            } catch (WindowManager.BadTokenException e) {
+                CherrygramLogger.e(e);
+            }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
