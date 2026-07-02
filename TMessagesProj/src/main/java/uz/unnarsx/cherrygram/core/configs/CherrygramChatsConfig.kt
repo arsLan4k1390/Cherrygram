@@ -36,8 +36,8 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
     /** Appearance start */
-    var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
-    var centerChatTitle_AdaptiveWidth by sharedPreferences.boolean("AP_CenterChatTitle_AdaptiveWidth", true)
+    var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle_v2", true)
+    var centerChatTitle_AdaptiveWidth by sharedPreferences.boolean("AP_CenterChatTitle_AdaptiveWidth_v2", true)
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
 
     /** Chat shortcuts start */

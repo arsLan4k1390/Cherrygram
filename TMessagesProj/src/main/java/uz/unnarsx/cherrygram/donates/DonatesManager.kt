@@ -409,7 +409,7 @@ object DonatesManager {
 
     /** USDT to TON converter start */
     private val FILE_NAME_TON_RATE = decodeBase64Array(Extra.FILE_NAME_TON_RATE_HASH)
-    private val TON_RATE_URL = decodeBase64Array(Extra.TON_RATE_URL_HASH)
+    private val TON_RATE_URL = "https://api.coinbase.com/v2/exchange-rates?currency=ton" // decodeBase64Array
 
     @Volatile
     private var tonRateFinal = 0.0
@@ -421,8 +421,11 @@ object DonatesManager {
 
             val jsonString = file.readText()
             val json = JSONObject(jsonString)
-            val ton = json.getJSONObject("ton")
-            val rawRate = ton.getDouble("usdt")
+
+            val data = json.getJSONObject("data")
+            val rates = data.getJSONObject("rates")
+            val rawRate = rates.getString("USDT").toDouble()
+
             tonRateFinal = rawRate
         } catch (e: Exception) {
             CherrygramLogger.e(e, true)
@@ -437,8 +440,10 @@ object DonatesManager {
 
                 val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
                 val json = JSONObject(jsonString)
-                val ton = json.getJSONObject("ton")
-                val rawRate = ton.getDouble("usdt")
+
+                val data = json.getJSONObject("data")
+                val rates = data.getJSONObject("rates")
+                val rawRate = rates.getString("USDT").toDouble()
 
                 tonRateFinal = rawRate
 
@@ -449,7 +454,6 @@ object DonatesManager {
                 file.setWritable(true, true)
                 file.writeText(jsonString)
                 FileIntegrityUtils.updateFileHash(context, file)
-
             } catch (e: Exception) {
                 CherrygramLogger.e(e, true)
                 loadLocalTonUsdtRateSync(context)

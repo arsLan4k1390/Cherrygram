@@ -476,12 +476,12 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                         tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
 
                         tableView.addRow(
-                                "$2 / €2 / 200₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON",
+                                "$2 / €2 / 200₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON/GRAM",
                                 generateDescForDonates(tableView)
                         );
 
                         tableView.addRow(
-                                "$5 / €5 / 500₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON",
+                                "$5 / €5 / 500₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON/GRAM",
                                 generateDescForMarketplace(tableView)
                         );
 
