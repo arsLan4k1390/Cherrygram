@@ -249,7 +249,7 @@ object BackupHelper {
             "CP_Shortcut_JumpToBegin", "CP_Shortcut_DeleteAll", "CP_Shortcut_SavedMessages",
             "CP_Shortcut_Browser", "CP_Admins_Reactions", "CP_Admins_Permissions", "CP_Admins_Administrators",
             "CP_Admins_Members", "CP_Admins_Statistics", "CP_Admins_RecentActions", "CP_UnreadBadgeOnBackButton",
-            "AP_CenterChatTitle", "AP_CenterChatTitle_AdaptiveWidth", "CP_Slider_RecentEmojisAmplifier", "CP_Slider_RecentStickersAmplifier",
+            "AP_CenterChatTitle_v2", "AP_CenterChatTitle_AdaptiveWidth_v2", "CP_Slider_RecentEmojisAmplifier", "CP_Slider_RecentStickersAmplifier",
             "CP_DisableSwipeToNext", "CP_HideMuteUnmuteButton", "CP_HideKeyboardOnScrollIntensity",
             "CP_GeminiApiKey", "CP_GeminiModelName", "CP_ShareDrawStoryButton", "CP_UsersDrawShareButton",
             "CP_SupergroupsDrawShareButton", "CP_ChannelsDrawShareButton", "CP_BotsDrawShareButton",
