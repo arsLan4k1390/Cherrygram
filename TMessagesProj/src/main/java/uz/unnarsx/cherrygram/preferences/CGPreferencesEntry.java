@@ -12,6 +12,9 @@ package uz.unnarsx.cherrygram.preferences;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyProSpan;
+
 import android.content.Context;
 import android.view.View;
 
@@ -34,9 +37,9 @@ import java.util.ArrayList;
 
 import kotlin.Pair;
 import uz.unnarsx.cherrygram.chats.CGChatMenuInjector;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
+import uz.unnarsx.cherrygram.core.firebase.crashlytics.Crashlytics;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
@@ -53,9 +56,9 @@ public class CGPreferencesEntry extends UniversalFragment {
     private final int aboutRow = 7;
 
     private final int supportRow = 8;
-    private final int watchADSRow = 9;
+    private final int proxyRow = 9;
 
-    private final int proxyRow = 10;
+    private final int alternativeSupportRow = 10;
 
     public ActionBarMenuItem otherItem;
 
@@ -153,32 +156,33 @@ public class CGPreferencesEntry extends UniversalFragment {
         );
         items.add(UItem.asShadow(null));
 
-        items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
+        items.add(UItem.asHeader(getString(R.string.DP_Support)));
         items.add(
                 SettingsActivity.SettingCell.Factory.of(
                         supportRow,
                         0xFFB659FF, 0xFF617CFF,
                         R.drawable.settings_support_filled_solar,
-                        getString(R.string.DP_Support)
+                        applyProSpan(getString(R.string.DP_DonateBadge), getResourceProvider())
                 )
         );
-        if (CherrygramCoreConfig.INSTANCE.getShowProxyInSettings() && CGChatMenuInjector.INSTANCE.showProxyButton()) {
+        if (!getConnectionsManager().isTestBackend()) {
+            items.add(
+                    SettingsActivity.SettingCell.Factory.of(
+                            alternativeSupportRow,
+                            0xFFF6538A, 0xFF581668,
+                            R.drawable.settings_stars,
+                            applyNewSpan(getString(R.string.AS_Header))
+                    )
+            );
+        }
+        if (CherrygramFirebaseConfig.INSTANCE.getShowProxyInSettings() && CGChatMenuInjector.INSTANCE.showProxyButton()) {
+            items.add(UItem.asShadow(null));
             items.add(
                     SettingsActivity.SettingCell.Factory.of(
                             proxyRow,
                             IconBackgroundColors.BLUE_DEEP.top, IconBackgroundColors.BLUE_DEEP.bottom,
                             R.drawable.settings_language,
                             getString(R.string.Proxy)
-                    )
-            );
-        }
-        if (CherrygramCoreConfig.INSTANCE.getShowAdsScreenInSettings()) {
-            items.add(
-                    SettingsActivity.SettingCell.Factory.of(
-                            watchADSRow,
-                            0xFFF6538A, 0xFF581668,
-                            R.drawable.settings_watch_ads_filled_solar,
-                            getString(R.string.CGP_ADS)
                     )
             );
         }
@@ -203,10 +207,10 @@ public class CGPreferencesEntry extends UniversalFragment {
             CherrygramPreferencesNavigator.INSTANCE.createAbout(this);
         } else if (item.id == supportRow) {
             CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
-        } else if (item.id == watchADSRow) {
-            CherrygramPreferencesNavigator.INSTANCE.createADS(this);
         } else if (item.id == proxyRow) {
-            Browser.openUrl(getContext(), CherrygramCoreConfig.INSTANCE.getProxyURL());
+            Browser.openUrl(getContext(), CherrygramFirebaseConfig.INSTANCE.getProxyURL());
+        } else if (item.id == alternativeSupportRow) {
+            CherrygramPreferencesNavigator.INSTANCE.createAlternativeSupport(this);
         }
     }
 
@@ -235,6 +239,9 @@ public class CGPreferencesEntry extends UniversalFragment {
             return true;
         } else if (item.id == aboutRow) {
             AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_About);
+            return true;
+        } else if (item.id == alternativeSupportRow) {
+            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Alternative_Support);
             return true;
         }
         return false;

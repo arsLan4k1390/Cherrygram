@@ -1,3 +1,6 @@
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 apply plugin: 'com.android.library'
@@ -35,6 +38,11 @@ def getGitHash = { ->
     return stdout.toString().trim()/*.substring(0, 8)*/
 }
 
+static def getCurrentDate() {
+    def formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+    return LocalDate.now().format(formatter)
+}
+
 dependencies {
     implementation 'androidx.core:core-ktx:1.18.0'
     implementation 'androidx.palette:palette-ktx:1.0.0'
@@ -47,13 +55,13 @@ dependencies {
     implementation 'com.google.android.gms:play-services-cast-framework:21.4.0'
     implementation "androidx.mediarouter:mediarouter:1.7.0"
 
-    implementation 'androidx.car.app:app:1.4.0'
-    implementation 'androidx.car.app:app-projected:1.4.0'
+    implementation 'androidx.car.app:app:1.7.0'
+    implementation 'androidx.car.app:app-projected:1.7.0'
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
 
     compileOnly 'org.checkerframework:checker-qual:2.5.2'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
-    implementation 'com.google.firebase:firebase-messaging:25.0.2'
+    implementation 'com.google.firebase:firebase-messaging:25.1.1'
     implementation 'com.google.firebase:firebase-config:23.1.0'
     implementation 'com.google.firebase:firebase-appindexing:20.0.0'
     implementation 'com.google.android.gms:play-services-maps:20.0.0'
@@ -69,13 +77,13 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.14.0'
 
     //Cherrygram
-    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
+    implementation 'com.squareup.okhttp3:okhttp:5.4.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
     implementation 'com.google.android.play:review:2.0.2'
     implementation 'com.google.firebase:firebase-analytics:23.2.0'
-    implementation 'com.google.firebase:firebase-crashlytics:20.0.6'
+    implementation 'com.google.firebase:firebase-crashlytics:20.1.0'
     implementation 'com.google.ai.client.generativeai:generativeai:0.9.0'
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
 
@@ -181,6 +189,7 @@ android {
         buildConfigField "String", "BUILD_SOURCE_CODE_VERSION", "\"${sourceCodeVersion}\""
         buildConfigField "String", "BUILD_CODE_VERSION", "\"${currentCodeVersion}\""
         buildConfigField "String", "GIT_COMMIT_HASH", "\"${getGitHash()}\""
+        buildConfigField "String", "GET_BUILD_DATE", "\"${getCurrentDate()}\""
     }
 
     buildTypes {

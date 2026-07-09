@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class TopicsNotifySettingsFragments extends BaseFragment {
 
     private final int VIEW_TYPE_ADD_EXCEPTION = 1;
@@ -57,7 +59,9 @@ public class TopicsNotifySettingsFragments extends BaseFragment {
         FrameLayout frameLayout = new FrameLayout(context);
         fragmentView = frameLayout;
 
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {

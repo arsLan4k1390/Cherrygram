@@ -11,6 +11,8 @@ package uz.unnarsx.cherrygram.preferences.folders;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyProSpan;
+
 import android.content.Context;
 import android.view.View;
 
@@ -30,7 +32,7 @@ import org.telegram.ui.SettingsActivity;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
@@ -87,7 +89,7 @@ public class FoldersPreferencesEntry extends UniversalFragment {
         items.add(SettingsHelper.asSwitchCG(folderNameAppHeaderRow, getString(R.string.AP_FolderNameInHeader), getString(R.string.AP_FolderNameInHeader_Desc))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader())
         );
-        items.add(SettingsHelper.asSwitchCG(foldersAtBottomRow, getString(R.string.AP_FoldersAtBottom))
+        items.add(SettingsHelper.asSwitchCG(foldersAtBottomRow, applyProSpan(getString(R.string.AP_FoldersAtBottom), getResourceProvider()))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()).setLocked(!DonatesManager.INSTANCE.didUserDonateForFeature())
         );
         items.add(UItem.asShadow(null));

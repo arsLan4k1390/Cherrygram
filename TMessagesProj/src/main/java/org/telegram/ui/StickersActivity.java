@@ -102,6 +102,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class StickersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private static final int MENU_ARCHIVE = 0;
@@ -209,7 +211,9 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public View createView(Context context) {
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setAllowOverlayTitle(true);
         if (currentType == TYPE_IMAGE) {
             actionBar.setTitle(getString(R.string.StickersName));

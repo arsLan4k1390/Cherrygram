@@ -12,7 +12,7 @@ package uz.unnarsx.cherrygram.core.configs
 import android.app.Activity
 import android.content.SharedPreferences
 import org.telegram.messenger.ApplicationLoader
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.boolean
 
 object CherrygramPrivacyConfig {

@@ -17,10 +17,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.SharedConfig
-import uz.unnarsx.cherrygram.helpers.network.StickersManager
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
-import uz.unnarsx.cherrygram.preferences.long
 
 object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Default
@@ -52,6 +50,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var customWallpapers by sharedPreferences.boolean("CP_CustomWallpapers", true)
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var discussInsteadOfMute by sharedPreferences.boolean("CP_DiscussInsteadOfMute", true)
+    var iOSMessageInputField by sharedPreferences.boolean("CP_iOSMessageInputField", false)
     var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
@@ -116,14 +115,12 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Search Filter finish */
 
     var unarchiveOnSwipe by sharedPreferences.boolean("CG_UnarchiveOnSwipe", false)
-    var lastStickersCheckTime by sharedPreferences.long("CG_LastStickersCheckTime", 0)
     var sortByUnread by sharedPreferences.boolean("CG_SortByUnread", false)
     /** Misc finish */
 
     fun init() {
         launch(Dispatchers.IO) {
-            StickersManager.startAutoRefresh(ApplicationLoader.applicationContext)
-            StickersManager.copyStickerFromAssets()
+
         }
     }
     

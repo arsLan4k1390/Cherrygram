@@ -25,13 +25,17 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public abstract class UniversalFragment extends BaseFragment {
 
     public UniversalRecyclerView listView;
 
     @Override
     public View createView(Context context) {
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(getTitle(), null, isGilroyEnabled);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

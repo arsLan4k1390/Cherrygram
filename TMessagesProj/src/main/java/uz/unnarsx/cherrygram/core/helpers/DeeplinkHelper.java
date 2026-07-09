@@ -22,6 +22,7 @@ import org.telegram.ui.Stars.StarsIntroActivity;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
@@ -54,6 +55,10 @@ public class DeeplinkHelper {
                 }
                 case DeepLinksRepo.CG_ADS-> {
                     CherrygramPreferencesNavigator.INSTANCE.createADS(fragment);
+                    return;
+                }
+                case DeepLinksRepo.CG_Alternative_Support -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createAlternativeSupport(fragment);
                     return;
                 }
                 case DeepLinksRepo.CG_Appearance -> {
@@ -89,7 +94,7 @@ public class DeeplinkHelper {
                     return;
                 }
                 case DeepLinksRepo.CG_Stars -> {
-                    if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+                    if (CherrygramFirebaseConfig.INSTANCE.getAllowSafeStars()) {
                         CherrygramPreferencesNavigator.INSTANCE.createStars(fragment, null, null, -1);
                     } else {
                         new StarsIntroActivity.StarsOptionsSheet(fragment.getContext(), fragment.getResourceProvider()).show();
@@ -186,6 +191,8 @@ public class DeeplinkHelper {
     public static class DeepLinksRepo {
         public static final String CG_ADS = "cg_ads";
 
+        public static final String CG_Alternative_Support = "cg_alternative_support";
+
         public static final String CG_Proxy = "cg_proxy";
 
         public static final String CG_Settings = "cg_settings";
@@ -210,11 +217,11 @@ public class DeeplinkHelper {
 
         public static final String CG_Privacy = "cg_privacy";
 
+        public static final String CG_Restart = "cg_restart";
+
         public static final String CG_Support = "cg_support";
         public static final String CG_Support_Force = "cg_support_force";
         public static final String CG_Stars = "cg_stars";
-
-        public static final String CG_Restart = "cg_restart";
 
         public static final String CG_About = "cg_about";
         public static final String CG_Debug = "cg_debug";

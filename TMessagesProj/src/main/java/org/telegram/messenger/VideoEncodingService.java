@@ -18,7 +18,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import org.telegram.tgnet.TLRPC;
 
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseCrashlyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.crashlytics.FirebaseCrashlyticsHelper;
 
 public class VideoEncodingService extends Service implements NotificationCenter.NotificationCenterDelegate {
 

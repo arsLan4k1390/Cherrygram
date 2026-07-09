@@ -164,9 +164,9 @@
     <string name="CGP_Camera_Desc">Налаштування камери та фото/відеозйомки</string>
     <string name="CGP_Experimental_Desc">Експериментальні, нестабільні та функції програми, що знаходяться в розробці</string>
     <string name="CGP_Privacy_Desc">Налаштування конфіденційності, блокування/приховування чату та захисту даних</string>
-    <string name="CGP_ADS">Watch ADS</string>
-    <string name="CGP_ADS_Advertiser">Advertiser:</string>
-    <string name="CGP_ADS_Click">Click the ad for more information</string>
+    <string name="CGP_ADS">Дивитися рекламу</string>
+    <string name="CGP_ADS_Advertiser">Рекламодавець:</string>
+    <string name="CGP_ADS_Click">Натисніть на оголошення, щоб отримати більше інформації</string>
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">Основне</string>
@@ -191,6 +191,7 @@
     <string name="AP_SystemEmoji">Системні емодзі</string>
     <string name="AP_ShowPencilIcon">Значок олівця для відредагованих повідомлень</string>
     <string name="AP_CenterTitle">Заголовок по центру</string>
+    <string name="AP_CenterTitle_AdaptiveWidth">Адаптивна ширина бульбашки</string>
     <string name="AP_HideSearchBar">Приховати панель пошуку в чатах</string>
     <string name="AP_DisableDividers">Вимкнути роздільники</string>
     <string name="AP_SystemFonts">Системні шрифти</string>
@@ -217,7 +218,7 @@
     <string name="CP_DisableReactionAnim">Вимкнути анімацію реакцій</string>
     <string name="CP_DisableReactionAnim_Desc">(під час реакції на повідомлення)</string>
     <string name="CP_DisablePremiumStatuses">Вимкнути преміум статуси</string>
-    <string name="CP_DisablePremiumStatuses_Desc">Це вимкне преміум-статус всюди, за винятком меню додатків</string>
+    <string name="CP_DisablePremiumStatuses_Desc">Це скрізь вимкне преміум статуси</string>
     <string name="CP_DisablePremStickAnim">Вимкнути дотики у преміум наліпок</string>
     <string name="CP_DisablePremStickAnim_Desc">Нічого не відбудеться, якщо натиснути на преміум наліпку</string>
     <string name="CP_DisablePremStickAutoPlay">Вимкнути анімацію преміум наліпок</string>
@@ -254,7 +255,7 @@
     <string name="CP_MessageMenu">Меню повідомлення</string>
     <string name="CP_MessageMenuItems">Елементи меню повідомлень</string>
     <string name="CP_BlurMessageMenu">Меню повідомлень у стилі iOS</string>
-    <string name="CP_BlurMessageMenu_Desc">Застосовує розмитий фон до меню повідомлень і показує панель реакцій над повідомленням, як у Telegram на iOS.</string>
+    <string name="CP_BlurMessageMenu_Desc">Застосовує розмитий фон до меню повідомлень та показує панель реакцій над повідомленням, подібно до Telegram на iOS. Не підтримується на планшетах.</string>
     <string name="CP_MessageMenuUnifiedScroll">Об\'єднана прокрутка</string>
     <string name="CP_MessageMenuUnifiedScroll_Desc">Меню та вміст повідомлень відображатимуться на одному суцільному екрані зі спільною прокруткою замість розділення на дві окремі зони.</string>
     <string name="CP_MessageMenuAutoscroll">Автопрокрутка повідомлень</string>
@@ -283,7 +284,8 @@
     <string name="CP_HideMuteUnmuteButton">Приховати нижню панель у каналах</string>
     <string name="CP_HideKbdOnScroll">Інтенсивність прокручування, щоб приховати клавіатуру</string>
     <string name="CP_HideSendAsChannel">Приховати \"Відправити як канал\"</string>
-    <string name="CP_HideSendAsChannelDesc">Ви можете отримати доступ до меню, довго натиснувши на кнопку з Емодзі/Наліпками/GIF</string>
+    <string name="CP_HideSendAsChannelDesc">Ви можете отримати доступ до меню, довго натиснувши на кнопку з Емодзі/Наліпками/GIF
+</string>
     <string name="CP_GeminiAI_API_Key">API ключ Gemini</string>
     <string name="CP_GeminiAI_API_Key_Desc">Відвідайте <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>, щоб отримати API ключ.</string>
     <string name="CP_GeminiAI_Model">Код моделі Gemini</string>
@@ -305,7 +307,8 @@
     <string name="CP_Messages_Size">Розмір бульбашок повідомлень</string>
     <string name="CP_Message_Filtering">Фільтр повідомлень</string>
     <string name="CP_Message_Filtering_Filter">Увімкнути фільтр</string>
-    <string name="CP_Message_Filtering_Filter_Desc">Коли фільтр увімкнено, вибрані слова у вхідних повідомленнях будуть автоматично приховані під ефектом спойлера, і їх не можна буде прочитати, доки ви їх не відкриєте.</string>
+    <string name="CP_Message_Filtering_Filter_Desc">Коли фільтр увімкнено, вибрані слова у вхідних повідомленнях будуть автоматично приховані під ефектом спойлера, і їх не можна буде прочитати, доки ви їх не відкриєте.
+</string>
     <string name="CP_Message_Filtering_Field">Введіть слова для фільтру</string>
     <string name="CP_Message_Filtering_Field_Desc">Розділяйте слова комою, пробілом або новим рядком. Використовуйте дужки, щоб згрупувати кілька слів у фразу. Без урахування регістру. \nПриклад: слово, інше, (декілька слів тут)    </string>
     <string name="CP_Message_Filtering_Translit">Виявлення трансліту</string>
@@ -326,7 +329,8 @@
     <string name="CP_Message_Filtering_FullyHide">Приховати повідомлення</string>
     <string name="CP_Message_Filtering_FullyHide_Desc">Повністю приховувати відфільтровані повідомлення замість приховування тексту за допомогою ефекту спойлера.</string>
     <string name="CP_Message_Filtering_HideAll">Спойлер усього повідомлення</string>
-    <string name="CP_Message_Filtering_HideAllDesc">Приховує весь текст повідомлення та медіа під спойлером, якщо воно містить слово з фільтра.</string>
+    <string name="CP_Message_Filtering_HideAllDesc">Приховує весь текст повідомлення та медіа під спойлером, якщо воно містить слово з фільтра.
+</string>
     <string name="CP_Message_Filtering_Collapse">Згорнути повідомлення</string>
     <string name="CP_Message_Filtering_Collapse_Desc">Коли опцію увімкнено, повідомлення будуть автоматично згортатися. Ви можете розгорнути їх, натиснувши на повідомлення.</string>
     <string name="CP_Message_Filtering_Transparent">Прозорість повідомлення</string>
@@ -350,7 +354,6 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Камера</string>
     <string name="CP_CameraType">Тип камери</string>
-    <string name="CP_Camera2Desc">Всі функції, які приховані, коли Камера2 увімкнено, не будуть працювати з увімкненим Camera2.</string>
     <string name="CP_CameraUW">Почати з UW</string>
     <string name="CP_CameraUW_Desc">Запис відеоповідомлення почнеться з Ультра Широкої камери (якщо API Вашого пристрою це підтримує)</string>
     <string name="CP_CameraDualCamera">Подвійна камера</string>
@@ -362,11 +365,8 @@
     <string name="CP_ContinuousAutofocus">Безперервне автофокусування</string>
     <string name="CP_NoiseReduction">Зменшення шуму</string>
     <string name="CP_FaceDetection">Розпізнавання обличчя</string>
-    <string name="CP_DefaultCameraDesc">Влаштована камера Telegram.</string>
-    <string name="CP_CameraXDesc">CameraX підтримується тільки на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">вибраних пристроях</a>]]>, ефекти та лінзи залежать від вашого виробника.</string>
     <string name="CP_CameraQuality">Якість камери</string>
     <string name="CP_CameraTypeSystem">Системна</string>
-    <string name="CP_SystemCameraDesc">Дозволяє отримати прямий доступ до системної камери (не застосовується в відеоповідомленнях).</string>
     <string name="CP_CameraAspectRatio">Співвідношення сторін камери</string>
     <string name="CP_CenterCameraControlButtons">Центрувати кнопки керування</string>
     <string name="CP_CenterCameraControlButtons_Desc">Центрувати перемикач камери та кнопку спалаху.</string>
@@ -403,7 +403,8 @@
     <string name="SP_Header_Privacy">Приватність</string>
     <string name="SP_GoogleAnalytics_Desc">Якщо ввімкнути це, усі збої програми та статистичні дані надсилатимуться на \"console.firebase.google.com\" для подальшого перегляду розробником.</string>
     <string name="SP_AskBioToOpenChats">Запитувати біометричні дані для відкриття чатів</string>
-    <string name="SP_AskBioToOpenChats_Desc">Щоб отримати доступ до вибраних типів чатів, буде потрібен системний пароль (відбиток пальця, Face ID, PIN-код або графічний ключ).</string>
+    <string name="SP_AskBioToOpenChats_Desc">Щоб отримати доступ до вибраних типів чатів, буде потрібен системний пароль (відбиток пальця, Face ID, PIN-код або графічний ключ).
+</string>
     <string name="SP_LockedChats">Заблоковані чати</string>
     <string name="SP_LockedChats_Lock_Destination">для оновлення списку заблокованих</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">буде заблоковано</string>
@@ -448,7 +449,7 @@
     <string name="DP_Donate_EpicBadge_desc">1. **Епічний значок Cherrygram** поруч з вашим ім\'ям.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. Кнопка \"**Магазин подарунків**\" у боковому меню.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. Функція \"**Фільтр повідомлень**\".</string>
-    <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS - стиль**\" меню повідомлень.</string>
+    <string name="DP_Donate_MessageMenu_Desc">Меню повідомлень 4. \"**У стилі iOS**\". Не підтримується на планшетах.</string>
     <string name="DP_Donate_Cheque">Надішліть підтвердження оплати на **@arsLan**, щоб отримати бонуси.</string>
     <string name="DP_Donate_Terms">Перед здійсненням пожертви, будь ласка, прочитайте Умови здійснення пожертв. Усі пожертви є добровільними та не підлягають поверненню.</string>
     <string name="DP_Donate_Counter_one">**%1$d** людина вже підтримала проект і отримала бонуси</string>

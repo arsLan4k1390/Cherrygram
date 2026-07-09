@@ -680,4 +680,20 @@ public class TelegramMediaSession {
             }
         }
     }
+
+    /** Cherrygram start */
+    public void clearPlaybackState() {
+        try {
+            session.setPlaybackState(new PlaybackStateCompat.Builder()
+                    .setState(PlaybackStateCompat.STATE_NONE, 0, 1f)
+                    .setActions(0)
+                    .build());
+            session.setMetadata(null);
+            session.setActive(false);
+        } catch (Throwable e) {
+            FileLog.e(e);
+        }
+    }
+    /** Cherrygram finish */
+
 }

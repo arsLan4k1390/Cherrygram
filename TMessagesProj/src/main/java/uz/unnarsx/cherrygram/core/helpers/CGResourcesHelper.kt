@@ -62,6 +62,11 @@ object CGResourcesHelper {
     }
 
     @JvmStatic
+    fun getBuildDate(): String {
+        return BuildConfig.GET_BUILD_DATE
+    }
+
+    @JvmStatic
     fun getAbiCode(): String {
         var abi: String
         try {
@@ -94,7 +99,9 @@ object CGResourcesHelper {
                     "\n" +
                     "Based on Telegram v" + BuildVars.BUILD_VERSION_STRING + " (" + getSourceCodeVersion() + ")" +
                     "\n" +
-                    Constants.CG_AUTHOR
+                    Constants.CG_AUTHOR +
+                    "\n" +
+                    "Build date: " + getBuildDate()
     }
     /** About app finish */
 

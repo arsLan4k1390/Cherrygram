@@ -92,7 +92,7 @@ import java.util.TreeSet;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseCrashlyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.crashlytics.FirebaseCrashlyticsHelper;
 
 public class StoriesController {
 

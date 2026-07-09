@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -71,6 +72,7 @@ import org.telegram.ui.Components.TranslateAlert2;
 import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.StatisticActivity;
+import org.telegram.ui.community.CommunitySheet;
 import org.telegram.ui.web.SearchEngine;
 
 import java.io.File;
@@ -149,6 +151,7 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_EXPLANATION_GEMINI = 2032;
     public final static int OPTION_SUMMARIZE_GEMINI = 2033;
     public final static int OPTION_ADVANCED_SEARCH = 2034;
+    public final static int OPTION_OPEN_COMMUNITY = 2035;
     /** Cherrygram chat options constant id's finish */
 
     /** ActionBar options start*/
@@ -158,7 +161,7 @@ public class ChatActivityHelper extends BaseController {
             ArrayList<MessageObject> messages,
             SparseArray<MessageObject>[] selectedMessagesIds,
             long mergeDialogId, int editTextStart, int editTextEnd,
-            TLRPC.TL_forumTopic forumTopic, TLRPC.Chat currentChat
+            TLRPC.TL_forumTopic forumTopic, TLRPC.Chat currentChat, TLRPC.User currentUser
     ) {
         if (id == OPTION_ADVANCED_SEARCH) {
             createSearchWithIDAlert(chatActivity);
@@ -282,6 +285,12 @@ public class ChatActivityHelper extends BaseController {
             });
         } else if (id == OPTION_OPEN_TELEGRAM_BROWSER) {
             Browser.openInTelegramBrowser(chatActivity.getContext(), SearchEngine.getCurrent().getSearchURL(""), null);
+        } else if (id == OPTION_OPEN_COMMUNITY) {
+            if (currentUser != null && currentUser.linked_community_id != 0) {
+                chatActivity.showDialog(new CommunitySheet(chatActivity, currentUser.linked_community_id));
+            } else if (currentChat != null && currentChat.linked_community_id != 0) {
+                chatActivity.showDialog(new CommunitySheet(chatActivity, currentChat.linked_community_id));
+            }
         }
     }
     /** ActionBar options finish*/
@@ -661,22 +670,27 @@ public class ChatActivityHelper extends BaseController {
     }
 
     private void searchWithID(ChatActivity chatActivity, String inputID) {
-        if (inputID.length() > 20) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(chatActivity.getContext());
-            builder.setTitle(getString(R.string.AvatarPreviewSearchMessages));
-            builder.setMessage(LocaleController.getString(R.string.InvalidFormatError));
-            builder.setPositiveButton(getString(R.string.Close), null);
-            builder.show();
+        if (TextUtils.isEmpty(inputID) || inputID.length() > 19) {
+            showInvalidFormatAlert(chatActivity);
             return;
         }
-        long chatID = Long.parseLong(inputID);
+
+        long chatID;
+        try {
+            chatID = Long.parseLong(inputID);
+        } catch (NumberFormatException e) {
+            showInvalidFormatAlert(chatActivity);
+            return;
+        }
 
         TLRPC.User user = getMessagesController().getUser(chatID);
         TLRPC.Chat chat = getMessagesController().getChat(chatID);
 
         if (chat == null && inputID.startsWith("100") && inputID.length() > 10) {
-            chatID = Long.parseLong(inputID.substring(3));
-            chat = getMessagesController().getChat(chatID);
+            try {
+                chatID = Long.parseLong(inputID.substring(3));
+                chat = getMessagesController().getChat(chatID);
+            } catch (NumberFormatException ignored) {}
         }
 
         if (user != null) {
@@ -700,6 +714,14 @@ public class ChatActivityHelper extends BaseController {
         }
     }
 
+    private void showInvalidFormatAlert(ChatActivity chatActivity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(chatActivity.getContext());
+        builder.setTitle(getString(R.string.AvatarPreviewSearchMessages));
+        builder.setMessage(LocaleController.getString(R.string.InvalidFormatError));
+        builder.setPositiveButton(getString(R.string.Close), null);
+        builder.show();
+    }
+
     private void createSearchWithIDAlert(ChatActivity chatActivity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(chatActivity.getContext());
         builder.setTitle(getString(R.string.AvatarPreviewSearchMessages));
@@ -713,6 +735,7 @@ public class ChatActivityHelper extends BaseController {
         editText.setSingleLine(true);
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(19) });
         editText.setHint("ID");
         editText.setCursorColor(chatActivity.getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader));
         editText.setCursorSize(AndroidUtilities.dp(20));
@@ -773,7 +796,6 @@ public class ChatActivityHelper extends BaseController {
     }
 
     public static class KeyboardHiderOnFastScroll {
-
         public static void attachTo(@NonNull RecyclerView recyclerView, @NonNull View contentView, ChatActivityEnterView chatActivityEnterView) {
             if (recyclerView == null || contentView == null || chatActivityEnterView == null) return;
             final int VELOCITY_THRESHOLD = dp(CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScrollIntensity() * 1000); // px/second

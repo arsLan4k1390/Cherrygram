@@ -33,7 +33,6 @@ import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.ActionIntroActivity
 import org.telegram.ui.CallLogActivity
 import org.telegram.ui.CameraScanActivity
-import org.telegram.ui.Cells.TextCell.applyNewSpan
 import org.telegram.ui.ChannelCreateActivity
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.ChatActivityEnterView
@@ -54,6 +53,7 @@ import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.helpers.CreateQRSheet
 import uz.unnarsx.cherrygram.helpers.QRCodeSheet
 import uz.unnarsx.cherrygram.misc.Constants
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan
 import kotlin.math.abs
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
@@ -167,6 +167,19 @@ object CGChatMenuInjector {
             R.drawable.msg_language,
             "Telegram Browser"
         )
+
+        if (
+            CherrygramChatsConfig.centerChatTitle
+            && (currentUser != null && currentUser.linked_community_id.toInt() != 0 || currentChat != null && currentChat.linked_community_id.toInt() != 0)
+        ) {
+            headerItem.lazilyAddColoredGap()
+
+            headerItem.lazilyAddSubItem(
+                ChatActivityHelper.OPTION_OPEN_COMMUNITY,
+                R.drawable.msg_groups,
+                getString(R.string.Community)
+            )
+        }
 
     }
 

@@ -13,7 +13,6 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
-import android.os.Build;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -36,7 +35,7 @@ import java.util.Locale;
 import uz.unnarsx.cherrygram.chats.gemini.network.ApiClient;
 import uz.unnarsx.cherrygram.chats.gemini.network.ModelInfo;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
@@ -128,7 +127,7 @@ public class GeminiPreferencesEntry extends UniversalFragment {
         });
         geminiSystemPromptField.setHint("⚙️");
         geminiSystemPromptField.getEditText().setSingleLine(false);
-        geminiModelNameField.getEditText().setHint(getString(R.string.CP_GeminiAI_System_Prompt));
+        geminiSystemPromptField.getEditText().setHint(getString(R.string.CP_GeminiAI_System_Prompt));
         geminiSystemPromptField.getEditText().setText(CherrygramMessagesConfig.INSTANCE.getGeminiSystemPrompt());
         geminiSystemPromptField.setMinimumHeight(200);
         geminiSystemPromptField.setPadding(dp(16), dp(12), dp(16), dp(12));

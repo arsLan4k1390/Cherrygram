@@ -261,7 +261,7 @@ object BackupHelper {
             "CP_EnableMsgFilter", "CP_MsgFiltersElements", "CP_MsgFiltersDetectTranslit",
             "CP_MsgFiltersMatchExactWord", "CP_MsgFiltersDetectEntities", "CP_MsgFiltersHideFromBlocked1",
             "CP_MsgFiltersHideAll", "CP_MsgFiltersCollapseAutomatically", "CP_MsgFilterTransparentMsg",
-            "CP_AutoQuoteReplies", "CP_TimeOnStick", "CP_ForwardMsgDate", "AP_PencilIcon",
+            "CP_AutoQuoteReplies", "CP_WideMessagesLayout", "CP_TimeOnStick", "CP_ForwardMsgDate", "AP_PencilIcon",
             "CP_LeftBottomButtonAction", "CP_DoubleTapAction", "CP_MessageSlideAction", "CP_DeleteForAll",
             "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration", "CP_OpenLinksInIV",
             "CP_VideoSeekDuration", "CP_Notification_Sound", "CP_VibrationInChats", "CP_SilenceNonContacts", "CG_UnarchiveOnSwipe",

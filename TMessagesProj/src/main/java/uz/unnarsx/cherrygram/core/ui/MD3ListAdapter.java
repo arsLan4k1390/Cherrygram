@@ -467,6 +467,18 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
         }
     }
 
+    public static int getBackgroundColor(Theme.ResourcesProvider resourcesProvider) {
+        if (shouldUseCustomColors()) {
+            if (resourcesProvider == null) {
+                return ColorUtils.blendARGB(Theme.getColor(Theme.key_actionBarDefaultSubmenuItemIcon), Theme.getColor(Theme.key_dialogBackground), 0.9f);
+            } else {
+                return Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider);
+            }
+        } else {
+            return Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider);
+        }
+    }
+
     public static boolean shouldUseCustomColors() {
 //        return false;
         return /*Theme.getActiveTheme().isMonetLight() || Theme.getActiveTheme().isMonetDark() ||*/ Theme.getCurrentTheme().isMonetAmoled() || Theme.getActiveTheme().isAmoled();

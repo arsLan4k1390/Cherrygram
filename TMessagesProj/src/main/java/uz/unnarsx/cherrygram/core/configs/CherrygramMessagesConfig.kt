@@ -82,6 +82,7 @@ object CherrygramMessagesConfig {
     var stickersDrawShareButton by sharedPreferences.boolean("CP_StickersDrawShareButton", false)
     /** Direct share finish */
 
+    var wideMessagesLayout by sharedPreferences.boolean("CP_WideMessagesLayout", false)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", true)
     var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", true)

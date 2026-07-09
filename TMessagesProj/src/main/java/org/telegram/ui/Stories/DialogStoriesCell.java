@@ -2237,6 +2237,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         if (titleOverlayText != null) {
             hasOverlayText = true;
 
+            if (TextUtils.isEmpty(titleOverlayText)) titleOverlayText = getString(R.string.CG_AppName);
+
             titleView.setText(titleOverlayText, !LocaleController.isRTL);
             ellipsizeSpanAnimator.addView(titleView);
             ellipsizeSpanAnimator.addView(telegramLogoView);

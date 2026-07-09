@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 
 public class DeleteAccountDialog extends BaseFragment {
 

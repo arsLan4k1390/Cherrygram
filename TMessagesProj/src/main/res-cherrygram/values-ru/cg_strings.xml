@@ -282,6 +282,8 @@
     <!--Chats Preferences-->
     <string name="CP_AutoQuoteReplies">Цитировать ответы</string>
     <string name="CP_AutoQuoteReplies_Desc">Отправлять цитату с текстом всего сообщения вместо обычного ответа. Не работает в топиках.</string>
+    <string name="CP_WideMessagesLayout">Широкий пузырь сообщения</string>
+    <string name="CP_WideMessagesLayout_Desc">Расширяет сообщения в каналах. Пока эта функция включена, кнопка Direct Share будет скрыта.</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
     <string name="CP_ChatMenuShortcuts">Действия в меню чата</string>
@@ -290,7 +292,7 @@
     <string name="CP_MessageMenu">Меню сообщения</string>
     <string name="CP_MessageMenuItems">Элементы меню сообщения</string>
     <string name="CP_BlurMessageMenu">Меню сообщений в стиле iOS</string>
-    <string name="CP_BlurMessageMenu_Desc">Добавляет размытие фона в меню сообщений и размещает панель реакций над сообщением, как в Telegram на iOS.</string>
+    <string name="CP_BlurMessageMenu_Desc">Добавляет размытие фона в меню сообщений и размещает панель реакций над сообщением, как в Telegram на iOS. Не поддерживается на планшетах.</string>
     <string name="CP_MessageMenuUnifiedScroll">Единый скролл</string>
     <string name="CP_MessageMenuUnifiedScroll_Desc">Контент меню и сообщения будет отображаться на одном непрерывном листе, используя единый скролл вместо двух отдельных.</string>
     <string name="CP_MessageMenuAutoscroll">Автопрокрутка сообщения</string>
@@ -317,6 +319,9 @@
     <string name="CG_MsgSlideAction">Свайп по сообщению</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
+    <string name="CP_BottomBar">Нижняя панель</string>
+    <string name="CP_iOSMessageInputField">Панель в стиле iOS</string>
+    <string name="CP_iOSMessageInputField_Desc">Переносит иконку вложений влево, а также разделяет кнопки по пузырям.</string>
     <string name="CP_HideMuteUnmuteButton">Скрыть нижнюю панель в каналах</string>
     <string name="CP_HideKbdOnScroll">Интенсивность скролла для скрытия клавиатуры при прокрутке</string>
     <string name="CP_HideSendAsChannel">Скрыть \"Отправить как канал\"</string>
@@ -401,7 +406,6 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Камера</string>
     <string name="CP_CameraType">Тип камеры</string>
-    <string name="CP_Camera2Desc">С Camera2 не будут работать все функции, которые скрываются при включении Camera2.</string>
     <string name="CP_CameraUW">Начинать с ширика</string>
     <string name="CP_CameraUW_Desc">Запись видеосообщений начнется со сверхширокоугольного объектива (если это поддерживает API вашего устройства)</string>
     <string name="CP_CameraDualCamera">Двойная камера</string>
@@ -413,11 +417,8 @@
     <string name="CP_ContinuousAutofocus">Непрерывная автофокусировка</string>
     <string name="CP_NoiseReduction">Шумоподавление</string>
     <string name="CP_FaceDetection">Обнаружение лиц</string>
-    <string name="CP_DefaultCameraDesc">Встроенная камера Telegram.</string>
-    <string name="CP_CameraXDesc">CameraX поддерживается только на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">выбранных устройствах</a>]]>, эффекты и линзы зависят от Вашего производителя.</string>
     <string name="CP_CameraQuality">Качество камеры</string>
     <string name="CP_CameraTypeSystem">Системная</string>
-    <string name="CP_SystemCameraDesc">Позволяет получить доступ напрямую к системной камере (не применимо к видеосообщениям).</string>
 
     <string name="CP_CameraAspectRatio">Соотношение сторон камеры</string>
     <string name="CP_CenterCameraControlButtons">Центрировать кнопки управления</string>
@@ -514,7 +515,7 @@
     <string name="DP_Donate_EpicBadge_desc">1. **Эпический значок Cherrygram** рядом с вашим ником.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. Кнопку \"**Маркетплейс подарков**\" в боковом меню.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. Функцию \"**Фильтр сообщений**\"</string>
-    <string name="DP_Donate_MessageMenu_Desc">4. Меню сообщения \"**в стиле Telegram iOS**\".</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. Меню сообщения \"**в стиле Telegram iOS**\". Не поддерживается на планшетах.</string>
     <string name="DP_Donate_Cheque">Отправьте подтверждение платежа **@arsLan** для получения бонусов.</string>
     <string name="DP_Donate_Terms">Перед донатом, пожалуйста, ознакомьтесь с **Условиями донатов**. Все донаты являются добровольными и безвозвратными.</string>
 
@@ -542,6 +543,13 @@
     <string name="DP_Donate_Exclusive">Эксклюзив для поддержавших</string>
     <string name="DP_Donate_ExclusiveDesc">Поддержите проект и откройте доступ ко всем возможностям.</string>
     <!--Donations-->
+
+    <!--Alternative Support-->
+    <string name="AS_Header">Альтернативная поддержка</string>
+    <string name="AS_ZeroCost">Поддержка без вложений</string>
+    <string name="AS_UsefulServices">Полезные сервисы</string>
+    <string name="AS_DigitalGoods">Цифровые товары</string>
+    <!--Alternative Support-->
     <!--Cherrygram screens-->
 
 </resources>

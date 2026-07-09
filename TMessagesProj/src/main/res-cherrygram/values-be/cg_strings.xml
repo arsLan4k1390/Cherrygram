@@ -200,16 +200,12 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Kamera</string>
     <string name="CP_CameraType">Typ kamery</string>
-    <string name="CP_Camera2Desc">Усе функцыі, што схаваны пры ўключэнні Camera2, не будуць працаваць з ёй.</string>
     <string name="CP_CameraUW">Пачынаць з УШ</string>
     <string name="CP_CameraUW_Desc">Запісваць відэапаведамленні з ультрашырокай камеры (калі API вашай прылады падтрымлівае)</string>
     <string name="CP_CameraDualCamera">Двайная камера</string>
     <string name="CP_CameraDualCamera_Desc">Запісвае відэа на абодзьвух камерах для хутчэйшага пераключэння. Выкарыстоўвае больш зараду.</string>
-    <string name="CP_DefaultCameraDesc">Vykarystoŭvajcie ŭbudavanuju kameru Telegram.</string>
-    <string name="CP_CameraXDesc">CameraX padtrymvajecca tolki na <![CDATA[<a href="https://developer.android.com/training/camerax/devices">abranych pryładach</a>]]>, padtrymka efektaŭ i linzaŭ zaležyć ad vašaha vytvorcy.</string>
     <string name="CP_CameraQuality">Якасць камеры</string>
     <string name="CP_CameraTypeSystem">Сістэмная</string>
-    <string name="CP_SystemCameraDesc">Дазваляе атрымаць доступ наўпрост да сістэмнай камеры (не ўжываецца да відэапаведамленняў).</string>
     <string name="CP_CameraAspectRatio">Суадносіны бакоў камеры</string>
     <string name="CP_RearCam">Выкарыстоўваць заднюю камеру</string>
     <string name="CP_RearCam_Desc">Заміж франтальнай камеры пры запісе відэапаведамленняў</string>

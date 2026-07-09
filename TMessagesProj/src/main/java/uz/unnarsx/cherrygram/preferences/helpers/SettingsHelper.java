@@ -9,8 +9,13 @@
 
 package uz.unnarsx.cherrygram.preferences.helpers;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
+
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.view.View;
 
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.NotificationsCheckCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
@@ -19,6 +24,7 @@ import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
+import org.telegram.ui.FilterCreateActivity;
 import org.telegram.ui.SettingsActivity;
 
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
@@ -133,7 +139,7 @@ public class SettingsHelper {
         } else if (view instanceof TextDetailSettingsCell textDetailSettingsCell) {
             textDetailSettingsCell.getValueTextView().setText(value);
         } else if (view instanceof SettingsActivity.SettingCell settingCell) {
-            settingCell.setValue(value);
+            settingCell.setValueCG(value);
         } else {
             if (view != null) {
                 CherrygramLogger.e(() -> "Unknown view type for setChecked: " + view.getClass().getName());
@@ -141,6 +147,34 @@ public class SettingsHelper {
                 CherrygramLogger.e(() -> "Attempted to update check state on a NULL view");
             }
         }
+    }
+
+    public static CharSequence applyNewSpan(CharSequence str) {
+        return applyNewSpan(str, false);
+    }
+    public static CharSequence applyNewSpan(CharSequence str, boolean outline) {
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
+        spannableStringBuilder.append("  d");
+        FilterCreateActivity.NewSpan span = new FilterCreateActivity.NewSpan(outline, 10);
+        span.usePaintAlpha = true;
+        span.setColor(Theme.getColor(Theme.key_premiumGradient1));
+        spannableStringBuilder.setSpan(span, spannableStringBuilder.length() - 1, spannableStringBuilder.length(), 0);
+        return spannableStringBuilder;
+    }
+
+    public static CharSequence applyProSpan(CharSequence str, Theme.ResourcesProvider resourcesProvider) {
+        return applySpan(str, "PRO", Theme.key_cgGradient2, resourcesProvider);
+    }
+
+    public static CharSequence applySpan(CharSequence str, String badgeText, int colorKey, Theme.ResourcesProvider resourcesProvider) {
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
+        spannableStringBuilder.append("  d");
+
+        FilterCreateActivity.TextSpan span = new FilterCreateActivity.TextSpan(badgeText, 10, colorKey, resourcesProvider);
+        span.backgroundHeight = dp(16.66f);
+
+        spannableStringBuilder.setSpan(span, spannableStringBuilder.length() - 1, spannableStringBuilder.length(), 0);
+        return spannableStringBuilder;
     }
 
 }

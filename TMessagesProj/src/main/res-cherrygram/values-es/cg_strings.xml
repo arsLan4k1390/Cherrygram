@@ -296,16 +296,12 @@ Si se encuentra una coincidencia dentro del enlace, el mensaje completo se ocult
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Cámara</string>
     <string name="CP_CameraType">Tipo de cámara</string>
-    <string name="CP_Camera2Desc">Todas las características que se ocultan cuando Camera2 está encendida no funcionarán con Camera2 habilitada.</string>
     <string name="CP_CameraUW">Comenzar desde UW</string>
     <string name="CP_CameraUW_Desc">La grabación de video mensajes comenzará desde la cámara Gran Angular (si la API de tu dispositivo lo soporta)</string>
     <string name="CP_CameraDualCamera">Doble cámara</string>
     <string name="CP_CameraDualCamera_Desc">Captura mensaje de vídeo en ambas cámaras para cambiar más rápido entre cámaras mientras se graba. Usa más batería.</string>
-    <string name="CP_DefaultCameraDesc">Usa la cámara integrada de Telegram.</string>
-    <string name="CP_CameraXDesc">CámaraX solo está soportado en <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, el soporte de efectos y lentes depende de su fabricante.</string>
     <string name="CP_CameraQuality">Calidad de la cámara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
-    <string name="CP_SystemCameraDesc">Accede directamente a la cámara del sistema (no aplica para videomensajes).</string>
     <string name="CP_CameraAspectRatio">Relación de aspecto de cámara</string>
     <string name="CP_CenterCameraControlButtons">Botones de control central</string>
     <string name="CP_CenterCameraControlButtons_Desc">Centrar los botones de cámara y linterna.</string>

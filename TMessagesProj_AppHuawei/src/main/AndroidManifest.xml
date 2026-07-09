@@ -15,12 +15,12 @@
         android:name="org.telegram.messenger.HuaweiApplicationLoader"
         tools:replace="name"
         android:extractNativeLibs="true"
-    >
+        >
         <service
             android:name="org.telegram.messenger.GoogleVoiceClientService"
             android:exported="true"
             android:foregroundServiceType="dataSync"
-        />
+            />
         <activity
             android:name="org.telegram.messenger.GoogleVoiceClientActivity"
             android:exported="true">
@@ -35,7 +35,7 @@
             android:name="org.telegram.messenger.HuaweiPushListenerService"
             android:exported="false"
             android:foregroundServiceType="dataSync|remoteMessaging"
-        >
+            >
             <intent-filter>
                 <action android:name="com.huawei.push.action.MESSAGING_EVENT"/>
             </intent-filter>

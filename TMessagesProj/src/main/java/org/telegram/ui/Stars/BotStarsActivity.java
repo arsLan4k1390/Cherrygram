@@ -86,6 +86,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class BotStarsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public static final int TYPE_STARS = 0;
@@ -177,7 +179,9 @@ public class BotStarsActivity extends BaseFragment implements NotificationCenter
             avatarContainer.setSubtitle(LocaleController.getString(R.string.BotStatsTON));
         }
 
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(final int id) {
