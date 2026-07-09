@@ -59,6 +59,7 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.utils.LeakDetector;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.ui.ArticleViewer;
+import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.LaunchActivity;
@@ -222,6 +223,13 @@ public abstract class BaseFragment {
         if (BuildConfig.DEBUG_PRIVATE_VERSION) {
             LeakDetector.getInstance().add(this);
         }
+
+        Bulletin.addDelegate(this, new Bulletin.Delegate() {
+            @Override
+            public int getBottomOffset(int tag) {
+                return isSupportEdgeToEdge() ? AndroidUtilities.navigationBarHeight : 0;
+            }
+        });
     }
 
     public void setCurrentAccount(int account) {
@@ -494,7 +502,7 @@ public abstract class BaseFragment {
         }
 
         if (hasForceLightStatusBar() && !AndroidUtilities.isTablet() && getParentLayout().getLastFragment() == this && getParentActivity() != null && !finishing) {
-            AndroidUtilities.setLightStatusBar(getParentActivity().getWindow(), Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE);
+            AndroidUtilities.setLightStatusBar(getParentActivity(), Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE);
         }
 
         if (sheetsStack != null) {
@@ -970,13 +978,15 @@ public abstract class BaseFragment {
     }
 
     public INavigationLayout[] showAsSheet(BaseFragment fragment, BottomSheetParams params) {
-        if (getParentActivity() == null) {
+        if (getParentActivity() == null || LaunchActivity.instance == null) {
             return null;
         }
         BottomSheet[] bottomSheet = new BottomSheet[1];
         INavigationLayout[] actionBarLayout = new INavigationLayout[]{INavigationLayout.newLayout(getParentActivity(), false, () -> bottomSheet[0])};
         actionBarLayout[0].setIsSheet(true);
-        LaunchActivity.instance.sheetFragmentsStack.add(actionBarLayout[0]);
+        if (LaunchActivity.instance != null && LaunchActivity.instance.sheetFragmentsStack != null) {
+            LaunchActivity.instance.sheetFragmentsStack.add(actionBarLayout[0]);
+        }
         fragment.onTransitionAnimationStart(true, false);
         bottomSheet[0] = new BottomSheet(getParentActivity(), true, fragment.getResourceProvider()) {
             {
@@ -1007,7 +1017,7 @@ public abstract class BaseFragment {
                 } else {
                     AndroidUtilities.setLightNavigationBar(bottomSheet[0], true);
                 }
-                AndroidUtilities.setLightStatusBar(getWindow(), fragment.isLightStatusBar());
+                AndroidUtilities.setLightStatusBar(this, fragment.isLightStatusBar());
                 fragment.onBottomSheetCreated();
             }
 
@@ -1047,7 +1057,11 @@ public abstract class BaseFragment {
                     }
                 }
                 super.dismiss();
-                LaunchActivity.instance.sheetFragmentsStack.remove(actionBarLayout[0]);
+
+                if (LaunchActivity.instance != null && LaunchActivity.instance.sheetFragmentsStack != null) {
+                    LaunchActivity.instance.sheetFragmentsStack.remove(actionBarLayout[0]);
+                }
+
                 actionBarLayout[0] = null;
             }
 
@@ -1421,6 +1435,53 @@ public abstract class BaseFragment {
         public boolean occupyNavigationBar;
     }
 
+    public EdgeToEdgeSupportMode getEdgeToEdgeSupportMode() {
+        return isSupportEdgeToEdge() ?
+                EdgeToEdgeSupportMode.VERTICAL :
+                EdgeToEdgeSupportMode.NONE;
+    }
+
+    @Deprecated
+    public boolean isSupportEdgeToEdge() {
+        // warn: overridden method must return a constant
+        return false; // CherrygramExtras.isEdgeToEdgeSupported()
+    }
+
+    public boolean drawEdgeNavigationBar() {
+        return isSupportEdgeToEdge();
+    }
+
+    public WindowInsetsCompat onInsetsInternal(@NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
+        final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars() | WindowInsetsCompat.Type.statusBars());
+        onInsets(insets.left, insets.top, insets.right, bottomInset = insets.bottom);
+        return WindowInsetsCompat.CONSUMED;
+    }
+
+    private int bottomInset;
+    public int getBottomInset() {
+        return bottomInset;
+    }
+
+    public void onInsets(int left, int top, int right, int bottom) {
+
+    }
+
+
+    private Bulletin.Delegate bulletinDelegate;
+
+    public void setBulletinDelegate(Bulletin.Delegate bulletinDelegate) {
+        this.bulletinDelegate = bulletinDelegate;
+    }
+
+    public Bulletin.Delegate getBulletinDelegate() {
+        return bulletinDelegate;
+    }
+
+
+    protected void dumpCanvas() {
+        AndroidUtilities.dumpCanvas(fragmentView);
+    }
+
     /** Cherrygram start */
     public MessageHelper getMessageHelper() {
         return MessageHelper.getInstance(currentAccount);
@@ -1447,33 +1508,4 @@ public abstract class BaseFragment {
     }
     /** Cherrygram finish */
 
-    public boolean isSupportEdgeToEdge() {
-        // warn: overridden method must return a constant
-        return false; // CherrygramExtras.isEdgeToEdgeSupported()
-    }
-
-    public boolean drawEdgeNavigationBar() {
-        return isSupportEdgeToEdge();
-    }
-
-    public WindowInsetsCompat onInsetsInternal(@NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
-        final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars() | WindowInsetsCompat.Type.statusBars());
-        onInsets(insets.left, insets.top, insets.right, bottomInset = insets.bottom);
-        return WindowInsetsCompat.CONSUMED;
-    }
-
-    private int bottomInset;
-    public int getBottomInset() {
-        return bottomInset;
-    }
-
-    public void onInsets(int left, int top, int right, int bottom) {
-
-    }
-
-
-
-    protected void dumpCanvas() {
-        AndroidUtilities.dumpCanvas(fragmentView);
-    }
 }

@@ -183,7 +183,7 @@ public class CounterView extends View {
         }
 
         public void setText(CharSequence text, boolean animated, int count, boolean isText) {
-            if (TextUtils.equals(text, currentText)) {
+            if (TextUtils.equals(text, currentText) && count == currentCount) {
                 return;
             }
             if (countAnimator != null) {

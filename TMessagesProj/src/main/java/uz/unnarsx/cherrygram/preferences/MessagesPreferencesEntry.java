@@ -11,6 +11,9 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyProSpan;
+
 import android.content.Context;
 import android.view.View;
 
@@ -28,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
@@ -38,13 +41,13 @@ import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 public class MessagesPreferencesEntry extends UniversalFragment {
 
     private final int messageMenuRow = 1, messageSizeRow = 2, directShareRow = 3,
-            hideTimeOnStickersRow = 4, showForwardDateRow = 5, pencilIconForEditedRow = 6;
+            wideMessagesLayout = 4, hideTimeOnStickersRow = 5, showForwardDateRow = 6, pencilIconForEditedRow = 7;
 
-    private final int geminiSettingsRow = 7, voiceTranscriptionRow = 8;
+    private final int geminiSettingsRow = 8, voiceTranscriptionRow = 9;
 
-    private final int messageFilterRow = 9, leftBottomBtnRow = 10, doubleTapRow = 11, slideActionRow = 12, deleteForAllRow = 13;
+    private final int messageFilterRow = 10, leftBottomBtnRow = 11, doubleTapRow = 12, slideActionRow = 13, deleteForAllRow = 14;
 
-    private final int reactionsOverlayRow = 14, reactionAnimationRow = 15, tapsOnPremiumStickersRow = 16, premiumStickersAutoplayRow = 17;
+    private final int reactionsOverlayRow = 15, reactionAnimationRow = 16, tapsOnPremiumStickersRow = 17, premiumStickersAutoplayRow = 18;
 
     @Override
     protected CharSequence getTitle() {
@@ -65,6 +68,14 @@ public class MessagesPreferencesEntry extends UniversalFragment {
         items.add(UItem.asButton(messageMenuRow, R.drawable.msg_list, getString(R.string.CP_MessageMenu)));
         items.add(UItem.asButton(messageSizeRow, R.drawable.msg_photo_settings, getString(R.string.CP_Messages_Size)));
         items.add(UItem.asButton(directShareRow, R.drawable.msg_share, getString(R.string.DirectShare)));
+        items.add(
+                SettingsHelper.asSwitchCG(
+                        wideMessagesLayout,
+                        applyNewSpan(getString(R.string.CP_WideMessagesLayout)),
+                        getString(R.string.CP_WideMessagesLayout_Desc)
+                )
+                .setChecked(CherrygramMessagesConfig.INSTANCE.getWideMessagesLayout())
+        );
         items.add(SettingsHelper.asSwitchCG(hideTimeOnStickersRow, getString(R.string.CP_TimeOnStick))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getHideStickerTime())
         );
@@ -91,7 +102,7 @@ public class MessagesPreferencesEntry extends UniversalFragment {
                 SettingsActivity.SettingCell.Factory.of(
                         messageFilterRow, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom,
                         R.drawable.settings_message_filrers_filled_solar,
-                        getString(R.string.CP_Message_Filtering),
+                        applyProSpan(getString(R.string.CP_Message_Filtering), getResourceProvider()),
                         getString(R.string.CGP_MessagesFilter_Desc),
                         true
                 )
@@ -126,6 +137,9 @@ public class MessagesPreferencesEntry extends UniversalFragment {
             CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(this);
         } else if (item.id == messageSizeRow) {
             AlertDialogSwitchers.showMessageSize(this);
+        } else if (item.id == wideMessagesLayout) {
+            CherrygramMessagesConfig.INSTANCE.setWideMessagesLayout(!CherrygramMessagesConfig.INSTANCE.getWideMessagesLayout());
+            SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getWideMessagesLayout());
         } else if (item.id == directShareRow) {
             showDirectShareConfigurator(this);
         } else if (item.id == hideTimeOnStickersRow) {

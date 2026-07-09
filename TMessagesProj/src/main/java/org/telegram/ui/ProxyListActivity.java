@@ -74,7 +74,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 public class ProxyListActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -366,7 +367,9 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
 
     @Override
     public View createView(Context context) {
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(getString(R.string.ProxySettings));
         if (parentLayout != null && parentLayout.isLayersLayout()) {
@@ -529,7 +532,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                     button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
                 }
             } else if (position == safeSurfRow) {
-                Browser.openAsInternalIntent(getContext(), CherrygramCoreConfig.INSTANCE.getSafe_surf_URL());
+                Browser.openAsInternalIntent(getContext(), CherrygramFirebaseConfig.INSTANCE.getSafe_surf_URL());
             }
         });
         listView.setOnItemLongClickListener((view, position) -> {
@@ -634,7 +637,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
 
     private void updateRows(boolean notify) {
         rowCount = 0;
-        if (CherrygramCoreConfig.INSTANCE.getAllowSafeSurf()) {
+        if (CherrygramFirebaseConfig.INSTANCE.getAllowSafeSurf()) {
             safeSurfRow = rowCount++;
             safeSurfShadowRow = rowCount++;
         }
@@ -937,7 +940,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
                         CharSequence tosInfoText = AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.CG_SafeSurf_TOS),
                                 Theme.key_windowBackgroundWhiteLinkText,
                                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> Browser.openUrl(getContext(), Constants.CG_DONATIONS_AND_TERMS_URL)
+                                () -> Browser.openUrl(getContext(), Constants.CG_PRIVACY_URL)
                         );
                         cell.setText(tosInfoText);
                     }

@@ -11,6 +11,8 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyProSpan;
+
 import android.content.Context;
 import android.os.Build;
 import android.view.View;
@@ -26,7 +28,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
@@ -63,7 +65,13 @@ public class MessageMenuPreferencesEntry extends UniversalFragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             items.add(UItem.asHeader(getString(R.string.AP_Header_Appearance)));
-            items.add(SettingsHelper.asSwitchCG(enableNewMessageMenuRow, getString(R.string.CP_BlurMessageMenu), getString(R.string.CP_BlurMessageMenu_Desc))
+            items.add(
+                    SettingsHelper.asSwitchCG
+                            (
+                                    enableNewMessageMenuRow,
+                                    applyProSpan(getString(R.string.CP_BlurMessageMenu), getResourceProvider()),
+                                    getString(R.string.CP_BlurMessageMenu_Desc)
+                            )
                     .setChecked(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
                     .setLocked(requireDonate)
             );
@@ -98,7 +106,7 @@ public class MessageMenuPreferencesEntry extends UniversalFragment {
                 SettingsHelper.asSwitchCG
                         (
                             messageMenuItemsCompactViewRow,
-                            getString(R.string.CP_MessageMenuCompactLayout),
+                            applyProSpan(getString(R.string.CP_MessageMenuCompactLayout), getResourceProvider()),
                             getString(R.string.CP_MessageMenuCompactLayout_Desc) + "\n\n" + getString(R.string.CP_MessageMenuCompactLayout_Dot)
                         )
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuItemsCompactView())

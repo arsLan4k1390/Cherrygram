@@ -146,6 +146,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class TopicsFragment extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ChatActivityInterface, RightSlidingDialogContainer.BaseFragmentWithFullscreen, MainTabsActivity.TabFragmentDelegate {
 
     private final static int BOTTOM_BUTTON_TYPE_JOIN = 0;
@@ -633,7 +635,9 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
             actionBar.setInterceptTouches(false);
         }
 
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -1456,8 +1460,8 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
                     topPanelLayout.setViewVisible(fragmentContextViewWrapper, visibility == VISIBLE, true);
                 }
             };
-            fragmentContextView.isInsideBubble = true;
             fragmentContextViewWrapper.addView(fragmentContextView);
+            topPanelLayout.setCallFragmentContextView(fragmentContextView);
         }
         FrameLayout.LayoutParams layoutParams = LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT);
         if (inPreviewMode) {
@@ -3640,7 +3644,7 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
             } else if (view instanceof FilteredSearchView) {
                 ((FilteredSearchView) view).setKeyboardHeight(keyboardSize, false);
                 Item item = viewPagerAdapter.items.get(position);
-                ((FilteredSearchView) view).search(-chatId, minDate, maxDate, FiltersView.filters[item.filterIndex], includeFolder, query, reset);
+                ((FilteredSearchView) view).search(-chatId, 0, minDate, maxDate, FiltersView.filters[item.filterIndex], includeFolder, query, reset);
             } else if (view instanceof SearchDownloadsContainer) {
                 ((SearchDownloadsContainer) view).setKeyboardHeight(keyboardSize, false);
                 ((SearchDownloadsContainer) view).search(query);

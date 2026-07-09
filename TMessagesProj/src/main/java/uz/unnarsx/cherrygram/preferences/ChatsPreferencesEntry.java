@@ -10,7 +10,8 @@
 package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
-import static org.telegram.ui.Cells.TextCell.applyNewSpan;
+
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -43,7 +44,7 @@ import java.util.function.Supplier;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
@@ -56,21 +57,21 @@ public class ChatsPreferencesEntry extends UniversalFragment {
 
     private final int customBackgroundInChatsRow = 5, snowflakesRow = 6;
 
-    private final int hideBottomBarRow = 7, sendAsChannelButtonRow = 8, recentEmojisStickersRow = 9;
+    private final int iOSMessageInputField = 7, hideBottomBarRow = 8, sendAsChannelButtonRow = 9, recentEmojisStickersRow = 10;
 
-    private final int messagesPreferencesRow = 10;
+    private final int messagesPreferencesRow = 11;
 
-    private final int customChatRow = 11;
+    private final int customChatRow = 12;
 
-    private final int autoQuoteRow = 12, disableSwipeToNextRow = 13, disableVibrationRow = 14, openLinksInIV = 15;
+    private final int autoQuoteRow = 13, disableSwipeToNextRow = 14, disableVibrationRow = 15, openLinksInIV = 16;
 
-    private final int hideKbdSliderRow = 16;
+    private final int hideKbdSliderRow = 17;
 
-    private final int playVideoOnVolumeBtnRow = 17, autoPauseVideoRow = 18;
+    private final int playVideoOnVolumeBtnRow = 18, autoPauseVideoRow = 19;
 
-    private final int videoSeekSliderRow = 19;
+    private final int videoSeekSliderRow = 20;
 
-    private final int notificationSoundRow = 20, vibrateInChatsRow = 21;
+    private final int notificationSoundRow = 21, vibrateInChatsRow = 22;
 
     @Override
     protected CharSequence getTitle() {
@@ -110,6 +111,10 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         );
         items.add(UItem.asShadow(null));
 
+        items.add(UItem.asHeader(getString(R.string.CP_BottomBar)));
+        items.add(SettingsHelper.asSwitchCG(iOSMessageInputField, applyNewSpan(getString(R.string.CP_iOSMessageInputField)), getString(R.string.CP_iOSMessageInputField_Desc))
+                .setChecked(CherrygramChatsConfig.INSTANCE.getIOSMessageInputField())
+        );
         items.add(SettingsHelper.asSwitchCG(hideBottomBarRow, getString(R.string.CP_HideMuteUnmuteButton))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton())
         );
@@ -218,6 +223,11 @@ public class ChatsPreferencesEntry extends UniversalFragment {
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getDrawSnowInChat());
 
             getParentLayout().rebuildAllFragmentViews(false, false);
+        } else if (item.id == iOSMessageInputField) {
+            CherrygramChatsConfig.INSTANCE.setIOSMessageInputField(!CherrygramChatsConfig.INSTANCE.getIOSMessageInputField());
+            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getIOSMessageInputField());
+
+            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == hideBottomBarRow) {
             CherrygramChatsConfig.INSTANCE.setHideMuteUnmuteButton(!CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton());

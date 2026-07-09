@@ -122,6 +122,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class StatisticActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private final int ADDITIONAL_LIST_HEIGHT_DP = Build.VERSION.SDK_INT >= 31 ? 48 : 0;
 
@@ -1018,7 +1020,9 @@ public class StatisticActivity extends BaseFragment implements NotificationCente
         avatarContainer.setTitle(chatLocal == null ? "" : chatLocal.title);
         avatarContainer.hideSubtitle();
 
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(final int id) {

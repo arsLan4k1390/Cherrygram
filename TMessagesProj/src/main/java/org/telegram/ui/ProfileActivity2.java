@@ -87,6 +87,8 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class ProfileActivity2 extends BaseFragment implements
     NotificationCenter.NotificationCenterDelegate,
     SharedMediaLayout.SharedMediaPreloaderDelegate,
@@ -229,7 +231,9 @@ public class ProfileActivity2 extends BaseFragment implements
         actionBar.setBackgroundColor(Color.TRANSPARENT);
         actionBar.setOccupyStatusBar(isMain || !AndroidUtilities.isTablet() && !inBubbleMode);
 
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         final ActionBarMenu menu = actionBar.createMenu();
 
         final ContainerView container = new ContainerView(context);

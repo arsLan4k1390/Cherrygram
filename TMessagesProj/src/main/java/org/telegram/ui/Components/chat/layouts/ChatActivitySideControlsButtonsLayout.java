@@ -170,14 +170,23 @@ public class ChatActivitySideControlsButtonsLayout extends FrameLayout implement
             holder.button.setAlpha(visibility);
             holder.button.setScaleX(lerp(0.7f, 1f, visibility));
             holder.button.setScaleY(lerp(0.7f, 1f, visibility));
-            if (buttonId != BUTTON_ATTACH) {
+            if (buttonId == BUTTON_ATTACH) {
+                final int extraGap = dp(20);
+
+                holder.button.setTranslationY(-dp(30) * visibility);
+
+                final int height = dp(50);
+                final int gap = dp(10) + extraGap;
+
+                totalHeight += (height + gap) * visibility;
+            } else {
                 holder.button.setTranslationY(dp(80) * (1f - visibility) - totalHeight);
+
+                final int height = dp(56);
+                final int gap = dp(10 + 10 * counterVisibility);
+
+                totalHeight += (height + gap) * visibility;
             }
-
-            final int height = dp(44);
-            final int gap = dp(10 + 10 * counterVisibility);
-
-            totalHeight += (height + gap) * visibility;
         }
     }
 
@@ -207,10 +216,10 @@ public class ChatActivitySideControlsButtonsLayout extends FrameLayout implement
                 buttonId == BUTTON_ATTACH ? 300 : 280);
 
             int size = 56, iconSize = 48;
-            if (buttonId == BUTTON_ATTACH) {
+            /*if (buttonId == BUTTON_ATTACH) {
                 size = 50;
                 iconSize = 32;
-            }
+            }*/
             final ChatActivityBlurredRoundPageDownButton button = ChatActivityBlurredRoundPageDownButton.create(
                 getContext(),
                 size, iconSize,

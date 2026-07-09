@@ -295,8 +295,7 @@ class TelegramSettingsHelper(
 
         val addAccountItem = SettingsActivity.SettingCell.Factory.of(
             1392,
-            IconBackgroundColors.BLUE.top,
-            IconBackgroundColors.BLUE_LIGHT.bottom,
+            IconBackgroundColors.BLUE.top, IconBackgroundColors.BLUE_LIGHT.bottom,
             R.drawable.filled_add_album,
             getString(R.string.AddAccount)
         )
@@ -389,8 +388,7 @@ class TelegramSettingsHelper(
         items.add(
             SettingsActivity.SettingCell.Factory.of(
                 1,
-                if (Theme.isCurrentThemeDay()) colorBottom else colorTop,
-                if (Theme.isCurrentThemeDay()) colorTop else colorBottom,
+                if (Theme.isCurrentThemeDay()) colorBottom else colorTop, if (Theme.isCurrentThemeDay()) colorTop else colorBottom,
                 R.drawable.settings_account,
                 if (Helper.showMyProfile()) getString(R.string.MyProfile) else getString(R.string.SettingsAccount),
                 getString(R.string.SettingsAccountInfo)
@@ -407,8 +405,7 @@ class TelegramSettingsHelper(
         if (!CherrygramPrivacyConfig.hideArchiveFromChatsList && fragment.messagesController.getDialogs(1).isNotEmpty()) {
             val archiveItem = SettingsActivity.SettingCell.Factory.of(
                 1395,
-                IconBackgroundColors.RED.top,
-                IconBackgroundColors.RED.bottom,
+                IconBackgroundColors.RED.top, IconBackgroundColors.RED.bottom,
                 R.drawable.cg_settings_archive_solar,
                 getString(R.string.ArchivedChats)
             )
@@ -419,8 +416,7 @@ class TelegramSettingsHelper(
         items.add(
             SettingsActivity.SettingCell.Factory.of(
                 1393,
-                IconBackgroundColors.BLUE_DEEP.top,
-                IconBackgroundColors.BLUE_DEEP.bottom,
+                IconBackgroundColors.BLUE_DEEP.top, IconBackgroundColors.BLUE_DEEP.bottom,
                 R.drawable.cg_settings_saved_solar,
                 getString(R.string.SavedMessages)
             )
@@ -431,8 +427,7 @@ class TelegramSettingsHelper(
         items.add(
             SettingsActivity.SettingCell.Factory.of(
                 1390,
-                0xFFE54C7F.toInt(),
-                0xFFA33156.toInt(),
+                0xFFE54C7F.toInt(), 0xFFA33156.toInt(),
                 if (CGResourcesHelper.isAnyOfBraIconsEnabled()) R.drawable.cg_settings_bra else R.drawable.cg_settings,
                 getString(R.string.CGP_AdvancedSettings)
             )
@@ -441,8 +436,7 @@ class TelegramSettingsHelper(
         if (CherrygramAppearanceConfig.marketPlaceDrawerButton && DonatesManager.checkAllDonatedAccountsForMarketplace()) {
             val giftsItem = SettingsActivity.SettingCell.Factory.of(
                 1394,
-                0xFFF38B31.toInt(),
-                0xFFE26314.toInt(),
+                0xFFF38B31.toInt(), 0xFFE26314.toInt(),
                 R.drawable.settings_gift,
                 getString(R.string.Gift2TitleSelf1)
             )

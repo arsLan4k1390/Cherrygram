@@ -95,8 +95,8 @@
     <string name="CG_SafeStars_Desc">多鏈及無 KYC（實名認證）</string>
     <string name="CG_SafeStars_BuyPremiumButton">請查閱網站</string>
     <string name="CG_SafeStars_buy_Telegram">透過 Telegram 購買星幣</string>
-    <string name="CG_Stars_TOS">By proceeding, you automatically agree to the **Telegram Terms and Conditions** and the **Cherrygram Terms of Service**.</string>
-    <string name="CG_SafeSurf_TOS">By proceeding, you automatically agree to the **Cherrygram Terms of Service**.</string>
+    <string name="CG_Stars_TOS">繼續操作即表示您自動同意**Telegram 使用條款**及**Cherrygram 服務條款**。</string>
+    <string name="CG_SafeSurf_TOS">繼續操作即表示您自動同意**Cherrygram 服務條款**。</string>
     <string name="CG_SortByDate">Sort by message date</string>
     <string name="CG_SortByUnread">Sort by unread first</string>
     <string name="CG_UnknownCherrySettingsOption">沒有這樣的 Cherry 設定選項</string>
@@ -112,6 +112,8 @@
     <string name="CG_CopyPhoto">複製圖片</string>
     <string name="CG_CopyPhotoAsSticker">將圖片複製為貼圖</string>
     <string name="CG_SendPhotoAsSticker">作為貼圖傳送</string>
+    <string name="CG_EnableMotionPhotos">啟用動態照片</string>
+    <string name="CG_DisableMotionPhotos">停用動態照片</string>
     <string name="CG_PhotoCopied">圖片已複製至剪貼簿</string>
     <string name="CG_SaveSticker">儲存貼圖</string>
     <string name="CG_StickerSavedHint">貼圖已儲存至下載資料夾</string>
@@ -130,12 +132,13 @@
     <string name="CG_Sleep_Timer">睡眠計時器已設定為 **%s**</string>
     <string name="CG_Sleep_Disabled">睡眠計時器已停用</string>
     <string name="CG_Sleep_Permission">請允許 Cherrygram 「排定精確鬧鐘」的權限，以便睡眠計時器能夠正常執行。</string>
-    <string name="CG_QR_Hint">This is a digital copy of the scanned QR code. Tap to copy it to the clipboard, or press and hold to save it to your gallery.</string>
-    <string name="CG_WifiConnect">Connect</string>
-    <string name="CG_WifiSuccess">Successfully connected to Wi-Fi.</string>
-    <string name="CG_WifiFailed">Failed to connect to Wi-Fi.</string>
-    <string name="CG_WifiDisabled">Wi-Fi is disabled.</string>
-    <string name="CG_AreYouSureToLogin">Are you sure you want to log in to this account on another device?</string>
+    <string name="CG_QR_Hint">這是 QR 碼的數位副本。按一下即可將其複製到剪貼簿，或長按以儲存至相簿。</string>
+    <string name="CG_WifiConnect">連線</string>
+    <string name="CG_WifiSuccess">已成功連線至 Wi-Fi。</string>
+    <string name="CG_WifiFailed">無法連線至 Wi-Fi。</string>
+    <string name="CG_WifiDisabled">Wi-Fi 已關閉。</string>
+    <string name="CG_AreYouSureToLogin">您確定要在另一台裝置上登入此帳號嗎？</string>
+    <string name="CG_CreateQR">建立 QR 碼</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -150,6 +153,20 @@
     <string name="CGP_Source">開放原始碼</string>
     <string name="CGP_Crowdin">協助翻譯</string>
     <string name="CGP_Header_Categories">偏好</string>
+    <string name="CGP_General_Desc">與特定部分無關的主要應用程式設定和功能</string>
+    <string name="CGP_Appearance_Desc">應用程式外觀與介面自訂</string>
+    <string name="CGP_Folders_Desc">資料夾外觀設定、佈局自訂，以及將資料夾列移至底部</string>
+    <string name="CGP_BottomTabs_Desc">自訂、整理及重新排列主畫面底部的標籤頁</string>
+    <string name="CGP_MessagesProfiles_Desc">顯示 Premium 表情符號、ID/DC 資訊，以及額外的個人資料/訊息元素</string>
+    <string name="CGP_Chats_Desc">聊天介面與訊息設定</string>
+    <string name="CGP_Messages_Desc">訊息設定、操作選單、外觀與互動</string>
+    <string name="CGP_MessagesFilter_Desc">訊息過濾與垃圾訊息防護</string>
+    <string name="CGP_Camera_Desc">相機和拍攝/錄影設定</string>
+    <string name="CGP_Experimental_Desc">實驗性、不穩定及開發中的應用程式功能</string>
+    <string name="CGP_Privacy_Desc">隱私權、對話鎖定/隱藏，以及資料保護設定</string>
+    <string name="CGP_ADS">觀看廣告</string>
+    <string name="CGP_ADS_Advertiser">廣告商：</string>
+    <string name="CGP_ADS_Click">按一下廣告以取得更多資訊</string>
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">一般</string>
@@ -174,6 +191,7 @@
     <string name="AP_SystemEmoji">系統表情符號</string>
     <string name="AP_ShowPencilIcon">將訊息底部的「已編輯」替換為鉛筆圖示</string>
     <string name="AP_CenterTitle">置中標題文字</string>
+    <string name="AP_CenterTitle_AdaptiveWidth">自適應氣泡寬度</string>
     <string name="AP_HideSearchBar">隱藏對話中的搜尋列</string>
     <string name="AP_DisableDividers">停用分隔線</string>
     <string name="AP_SystemFonts">系統字型</string>
@@ -200,7 +218,7 @@
     <string name="CP_DisableReactionAnim">關閉回應動畫</string>
     <string name="CP_DisableReactionAnim_Desc">對訊息回應時禁用其動畫</string>
     <string name="CP_DisablePremiumStatuses">停用 Premium 狀態顯示</string>
-    <string name="CP_DisablePremiumStatuses_Desc">此功能將停用除側邊欄之外，其他所有地方的 Premium 狀態顯示</string>
+    <string name="CP_DisablePremiumStatuses_Desc">將在所有地方停用 Premium 會員狀態</string>
     <string name="CP_DisablePremStickAnim">禁止點擊 Premium 貼圖</string>
     <string name="CP_DisablePremStickAnim_Desc">點擊 Premium 貼圖時不會有動畫效果</string>
     <string name="CP_DisablePremStickAutoPlay">禁止自動播放 Premium 動態貼圖</string>
@@ -236,7 +254,7 @@
     <string name="CP_MessageMenu">訊息選單自訂</string>
     <string name="CP_MessageMenuItems">訊息選單項目</string>
     <string name="CP_BlurMessageMenu">模糊訊息選單背景</string>
-    <string name="CP_BlurMessageMenu_Desc">為訊息選單套用模糊背景，並將回應面板顯示於訊息上方，類似 iOS 版 Telegram 的設計。</string>
+    <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS. Not supported on tablets.</string>
     <string name="CP_MessageMenuUnifiedScroll">訊息選單隨頁面滾動</string>
     <string name="CP_MessageMenuUnifiedScroll_Desc">訊息選單將直接顯示在訊息內容的最下方，並隨頁面捲動，而不再使用兩個獨立的捲動區域。</string>
     <string name="CP_MessageMenuAutoscroll">訊息自動捲動</string>
@@ -310,8 +328,9 @@
         \n\n此機制有助防範偽裝垃圾訊息、隱藏廣告或釣魚網域，避免其繞過一般文字過濾機制。
     </string>
     <string name="CP_Message_Filtering_FilterBlocked">篩選來自被封鎖使用者的訊息</string>
-    <string name="CP_Message_Filtering_HideBlocked">隱藏被封鎖使用者在群組中的訊息</string>
-    <string name="CP_Message_Filtering_FilterBlockedDesc">啟用功能後，所有來自被封鎖用戶的訊息和轉寄的訊息將自動隱藏在劇透標籤下。</string>
+    <string name="CP_Message_Filtering_FilterBlockedDesc">啟用功能後，所有來自被封鎖用戶的訊息和轉寄的訊息將自動過濾。</string>
+    <string name="CP_Message_Filtering_FullyHide">隱藏訊息</string>
+    <string name="CP_Message_Filtering_FullyHide_Desc">完全隱藏已篩選的訊息，而非將文字隱藏在「劇透」效果之下。</string>
     <string name="CP_Message_Filtering_HideAll">完整訊息劇透隱藏</string>
     <string name="CP_Message_Filtering_HideAllDesc">如訊息內容包含過濾字詞，則將整則訊息文字與媒體檔案隱藏於劇透標籤之下。</string>
     <string name="CP_Message_Filtering_Collapse">折疊訊息</string>
@@ -327,6 +346,7 @@
     <string name="CP_AutoPauseVideo">自動暫停影片</string>
     <string name="CP_AutoPauseVideo_Desc">鎖定螢幕或切換至背景時</string>
     <string name="CP_DisableVibration">停用全局震動</string>
+    <string name="CP_OpenLinksInIV">在「即時預覽」中開啟連結</string>
     <string name="CP_VideoSeekDuration">雙擊尋找視頻（秒）</string>
     <string name="CP_VibrateInChats">對話震動功能</string>
     <string name="CP_VibrateInChats_Desc">收到訊息時發出短暫震動</string>
@@ -336,23 +356,19 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">相機</string>
     <string name="CP_CameraType">相機類型</string>
-    <string name="CP_Camera2Desc">鏡頭開啟時隱藏的所有功能，在啟用第二個鏡頭時將無法使用。</string>
     <string name="CP_CameraUW">由超廣角鏡頭開始</string>
     <string name="CP_CameraUW_Desc">影片訊息的錄製將由超廣角鏡頭開始 (如果您的裝置的 API 支援的話)</string>
     <string name="CP_CameraDualCamera">雙鏡頭</string>
     <string name="CP_CameraDualCamera_Desc">在兩個鏡頭同時上錄製影片訊息，以便在錄製時快速轉換另一個鏡頭。啟用此功能可能消耗更多電量。</string>
-    <string name="CP_CategoryEnhancements">Enhancements</string>
-    <string name="CP_EnhancementsNote">Some camera enhancements can improve video quality, but using multiple features at the same time may not always give the best result. Feel free to experiment and find what works best for your device.</string>
-    <string name="CP_OpticalStabilisation">Optical stabilisation (OIS)</string>
-    <string name="CP_VideoStabilisation">Video stabilisation (EIS)</string>
-    <string name="CP_ContinuousAutofocus">Continuous autofocus</string>
-    <string name="CP_NoiseReduction">Noise reduction</string>
-    <string name="CP_FaceDetection">Face detection</string>
-    <string name="CP_DefaultCameraDesc">使用 Telegram 內建相機</string>
-    <string name="CP_CameraXDesc">CameraX 僅支援 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下列裝置</a>]]>，效果和鏡頭支援取決於您的硬體</string>
+    <string name="CP_CategoryEnhancements">增強功能</string>
+    <string name="CP_EnhancementsNote">某些相機增強功能可以提升影片畫質，但同時啟用多項功能未必總能獲得最佳效果。您可以自行嘗試，找到最適合您裝置的設定組合。</string>
+    <string name="CP_OpticalStabilisation">光學防手震 (OIS)</string>
+    <string name="CP_VideoStabilisation">電子防手震 (EIS)</string>
+    <string name="CP_ContinuousAutofocus">連續對焦錄製</string>
+    <string name="CP_NoiseReduction">減少雜訊</string>
+    <string name="CP_FaceDetection">人臉偵測</string>
     <string name="CP_CameraQuality">相機品質</string>
     <string name="CP_CameraTypeSystem">系統相機</string>
-    <string name="CP_SystemCameraDesc">使用系統相機 (在視訊訊息中不可用)</string>
     <string name="CP_CameraAspectRatio">相機縱橫比</string>
     <string name="CP_CenterCameraControlButtons">置中控制按鈕</string>
     <string name="CP_CenterCameraControlButtons_Desc">置中切換相機和手電筒按鈕</string>
@@ -434,7 +450,7 @@
     <string name="DP_Donate_EpicBadge_desc">1. **史詩級 Cherrygram 徽章** 顯示於您的姓名旁。</string>
     <string name="DP_Donate_GiftMarket_Desc">2. 側邊選單中的「**禮物市集**」按鈕。</string>
     <string name="DP_Donate_MessageFilter_Desc">3. 「**訊息過濾器**」功能。</string>
-    <string name="DP_Donate_MessageMenu_Desc">4. 「**iOS風格**」的訊息選單。</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS-styled**\" message menu. Not supported on tablets.</string>
     <string name="DP_Donate_Cheque">將付款確認書傳送至 **@arsLan** 以獲取獎勵。</string>
     <string name="DP_Donate_Terms">在捐贈前，請閱讀 **捐贈條款**。所有捐贈行為均為自願執行且不可退款。</string>
     <string name="DP_Donate_Counter_one">已有**%1$d**人支持此專案並獲得獎勵</string>

@@ -123,6 +123,8 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class CallLogActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, MainTabsActivity.TabFragmentDelegate {
 	private final int ADDITIONAL_LIST_HEIGHT_DP = Build.VERSION.SDK_INT >= 31 ? 48 : 0;
 
@@ -726,7 +728,9 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
     @Override
 	public View createView(Context context) {
 		if (!hasMainTabs) {
-			actionBar.setBackButtonDrawable(new BackDrawable(false));
+			BackDrawable backDrawable = new BackDrawable(false);
+            backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+            actionBar.setBackButtonDrawable(backDrawable);
 		}
 		actionBar.setAllowOverlayTitle(true);
 		actionBar.setTitle(getString(R.string.Calls));
@@ -916,8 +920,8 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 				topPanelLayout.setViewVisible(fragmentContextViewWrapper, visibility == VISIBLE);
 			}
 		};
-		fragmentContextView.isInsideBubble = true;
 		fragmentContextViewWrapper.addView(fragmentContextView);
+		topPanelLayout.setCallFragmentContextView(fragmentContextView);
 		contentView.addView(topPanelLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, -14, 0, 0));
 		contentView.addView(actionBar);
 

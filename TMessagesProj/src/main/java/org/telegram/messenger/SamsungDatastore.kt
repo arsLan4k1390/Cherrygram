@@ -16,7 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.telegram.tgnet.ConnectionManagerDelegate
 import uz.unnarsx.cherrygram.Extra
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import java.io.File
 

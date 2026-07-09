@@ -356,7 +356,6 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Fotocamera</string>
     <string name="CP_CameraType">Tipo di fotocamera</string>
-    <string name="CP_Camera2Desc">Tutte le funzioni che risultano nascoste quando Camera2 è accesa non saranno attive.</string>
     <string name="CP_CameraUW">Inizia da UW</string>
     <string name="CP_CameraUW_Desc">Per i messaggi video sarà utilizzata la fotocamera Ultra Wide (se l\'API del tuo dispositivo lo supporta)</string>
     <string name="CP_CameraDualCamera">Doppia fotocamera</string>
@@ -368,11 +367,8 @@
     <string name="CP_ContinuousAutofocus">Messa a fuoco automatica continua</string>
     <string name="CP_NoiseReduction">Riduzione rumore</string>
     <string name="CP_FaceDetection">Rilevamento volto</string>
-    <string name="CP_DefaultCameraDesc">Usa la fotocamera integrata di Telegram.</string>
-    <string name="CP_CameraXDesc">CameraX è supportata solo su <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivi selezionati</a>]]>, il supporto agli effetti e alle lenti dipende dal produttore.</string>
     <string name="CP_CameraQuality">Qualità della fotocamera</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
-    <string name="CP_SystemCameraDesc">Accedi direttamente alla fotocamera di sistema (non applicabile per i videomessaggi).</string>
     <string name="CP_CameraAspectRatio">Rapporto proporzioni fotocamera</string>
     <string name="CP_CenterCameraControlButtons">Pulsanti del centro di controllo</string>
     <string name="CP_CenterCameraControlButtons_Desc">Centra i tasti fotocamera e torcia.</string>

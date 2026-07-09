@@ -20,7 +20,7 @@ import org.telegram.messenger.SamsungDatastore
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.core.CherrygramLogger
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.MessageLoader
 import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.preferences.boolean

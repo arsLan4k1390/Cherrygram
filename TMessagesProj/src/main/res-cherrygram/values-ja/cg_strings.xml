@@ -300,16 +300,12 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">カメラ</string>
     <string name="CP_CameraType">カメラの種類</string>
-    <string name="CP_Camera2Desc">Camera2をONにすると非表示になるすべての機能は、Camera2が有効化されていると動作しなくなります。</string>
     <string name="CP_CameraUW">超広角レンズで開始する</string>
     <string name="CP_CameraUW_Desc">ビデオメッセージの録画を超広角レンズで開始します (使用しているデバイスのAPIがサポートしている場合)。</string>
     <string name="CP_CameraDualCamera">デュアルカメラ</string>
     <string name="CP_CameraDualCamera_Desc">両方のカメラでビデオメッセージをキャプチャして録画時のカメラの切り替えを高速化します。バッテリーの消費が激しくなります。</string>
-    <string name="CP_DefaultCameraDesc">Telegramの内蔵カメラ機能を使用します。</string>
-    <string name="CP_CameraXDesc">CameraXは<![CDATA[<a href="https://developer.android.com/training/camerax/devices">選ばれたデバイス</a>]]>でのみサポートされており、エフェクトやレンズのサポートに関しては製造元によって異なります。</string>
     <string name="CP_CameraQuality">カメラの画質</string>
     <string name="CP_CameraTypeSystem">システム</string>
-    <string name="CP_SystemCameraDesc">システムのカメラに直接アクセスします (ビデオメッセージには適用されません)。</string>
     <string name="CP_CameraAspectRatio">カメラのアスペクト比</string>
     <string name="CP_CenterCameraControlButtons">中央のコントロールボタン</string>
     <string name="CP_CenterCameraControlButtons_Desc">中央のボタンをカメラとフラッシュライトに切り替えます。</string>

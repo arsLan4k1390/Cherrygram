@@ -122,7 +122,10 @@ public class BackDrawable extends Drawable {
         paint.setColor(ColorUtils.blendARGB(color, rotatedColor, currentRotation));
 
         canvas.save();
-        canvas.translate(getIntrinsicWidth() / 2f, getIntrinsicHeight() / 2f);
+
+        float offsetX = !showStick ? AndroidUtilities.dp(3.5f) * (1.0f - currentRotation) : 0;
+
+        canvas.translate(getIntrinsicWidth() / 2f + offsetX, getIntrinsicHeight() / 2f);
         if (arrowRotation != 0) {
             canvas.rotate(arrowRotation);
         }
@@ -134,7 +137,15 @@ public class BackDrawable extends Drawable {
             canvas.rotate(135 + currentRotation * (reverseAngle ? -180 : 180));
             rotation = 1.0f;
         }
-        canvas.drawLine(AndroidUtilities.dp(AndroidUtilities.lerp(-6.75f, -8f, rotation)), 0, AndroidUtilities.dp(8) - (paint.getStrokeWidth() / 2f) * (1f - rotation), 0, paint);
+
+        float startX = AndroidUtilities.dp(AndroidUtilities.lerp(-6.75f, -8f, rotation));
+        float defaultEndX = AndroidUtilities.dp(8) - (paint.getStrokeWidth() / 2f) * (1f - rotation);
+
+        float stickFactor = showStick ? 1.0f : rotation;
+        float endX = AndroidUtilities.lerp(startX, defaultEndX, stickFactor);
+
+        canvas.drawLine(startX, 0, endX, 0, paint);
+
         float startYDiff = AndroidUtilities.dp(-0.25f);
         float endYDiff = AndroidUtilities.dp(AndroidUtilities.lerp(7f, 8f, rotation)) - (paint.getStrokeWidth() / 4f) * (1f - rotation);
         float startXDiff = AndroidUtilities.dp(AndroidUtilities.lerp(-7f - 0.25f, 0f, rotation));
@@ -168,4 +179,20 @@ public class BackDrawable extends Drawable {
     public int getIntrinsicHeight() {
         return AndroidUtilities.dp(24);
     }
+
+    /** Cherrygram start */
+    private boolean showStick = true;
+
+    public void setShowStick(boolean show) {
+        if (showStick != show) {
+            showStick = show;
+            invalidateSelf();
+        }
+    }
+
+    public boolean isShowStick() {
+        return showStick;
+    }
+    /** Cherrygram finish */
+
 }

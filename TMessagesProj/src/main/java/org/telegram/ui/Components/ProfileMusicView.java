@@ -107,7 +107,7 @@ public class ProfileMusicView extends View {
         }
 
         if (peerColor == null) {
-            backgroundColor = MD3ListAdapter.getBackgroundColor();
+            backgroundColor = MD3ListAdapter.getBackgroundColor(resourcesProvider);
             withShadows = true;
         } else {
             backgroundColor = Theme.adaptHSV(ColorUtils.blendARGB(color1, color2, .15f), +.04f, -.09f);

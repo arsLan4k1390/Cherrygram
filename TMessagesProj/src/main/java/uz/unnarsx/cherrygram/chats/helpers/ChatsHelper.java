@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.AppGlobalConfig;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.ChatObject;
@@ -188,16 +189,26 @@ public class ChatsHelper extends BaseController {
             forwardsSpan = new SpannableStringBuilder("\u200B");
             forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable, true), 0, 1, 0);
         }
+
+        boolean primaryEditedDate = AppGlobalConfig.getInstance(messageObject.currentAccount)
+                .messagePrimaryEditedDate.get();
+
         spannableStringBuilder
                 .append(isMusic ? "" : " ")
                 .append(hasForwards && !isMusic ? forwardsSpan : "")
                 .append(hasForwards && !isMusic ? " " : "")
                 .append(hasForwards && !isMusic ? String.format("%d", messageObject.messageOwner.forwards) : "")
                 .append(isMusic ? "" : " ")
-                .append(hasForwards && !isMusic ? "• " : "")
-                .append(CherrygramMessagesConfig.INSTANCE.getShowPencilIcon() ? editedSpan : getString(R.string.EditedMessage))
-                .append(hasForwards && !isMusic ? " • " : " ")
-                .append(LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000));
+                .append(hasForwards && !isMusic ? "• " : "");
+
+        if (primaryEditedDate) {
+            spannableStringBuilder.append(LocaleController.formatPmEditedDate(messageObject.messageOwner.edit_date));
+        } else {
+            spannableStringBuilder
+                    .append(CherrygramMessagesConfig.INSTANCE.getShowPencilIcon() ? editedSpan : getString(R.string.EditedMessage))
+                    .append(hasForwards && !isMusic ? " • " : " ")
+                    .append(LocaleController.getInstance().getFormatterDay().format((long) messageObject.messageOwner.date * 1000));
+        }
         return spannableStringBuilder;
     }
 
@@ -379,9 +390,11 @@ public class ChatsHelper extends BaseController {
 
         if (buttonAvailable && getCustomReactionsCount(selectedObject) > 0) {
             if (chatActivity.getMessageMenuHelper().allowNewMessageMenu() && chatActivity.getMessageMenuHelper().showCustomDivider(false)) {
-                View gap = new FrameLayout(chatActivity.contentView.getContext());
-                gap.setBackgroundColor(MessageMenuHelper.getMessageMenuBackgroundColor());
-                popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+                popupLayout.addView(new ActionBarPopupWindow.GapView(
+                        chatActivity.getContext(),
+                        MessageMenuHelper.getMessageMenuGapColor(),
+                        Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.getResourceProvider())
+                ), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
             } else {
                 View gap = new FrameLayout(chatActivity.getContext());
                 gap.setBackgroundColor(chatActivity.getThemedColor(Theme.key_actionBarDefaultSubmenuSeparator));

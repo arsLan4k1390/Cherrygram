@@ -11,6 +11,8 @@ import org.telegram.messenger.R;
 import java.util.HashMap;
 import java.util.Map;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+
 public class ChatActivityEnterViewAnimatedIconView extends RLottieImageView {
     private State currentState;
     private TransitState animatingState;
@@ -49,7 +51,7 @@ public class ChatActivityEnterViewAnimatedIconView extends RLottieImageView {
             RLottieDrawable drawable = stateMap.get(getAnyState(currentState));
             drawable.stop();
 
-            drawable.setProgress(state == State.VOICE ? 0.5f : 0, false);
+            drawable.setProgress(state == State.VOICE && !iosInput ? 0.5f : 0, false);
             setAnimation(drawable);
         } else {
             TransitState transitState = getState(fromState, currentState);
@@ -60,10 +62,10 @@ public class ChatActivityEnterViewAnimatedIconView extends RLottieImageView {
             animatingState = transitState;
             RLottieDrawable drawable = stateMap.get(transitState);
             drawable.stop();
-            if (transitState == TransitState.VIDEO_TO_VOICE) {
+            if (transitState == TransitState.VIDEO_TO_VOICE && !iosInput) {
                 drawable.setCustomEndFrame(30);
                 drawable.setProgress(0, false);
-            } else if (transitState == TransitState.VOICE_TO_VIDEO) {
+            } else if (transitState == TransitState.VOICE_TO_VIDEO && !iosInput) {
                 drawable.setCustomEndFrame(60);
                 drawable.setProgress(0.5f, false);
             } else {
@@ -108,10 +110,10 @@ public class ChatActivityEnterViewAnimatedIconView extends RLottieImageView {
     }
 
     private enum TransitState {
-        VOICE_TO_VIDEO(State.VOICE, State.VIDEO, R.raw.voice_and_video),
+        VOICE_TO_VIDEO(State.VOICE, State.VIDEO, iosInput ? R.raw.voice_and_video_cg : R.raw.voice_and_video),
         STICKER_TO_KEYBOARD(State.STICKER, State.KEYBOARD, R.raw.sticker_to_keyboard),
         SMILE_TO_KEYBOARD(State.SMILE, State.KEYBOARD, R.raw.smile_to_keyboard),
-        VIDEO_TO_VOICE(State.VIDEO, State.VOICE, R.raw.voice_and_video),
+        VIDEO_TO_VOICE(State.VIDEO, State.VOICE, iosInput ? R.raw.voice_and_video_cg_2 : R.raw.voice_and_video),
         KEYBOARD_TO_STICKER(State.KEYBOARD, State.STICKER, R.raw.keyboard_to_sticker),
         KEYBOARD_TO_GIF(State.KEYBOARD, State.GIF, R.raw.keyboard_to_gif),
         KEYBOARD_TO_SMILE(State.KEYBOARD, State.SMILE, R.raw.keyboard_to_smile),
@@ -139,4 +141,9 @@ public class ChatActivityEnterViewAnimatedIconView extends RLottieImageView {
         SMILE,
         GIF
     }
+
+    /** Cherrygram start */
+    private static final boolean iosInput = CherrygramChatsConfig.INSTANCE.getIOSMessageInputField();
+    /** Cherrygram finish */
+
 }

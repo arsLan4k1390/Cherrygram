@@ -53,6 +53,8 @@ import org.webrtc.RendererCommon;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 @TargetApi(21)
 public abstract class PrivateVideoPreviewDialogNew extends FrameLayout implements VoIPService.StateListener {
 
@@ -157,7 +159,9 @@ public abstract class PrivateVideoPreviewDialogNew extends FrameLayout implement
         addView(textureView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         actionBar = new ActionBar(context);
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setBackgroundColor(Color.TRANSPARENT);
         actionBar.setItemsColor(Theme.getColor(Theme.key_voipgroup_actionBarItems), false);
         actionBar.setOccupyStatusBar(true);
@@ -725,7 +729,7 @@ public abstract class PrivateVideoPreviewDialogNew extends FrameLayout implement
                     if (lastBitmap != bitmap) {
                         bitmap.recycle();
                     }
-                    Utilities.blurBitmap(lastBitmap, 7, 1, lastBitmap.getWidth(), lastBitmap.getHeight(), lastBitmap.getRowBytes());
+                    Utilities.blurBitmap(lastBitmap, 7);
                     File file = new File(ApplicationLoader.getFilesDirFixed(), "cthumb" + visibleCameraPage + ".jpg");
                     FileOutputStream stream = new FileOutputStream(file);
                     lastBitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);

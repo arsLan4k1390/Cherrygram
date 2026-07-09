@@ -14,11 +14,9 @@ import android.content.SharedPreferences
 import android.os.Build
 import androidx.annotation.Keep
 import androidx.core.content.edit
-import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.AutoBackupUserAgent
@@ -30,14 +28,12 @@ import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.core.CherrygramLogger
-import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
 import uz.unnarsx.cherrygram.core.helpers.MessageLoader
 import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
-import uz.unnarsx.cherrygram.preferences.string
 
 @Keep
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
@@ -116,20 +112,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Misc start */
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
-    var humoCardNumber by sharedPreferences.string("CP_Humo_Card_Number", "9860100128256904")
-    var tbankCardNumber by sharedPreferences.string("CP_TBank_Card_Number", "9860100128256904")
     var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
-
-    var showAdsScreenInSettings by sharedPreferences.boolean("CG_ShowAdsScreenInSettings", true)
-
-    var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", true)
-    var safe_stars_URL by sharedPreferences.string("CP_SafeStarsURL", "https://safe-stars.com/?partner=cherrygram")
-    var safe_stars_URL_RU by sharedPreferences.string("CP_SafeStarsURL_RU", "https://safe-stars.com/ru/?partner=cherrygram")
-    var allowSafeSurf by sharedPreferences.boolean("CG_AllowSafeSurfUI", true)
-    var safe_surf_URL by sharedPreferences.string("CP_SafeSurfURL", "https://t.me/safe_surfbot?start=cherry")
-
-    var showProxyInSettings by sharedPreferences.boolean("CG_ShowProxyInSettings", false)
-    var proxyURL by sharedPreferences.string("CP_ProxyURL", "https://t.me/proxy?server=78.17.39.137&port=443&secret=ee7ae12ad5e1268d51eccdc0d1acb595ea74656c6567612e6d65")
 
     var showNotifications by sharedPreferences.boolean("CG_ShowNotifications", true)
     var checkContent by sharedPreferences.boolean("CG_CheckContent2", false)
@@ -181,15 +164,6 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     fun init() {
         launch {
-            if (ApplicationLoader.checkPlayServices()) {
-                FirebaseApp.initializeApp(ApplicationLoader.applicationContext)
-                FirebaseRemoteConfigHelper.init()
-                val success = FirebaseRemoteConfigHelper.fetchAndActivate()
-                if (success) {
-                    FirebaseRemoteConfigHelper.applyConfig()
-                }
-            }
-
             DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)
 
             if (KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelInfo))
@@ -206,27 +180,6 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
             }
 
             migratePreferences()
-
-            if (allowSafeStars) {
-                val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
-
-                val exceptions = messagesController.getWebBrowserExceptionsList(false)
-
-                delay(10000)
-                val inAppBrowserEnabled = messagesController.isWebBrowserInAppEnabled
-
-                val hasSafeStarsPro = exceptions.any { it.domain.equals("safestars.pro", ignoreCase = true) }
-                if (!hasSafeStarsPro) {
-                    messagesController.addWebBrowserException("safestars.pro", inAppBrowserEnabled)
-                }
-
-                delay(15000)
-
-                val hasSafeStarsCom = exceptions.any { it.domain.equals("safe-stars.com", ignoreCase = true) }
-                if (!hasSafeStarsCom) {
-                    messagesController.addWebBrowserException("safe-stars.com", inAppBrowserEnabled)
-                }
-            }
 
             MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
                 override fun onLoaded(message: MessageObject?) {

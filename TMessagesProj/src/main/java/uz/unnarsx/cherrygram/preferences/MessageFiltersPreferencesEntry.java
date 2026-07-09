@@ -39,7 +39,7 @@ import java.util.Set;
 import uz.unnarsx.cherrygram.chats.filters.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
@@ -101,7 +101,7 @@ public class MessageFiltersPreferencesEntry extends UniversalFragment {
         boolean requireDonate = !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
 
         items.add(UItem.asHeader(getString(R.string.General)));
-        items.add(SettingsHelper.asSwitchCG(enableFilterRow, getString(R.string.CP_Message_Filtering_Filter), getString(R.string.CP_Message_Filtering_Filter_Desc))
+        items.add(SettingsHelper.asSwitchCG(enableFilterRow, SettingsHelper.applyProSpan(getString(R.string.CP_Message_Filtering_Filter), getResourceProvider()), getString(R.string.CP_Message_Filtering_Filter_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
                 .setLocked(requireDonate)
         );

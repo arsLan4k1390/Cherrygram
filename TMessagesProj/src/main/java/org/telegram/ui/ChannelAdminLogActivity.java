@@ -178,6 +178,7 @@ import me.vkryl.core.reference.ReferenceList;
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet;
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ChannelAdminLogActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -930,7 +931,9 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
         actionBar.setCastShadows(false);
         actionBar.setBackground(null);
         actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(final int id) {
@@ -978,7 +981,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             }
         });
         searchItem.setSearchFieldHint(getString(R.string.Search));
-        searchItem.setSearchPaddingStart(12);
+        searchItem.setSearchPaddingStart(7);
         avatarContainer.setEnabled(false);
 
         avatarContainer.setTitle(currentChat.title);

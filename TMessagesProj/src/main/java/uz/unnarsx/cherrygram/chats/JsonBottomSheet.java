@@ -87,9 +87,6 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
     private final PaddedAdapter adapter;
 
     private final View buttonShadowView;
-    private final FrameLayout buttonView;
-    private final ButtonWithCounterView buttonTextView;
-    private final ButtonWithCounterView copyButton;
 
     public Theme.ResourcesProvider resourcesProvider;
     public BaseFragment fragment;
@@ -187,7 +184,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         headerView = new HeaderView(context, messageObject);
         containerView.addView(headerView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 78, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
-        buttonView = new FrameLayout(context);
+        FrameLayout buttonView = new FrameLayout(context);
         buttonView.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
 
         buttonShadowView = new View(context);
@@ -195,21 +192,20 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         buttonShadowView.setAlpha(0);
         buttonView.addView(buttonShadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.getShadowHeight() / dpf2(1), Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
-        buttonTextView = new ButtonWithCounterView(context, getResourcesProvider()).setRound();
+        ButtonWithCounterView buttonTextView = new ButtonWithCounterView(context, getResourcesProvider()).setRound();
         buttonTextView.setFilled(true);
         buttonTextView.setText(getString(R.string.Close), false);
         buttonTextView.setOnClickListener(e -> dismiss());
         buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
-        copyButton = new ButtonWithCounterView(context, getResourcesProvider()).setRound();
-        SpannableStringBuilder sb = new SpannableStringBuilder();
-        sb.append("+");
+        ButtonWithCounterView copyButton = new ButtonWithCounterView(context, getResourcesProvider()).setRound();
+        SpannableStringBuilder sb = new SpannableStringBuilder(" ");
         sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.msg_copy_filled_solar)), 0, 1, 0);
         copyButton.setText(sb, false);
         copyButton.setOnClickListener(v -> {
             if (isNoForwards) {
                 if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {
-                    BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoChannel)).show()
+                    BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoChannel))
                             .setDuration(Bulletin.DURATION_LONG)
                             .show();
                 } else {
@@ -284,11 +280,6 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             }
         }.start();
         adapter.updateMainView(textViewContainer);
-    }
-
-    @Override
-    public void dismissInternal() {
-        super.dismissInternal();
     }
 
     public void setFragment(BaseFragment fragment) {
@@ -439,7 +430,6 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         private final TextView titleTextView;
         private final LinearLayout subtitleView;
         public TextView messageIdTextView;
-        private final ImageView menuIconImageView;
 
         private final View shadow;
 
@@ -455,7 +445,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             backButton.setOnClickListener(e -> dismiss());
             addView(backButton, LayoutHelper.createFrame(54, 54, Gravity.TOP, 1, 1, 1, 1));
 
-            menuIconImageView = new ImageView(context);
+            ImageView menuIconImageView = new ImageView(context);
             menuIconImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector, resourcesProvider), 1));
             menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
             menuIconImageView.setImageResource(R.drawable.ic_ab_other);

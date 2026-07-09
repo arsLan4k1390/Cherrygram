@@ -204,7 +204,7 @@ public class MentionsContainerView extends FrameLayout implements NotificationCe
             public void onItemCountUpdate(int oldCount, int newCount) {
                 if (listView.getLayoutManager() != gridLayoutManager && shown) {
                     AndroidUtilities.cancelRunOnUIThread(updateVisibilityRunnable);
-                    AndroidUtilities.runOnUIThread(updateVisibilityRunnable, baseFragment.getFragmentBeginToShow() ? 0 : 100);
+                    AndroidUtilities.runOnUIThread(updateVisibilityRunnable, baseFragment != null && baseFragment.getFragmentBeginToShow() ? 0 : 100);
                 }
             }
 

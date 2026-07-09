@@ -285,6 +285,8 @@
     <!--Chats Preferences-->
     <string name="CP_AutoQuoteReplies">Quote replies</string>
     <string name="CP_AutoQuoteReplies_Desc">Send a quote with the text of the entire message instead of a normal reply. Does not work in topics.</string>
+    <string name="CP_WideMessagesLayout">Wide message layout</string>
+    <string name="CP_WideMessagesLayout_Desc">Expands message bubbles in channels. The Direct Share button will be hidden while this option is enabled.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
     <string name="CP_ChatMenuShortcuts">Chat menu shortcuts</string>
@@ -293,7 +295,7 @@
     <string name="CP_MessageMenu">Message menu</string>
     <string name="CP_MessageMenuItems">Message menu items</string>
     <string name="CP_BlurMessageMenu">iOS-styled message menu</string>
-    <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS.</string>
+    <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS. Not supported on tablets.</string>
     <string name="CP_MessageMenuUnifiedScroll">Unified Scroll</string>
     <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
     <string name="CP_MessageMenuAutoscroll">Message Autoscroll</string>
@@ -323,6 +325,9 @@
     <string name="CG_MsgSlideAction">Action on message swipe</string>
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
     <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
+    <string name="CP_BottomBar">Bottom bar</string>
+    <string name="CP_iOSMessageInputField">iOS-styled message input field</string>
+    <string name="CP_iOSMessageInputField_Desc">Moves the attachment icon to the left and splits buttons into separate bubbles.</string>
     <string name="CP_HideMuteUnmuteButton">Hide bottom bar in channels</string>
     <string name="CP_HideKbdOnScroll">Scroll intensity to hide keyboard</string>
     <string name="CP_HideSendAsChannel">Hide \"Send as channel\"</string>
@@ -408,7 +413,6 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Camera</string>
     <string name="CP_CameraType">Camera Type</string>
-    <string name="CP_Camera2Desc">All features that are hidden when Camera2 is turned on will not work with Camera2 enabled.</string>
     <string name="CP_CameraUW">Start from UW</string>
     <string name="CP_CameraUW_Desc">Recording of video messages will start from Ultra Wide camera (if your device\'s API supports it)</string>
     <string name="CP_CameraDualCamera">Dual camera</string>
@@ -420,11 +424,8 @@
     <string name="CP_ContinuousAutofocus">Continuous autofocus</string>
     <string name="CP_NoiseReduction">Noise reduction</string>
     <string name="CP_FaceDetection">Face detection</string>
-    <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
-    <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
     <string name="CP_CameraQuality">Camera Quality</string>
     <string name="CP_CameraTypeSystem">System</string>
-    <string name="CP_SystemCameraDesc">Access directly the system camera (not applicable for video messages).</string>
 
     <string name="CP_CameraAspectRatio">Camera aspect ratio</string>
     <string name="CP_CenterCameraControlButtons">Center control buttons</string>
@@ -523,7 +524,7 @@
     <string name="DP_Donate_EpicBadge_desc">1. An **epic Cherrygram badge** next to your name.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. \"**Gift Market**\" button in the side menu.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. \"**Message filter**\" feature.</string>
-    <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS-styled**\" message menu.</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS-styled**\" message menu. Not supported on tablets.</string>
     <string name="DP_Donate_Cheque">Send a payment confirmation to **@arsLan** to get bonuses.</string>
     <string name="DP_Donate_Terms">Before making a donation, please read the **Donation Terms**. All donations are voluntary and non-refundable.</string>
 
@@ -551,6 +552,13 @@
     <string name="DP_Donate_Exclusive">Exclusive for supporters</string>
     <string name="DP_Donate_ExclusiveDesc">Support the project and unlock all features.</string>
     <!--Donations-->
+
+    <!--Alternative Support-->
+    <string name="AS_Header">Alternative Support</string>
+    <string name="AS_ZeroCost">Zero-Cost Support</string>
+    <string name="AS_UsefulServices">Useful services</string>
+    <string name="AS_DigitalGoods">Digital Goods</string>
+    <!--Alternative Support-->
     <!--Cherrygram screens-->
 
 </resources>

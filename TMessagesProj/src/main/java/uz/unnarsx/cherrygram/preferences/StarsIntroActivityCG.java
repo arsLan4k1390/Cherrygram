@@ -73,8 +73,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 public class StarsIntroActivityCG extends GradientHeaderActivity implements NotificationCenter.NotificationCenterDelegate {
@@ -292,7 +292,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
             text.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(@NonNull View widget) {
-                    Browser.openUrl(context, Constants.CG_DONATIONS_AND_TERMS_URL);
+                    Browser.openUrl(context, Constants.CG_PRIVACY_URL);
                 }
 
                 @Override
@@ -444,7 +444,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         ));
 
         String lang = LocaleController.getInstance().getCurrentLocaleInfo().shortName;
-        String baseUrl = cyrillicLangs.contains(lang) ? CherrygramCoreConfig.INSTANCE.getSafe_stars_URL_RU() : CherrygramCoreConfig.INSTANCE.getSafe_stars_URL();
+        String baseUrl = cyrillicLangs.contains(lang) ? CherrygramFirebaseConfig.INSTANCE.getSafe_stars_URL_RU() : CherrygramFirebaseConfig.INSTANCE.getSafe_stars_URL();
 
         StringBuilder url = new StringBuilder(baseUrl);
 
@@ -458,7 +458,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
     }
 
     public static boolean allowSafeStars() {
-        return CherrygramCoreConfig.INSTANCE.getAllowSafeStars() && !ConnectionsManager.getInstance(UserConfig.selectedAccount).isTestBackend();
+        return CherrygramFirebaseConfig.INSTANCE.getAllowSafeStars() && !ConnectionsManager.getInstance(UserConfig.selectedAccount).isTestBackend();
     }
 
 }

@@ -10,12 +10,10 @@
 package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
-import static org.telegram.ui.Cells.TextCell.applyNewSpan;
+
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
 
 import android.content.Context;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.util.Size;
 import android.view.View;
 
@@ -37,8 +35,7 @@ import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
@@ -98,7 +95,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
                     listView.adapter.update(true);
                 }
             }));
-            items.add(UItem.asShadow(getCameraAdvise()));
+            items.add(UItem.asShadow(null));
         }
 
         if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2 || CherrygramCoreConfig.isDevBuild()) {
@@ -386,19 +383,6 @@ public class CameraPreferencesEntry extends UniversalFragment {
             case CherrygramCameraConfig.CAMERA_2 -> "Camera 2 (Telegram)";
             default -> getString(R.string.CP_CameraTypeSystem);
         };
-    }
-
-    private CharSequence getCameraAdvise() {
-        String advise = switch (CherrygramCameraConfig.INSTANCE.getCameraType()) {
-            case CherrygramCameraConfig.TELEGRAM_CAMERA -> getString(R.string.CP_DefaultCameraDesc);
-            case CherrygramCameraConfig.CAMERA_X -> getString(R.string.CP_CameraXDesc);
-            case CherrygramCameraConfig.CAMERA_2 -> getString(R.string.CP_Camera2Desc);
-            default -> getString(R.string.CP_SystemCameraDesc);
-        };
-
-        Spannable htmlParsed = new SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY));
-
-        return CGResourcesHelper.INSTANCE.getUrlNoUnderlineText(htmlParsed);
     }
 
     private static String getCameraAspectRatio()  {

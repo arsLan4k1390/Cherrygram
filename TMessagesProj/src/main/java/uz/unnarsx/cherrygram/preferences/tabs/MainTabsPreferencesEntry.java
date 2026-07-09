@@ -11,7 +11,8 @@ package uz.unnarsx.cherrygram.preferences.tabs;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
-import static org.telegram.ui.ChatEditActivity.applyNewSpan;
+
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -36,7 +37,7 @@ import org.telegram.ui.Components.UniversalFragment;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;

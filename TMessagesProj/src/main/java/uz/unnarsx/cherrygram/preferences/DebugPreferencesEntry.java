@@ -36,7 +36,8 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
+import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
@@ -93,10 +94,10 @@ public class DebugPreferencesEntry extends UniversalFragment {
         );
         if (CherrygramCoreConfig.isDevBuild()) {
             items.add(SettingsHelper.asSwitchCG(safeStarsRow, "Use SafeStars *")
-                    .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeStars())
+                    .setChecked(CherrygramFirebaseConfig.INSTANCE.getAllowSafeStars())
             );
             items.add(SettingsHelper.asSwitchCG(safeSurfRow, "Use SafeSurf *")
-                    .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeSurf())
+                    .setChecked(CherrygramFirebaseConfig.INSTANCE.getAllowSafeSurf())
             );
         }
         items.add(UItem.asButton(performanceClassRow, "Force performance class", SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass())));
@@ -159,11 +160,11 @@ public class DebugPreferencesEntry extends UniversalFragment {
             CherrygramDebugConfig.INSTANCE.setOldTimeStyle(!CherrygramDebugConfig.INSTANCE.getOldTimeStyle());
             SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getOldTimeStyle());
         } else if (item.id == safeStarsRow) {
-            CherrygramCoreConfig.INSTANCE.setAllowSafeStars(!CherrygramCoreConfig.INSTANCE.getAllowSafeStars());
-            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getAllowSafeStars());
+            CherrygramFirebaseConfig.INSTANCE.setAllowSafeStars(!CherrygramFirebaseConfig.INSTANCE.getAllowSafeStars());
+            SettingsHelper.updateCheckState(view, CherrygramFirebaseConfig.INSTANCE.getAllowSafeStars());
         } else if (item.id == safeSurfRow) {
-            CherrygramCoreConfig.INSTANCE.setAllowSafeSurf(!CherrygramCoreConfig.INSTANCE.getAllowSafeSurf());
-            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getAllowSafeSurf());
+            CherrygramFirebaseConfig.INSTANCE.setAllowSafeSurf(!CherrygramFirebaseConfig.INSTANCE.getAllowSafeSurf());
+            SettingsHelper.updateCheckState(view, CherrygramFirebaseConfig.INSTANCE.getAllowSafeSurf());
         } else if (item.id == performanceClassRow) {
             showPerformanceClassDialog(view);
         } else if (item.id == fixCallsNotifRow) {

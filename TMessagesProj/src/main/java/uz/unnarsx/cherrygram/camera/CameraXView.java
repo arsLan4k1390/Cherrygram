@@ -245,7 +245,7 @@ public class CameraXView extends BaseCameraView {
         if (firstFrameRendered) {
             Bitmap bitmap = getTextureView().getBitmap(100, 100);
             if (bitmap != null) {
-                Utilities.blurBitmap(bitmap, 3, 1, bitmap.getWidth(), bitmap.getHeight(), bitmap.getRowBytes());
+                Utilities.blurBitmap(bitmap, 3);
                 Drawable drawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), bitmap);
                 blurredStubView.setBackground(drawable);
             }
@@ -265,7 +265,7 @@ public class CameraXView extends BaseCameraView {
         if (firstFrameRendered) {
             Bitmap bitmap = getTextureView().getBitmap(100, 100);
             if (bitmap != null) {
-                Utilities.blurBitmap(bitmap, 3, 1, bitmap.getWidth(), bitmap.getHeight(), bitmap.getRowBytes());
+                Utilities.blurBitmap(bitmap, 3);
                 Drawable drawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), bitmap);
                 blurredStubView.setBackground(drawable);
             }

@@ -196,16 +196,12 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Kamera</string>
     <string name="CP_CameraType">Kameratyp</string>
-    <string name="CP_Camera2Desc">Alle Funktionen, die ausgeblendet werden, wenn Camera2 eingeschaltet ist, funktionieren nicht mit aktivierter Camera2.</string>
     <string name="CP_CameraUW">Start von UW</string>
     <string name="CP_CameraUW_Desc">Die Aufnahme von Videos wird von der Ultra-Wide Kamera gestartet (falls die API des Geräts es unterstützt)</string>
     <string name="CP_CameraDualCamera">Dual-Kamera</string>
     <string name="CP_CameraDualCamera_Desc">Erfasst Videonachrichten auf beiden Kameras zum schnelleren Umschalten zwischen Kameras während der Aufnahme. Verbraucht mehr Akku.</string>
-    <string name="CP_DefaultCameraDesc">Verwenden Sie die eingebaute Kamera von Telegram.</string>
-    <string name="CP_CameraXDesc">CameraX wird nur auf <![CDATA[<a href="https://developer.android.com/training/camerax/devices">ausgewählten Geräten unterstützt</a>]]>, Effekte hängen von Ihrem Hersteller ab.</string>
     <string name="CP_CameraQuality">Kamera-Qualität</string>
     <string name="CP_CameraTypeSystem">System</string>
-    <string name="CP_SystemCameraDesc">Direkter Systemkamerazugriff (gilt nicht für Videonachrichten).</string>
     <string name="CP_CameraAspectRatio">Kamera-Seitenverhältnis</string>
     <string name="CP_RearCam">Hintere Kamera verwenden</string>
     <string name="CP_RearCam_Desc">Anstelle der Frontkamera für Video-Nachrichten</string>

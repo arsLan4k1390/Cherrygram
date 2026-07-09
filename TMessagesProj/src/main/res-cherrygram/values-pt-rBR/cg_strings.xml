@@ -354,7 +354,6 @@ Se uma correspondência for encontrada dentro do link, toda a mensagem será aut
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Câmara</string>
     <string name="CP_CameraType">Tipo de câmera</string>
-    <string name="CP_Camera2Desc">Todos os recursos que estão ocultos quando o Câmera2 estiver ativado não funcionarão com a Câmera2 habilitada.</string>
     <string name="CP_CameraUW">Iniciar pelo UW</string>
     <string name="CP_CameraUW_Desc">Gravação de mensagens de vídeo serão iniciadas pela Câmera Ultra Wide (se a API do seu dispositivo suporta isso)</string>
     <string name="CP_CameraDualCamera">Câmera dupla</string>
@@ -366,11 +365,8 @@ Se uma correspondência for encontrada dentro do link, toda a mensagem será aut
     <string name="CP_ContinuousAutofocus">Foco automático contínuo</string>
     <string name="CP_NoiseReduction">Redução de ruído</string>
     <string name="CP_FaceDetection">Detecção facial</string>
-    <string name="CP_DefaultCameraDesc">Use a câmara interna do Telegram.</string>
-    <string name="CP_CameraXDesc">CameraX só é suportado em <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, efeitos e suporte de lentes depende do seu fabricante.</string>
     <string name="CP_CameraQuality">Qualidade da Câmara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
-    <string name="CP_SystemCameraDesc">Acessar diretamente a câmara do sistema (não aplicável às mensagens de vídeo).</string>
     <string name="CP_CameraAspectRatio">Razão de aspeto da câmara</string>
     <string name="CP_CenterCameraControlButtons">Centralizar botões de controle</string>
     <string name="CP_CenterCameraControlButtons_Desc">Centralizar os botões de câmera e lanterna.</string>

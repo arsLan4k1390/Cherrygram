@@ -18,6 +18,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
@@ -38,10 +39,8 @@ import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -52,10 +51,11 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.core.graphics.Insets;
 import androidx.core.math.MathUtils;
 import androidx.core.util.Consumer;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.FloatValueHolder;
@@ -84,9 +84,7 @@ import org.telegram.ui.ViewPagerActivity;
 
 import java.lang.annotation.Retention;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.WeakHashMap;
 
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
@@ -163,9 +161,6 @@ public class Bulletin {
             bulletin.hide(animated && isTransitionsEnabled(), 0);
         }
     }
-
-    private static final WeakHashMap<FrameLayout, Delegate> delegates = new WeakHashMap<>();
-    private static final WeakHashMap<BaseFragment, Delegate> fragmentDelegates = new WeakHashMap<>();
 
     @SuppressLint("StaticFieldLeak")
     private static Bulletin visibleBulletin;
@@ -693,31 +688,45 @@ public class Bulletin {
     }
 
     //region Offset Providers
-    public static void addDelegate(@NonNull BaseFragment fragment, @NonNull Delegate delegate) {
-        fragmentDelegates.put(fragment, delegate);
+    public static void addDelegate(BaseFragment fragment, @NonNull Delegate delegate) {
+        if (fragment != null) {
+            fragment.setBulletinDelegate(delegate);
+        }
     }
 
-    public static void addDelegate(@NonNull FrameLayout containerLayout, @NonNull Delegate delegate) {
-        delegates.put(containerLayout, delegate);
+    public static void addDelegate(FrameLayout containerLayout, @NonNull Delegate delegate) {
+        if (containerLayout != null) {
+            containerLayout.setTag(R.id.bulletin_delegate_tag, delegate);
+        }
     }
 
     private static Delegate findDelegate(BaseFragment probableFragment, FrameLayout probableContainer) {
-        Delegate delegate;
-        if ((delegate = fragmentDelegates.get(probableFragment)) != null) {
-            return delegate;
+        if (probableFragment != null) {
+            Delegate delegate = probableFragment.getBulletinDelegate();
+            if (delegate != null) {
+                return delegate;
+            }
         }
-        if ((delegate = delegates.get(probableContainer)) != null) {
-            return delegate;
+
+        if (probableContainer != null) {
+            Object tag = probableContainer.getTag(R.id.bulletin_delegate_tag);
+            if (tag instanceof Delegate) {
+                return (Delegate) tag;
+            }
         }
         return null;
     }
 
-    public static void removeDelegate(@NonNull BaseFragment fragment) {
-        fragmentDelegates.remove(fragment);
+    public static void removeDelegate(BaseFragment fragment) {
+        if (fragment != null) {
+            fragment.setBulletinDelegate(null);
+        }
     }
 
-    public static void removeDelegate(@NonNull FrameLayout containerLayout) {
-        delegates.remove(containerLayout);
+    public static void removeDelegate(FrameLayout containerLayout) {
+        if (containerLayout != null) {
+            containerLayout.setTag(R.id.bulletin_delegate_tag, null);
+        }
     }
 
     public interface Delegate {
@@ -2469,26 +2478,23 @@ public class Bulletin {
 
         private BulletinWindow(Context context, Delegate delegate) {
             super(context);
+            AndroidUtilities.enableEdgeToEdge(getWindow());
+
             setContentView(
                     container = new BulletinWindowLayout(context),
                     new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             );
-            if (Build.VERSION.SDK_INT >= 21) {
-                container.setFitsSystemWindows(true);
-                container.setOnApplyWindowInsetsListener((v, insets) -> {
-                    applyInsets(insets);
-                    v.requestLayout();
-                    if (Build.VERSION.SDK_INT >= 30) {
-                        return WindowInsets.CONSUMED;
-                    } else {
-                        return insets.consumeSystemWindowInsets();
-                    }
-                });
-                if (Build.VERSION.SDK_INT >= 30) {
-                    container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-                } else {
-                    container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-                }
+
+            ViewCompat.setOnApplyWindowInsetsListener(container, (v, i) -> {
+                applyInsets(AndroidUtilities.getDefaultWindowInsets(i, false));
+                v.requestLayout();
+                return WindowInsetsCompat.CONSUMED;
+            });
+
+            if (Build.VERSION.SDK_INT >= 30) {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+            } else {
+                container.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             }
 
             addDelegate(container, new Delegate() {
@@ -2517,6 +2523,7 @@ public class Bulletin {
                 params.height = ViewGroup.LayoutParams.MATCH_PARENT;
                 params.gravity = Gravity.TOP | Gravity.LEFT;
                 params.dimAmount = 0;
+                params.format = PixelFormat.TRANSLUCENT;
                 params.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
                 params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
                 params.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
@@ -2550,15 +2557,9 @@ public class Bulletin {
             }
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-        private void applyInsets(WindowInsets insets) {
+        private void applyInsets(Insets insets) {
             if (container != null) {
-                container.setPadding(
-                        insets.getSystemWindowInsetLeft(),
-                        insets.getSystemWindowInsetTop(),
-                        insets.getSystemWindowInsetRight(),
-                        insets.getSystemWindowInsetBottom()
-                );
+                container.setPadding(insets.left, insets.top, insets.right, insets.bottom);
             }
         }
 

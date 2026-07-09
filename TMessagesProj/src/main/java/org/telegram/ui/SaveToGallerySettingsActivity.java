@@ -60,6 +60,8 @@ import org.telegram.ui.Components.SeekBarView;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class SaveToGallerySettingsActivity extends BaseFragment {
 
     int type;
@@ -121,7 +123,9 @@ public class SaveToGallerySettingsActivity extends BaseFragment {
         FrameLayout frameLayout = new FrameLayout(context);
         fragmentView = frameLayout;
 
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
