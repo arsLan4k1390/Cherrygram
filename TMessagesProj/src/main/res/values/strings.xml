@@ -7615,6 +7615,9 @@
     <string name="PmEditedTodayAt">edited at %s</string>
     <string name="PmEditedYesterdayAt">edited yesterday at %s</string>
     <string name="PmEditedDateTimeAt">edited %1$s at %2$s</string>
+    <string name="PmSentTodayAt">sent at %s</string>
+    <string name="PmSentYesterdayAt">sent yesterday at %s</string>
+    <string name="PmSentDateTimeAt">sent %1$s at %2$s</string>
     <string name="PmFwdOriginalTodayAt">original at %s</string>
     <string name="PmFwdOriginalYesterdayAt">original yesterday at %s</string>
     <string name="PmFwdOriginalDateTimeAt">original %1$s at %2$s</string>

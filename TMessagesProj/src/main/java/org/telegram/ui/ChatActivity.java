@@ -44272,7 +44272,7 @@ public class ChatActivity extends BaseFragment implements
                 BulletinFactory.of(ChatActivity.this).createCopyBulletin(getString(R.string.UsernameCopied)).show();
             });
             if (selling) {
-                options.add(R.drawable.msg_ton, getString(R.string.BuyUsernameOnFragment), () -> {
+                options.add(R.drawable.outline_gram_24, getString(R.string.BuyUsernameOnFragment), () -> {
                     Browser.openUrl(getContext(), "https://fragment.com/username/" + username);
                 });
             }

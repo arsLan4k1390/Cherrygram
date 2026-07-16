@@ -53952,18 +53952,24 @@ public class TLRPC {
         }
     }
 
-    public static class TL_contacts_search extends TLObject {
-        public static final int constructor = 0x11f812d8;
+    public static class TL_contacts_search extends TLMethod<TL_contacts_found> {
+        public static final int constructor = 0x5F58D0F;
 
+        public int flags;
+        public boolean broadcasts;
+        public boolean bots;
         public String q;
         public int limit;
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TL_contacts_found deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
             return TL_contacts_found.TLdeserialize(stream, constructor, exception);
         }
 
         public void serializeToStream(OutputSerializedData stream) {
             stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, broadcasts);
+            flags = setFlag(flags, FLAG_1, bots);
+            stream.writeInt32(flags);
             stream.writeString(q);
             stream.writeInt32(limit);
         }

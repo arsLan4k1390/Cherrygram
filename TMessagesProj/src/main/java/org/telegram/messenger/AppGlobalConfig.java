@@ -82,6 +82,8 @@ public class AppGlobalConfig {
     public final ConfigInt aicomposeToneSavedLimitDefault = ofInt("aicompose_tone_saved_limit_default", 5);
     public final ConfigInt aicomposeToneSavedLimitPremium = ofInt("aicompose_tone_saved_limit_premium", 20);
 
+    public final ConfigBoolean messagePrimaryEditedDate = ofBoolean("message_primary_edited_date", false);
+
     /* * */
 
     public boolean apply(SharedPreferences.Editor editor, TLRPC.TL_jsonObject object) {
@@ -382,5 +384,9 @@ public class AppGlobalConfig {
         map.put(name, configInt.handler);
 
         return configInt;
+    }
+
+    public static AppGlobalConfig getInstance(int num) {
+        return MessagesController.getInstance(num).config;
     }
 }

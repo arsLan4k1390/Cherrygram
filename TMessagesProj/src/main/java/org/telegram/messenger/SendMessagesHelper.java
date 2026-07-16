@@ -4317,7 +4317,11 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     newMsg.media = new TLRPC.TL_messageMediaEmpty();
                     newMsg.message = "";
                     newMsg.rich_message = richMessage;
-                    type = MEDIA_TYPE_RICH;
+                    if (params != null && params.containsKey("query_id")) {
+                        type = 9;
+                    } else {
+                        type = MEDIA_TYPE_RICH;
+                    }
                 } else if (message != null) {
                     if (encryptedChat != null) {
                         newMsg = new TLRPC.TL_message_secret();

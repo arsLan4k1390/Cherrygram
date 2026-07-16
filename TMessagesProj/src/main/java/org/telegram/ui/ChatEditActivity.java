@@ -1423,7 +1423,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                 if (!c.isTONBalanceAvailable(userId)) {
                     SpannableStringBuilder loadingStr = new SpannableStringBuilder("x");
                     loadingStr.setSpan(new LoadingSpan(tonBalanceCell.valueTextView, dp(30)), 0, loadingStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    tonBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceTON), loadingStr, R.drawable.msg_ton, false);
+                    tonBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceTON), loadingStr, R.drawable.outline_gram_24, false);
                 } else {
                     long ton_balance = c.getTONBalance(userId);
                     SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -1440,7 +1440,7 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                             ssb.append("TON ").append(formatterTON.format(ton_balance / 1_000_000_000.0));
                         }
                     }
-                    tonBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceTON), ssb, R.drawable.msg_ton, true);
+                    tonBalanceCell.setTextAndValueAndIcon(getString(R.string.BotBalanceTON), ssb, R.drawable.outline_gram_24, true);
                 }
                 tonBalanceCell.setVisibility(c.botHasTON(userId) ? View.VISIBLE : View.GONE);
 
