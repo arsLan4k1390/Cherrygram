@@ -187,6 +187,7 @@ import org.telegram.messenger.VideoEditedInfo;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.camera.CameraView;
 import org.telegram.messenger.support.LongSparseIntArray;
+import org.telegram.messenger.utils.Choreographer60FpsContent;
 import org.telegram.messenger.utils.FBool;
 import org.telegram.messenger.utils.OnPostDrawView;
 import org.telegram.messenger.utils.PhotoUtilities;
@@ -3545,6 +3546,8 @@ public class ChatActivity extends BaseFragment implements
         }
     }
 
+    private Runnable justForTest;
+
     @Override
     public View createView(Context context) {
         Timer t = Timer.create("ChatActivity.createView");
@@ -4195,7 +4198,7 @@ public class ChatActivity extends BaseFragment implements
             });
             getConnectionsManager().bindRequestToGuid(req, classGuid);
         } else {
-            actionBar.addView(avatarContainer, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, !inPreviewMode ? 53 : 4, 0, 52, 0));
+            actionBar.addView(avatarContainer, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, !inPreviewMode ? 52 : 4, 0, 52, 0));
             actionBar.createMenu().bringToFront();
         }
         actionBar.setOnActionModeFactorChangeListener(() -> {
@@ -4216,7 +4219,7 @@ public class ChatActivity extends BaseFragment implements
             searchIconItem = menu.addItem(search, isSupportedTags() ? R.drawable.navbar_search_tag : R.drawable.outline_header_search);
             searchIconItem.setContentDescription(LocaleController.getString(R.string.Search));
             searchItem = menu.addItem(chat_menu_search, R.drawable.outline_header_search, themeDelegate);
-            searchItem.setSearchPaddingStart(12);
+            searchItem.setSearchPaddingStart(7);
             searchItem.setIsSearchField(true);
             searchItem.setActionBarMenuItemSearchListener(getSearchItemListener());
             searchItem.setSearchFieldHint(isSupportedTags() ? LocaleController.getString(R.string.SavedTagSearchHint) : LocaleController.getString(R.string.Search));
@@ -4241,11 +4244,16 @@ public class ChatActivity extends BaseFragment implements
                     showAudioCallAsIcon = false;
                     audioCallIconItem.setVisibility(View.GONE);
                 }
-                if (avatarContainer != null) {
-                    avatarContainer.setTitleExpand(showAudioCallAsIcon);
-                }
             }
         }
+        /*
+        Choreographer60FpsContent.getInstance().addFrameCallback(justForTest = () -> {
+            if (audioCallIconItem != null) {
+                showAudioCallAsIcon = !showAudioCallAsIcon;
+                audioCallIconItem.setVisibility(!showAudioCallAsIcon ? View.GONE : View.VISIBLE);
+            }
+        }, 1);
+        */
 
         editTextItem = menu.lazilyAddItem(chat_menu_edit_text_options, R.drawable.ic_ab_other, themeDelegate);
         editTextItem.setContentDescription(LocaleController.getString(R.string.AccDescrMoreOptions));
@@ -4519,7 +4527,7 @@ public class ChatActivity extends BaseFragment implements
 
         contentView.setOccupyStatusBar(!inBubbleMode && !isInsideContainer && !inPreviewMode);
 
-        actionBar.setupGlass(glassBackgroundDrawableFactory, blurredBackgroundColorProvider);
+        actionBar.setupGlass(glassBackgroundDrawableFactory, BlurredBackgroundProviderImpl.topPanelChatActivity(themeDelegate));
         //actionBar.setChatAvatarContainer(avatarContainer);
         //avatarContainer.setActionBar(actionBar);
 
@@ -8875,11 +8883,11 @@ public class ChatActivity extends BaseFragment implements
             contentView.addView(actionBarSearchTags, LayoutHelper.createFrameMarginPx(LayoutHelper.MATCH_PARENT, 38, Gravity.FILL_HORIZONTAL | Gravity.TOP, 0, -dp(3), 0, 0));
         }
 
-        final BlurredBackgroundDrawable topPanelLayoutBackground = glassBackgroundDrawableFactory.create(topPanelLayout, BlurredBackgroundProviderImpl.topPanelChatActivity(themeDelegate));
-        topPanelLayoutBackground.setRadius(dp(18));
-        topPanelLayoutBackground.setPadding(dp(7));
         checkUi_topPanelLayoutWidth();
-        topPanelLayout.setBlurredBackground(topPanelLayoutBackground);
+        topPanelLayout.setBlurredBackground(glassBackgroundDrawableFactory.create(topPanelLayout)
+            .setColorProvider(BlurredBackgroundProviderImpl.topPanelChatActivity(themeDelegate))
+            .setRadius(dp(18))
+            .setPadding(dp(7)));
 
         if (chatMode == MODE_SEARCH) {
             animatorSearchResultAsListVisibility.setValue(true, false);
@@ -10173,10 +10181,6 @@ public class ChatActivity extends BaseFragment implements
         selectedMessagesCountTextView.getDrawable().setOverrideFullWidth(dp(300));
         actionMode.addView(selectedMessagesCountTextView, LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 1.0f, 85, 0, 5, 0));
         actionMode.setOnLayoutListener(actionBar::invalidate);
-
-        final View widthAnchorView = new View(actionMode.getContext());
-        actionMode.addView(widthAnchorView, LayoutHelper.createFrame(5, LayoutHelper.MATCH_PARENT));
-        actionMode.setWidthAnchorView(widthAnchorView);
 
         if (currentEncryptedChat == null) {
             final boolean isSavedMessages = getDialogId() == getUserConfig().getClientUserId() && (chatMode == 0 || chatMode == MODE_SAVED);
@@ -16890,6 +16894,7 @@ public class ChatActivity extends BaseFragment implements
         }
     }
 
+    private boolean shouldHaveLightStatusBarIcons;
     private boolean shouldHaveLightNavigationBarIcons;
 
     public boolean isShouldHaveLightNavigationBarIcons() {
@@ -17050,10 +17055,13 @@ public class ChatActivity extends BaseFragment implements
             }
 
             final BlurredBackgroundSource source = wallpaperBitmapProvider.updateSourceFromBackgroundViewDrawable(drawable);
+            final int statusBarColor = wallpaperBitmapProvider.getStatusBarColor(source);
+            final float statusBarBrightness = AndroidUtilities.computePerceivedBrightness(statusBarColor);
             final int navigationBarColor = wallpaperBitmapProvider.getNavigationBarColor(source);
-            final float brightness = AndroidUtilities.computePerceivedBrightness(navigationBarColor);
-            final boolean isDark = brightness <= 0.9f;
-            shouldHaveLightNavigationBarIcons = isDark;
+            final float navigationBarBrightness = AndroidUtilities.computePerceivedBrightness(navigationBarColor);
+
+            shouldHaveLightStatusBarIcons = statusBarBrightness <= 0.721f;
+            shouldHaveLightNavigationBarIcons = navigationBarBrightness <= 0.9f;
 
             navbarContentSourceWallpaper.setSource(source);
             if (chatActivityFadeView != null) {
@@ -23733,9 +23741,6 @@ public class ChatActivity extends BaseFragment implements
                 }
                 if (headerItem != null) {
                     showAudioCallAsIcon = userInfo.phone_calls_available && !inPreviewMode;
-                    if (avatarContainer != null) {
-                        avatarContainer.setTitleExpand(showAudioCallAsIcon);
-                    }
                     if (userInfo.phone_calls_available) {
                         if (showAudioCallAsIcon) {
                             if (audioCallIconItem != null) {
@@ -29431,7 +29436,6 @@ public class ChatActivity extends BaseFragment implements
         }
         if (avatarContainer != null) {
             avatarContainer.setOccupyStatusBar(!value);
-            avatarContainer.setTitleExpand(showAudioCallAsIcon);
             avatarContainer.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, !value ? 56 : (chatMode == MODE_PINNED ? 10 : 0), 0, 40, 0));
         }
         if (chatActivityEnterView != null) {
@@ -42363,7 +42367,6 @@ public class ChatActivity extends BaseFragment implements
         themeDescriptions.add(new ThemeDescription(chatActivityEnterView, ThemeDescription.FLAG_BACKGROUNDFILTER, new Class[]{ChatActivityEnterView.class}, new String[]{"recordedAudioBackground"}, null, null, null, Theme.key_chat_recordedVoiceBackground));
         themeDescriptions.add(new ThemeDescription(chatActivityEnterView, 0, null, null, null, null, Theme.key_chat_recordTime));
         themeDescriptions.add(new ThemeDescription(chatActivityEnterView, 0, null, null, null, null, Theme.key_chat_recordVoiceCancel));
-        themeDescriptions.add(new ThemeDescription(chatActivityEnterView, ThemeDescription.FLAG_TEXTCOLOR, new Class[]{ChatActivityEnterView.class}, new String[]{"recordedAudioTimeTextView"}, null, null, null, Theme.key_chat_messagePanelVoiceDuration));
         themeDescriptions.add(new ThemeDescription(chatActivityEnterView, 0, null, null, null, null, Theme.key_chat_recordVoiceCancel));
         themeDescriptions.add(new ThemeDescription(chatActivityEnterView, ThemeDescription.FLAG_IMAGECOLOR, new Class[]{ChatActivityEnterView.class}, new String[]{"cancelBotButton"}, null, null, null, Theme.key_chat_messagePanelCancelInlineBot));
         themeDescriptions.add(new ThemeDescription(chatActivityEnterView, ThemeDescription.FLAG_USEBACKGROUNDDRAWABLE | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, new Class[]{ChatActivityEnterView.class}, new String[]{"cancelBotButton"}, null, null, null, Theme.key_listSelector));
@@ -43739,7 +43742,7 @@ public class ChatActivity extends BaseFragment implements
         if (actionBar == null) {
             return !Theme.isCurrentThemeDark();
         }
-        return AndroidUtilities.computePerceivedBrightness(actionBar.getBackgroundColor()) > 0.721f;
+        return !shouldHaveLightStatusBarIcons;
     }
 
     public MessageObject.GroupedMessages getGroup(long id) {

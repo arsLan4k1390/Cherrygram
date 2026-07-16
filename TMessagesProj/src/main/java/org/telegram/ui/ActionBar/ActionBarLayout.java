@@ -308,7 +308,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 if (!(child instanceof ActionBar)) {
                     if (child instanceof BaseFragment.AttachedSheetWindow) {
                         measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, getBottomTabsHeight(false) > 0 || !isSupportEdgeToEdge ? 0 : navigationBarInsetHeight);
-                    } else if (child.getTag(0xFF112233) != null || child.getFitsSystemWindows()) {
+                    } else if (child.getTag(R.id.sheet_attached_to_fragment_tag) != null || child.getFitsSystemWindows()) {
                         int addHeight = isSupportEdgeToEdge ? navigationBarInsetHeight : 0;
                         measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, addHeight);
                     } else {
@@ -335,7 +335,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 View child = getChildAt(a);
                 if (!(child instanceof ActionBar)) {
                     FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) child.getLayoutParams();
-                    if (child.getTag(0xFF112233) != null || child.getFitsSystemWindows() || child instanceof BaseFragment.AttachedSheetWindow) {
+                    if (child.getTag(R.id.sheet_attached_to_fragment_tag) != null || child.getFitsSystemWindows() || child instanceof BaseFragment.AttachedSheetWindow) {
                         child.layout(
                             layoutParams.leftMargin,
                             layoutParams.topMargin,
@@ -929,12 +929,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 if (currNavigationBarColor != prevNavigationBarColor) {
                     currFragment.setNavigationBarColor(ColorUtils.blendARGB(currNavigationBarColor, prevNavigationBarColor, ratio));
                 }
-            }
-            if (currFragment != null && !currFragment.inPreviewMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !SharedConfig.noStatusBar) {
-                int overlayColor = Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE ? AndroidUtilities.LIGHT_STATUS_BAR_OVERLAY : AndroidUtilities.DARK_STATUS_BAR_OVERLAY;
-                int oldStatusBarColor = prevFragment != null && prevFragment.hasForceLightStatusBar() ? Color.TRANSPARENT : overlayColor;
-                int newStatusBarColor = currFragment != null && currFragment.hasForceLightStatusBar() ? Color.TRANSPARENT : overlayColor;
-                parentActivity.getWindow().setStatusBarColor(ColorUtils.blendARGB(newStatusBarColor, oldStatusBarColor, ratio));
             }
         }
     }
@@ -2512,7 +2506,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         fragment.setInMenuMode(false);
 
         try {
-            AndroidUtilities.setLightStatusBar(parentActivity.getWindow(), Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE || (fragment.hasForceLightStatusBar() && !Theme.getCurrentTheme().isDark()), fragment.hasForceLightStatusBar());
+            AndroidUtilities.setLightStatusBar(parentActivity, Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE || (fragment.hasForceLightStatusBar() && !Theme.getCurrentTheme().isDark()));
         } catch (Exception ignore) {}
     }
 
@@ -2552,7 +2546,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         }
 
         if (previousFragment != null) {
-            AndroidUtilities.setLightStatusBar(parentActivity.getWindow(), Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE || (previousFragment.hasForceLightStatusBar() && !Theme.getCurrentTheme().isDark()), previousFragment.hasForceLightStatusBar());
+            AndroidUtilities.setLightStatusBar(parentActivity, Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE || (previousFragment.hasForceLightStatusBar() && !Theme.getCurrentTheme().isDark()));
             LayoutContainer temp = containerView;
             containerView = containerViewBack;
             containerViewBack = temp;

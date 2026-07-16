@@ -787,9 +787,9 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
         if (attachedFragment != null) {
             LaunchActivity.instance.checkSystemBarColors(true, true, true);
         } else if (actionBar != null && actionBar.getTag() != null) {
-            AndroidUtilities.setLightStatusBar(getWindow(), isLightStatusBar());
+            AndroidUtilities.setLightStatusBar(this, isLightStatusBar());
         } else if (baseFragment != null) {
-            AndroidUtilities.setLightStatusBar(getWindow(), baseFragment.isLightStatusBar());
+            AndroidUtilities.setLightStatusBar(this, baseFragment.isLightStatusBar());
         }
     }
 

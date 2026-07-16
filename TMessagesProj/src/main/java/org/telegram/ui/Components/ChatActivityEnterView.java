@@ -4126,7 +4126,7 @@ public class ChatActivityEnterView extends FrameLayout implements
                         d.getWindow().setNavigationBarColor(0);
 
                         int color = Theme.getColor(Theme.key_actionBarDefault, null, true);
-                        AndroidUtilities.setLightStatusBar(d.getWindow(), color == Color.WHITE);
+                        AndroidUtilities.setLightStatusBar(d, color == Color.WHITE);
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             int color2 = Theme.getColor(Theme.key_windowBackgroundGray, null, true);

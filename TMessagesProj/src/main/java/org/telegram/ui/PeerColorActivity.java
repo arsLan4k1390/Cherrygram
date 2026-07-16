@@ -3456,7 +3456,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
 
     public void updateLightStatusBar() {
         if (getParentActivity() == null) return;
-        AndroidUtilities.setLightStatusBar(getParentActivity().getWindow(), isLightStatusBar());
+        AndroidUtilities.setLightStatusBar(getParentActivity(), isLightStatusBar());
     }
 
     private boolean forceDark = isDark;

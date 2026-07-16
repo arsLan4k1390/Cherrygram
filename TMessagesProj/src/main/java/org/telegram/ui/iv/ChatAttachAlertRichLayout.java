@@ -1743,25 +1743,25 @@ public class ChatAttachAlertRichLayout extends ChatAttachAlert.AttachAlertLayout
             monoForumPeerId = ca.getSendMonoForumPeerId();
             quickReplyShortcutId = ca.getQuickReplyId();
         }
-        SendMessagesHelper.prepareSendingArticle(
-            AccountInstance.getInstance(parentAlert.currentAccount),
-            sendBlocks,
-            sendPhotos,
-            sendDocs,
-            null,
-            false,
-            parentAlert.getDialogId(),
-            replyToMsg,
-            replyToTopMsg,
-            notify,
-            scheduleDate,
-            scheduleRepeatPeriod,
-            quickReplyShortcut,
-            quickReplyShortcutId,
-            effectId,
-            monoForumPeerId,
-            0
-        );
+//        SendMessagesHelper.prepareSendingArticle(
+//            AccountInstance.getInstance(parentAlert.currentAccount),
+//            sendBlocks,
+//            sendPhotos,
+//            sendDocs,
+//            null,
+//            false,
+//            parentAlert.getDialogId(),
+//            replyToMsg,
+//            replyToTopMsg,
+//            notify,
+//            scheduleDate,
+//            scheduleRepeatPeriod,
+//            quickReplyShortcut,
+//            quickReplyShortcutId,
+//            effectId,
+//            monoForumPeerId,
+//            0
+//        );
         parentAlert.dismiss(true);
         return true;
     }

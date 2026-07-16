@@ -973,7 +973,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             }
         });
         searchItem.setSearchFieldHint(getString(R.string.Search));
-        searchItem.setSearchPaddingStart(12);
+        searchItem.setSearchPaddingStart(7);
         avatarContainer.setEnabled(false);
 
         avatarContainer.setTitle(currentChat.title);

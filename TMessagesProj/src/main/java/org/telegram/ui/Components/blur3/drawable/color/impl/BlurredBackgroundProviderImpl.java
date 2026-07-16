@@ -131,11 +131,11 @@ public class BlurredBackgroundProviderImpl {
                     final int colorBg = Theme.getColor(Theme.key_chat_topPanelBackground, r);
                     return Theme.multAlpha(colorBg, alpha);
                 })
-                .setStrokeColorTop(0xFFFFFFFF, 0x28FFFFFF)
+                .setStrokeColorTop(0xFFFFFFFF, 0x20FFFFFF)
                 .setStrokeColorBottom(0xFFFFFFFF, 0x14FFFFFF)
                 .setShadowColor(0x20000000, 0)
                 //.setShadowLayer(dpf2(10 / 3f), 0, dpf2(2 / 3f))
-                .setStrokeWidth(dpf2(0.5f), dpf2(0.5f))
+                .setStrokeWidth(dpf2(0.55f), dpf2(0.55f))
                 .build();
     }
 

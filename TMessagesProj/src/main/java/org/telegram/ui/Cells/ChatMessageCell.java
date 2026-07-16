@@ -18343,7 +18343,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             author = MessagesController.getInstance(currentAccount).getUser(fromId);
         }
         boolean hasReplies = messageObject.hasReplies();
-        if (messageObject.scheduled || messageObject.isLiveLocation() || messageObject.isPoll() || messageObject.messageOwner.edit_hide || messageObject.getDialogId() == 777000 || messageObject.messageOwner.via_bot_id != 0 || messageObject.messageOwner.via_bot_name != null || author != null && author.bot) {
+        if (messageObject.scheduled || messageObject.messageOwner.edit_hide) {
             edited = false;
         } else if (currentPosition == null || currentMessagesGroup == null || currentMessagesGroup.messages.isEmpty()) {
             edited = (messageObject.messageOwner.flags & TLRPC.MESSAGE_FLAG_EDITED) != 0 || messageObject.isEditing();

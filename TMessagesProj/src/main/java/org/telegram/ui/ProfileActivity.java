@@ -5798,13 +5798,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                     avatarContainer2.draw(canvas);
 
-                    if (actionBar.getOccupyStatusBar() && !SharedConfig.noStatusBar) {
-                        if (statusBarPaint == null) {
-                            statusBarPaint = new Paint();
-                            statusBarPaint.setColor(ColorUtils.setAlphaComponent(Color.BLACK, (int) (255 * 0.2f)));
-                        }
-                        canvas.drawRect(actionBar.getX(), actionBar.getY(), actionBar.getX() + actionBar.getMeasuredWidth(), actionBar.getY() + AndroidUtilities.statusBarHeight, statusBarPaint);
-                    }
                     canvas.save();
                     canvas.translate(actionBar.getX(), actionBar.getY());
                     actionBar.draw(canvas);
