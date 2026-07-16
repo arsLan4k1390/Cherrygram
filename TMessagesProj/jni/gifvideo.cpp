@@ -763,6 +763,14 @@ static inline void writeFrameToBitmap(JNIEnv *env, VideoInfo *info, jintArray da
         wantedWidth = dataArr[0];
         wantedHeight = dataArr[1];
         dataArr[3] = (jint) (1000 * info->frame->best_effort_timestamp * av_q2d(info->video_stream->time_base));
+        if (env->GetArrayLength(data) > 6) {
+            bool isOpaque = (
+                info->frame->format == AV_PIX_FMT_YUV420P  ||
+                info->frame->format == AV_PIX_FMT_YUVJ420P ||
+                info->frame->format == AV_PIX_FMT_YUV444P
+            );
+            dataArr[6] = isOpaque ? 1 : 0;
+        }
         env->ReleaseIntArrayElements(data, dataArr, 0);
     } else {
         wantedWidth = bitmapWidth;

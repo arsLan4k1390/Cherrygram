@@ -1673,6 +1673,12 @@ public class DatabaseMigrationHelper {
             database.executeFast("PRAGMA user_version = 175").stepThis().dispose();
             version = 175;
         }
+        if (version == 175) {
+            database.executeFast("CREATE TABLE ephemeral_messages (id INTEGER, dialog_id INTEGER, topic_id INTEGER, date INTEGER, data BLOB, PRIMARY KEY(dialog_id, id));").stepThis().dispose();
+            database.executeFast("CREATE INDEX IF NOT EXISTS ephemeral_messages_date_idx ON ephemeral_messages(date);").stepThis().dispose();
+            database.executeFast("PRAGMA user_version = 176").stepThis().dispose();
+            version = 176;
+        }
 
         return version;
     }

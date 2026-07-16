@@ -207,7 +207,8 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
 
     private int touchSlop;
     private boolean useFastDismiss;
-    protected Interpolator openInterpolator = CubicBezierInterpolator.EASE_OUT_QUINT;
+    public int openDuration = 400;
+    public Interpolator openInterpolator = CubicBezierInterpolator.EASE_OUT_QUINT;
 
     private TextView titleView;
 
@@ -1738,7 +1739,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
                 currentSheetAnimation.setDuration(250);
                 currentSheetAnimation.setInterpolator(CubicBezierInterpolator.DEFAULT);
             } else {
-                currentSheetAnimation.setDuration(400);
+                currentSheetAnimation.setDuration(openDuration);
                 currentSheetAnimation.setInterpolator(openInterpolator);
             }
             currentSheetAnimation.setStartDelay(waitingKeyboard ? 0 : 20);
@@ -2162,7 +2163,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
 
         public static int CELL_TYPE_CALL = 4;
 
-        private BottomSheet bottomSheet;
+        public BottomSheet bottomSheet;
 
         public Builder(Context context) {
             this(context, false);

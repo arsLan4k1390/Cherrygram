@@ -223,6 +223,13 @@ public abstract class BaseFragment {
         if (BuildConfig.DEBUG_PRIVATE_VERSION) {
             LeakDetector.getInstance().add(this);
         }
+
+        Bulletin.addDelegate(this, new Bulletin.Delegate() {
+            @Override
+            public int getBottomOffset(int tag) {
+                return isSupportEdgeToEdge() ? AndroidUtilities.navigationBarHeight : 0;
+            }
+        });
     }
 
     public void setCurrentAccount(int account) {

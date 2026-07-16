@@ -593,6 +593,8 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
         }
     }
 
+    protected int additionalTitleX;
+
     protected int getActionBarProgressHeight() {
         return dp(56);
     }
@@ -657,7 +659,7 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
                 actionBar.backButtonImageView.setPivotY(actionBar.backButtonImageView.getMeasuredHeight() / 2f);
                 actionBar.backButtonImageView.setScaleY(t);
                 SimpleTextView titleTextView = actionBar.getTitleTextView();
-                titleTextView.setTranslationX(AndroidUtilities.lerp(dp(21) - titleTextView.getLeft(), 0.0f, t));
+                titleTextView.setTranslationX(AndroidUtilities.lerp(dp(21) - titleTextView.getLeft(), 0.0f, t) + additionalTitleX);
                 if (centerTitle) {
                     titleTextView.setTranslationX((actionBar.getMeasuredWidth() - titleTextView.getTextWidth()) / 2f - titleTextView.getLeft());
                 }

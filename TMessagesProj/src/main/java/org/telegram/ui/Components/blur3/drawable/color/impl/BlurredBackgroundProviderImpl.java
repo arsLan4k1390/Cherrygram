@@ -63,6 +63,21 @@ public class BlurredBackgroundProviderImpl {
                 .build();
     }
 
+    public static BlurredBackgroundProvider counterMini(Theme.ResourcesProvider resourcesProvider) {
+        return new BlurredBackgroundProviderBuilder(resourcesProvider)
+                .setBackgroundColor((r, isDark) -> {
+                    final float alpha = 0.075f;
+                    final int colorBg = Color.BLACK;
+                    return Theme.multAlpha(colorBg, alpha);
+                })
+                .setStrokeColorTop(0x60FFFFFF, 0x50FFFFFF)
+                .setStrokeColorBottom(0x24000000, 0x24000000)
+                .setShadowColor(0, 0)
+                .setShadowLayer(0, 0, 0)
+                .setStrokeWidth(dpf2(0.43f), dpf2(0.43f))
+                .build();
+    }
+
     public static BlurredBackgroundProvider scrimMenuBackground(Theme.ResourcesProvider resourcesProvider) {
         return new BlurredBackgroundProviderBuilder(resourcesProvider)
             .setBackgroundColor((r, isDark) ->
