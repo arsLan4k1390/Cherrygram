@@ -2,16 +2,17 @@ package org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -95,9 +96,6 @@ import org.telegram.ui.Components.URLSpanNoUnderline;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.PermissionsUtils;
-
-@TargetApi(18)
 public class CameraScanActivity extends BaseFragment {
 
     private TextView titleTextView;
@@ -277,9 +275,7 @@ public class CameraScanActivity extends BaseFragment {
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
         destroy(false, null);
-        if (getParentActivity() != null) {
-            getParentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        }
+        AndroidUtilities.unlockOrientation(getParentActivity());
         if (visionQrReader != null) {
             visionQrReader.release();
         }
@@ -678,9 +674,15 @@ public class CameraScanActivity extends BaseFragment {
                     if (getParentActivity() == null) {
                         return;
                     }
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        if (!PermissionsUtils.isImagesAndVideoPermissionGranted()) {
-                            PermissionsUtils.requestImagesAndVideoPermission(getParentActivity());
+                    final Activity activity = getParentActivity();
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        if (activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                            activity.requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+                            return;
+                        }
+                    } else if (Build.VERSION.SDK_INT >= 23) {
+                        if (activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
                             return;
                         }
                     }
@@ -765,9 +767,7 @@ public class CameraScanActivity extends BaseFragment {
             });
         }
 
-        if (getParentActivity() != null) {
-            getParentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+        AndroidUtilities.lockOrientation(getParentActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         fragmentView.setKeepScreenOn(true);
 
         return fragmentView;
@@ -943,8 +943,8 @@ public class CameraScanActivity extends BaseFragment {
         if (normalBounds == null) {
             normalBounds = new RectF();
         }
-        int width = Math.max(AndroidUtilities.displaySize.x, fragmentView.getWidth()),
-            height = Math.max(AndroidUtilities.displaySize.y, fragmentView.getHeight()),
+        int width = fragmentView.getWidth(),
+            height = fragmentView.getHeight(),
             side = (int) (Math.min(width, height) / 1.5f);
         normalBounds.set(
             (width - side) / 2f / (float) width,

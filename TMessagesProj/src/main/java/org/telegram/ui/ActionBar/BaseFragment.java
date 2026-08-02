@@ -68,16 +68,6 @@ import org.telegram.ui.bots.BotWebViewAttachedSheet;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
-import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
-import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
-import uz.unnarsx.cherrygram.core.VibrateUtil;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.helpers.ProfileActivityHelper;
-
 public abstract class BaseFragment {
 
     public boolean isFinished;
@@ -86,7 +76,7 @@ public abstract class BaseFragment {
     protected int currentAccount = UserConfig.selectedAccount;
 
     public View fragmentView;
-    public INavigationLayout parentLayout;
+    protected INavigationLayout parentLayout;
     protected ActionBar actionBar;
     protected boolean inPreviewMode;
     protected boolean inMenuMode;
@@ -300,12 +290,6 @@ public abstract class BaseFragment {
     }
 
     public boolean isActionBarCrossfadeEnabled() {
-        if (CherrygramCoreConfig.INSTANCE.getSpringAnimation() == CherrygramCoreConfig.ANIMATION_SPRING) {
-            if (getLastStoryViewer() != null && getLastStoryViewer().attachedToParent()) {
-                return false;
-            }
-            return actionBar != null && !actionBar.isActionModeShowed();
-        }
         return actionBar != null;
     }
 
@@ -368,9 +352,6 @@ public abstract class BaseFragment {
     public void setParentFragment(BaseFragment fragment) {
         setParentLayout(fragment.parentLayout);
         fragmentView = createView(parentLayout.getView().getContext());
-        if (fragmentView != null && CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-            VibrateUtil.INSTANCE.disableHapticFeedback(fragmentView);
-        }
     }
 
     public void setParentLayout(INavigationLayout layout) {
@@ -895,7 +876,7 @@ public abstract class BaseFragment {
         return getAccountInstance().getGiftAuctionsController();
     }
 
-    public ContactsController getContactsController() {
+    protected ContactsController getContactsController() {
         return getAccountInstance().getContactsController();
     }
 
@@ -1339,7 +1320,7 @@ public abstract class BaseFragment {
 
     public void setTitleOverlayText(String title, int titleId, Runnable action) {
         if (actionBar != null) {
-            actionBar.setTitleOverlayText(title, titleId, true, action);
+            actionBar.setTitleOverlayText(title, titleId, action);
         }
     }
 
@@ -1429,35 +1410,16 @@ public abstract class BaseFragment {
         public boolean occupyNavigationBar;
     }
 
-    /** Cherrygram start */
-    public MessageHelper getMessageHelper() {
-        return MessageHelper.getInstance(currentAccount);
+    public EdgeToEdgeSupportMode getEdgeToEdgeSupportMode() {
+        return isSupportEdgeToEdge() ?
+            EdgeToEdgeSupportMode.VERTICAL :
+            EdgeToEdgeSupportMode.NONE;
     }
 
-    public ChatsHelper getChatsHelper() {
-        return ChatsHelper.getInstance(currentAccount);
-    }
-
-    public ChatActivityHelper getChatActivityHelper() {
-        return ChatActivityHelper.getInstance(currentAccount);
-    }
-
-    public MessageMenuHelper getMessageMenuHelper() {
-        return MessageMenuHelper.getInstance(currentAccount);
-    }
-
-    public ChatsPasswordHelper getChatsPasswordHelper() {
-        return ChatsPasswordHelper.getInstance(currentAccount);
-    }
-
-    public ProfileActivityHelper getProfileActivityHelper() {
-        return ProfileActivityHelper.getInstance(currentAccount);
-    }
-    /** Cherrygram finish */
-
+    @Deprecated
     public boolean isSupportEdgeToEdge() {
         // warn: overridden method must return a constant
-        return false; // CherrygramExtras.isEdgeToEdgeSupported()
+        return false;
     }
 
     public boolean drawEdgeNavigationBar() {
