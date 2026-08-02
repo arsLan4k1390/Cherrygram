@@ -33,3 +33,4 @@ Cherrygram.jks
 mykey.jks
 actions-runner
 secrets_for_ci.env
+TMessagesProj/jni/ffmpeg/build_android
