@@ -34,6 +34,7 @@ import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
+import uz.unnarsx.cherrygram.preferences.string
 
 @Keep
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
@@ -68,6 +69,8 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Notifications start */
     var silenceNonContacts by sharedPreferences.boolean("CP_SilenceNonContacts", false)
+    var ignoreMentions by sharedPreferences.boolean("CG_IgnoreMentions", false)
+    var ignoreMentionsMarkAsRead by sharedPreferences.boolean("CG_IgnoreMentionsMarkAsRead", false)
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
     var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && !ApplicationLoader.checkPlayServices())
     /** Notifications finish */
@@ -108,6 +111,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isStandaloneBetaBuild())
     var autoOTA by sharedPreferences.boolean("CG_Check_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
     var forceFound by sharedPreferences.boolean("CG_ForceFound", false)
+    var minCherryVersion by sharedPreferences.string("CG_Min_Cherry_Version", "0")
     /** OTA finish */
 
     /** Misc start */
@@ -151,12 +155,12 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Misc start */
     var lastDonatesCheckTime by sharedPreferences.long("CG_LastDonatesCheckTime", 0)
-    /** Misc finish*/
+    /** Misc finish */
 
     /** Migration start */
     private fun migratePreferences() {
         if (CherrygramAppearanceConfig.showIDDC_old >= CherrygramAppearanceConfig.ID_DC) {
-            CherrygramAppearanceConfig.showIDDC_old = 1
+            CherrygramAppearanceConfig.showIDDC_old = CherrygramAppearanceConfig.ID_DC_NONE
             CherrygramAppearanceConfig.showIDDC = true
         }
     }

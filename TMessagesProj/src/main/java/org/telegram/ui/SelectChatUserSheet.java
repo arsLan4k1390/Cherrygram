@@ -536,7 +536,7 @@ public class SelectChatUserSheet extends BottomSheetWithRecyclerListView {
             NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.chatInfoDidLoad);
         }
         public void detach() {
-            if (attached) return;
+            if (!attached) return;
             attached = false;
             NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.chatInfoDidLoad);
 

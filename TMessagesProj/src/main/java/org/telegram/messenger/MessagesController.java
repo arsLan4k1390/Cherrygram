@@ -144,7 +144,6 @@ import java.util.stream.Collectors;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
@@ -25574,7 +25573,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }
 
         SponsoredMessagesInfo info = sponsoredMessagesForADSgram.get(dialogId);
-        if (info != null && (info.loading || Math.abs(SystemClock.elapsedRealtime() - info.loadTime) <= 5 * 60 * 1000)) {
+        if (info != null && (info.loading || Math.abs(SystemClock.elapsedRealtime() - info.loadTime) <= 2 * 60 * 1000)) {
             return info;
         }
         info = new SponsoredMessagesInfo();
@@ -25583,131 +25582,142 @@ public class MessagesController extends BaseController implements NotificationCe
 
         SponsoredMessagesInfo infoFinal = info;
 
-        AdsGramApi.fetchRealIp(ip -> {
-            new AdsGramApi(ApplicationLoader.applicationContext).loadAd(
-                    AdsScreen.large_banner_in_chats_id,
-                    getUserConfig().clientUserId,
-                    getUserConfig().isPremium(),
-                    AndroidUtilities.displaySize.x,
-                    AndroidUtilities.displaySize.y,
-                    ip,
-                    new Callback() {
-                        @Override
-                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                            AndroidUtilities.runOnUIThread(() ->
-                                    sponsoredMessagesForADSgram.remove(dialogId)
-                            );
-                        }
-
-                        @Override
-                        public void onResponse(@NonNull Call call, @NonNull Response response) {
-                            ArrayList<MessageObject> result;
-                            Integer posts_between = null; // If set, specifies the minimum number of messages between shown sponsored messages; otherwise, only one sponsored message must be shown after all ordinary messages.
-
-                            try (response) {
-                                if (!response.isSuccessful() || response.body() == null) {
-                                    result = null;
-                                } else {
-                                    AdsGramResponse ad = new Gson().fromJson(
-                                            response.body().string(),
-                                            AdsGramResponse.class
-                                    );
-
-                                    if (ad == null || ad.banner == null) {
-                                        result = null;
-                                    } else {
-                                        result = new ArrayList<>();
-                                        TLRPC.TL_message message = new TLRPC.TL_message();
-                                        message.peer_id = getPeer(dialogId);
-                                        message.flags |= 256;
-                                        message.date = getConnectionsManager().getCurrentTime();
-                                        message.id = -10000000;
-
-                                        String description = ad.banner.getAsset("description");
-                                        String title = ad.banner.getAsset("title");
-
-                                        if (!TextUtils.isEmpty(description)) {
-                                            message.message = description;
-                                        } else if (!TextUtils.isEmpty(title)) {
-                                            message.message = title;
-                                        } else {
-                                            message.message = "";
-                                        }
-
-                                        final LongSparseArray<TLRPC.User> usersDict = new LongSparseArray<>();
-                                        final LongSparseArray<TLRPC.Chat> chatsDict = new LongSparseArray<>();
-
-                                        TLRPC.User self = getUser(UserConfig.getInstance(currentAccount).getClientUserId());
-                                        if (self != null) {
-                                            usersDict.put(self.id, self);
-                                        }
-
-                                        MessageObject messageObject = new MessageObject(currentAccount, message, usersDict, chatsDict, true, true);
-                                        messageObject.isAdsGram = true;
-                                        messageObject.bannerData = ad.banner;
-                                        messageObject.sponsoredId = Utilities.computeSHA256(
-                                                String.valueOf(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8)
-                                        );
-                                        messageObject.sponsoredTitle = ad.banner.getAsset("title");
-                                        messageObject.sponsoredUrl = ad.banner.getAsset("url");
-                                        messageObject.sponsoredButtonText = ad.banner.getAsset("buttonName");
-
-                                        /*String iconUrl = ad.banner.getAsset("icon");
-                                        if (iconUrl != null) {
-                                            icon.setImage(ImageLocation.getForPath(iconUrl), "100_100", null, null, null, 0);
-                                            messageObject.sponsoredPhoto = iconUrl;
-                                        }
-                                        String imageUrl = ad.banner.getAsset("image");
-                                        if (imageUrl != null) {
-                                            bigBanner.setImage(ImageLocation.getForPath(imageUrl), "512_512", null, null, null, 0);
-                                            messageObject.sponsoredMedia = imageUrl;
-                                        }*/
-
-                                        if (ad.banner != null && ad.banner.getAsset("advertiserName") != null) {
-                                            String advertiser = ad.banner.getAsset("advertiserName");
-                                            messageObject.sponsoredInfo = advertiser;
-                                        } else {
-                                            messageObject.sponsoredInfo = "AdsGram";
-                                        }
-
-                                        messageObject.sponsoredCanReport = false;
-
-                                        messageObject.setType();
-                                        messageObject.generateThumbs(true);
-
-                                        result.add(messageObject);
-
-                                        String renderTracking = ad.banner.getTracking("render");
-                                        AdsGramCell.openTracking(renderTracking);
-                                        CherrygramLogger.d("ADSgram", () -> "render request sent");
-                                    }
-                                }
-                            } catch (Exception e) {
-                                FileLog.e(e);
-                                result = null;
-                                posts_between = null;
-                            }
-
-                            ArrayList<MessageObject> finalResult = result;
-                            Integer finalPosts_between = posts_between;
-
-                            AndroidUtilities.runOnUIThread(() -> {
-                                if (finalResult == null) {
-                                    sponsoredMessagesForADSgram.remove(dialogId);
-                                } else {
-                                    infoFinal.loadTime = SystemClock.elapsedRealtime();
-                                    infoFinal.loading = false;
-                                    infoFinal.messages = finalResult;
-                                    infoFinal.posts_between = finalPosts_between;
-                                    getNotificationCenter().postNotificationName(NotificationCenter.didLoadSponsoredMessages, dialogId, finalResult);
-                                }
-                            });
-                        }
-                    }
-            );
-        });
+        AdsGramApi.fetchRealIp(ip ->
+                requestAdsGramAd(dialogId, infoFinal, ip, false)
+        );
 
         return null;
+    }
+
+    private void requestAdsGramAd(long dialogId, SponsoredMessagesInfo infoFinal, String ip, boolean isRetryWithRu) {
+        new AdsGramApi(ApplicationLoader.applicationContext).loadAd(
+                AdsScreen.large_banner_in_chats_id,
+                getUserConfig().clientUserId,
+                getUserConfig().isPremium(),
+                AndroidUtilities.displaySize.x,
+                AndroidUtilities.displaySize.y,
+                ip,
+                isRetryWithRu ? "ru" : null,
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                        AndroidUtilities.runOnUIThread(() ->
+                                sponsoredMessagesForADSgram.remove(dialogId)
+                        );
+                    }
+
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response) {
+                        ArrayList<MessageObject> result;
+                        Integer posts_between = null;
+
+                        try (response) {
+                            if (!response.isSuccessful() || response.body() == null) {
+                                int code = response.code();
+                                result = null;
+                            } else {
+                                String bodyStr = response.body().string();
+
+                                AdsGramResponse ad = new Gson().fromJson(bodyStr, AdsGramResponse.class);
+
+                                if (ad == null || ad.banner == null) {
+                                    result = null;
+                                } else {
+                                    result = new ArrayList<>();
+                                    TLRPC.TL_message message = new TLRPC.TL_message();
+                                    message.peer_id = getPeer(dialogId);
+                                    message.flags |= 256;
+                                    message.date = getConnectionsManager().getCurrentTime();
+                                    message.id = -10000000;
+
+                                    String description = ad.banner.getAsset("description");
+                                    String title = ad.banner.getAsset("title");
+
+                                    if (!TextUtils.isEmpty(description)) {
+                                        message.message = description;
+                                    } else if (!TextUtils.isEmpty(title)) {
+                                        message.message = title;
+                                    } else {
+                                        message.message = "";
+                                    }
+
+                                    final LongSparseArray<TLRPC.User> usersDict = new LongSparseArray<>();
+                                    final LongSparseArray<TLRPC.Chat> chatsDict = new LongSparseArray<>();
+
+                                    TLRPC.User self = getUser(UserConfig.getInstance(currentAccount).getClientUserId());
+                                    if (self != null) {
+                                        usersDict.put(self.id, self);
+                                    }
+
+                                    MessageObject messageObject = new MessageObject(currentAccount, message, usersDict, chatsDict, true, true);
+                                    messageObject.isAdsGram = true;
+                                    messageObject.bannerData = ad.banner;
+                                    messageObject.sponsoredId = Utilities.computeSHA256(
+                                            String.valueOf(System.currentTimeMillis()).getBytes(StandardCharsets.UTF_8)
+                                    );
+                                    messageObject.sponsoredTitle = ad.banner.getAsset("title");
+                                    messageObject.sponsoredUrl = ad.banner.getAsset("url");
+                                    messageObject.sponsoredButtonText = ad.banner.getAsset("buttonName");
+
+                                    /*String iconUrl = ad.banner.getAsset("icon");
+                                    if (iconUrl != null) {
+                                        icon.setImage(ImageLocation.getForPath(iconUrl), "100_100", null, null, null, 0);
+                                        messageObject.sponsoredPhoto = iconUrl;
+                                    }
+                                    String imageUrl = ad.banner.getAsset("image");
+                                    if (imageUrl != null) {
+                                        bigBanner.setImage(ImageLocation.getForPath(imageUrl), "512_512", null, null, null, 0);
+                                        messageObject.sponsoredMedia = imageUrl;
+                                    }*/
+
+                                    if (ad.banner != null && ad.banner.getAsset("advertiserName") != null) {
+                                        String advertiser = ad.banner.getAsset("advertiserName");
+                                        messageObject.sponsoredInfo = advertiser;
+                                    } else {
+                                        messageObject.sponsoredInfo = "AdsGram";
+                                    }
+
+                                    messageObject.sponsoredCanReport = false;
+
+                                    messageObject.setType();
+                                    messageObject.generateThumbs(true);
+
+                                    result.add(messageObject);
+
+                                    String renderTracking = ad.banner.getTracking("render");
+                                    AdsGramCell.openTracking(renderTracking);
+                                }
+                            }
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                            result = null;
+                            posts_between = null;
+                        }
+
+                        ArrayList<MessageObject> finalResult = result;
+                        Integer finalPosts_between = posts_between;
+
+                        if (finalResult == null && !isRetryWithRu) {
+                            AndroidUtilities.runOnUIThread(() ->
+                                    requestAdsGramAd(dialogId, infoFinal, ip, true)
+                            );
+                            return;
+                        }
+
+                        AndroidUtilities.runOnUIThread(() -> {
+                            if (finalResult == null) {
+                                sponsoredMessagesForADSgram.remove(dialogId);
+                            } else {
+                                infoFinal.loadTime = SystemClock.elapsedRealtime();
+                                infoFinal.loading = false;
+                                infoFinal.messages = finalResult;
+                                infoFinal.posts_between = finalPosts_between;
+                                getNotificationCenter().postNotificationName(NotificationCenter.didLoadSponsoredMessages, dialogId, finalResult);
+                            }
+                        });
+                    }
+                }
+        );
     }
     /** Cherrygram finish */
 

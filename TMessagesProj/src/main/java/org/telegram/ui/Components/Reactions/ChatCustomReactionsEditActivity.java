@@ -137,7 +137,6 @@ public class ChatCustomReactionsEditActivity extends BaseFragment implements Not
                 checkMaxCustomReactions(false);
             }
         });
-        getNotificationCenter().addObserver(this, NotificationCenter.reactionsDidLoad);
         allAvailableReactions.addAll(getMediaDataController().getEnabledReactionsList());
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.stopAllHeavyOperations, 512);
         getNotificationCenter().addObserver(this, NotificationCenter.dialogDeleted);

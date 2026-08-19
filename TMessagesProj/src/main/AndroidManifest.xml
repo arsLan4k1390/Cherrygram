@@ -108,6 +108,10 @@
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="ton"/>
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="tg"/>
+        </intent>
     </queries>
 
     <application
@@ -930,7 +934,6 @@
 
         <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="false" />
 
-        <!--
         <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" android:resource="@drawable/ic_player" />
         <meta-data android:name="com.google.android.gms.car.application" android:resource="@xml/automotive_app_desc" />
 
@@ -946,8 +949,7 @@
 
         <meta-data
             android:name="androidx.car.app.minCarApiLevel"
-            android:value="5" />
-        -->
+            android:value="7" />
 
         <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="face,barcode" />
 

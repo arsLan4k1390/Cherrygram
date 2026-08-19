@@ -407,20 +407,20 @@ public class VideoTimelineView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (useClip) {
+        if (useClip || roundy) {
             if (path == null) {
                 path = new Path();
             }
             path.rewind();
             int topOffset = (getMeasuredHeight() - AndroidUtilities.dp(32)) >> 1;
             AndroidUtilities.rectTmp.set(0, topOffset, getMeasuredWidth(), getMeasuredHeight() - topOffset);
-            path.addRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.dp(7), AndroidUtilities.dp(7), Path.Direction.CCW);
+            path.addRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.dp(roundy ? 24 : 7), AndroidUtilities.dp(roundy ? 24 : 7), Path.Direction.CCW);
         }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (useClip) {
+        if (useClip || roundy) {
             canvas.save();
             if (path != null) {
                 canvas.clipPath(path);
@@ -454,7 +454,7 @@ public class VideoTimelineView extends View {
                 offset++;
             }
         } else {
-            if (useClip) {
+            if (useClip || roundy) {
                 canvas.restore();
             }
             return;
@@ -466,7 +466,7 @@ public class VideoTimelineView extends View {
         canvas.drawLine(startX - AndroidUtilities.dp(4), topOffset + AndroidUtilities.dp(10), startX - AndroidUtilities.dp(4), getMeasuredHeight() - AndroidUtilities.dp(10) - topOffset, thumbPaint);
         canvas.drawLine(endX + AndroidUtilities.dp(4), topOffset + AndroidUtilities.dp(10), endX + AndroidUtilities.dp(4), getMeasuredHeight() - AndroidUtilities.dp(10) - topOffset, thumbPaint);
 
-        if (useClip) {
+        if (useClip || roundy) {
             canvas.restore();
         } else {
             drawCorners(canvas, getMeasuredHeight() - topOffset * 2, getMeasuredWidth(), 0, topOffset);
@@ -609,4 +609,9 @@ public class VideoTimelineView extends View {
             invalidate();
         }
     }
+
+    /** Cherrygram start */
+    boolean roundy;
+    /** Cherrygram finish */
+
 }

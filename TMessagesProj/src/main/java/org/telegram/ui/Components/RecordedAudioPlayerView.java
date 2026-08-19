@@ -241,7 +241,7 @@ public class RecordedAudioPlayerView extends View {
 
         canvas.save();
         clipPath.rewind();
-        clipPath.addRoundRect(rect, dp(8), dp(8), Path.Direction.CW);
+        clipPath.addRoundRect(rect, dp(roundy ? 24 : 8), dp(roundy ? 24 : 8), Path.Direction.CW);
         canvas.clipPath(clipPath);
 
         canvas.drawRect(rect.left, rect.top, left - dp(1.33f), rect.bottom, darkerBackgroundPaint);
@@ -429,4 +429,9 @@ public class RecordedAudioPlayerView extends View {
         }
         return playPressed || leftPressed || rightPressed || progressPressed || super.dispatchTouchEvent(e);
     }
+
+    /** Cherrygram start */
+    boolean roundy;
+    /** Cherrygram finish */
+
 }

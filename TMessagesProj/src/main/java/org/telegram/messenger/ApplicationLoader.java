@@ -36,7 +36,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.json.JSONObject;
-import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
@@ -51,9 +50,12 @@ import java.io.File;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
+import uz.unnarsx.cherrygram.core.memory.MemoryMonitor;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.firebase.crashlytics.FirebaseCrashlyticsHelper;
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 
 public class ApplicationLoader extends Application {
 
@@ -367,7 +369,8 @@ public class ApplicationLoader extends Application {
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
-        FirebaseAnalyticsHelper.INSTANCE.init(applicationContext);
+
+        initCG();
 
         LauncherIconController.tryFixLauncherIconIfNeeded();
         ProxyRotationController.init();
@@ -747,5 +750,34 @@ public class ApplicationLoader extends Application {
     public boolean showUpdaterBottomSheet(BaseFragment fragment, boolean available, TLRPC.TL_help_appUpdate update) {
         return false;
     }
+
+    /** Cherrygram start */
+    private void initCG() {
+        FirebaseAnalyticsHelper.INSTANCE.init(applicationContext);
+
+        if (CherrygramExperimentalConfig.INSTANCE.getUse_CG_OOMHandler()) {
+            MemoryMonitor memoryMonitor = new MemoryMonitor(
+                    this,
+                    MemoryMonitor.getCleanupThresholdRatio(),
+                    CherrygramExperimentalConfig.INSTANCE.getOomHandlerPopupThreshold() / 100,
+                    5000L,
+                    15000L,
+                    ratio -> {
+                        ImageLoader.getInstance().clearMemory();
+
+                        AndroidUtilities.runOnUIThread(() -> {
+                            if (LaunchActivity.instance != null) {
+                                LaunchActivity.instance.onLowMemory();
+                            }
+                        });
+                        System.gc();
+                    },
+                    CGBulletinCreator.INSTANCE::createAppRestartDialog
+            );
+
+            memoryMonitor.start();
+        }
+    }
+    /** Cherrygram finish */
 
 }

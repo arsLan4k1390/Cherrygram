@@ -422,6 +422,6 @@ public class ChatInputViewsContainer extends FrameLayout {
             invalidate();
         }
     }
-    /** Cherrygram Finish */
+    /** Cherrygram finish */
 
 }

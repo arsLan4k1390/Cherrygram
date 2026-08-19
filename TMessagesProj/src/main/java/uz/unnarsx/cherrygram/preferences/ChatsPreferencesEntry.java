@@ -48,30 +48,35 @@ import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+import uz.unnarsx.cherrygram.preferences.cells.ChatHeaderPreviewView;
+import uz.unnarsx.cherrygram.preferences.cells.ChatInputPreviewView;
 import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class ChatsPreferencesEntry extends UniversalFragment {
 
-    private final int centerTitleRow = 1, centerTitleAdaptiveWidthRow = 2, unreadBadgeRow = 3, chatMenuShortcutsRow = 4;
+    private final int headerSettingsRow = 1, centerTitleRow = 2, centerTitleAdaptiveWidthRow = 3, unreadBadgeRow = 4, iOSUnreadBadgeRow = 5, chatMenuShortcutsRow = 6;
 
-    private final int customBackgroundInChatsRow = 5, snowflakesRow = 6;
+    private final int customBackgroundInChatsRow = 7, snowflakesRow = 8;
 
-    private final int iOSMessageInputField = 7, hideBottomBarRow = 8, sendAsChannelButtonRow = 9, recentEmojisStickersRow = 10;
+    private final int bottomBarSettingsRow = 9, iOSMessageInputField = 10, sendAsChannelButtonRow = 11, hideBottomBarRow = 12, recentEmojisStickersRow = 13;
 
-    private final int messagesPreferencesRow = 11;
+    private final int messagesPreferencesRow = 14;
 
-    private final int customChatRow = 12;
+    private final int customChatRow = 15;
 
-    private final int autoQuoteRow = 13, disableSwipeToNextRow = 14, disableVibrationRow = 15, openLinksInIV = 16;
+    private final int autoQuoteRow = 16, disableSwipeToNextRow = 17, disableVibrationRow = 18, openLinksInIV = 19;
 
-    private final int hideKbdSliderRow = 17;
+    private final int hideKbdSliderRow = 20;
 
-    private final int playVideoOnVolumeBtnRow = 18, autoPauseVideoRow = 19;
+    private final int voiceMessagesAutoPlay = 21, playVideoOnVolumeBtnRow = 22, autoPauseVideoRow = 23;
 
-    private final int videoSeekSliderRow = 20;
+    private final int videoSeekSliderRow = 24;
 
-    private final int notificationSoundRow = 21, vibrateInChatsRow = 22;
+    private final int notificationSoundRow = 25, vibrateInChatsRow = 26;
+
+    private boolean expandedHeaderSettingsSection = false;
+    private boolean expandedBottomBarSettingsSection = false;
 
     @Override
     protected CharSequence getTitle() {
@@ -89,20 +94,48 @@ public class ChatsPreferencesEntry extends UniversalFragment {
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.AP_Header_Appearance)));
-        items.add(SettingsHelper.asSwitchCG(centerTitleRow, getString(R.string.AP_CenterTitle))
-                .setChecked(CherrygramChatsConfig.INSTANCE.getCenterChatTitle())
+        items.add(
+                SettingsHelper.asExpandableSwitch(
+                        headerSettingsRow,
+                        R.drawable.msg_photo_settings_solar,
+                        applyNewSpan(getString(R.string.AP_Header)),
+                        " "
+                )
+                .setCollapsed(!expandedHeaderSettingsSection)
+                .setClickCallback(v -> {
+                    expandedHeaderSettingsSection = !expandedHeaderSettingsSection;
+                    listView.adapter.update(true);
+                })
+                .hideCheckbox(true)
         );
-        if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) {
-            items.add(SettingsHelper.asSwitchCG(centerTitleAdaptiveWidthRow, applyNewSpan(getString(R.string.AP_CenterTitle_AdaptiveWidth)))
-                    .setChecked(CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth())
+        if (expandedHeaderSettingsSection) {
+            items.add(UItem.asShadow(null));
+            ChatHeaderPreviewView headerPreviewView = new ChatHeaderPreviewView(getContext(), this, getResourceProvider());
+            headerPreviewView.setTitleCentered(CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
+            headerPreviewView.updateIOSUnreadBadge();
+            items.add(SettingsHelper.asCustomWithBackground(headerPreviewView, 70));
+            items.add(UItem.asShadow(null));
+
+            items.add(SettingsHelper.asSwitchCG(centerTitleRow, getString(R.string.AP_CenterTitle))
+                    .setChecked(CherrygramChatsConfig.INSTANCE.getCenterChatTitle())
             );
+            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) {
+                items.add(SettingsHelper.asSwitchCG(centerTitleAdaptiveWidthRow, applyNewSpan(getString(R.string.AP_CenterTitle_AdaptiveWidth)))
+                        .setChecked(CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth())
+                );
+            }
+            items.add(SettingsHelper.asSwitchCG(unreadBadgeRow, getString(R.string.CP_UnreadBadgeOnBackButton), getString(R.string.CP_UnreadBadgeOnBackButton_Desc))
+                    .setChecked(CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton())
+            );
+            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle() && CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton()) {
+                items.add(SettingsHelper.asSwitchCG(iOSUnreadBadgeRow, applyNewSpan(getString(R.string.CP_UnreadBadgeOnBackButton_IOS)))
+                        .setChecked(CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton_iOS())
+                );
+            }
         }
-        items.add(SettingsHelper.asSwitchCG(unreadBadgeRow, getString(R.string.CP_UnreadBadgeOnBackButton), getString(R.string.CP_UnreadBadgeOnBackButton_Desc))
-                .setChecked(CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton())
-        );
-        items.add(UItem.asButton(chatMenuShortcutsRow, R.drawable.msg_list, getString(R.string.CP_ChatMenuShortcuts)));
         items.add(UItem.asShadow(null));
 
+        items.add(UItem.asButton(chatMenuShortcutsRow, R.drawable.msg_list, getString(R.string.CP_ChatMenuShortcuts)));
         items.add(SettingsHelper.asSwitchCG(customBackgroundInChatsRow, getString(R.string.CP_CustomWallpapers), getString(R.string.CP_CustomWallpapers_Desc))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getCustomWallpapers())
         );
@@ -111,17 +144,36 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         );
         items.add(UItem.asShadow(null));
 
-        items.add(UItem.asHeader(getString(R.string.CP_BottomBar)));
-        items.add(SettingsHelper.asSwitchCG(iOSMessageInputField, applyNewSpan(getString(R.string.CP_iOSMessageInputField)), getString(R.string.CP_iOSMessageInputField_Desc))
-                .setChecked(CherrygramChatsConfig.INSTANCE.getIOSMessageInputField())
+        items.add(
+                SettingsHelper.asExpandableSwitch(
+                        bottomBarSettingsRow,
+                        R.drawable.msg_photo_settings_solar,
+                        applyNewSpan(getString(R.string.CP_BottomBar)),
+                        " "
+                )
+                .setCollapsed(!expandedBottomBarSettingsSection)
+                .setClickCallback(v -> {
+                    expandedBottomBarSettingsSection = !expandedBottomBarSettingsSection;
+                    listView.adapter.update(true);
+                })
+                .hideCheckbox(true)
         );
-        items.add(SettingsHelper.asSwitchCG(hideBottomBarRow, getString(R.string.CP_HideMuteUnmuteButton))
-                .setChecked(CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton())
-        );
-        items.add(SettingsHelper.asSwitchCG(sendAsChannelButtonRow, getString(R.string.CP_HideSendAsChannel), getString(R.string.CP_HideSendAsChannelDesc))
-                .setChecked(CherrygramChatsConfig.INSTANCE.getHideSendAsChannel())
-        );
-        items.add(UItem.asButton(recentEmojisStickersRow, 0, getString(R.string.CP_Slider_RecentEmojisAndStickers)));
+        if (expandedBottomBarSettingsSection) {
+            items.add(UItem.asShadow(null));
+            ChatInputPreviewView inputPreviewView = new ChatInputPreviewView(getContext(), this, getResourceProvider());
+            items.add(SettingsHelper.asCustomWithBackground(inputPreviewView, 62));
+            items.add(UItem.asShadow(null));
+            items.add(SettingsHelper.asSwitchCG(iOSMessageInputField, applyNewSpan(getString(R.string.CP_iOSMessageInputField)), getString(R.string.CP_iOSMessageInputField_Desc))
+                    .setChecked(CherrygramChatsConfig.INSTANCE.getIOSMessageInputField())
+            );
+            items.add(SettingsHelper.asSwitchCG(sendAsChannelButtonRow, getString(R.string.CP_HideSendAsChannel), getString(R.string.CP_HideSendAsChannelDesc))
+                    .setChecked(CherrygramChatsConfig.INSTANCE.getHideSendAsChannel())
+            );
+            items.add(SettingsHelper.asSwitchCG(hideBottomBarRow, getString(R.string.CP_HideMuteUnmuteButton))
+                    .setChecked(CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton())
+            );
+            items.add(UItem.asButton(recentEmojisStickersRow, 0, getString(R.string.CP_Slider_RecentEmojisAndStickers)));
+        }
         items.add(UItem.asShadow(null));
 
         items.add(
@@ -172,6 +224,9 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Record)));
+        items.add(SettingsHelper.asSwitchCG(voiceMessagesAutoPlay, applyNewSpan(getString(R.string.CP_VoiceMessagesAutoPlay)))
+                .setChecked(CherrygramChatsConfig.INSTANCE.getVoiceMessagesAutoPlay())
+        );
         items.add(SettingsHelper.asSwitchCG(playVideoOnVolumeBtnRow, getString(R.string.CP_PlayVideo), getString(R.string.CP_PlayVideo_Desc))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume())
         );
@@ -202,7 +257,12 @@ public class ChatsPreferencesEntry extends UniversalFragment {
 
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == centerTitleRow) {
+        if (item.id == headerSettingsRow) {
+            expandedHeaderSettingsSection = !expandedHeaderSettingsSection;
+            item.collapsed = !item.collapsed;
+
+            listView.adapter.update(true);
+        } else if (item.id == centerTitleRow) {
             CherrygramChatsConfig.INSTANCE.setCenterChatTitle(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
 
@@ -210,9 +270,18 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         } else if (item.id == centerTitleAdaptiveWidthRow) {
             CherrygramChatsConfig.INSTANCE.setCenterChatTitle_AdaptiveWidth(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth());
+
+            listView.adapter.update(true);
         } else if (item.id == unreadBadgeRow) {
             CherrygramChatsConfig.INSTANCE.setUnreadBadgeOnBackButton(!CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton());
+
+            listView.adapter.update(true);
+        } else if (item.id == iOSUnreadBadgeRow) {
+            CherrygramChatsConfig.INSTANCE.setUnreadBadgeOnBackButton_iOS(!CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton_iOS());
+            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton_iOS());
+
+            listView.adapter.update(true);
         } else if (item.id == chatMenuShortcutsRow) {
             showChatMenuItemsConfigurator(this);
         } else if (item.id == customBackgroundInChatsRow) {
@@ -223,17 +292,25 @@ public class ChatsPreferencesEntry extends UniversalFragment {
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getDrawSnowInChat());
 
             getParentLayout().rebuildAllFragmentViews(false, false);
+        } else if (item.id == bottomBarSettingsRow) {
+            expandedBottomBarSettingsSection = !expandedBottomBarSettingsSection;
+            item.collapsed = !item.collapsed;
+
+            listView.adapter.update(true);
         } else if (item.id == iOSMessageInputField) {
             CherrygramChatsConfig.INSTANCE.setIOSMessageInputField(!CherrygramChatsConfig.INSTANCE.getIOSMessageInputField());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getIOSMessageInputField());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
-        } else if (item.id == hideBottomBarRow) {
-            CherrygramChatsConfig.INSTANCE.setHideMuteUnmuteButton(!CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton());
-            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton());
+            listView.adapter.update(true);
+//            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == sendAsChannelButtonRow) {
             CherrygramChatsConfig.INSTANCE.setHideSendAsChannel(!CherrygramChatsConfig.INSTANCE.getHideSendAsChannel());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getHideSendAsChannel());
+
+            listView.adapter.update(true);
+        } else if (item.id == hideBottomBarRow) {
+            CherrygramChatsConfig.INSTANCE.setHideMuteUnmuteButton(!CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton());
+            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton());
         } else if (item.id == recentEmojisStickersRow) {
             AlertDialogSwitchers.showRecentEmojisAndStickers(this);
         } else if (item.id == messagesPreferencesRow) {
@@ -257,6 +334,9 @@ public class ChatsPreferencesEntry extends UniversalFragment {
         } else if (item.id == openLinksInIV) {
             CherrygramChatsConfig.INSTANCE.setOpenLinksInIV(!CherrygramChatsConfig.INSTANCE.getOpenLinksInIV());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getOpenLinksInIV());
+        } else if (item.id == voiceMessagesAutoPlay) {
+            CherrygramChatsConfig.INSTANCE.setVoiceMessagesAutoPlay(!CherrygramChatsConfig.INSTANCE.getVoiceMessagesAutoPlay());
+            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getVoiceMessagesAutoPlay());
         } else if (item.id == playVideoOnVolumeBtnRow) {
             CherrygramChatsConfig.INSTANCE.setPlayVideoOnVolume(!CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume());

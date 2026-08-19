@@ -15,7 +15,9 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
 import android.os.Build;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +45,7 @@ import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
+import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
@@ -60,6 +63,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.firebase.remoteConfig.RemoteConfigHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
@@ -189,6 +193,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                         }
                     };
                     DonatesManager.INSTANCE.startAutoRefresh(getContext(), true, false, suspendResult);
+                    RemoteConfigHelper.INSTANCE.fetchAndActivate(true, suspendResult);
                 }
             }
         });
@@ -470,13 +475,19 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     } else if (position == bonusesPriceRow) {
                         tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
 
+                        String amount2 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON (GRAM)";
+                        CharSequence row1Title = getTonSpanned("$2 / €2 / 200₽ \n\n" + amount2);
+
                         tableView.addRow(
-                                "$2 / €2 / 200₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON (GRAM)",
+                                row1Title,
                                 generateDescForDonates(tableView)
                         );
 
+                        String amount5 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON (GRAM)";
+                        CharSequence row2Title = getTonSpanned("$5 / €5 / 500₽ \n\n" + amount5);
+
                         tableView.addRow(
-                                "$5 / €5 / 500₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON (GRAM)",
+                                row2Title,
                                 generateDescForMarketplace(tableView)
                         );
 
@@ -874,6 +885,15 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         }
 
         return sb;
+    }
+
+    private CharSequence getTonSpanned(String textWithTon) {
+        SpannableString tonIcon = new SpannableString("TON");
+        ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_gram_16);
+        span.setWidth(dp(13));
+        tonIcon.setSpan(span, 0, tonIcon.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return AndroidUtilities.replaceCharSequence("TON", textWithTon, tonIcon);
     }
 
     private static class CardsRepo {

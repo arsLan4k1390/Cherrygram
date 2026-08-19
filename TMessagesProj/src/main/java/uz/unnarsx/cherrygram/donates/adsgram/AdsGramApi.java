@@ -58,15 +58,20 @@ public class AdsGramApi {
             int viewportWidth,
             int viewportHeight,
             String realIp,
+            String forceLanguage,
             Callback callback
     ) {
         HttpUrl parsedUrl = HttpUrl.parse(BASE_URL);
         if (parsedUrl == null) return;
 
+        String language = !TextUtils.isEmpty(forceLanguage)
+                ? forceLanguage
+                : LocaleController.getInstance().getCurrentLocaleInfo().shortName;
+
         HttpUrl url = parsedUrl.newBuilder()
                 .addQueryParameter("blockId", blockId)
                 .addQueryParameter("tg_id", String.valueOf(telegramUserId))
-                .addQueryParameter("language", LocaleController.getInstance().getCurrentLocaleInfo().shortName)
+                .addQueryParameter("language", language)
                 .addQueryParameter("is_premium", String.valueOf(isPremium))
                 .addQueryParameter("devicebrand", Build.BRAND)
                 .addQueryParameter("devicefamily", Build.DEVICE)
@@ -78,14 +83,20 @@ public class AdsGramApi {
                 .addQueryParameter("viewportwidth", String.valueOf(viewportWidth))
                 .build();
 
+        String battery = String.valueOf(getBatteryLevel());
+        String charging = String.valueOf(isCharging());
+        String brightness = String.valueOf(getBrightness());
+        String timestamp = String.valueOf(System.currentTimeMillis() / 1000L);
+        String osVersion = "Android " + Build.VERSION.RELEASE;
+
         Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
                 .get()
-                .addHeader("X-Battery", String.valueOf(getBatteryLevel()))
-                .addHeader("X-Is-Charging", String.valueOf(isCharging()))
-                .addHeader("X-Brightness", String.valueOf(getBrightness()))
-                .addHeader("X-Open-Timestamp", String.valueOf(System.currentTimeMillis() / 1000L))
-                .addHeader("X-Device-OS", "Android " + Build.VERSION.RELEASE);
+                .addHeader("X-Battery", battery)
+                .addHeader("X-Is-Charging", charging)
+                .addHeader("X-Brightness", brightness)
+                .addHeader("X-Open-Timestamp", timestamp)
+                .addHeader("X-Device-OS", osVersion);
 
         if (!TextUtils.isEmpty(realIp)) {
             requestBuilder.addHeader("X-Real-Ip", realIp);

@@ -235,7 +235,7 @@ object BackupHelper {
             "AP_SystemEmoji", "AP_SystemFonts", "AP_Tablet_Mode", "AP_Old_Notification_Icon", "CG_ResidentNotification",
             "CP_HideStories", "CP_ArchiveStoriesFromUsers", "CP_ArchiveStoriesFromChannels", "CP_CustomWallpapers",
             "CP_DisableReactionsOverlay", "CP_DisableReactionAnim", "CP_DisablePremStickAnim",
-            "CP_DisablePremStickAutoPlay", "CP_HideSendAsChannel",
+            "CP_DisablePremStickAutoPlay",
 
             // Appearance
             "AP_Icon_Replacements1", "AP_OneUI_SwitchStyle", "AP_DisableDividers", "AP_CenterTitle",
@@ -248,9 +248,9 @@ object BackupHelper {
             // Chats
             "CP_Shortcut_JumpToBegin", "CP_Shortcut_DeleteAll", "CP_Shortcut_SavedMessages",
             "CP_Shortcut_Browser", "CP_Admins_Reactions", "CP_Admins_Permissions", "CP_Admins_Administrators",
-            "CP_Admins_Members", "CP_Admins_Statistics", "CP_Admins_RecentActions", "CP_UnreadBadgeOnBackButton",
+            "CP_Admins_Members", "CP_Admins_Statistics", "CP_Admins_RecentActions", "CP_UnreadBadgeOnBackButton", "CP_UnreadBadgeOnBackButton_iOS",
             "AP_CenterChatTitle_v2", "AP_CenterChatTitle_AdaptiveWidth_v2", "CP_Slider_RecentEmojisAmplifier", "CP_Slider_RecentStickersAmplifier",
-            "CP_DisableSwipeToNext", "CP_HideMuteUnmuteButton", "CP_HideKeyboardOnScrollIntensity",
+            "CP_DisableSwipeToNext", "CP_iOSMessageInputField", "CP_HideSendAsChannel", "CP_HideMuteUnmuteButton", "CP_HideKeyboardOnScrollIntensity",
             "CP_GeminiApiKey", "CP_GeminiModelName", "CP_ShareDrawStoryButton", "CP_UsersDrawShareButton",
             "CP_SupergroupsDrawShareButton", "CP_ChannelsDrawShareButton", "CP_BotsDrawShareButton",
             "CP_StickersDrawShareButton", "CP_ShowSaveForNotifications", "CP_ShowGemini", "CP_ShowReply",
@@ -263,7 +263,7 @@ object BackupHelper {
             "CP_MsgFiltersHideAll", "CP_MsgFiltersCollapseAutomatically", "CP_MsgFilterTransparentMsg",
             "CP_AutoQuoteReplies", "CP_WideMessagesLayout", "CP_TimeOnStick", "CP_ForwardMsgDate", "AP_PencilIcon",
             "CP_LeftBottomButtonAction", "CP_DoubleTapAction", "CP_MessageSlideAction", "CP_DeleteForAll",
-            "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration", "CP_OpenLinksInIV",
+            "CP_VoiceMessagesAutoPlay", "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration", "CP_OpenLinksInIV",
             "CP_VideoSeekDuration", "CP_Notification_Sound", "CP_VibrationInChats", "CP_SilenceNonContacts", "CG_UnarchiveOnSwipe",
 
             // Camera

@@ -63,6 +63,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+
 public class MediaActivity extends BaseFragment implements SharedMediaLayout.SharedMediaPreloaderDelegate, FloatingDebugProvider, NotificationCenter.NotificationCenterDelegate {
 
     public static final int TYPE_MEDIA = 0;
@@ -172,7 +174,9 @@ public class MediaActivity extends BaseFragment implements SharedMediaLayout.Sha
 
     @Override
     public View createView(Context context) {
-        actionBar.setBackButtonDrawable(backDrawable = new BackDrawable(false));
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
+        actionBar.setBackButtonDrawable(backDrawable);
         backDrawable.setAnimationTime(240);
         actionBar.setCastShadows(false);
         actionBar.setAddToContainer(false);

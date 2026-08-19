@@ -152,7 +152,6 @@ import org.telegram.ui.Components.emojiview.FoundStickerPackCell;
 import org.telegram.ui.Components.emojiview.FoundStickerPacksHeaderCell;
 import org.telegram.ui.Components.inset.InAppKeyboardInsetView;
 import org.telegram.ui.ContentPreviewViewer;
-import org.telegram.ui.SettingsActivity;
 import org.telegram.ui.StickersActivity;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
@@ -1570,7 +1569,8 @@ public class EmojiView extends FrameLayout implements
         this.resourcesProvider = resourcesProvider;
         this.glassDesign = glassDesign;
 
-        boolean showAnimatedEmoji = needAnimatedEmoji && ((chatFull != null && chatFull.emojiset != null) || UserConfig.getInstance(currentAccount).isPremium());
+        boolean savedMessages = fragment instanceof ChatActivity ca && ca.getDialogId() == ca.getUserConfig().clientUserId;
+        boolean showAnimatedEmoji = savedMessages || (needAnimatedEmoji && ((chatFull != null && chatFull.emojiset != null) || UserConfig.getInstance(currentAccount).isPremium()));
 
         blurredBackgroundSourceColor = new BlurredBackgroundSourceColor();
         blurredBackgroundSourceColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));

@@ -88,6 +88,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
+import uz.unnarsx.cherrygram.core.helpers.DeletedGiftsManager;
 
 public class StarsController {
 
@@ -139,6 +140,8 @@ public class StarsController {
     private StarsController(int account, boolean ton) {
         this.currentAccount = account;
         this.ton = ton;
+
+        DeletedGiftsManager.getInstance(currentAccount).preload();
     }
 
     // ===== STAR BALANCE =====
@@ -2273,6 +2276,9 @@ public class StarsController {
                 giftsLoaded = true;
                 if (giftsRemote instanceof TL_stars.TL_starGifts) {
                     final TL_stars.TL_starGifts res = (TL_stars.TL_starGifts) giftsRemote;
+
+//                    DeletedGiftsManager.getInstance(currentAccount).injectDeletedGifts(res.gifts);
+
                     MessagesController.getInstance(currentAccount).putUsers(res.users, false);
                     MessagesController.getInstance(currentAccount).putChats(res.chats, false);
                     MessagesStorage.getInstance(currentAccount).putUsersAndChats(res.users, res.chats, true, true);
@@ -2397,7 +2403,7 @@ public class StarsController {
     private void getStarGiftsRemote(int hash, Utilities.Callback<TL_stars.StarGifts> whenDone) {
         if (whenDone == null) return;
         TL_stars.getStarGifts req = new TL_stars.getStarGifts();
-        req.hash = hash;
+        req.hash = CherrygramFirebaseConfig.INSTANCE.getShowDeletedGifts() ? 0 : hash;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
            if (res instanceof TL_stars.StarGifts) {
                whenDone.run((TL_stars.StarGifts) res);
@@ -2775,7 +2781,7 @@ public class StarsController {
                             }, 200);
                             BulletinFactory.of(profileActivity).createEmojiBulletin(gift.sticker, getString(R.string.StarsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedChannelText", (int) stars, name))).show(false);
                         });
-                        fragment.presentFragment(profileActivity);
+                        if (fragment != null) fragment.presentFragment(profileActivity);
                     }
                 } else {
                     if (fragment instanceof ChatActivity && ((ChatActivity) fragment).getDialogId() == dialogId) {
@@ -2787,7 +2793,7 @@ public class StarsController {
                         chatActivity.whenFullyVisible(() -> {
                             BulletinFactory.of(chatActivity).createEmojiBulletin(gift.sticker, getString(R.string.StarsGiftCompleted), overrideToastSubtitle != null ? overrideToastSubtitle : AndroidUtilities.replaceTags(formatPluralString("StarsGiftCompletedText", (int) stars/*, UserObject.getForcedFirstName(user)*/))).show(true);
                         });
-                        fragment.presentFragment(chatActivity);
+                        if (fragment != null) fragment.presentFragment(chatActivity);
                     }
                 }
 

@@ -8783,7 +8783,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         final BaseFragment[] previewActivity = new BaseFragment[1];
         previewMenu[0] = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getParentActivity(), R.drawable.popup_fixed_alert4, getResourceProvider(), flags);
-        previewMenu[0].setBackgroundColor(MessageMenuHelper.getMessageMenuBackgroundColor());
+        previewMenu[0].setBackgroundColor(MessageMenuHelper.getMessageMenuBackgroundColor(resourceProvider));
 
         if (!UserObject.isUserSelf(getMessagesController().getUser(dialogId))) {
             ActionBarMenuSubItem openProfileItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
@@ -8985,7 +8985,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             previewMenu[0].addView(muteItem);
         }
 
-        if (!isCommunityCell && dialogId != Constants.Cherrygram_Owner && dialogId != Constants.Alina) {
+        if (!isCommunityCell && !getChatActivityHelper().isDeleteChatButtonUnavailable(dialogId)) {
             ActionBarMenuSubItem deleteItem = new ActionBarMenuSubItem(getParentActivity(), false, true);
             deleteItem.setIconColor(getThemedColor(Theme.key_text_RedRegular));
             deleteItem.setTextColor(getThemedColor(Theme.key_text_RedBold));
@@ -9438,7 +9438,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 getMessagesController().toggleCommunityCollapsedInDialogs(-selectedDialog, false);
             }
         } else if ((action == delete || action == clear) && count > 1 && alert) {
-            if (selectedDialogs.contains(Constants.Cherrygram_Owner) || selectedDialogs.contains(Constants.Alina)) {
+            if (selectedDialogs.stream().anyMatch(getChatActivityHelper()::isDeleteChatButtonUnavailable)) {
                 return;
             }
             boolean hasDialogsToRevoke = false;
@@ -9589,7 +9589,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     markAsUnread(selectedDialog);
                 }
             } else if (action == delete || action == clear) {
-                if (dialog.id == Constants.Cherrygram_Owner || dialog.id == Constants.Alina) {
+                if (getChatActivityHelper().isDeleteChatButtonUnavailable(dialog.id)) {
                     return;
                 }
                 if (count == 1) {

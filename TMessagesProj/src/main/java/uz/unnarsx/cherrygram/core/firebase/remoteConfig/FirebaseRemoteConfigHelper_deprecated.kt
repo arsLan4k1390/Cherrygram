@@ -17,6 +17,7 @@ import org.telegram.messenger.ApplicationLoader
 import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 
@@ -266,7 +267,7 @@ object FirebaseRemoteConfigHelper_deprecated {
     }
 
     private fun checkRecordOOMasNonFatal() {
-        val oldRecordOOMasNonFatal = CherrygramFirebaseConfig.recordOOMasNonFatal
+        val oldRecordOOMasNonFatal = CherrygramExperimentalConfig.recordOOMasNonFatal
         val newRecordOOMasNonFatal = getBoolean(RemoteConfigConstants.record_oom_as_nf, true)
 
         CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.record_oom_as_nf} value = $newRecordOOMasNonFatal" }
@@ -274,7 +275,7 @@ object FirebaseRemoteConfigHelper_deprecated {
             CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.record_oom_as_nf} changed $oldRecordOOMasNonFatal -> $newRecordOOMasNonFatal" }
         }
 
-        CherrygramFirebaseConfig.recordOOMasNonFatal = newRecordOOMasNonFatal
+        CherrygramExperimentalConfig.recordOOMasNonFatal = newRecordOOMasNonFatal
 //        Crashlytics.updateOOMReserve()
     }
 

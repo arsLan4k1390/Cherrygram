@@ -1420,6 +1420,10 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         final long[] lastProfileClickTime = {0};
         final long[] lastChatsClickTime = {0};
 
+        boolean hasProfile = MainTabsManager.INSTANCE.hasTab(MainTabsManager.TabType.PROFILE);
+        boolean hasSettings = MainTabsManager.INSTANCE.hasTab(MainTabsManager.TabType.SETTINGS);
+        boolean bothProfileAndSettingsTabsEnabled = hasProfile && hasSettings;
+
         for (int i = 0; i < cgTabs.size(); i++) {
             MainTabsManager.Tab tab = cgTabs.get(i);
 
@@ -1476,6 +1480,10 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
             switch (type) {
                 case SETTINGS:
+                    if (!bothProfileAndSettingsTabsEnabled) {
+                        view.setOnLongClickListener(this::openAccountSelector);
+                    }
+                    break;
                 case PROFILE:
                     view.setOnLongClickListener(this::openAccountSelector);
                     break;
@@ -1504,6 +1512,10 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         };
 
         for (MainTabsManager.TabType type2 : typesToIgnore) {
+            if (type2 == MainTabsManager.TabType.SETTINGS && bothProfileAndSettingsTabsEnabled) {
+                continue;
+            }
+
             int pos = MainTabsManager.INSTANCE.getPosition(type2);
             if (pos != -1 && pos < tabs.length && tabs[pos] != null) {
                 tabsView.addTabToIgnoreClick(tabs[pos]);
@@ -1728,6 +1740,30 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                 folderItem.setChecked(selectedFolder);
                 title = Emoji.replaceEmoji(title, folderItem.getTextView().getPaint().getFontMetricsInt(), false);
                 title = MessageObject.replaceAnimatedEmoji(title, folder.entities, folderItem.getTextView().getPaint().getFontMetricsInt());
+
+                final int unreadCount = folder.isDefault()
+                        ? MessagesStorage.getInstance(currentAccount).getMainUnreadCount()
+                        : folder.unreadCount;
+                if (unreadCount > 0) {
+                    final SpannableStringBuilder titleWithCounter = new SpannableStringBuilder(title);
+                    final int counterStart = titleWithCounter.length();
+                    titleWithCounter.append(String.valueOf(unreadCount));
+                    titleWithCounter.setSpan(
+                            new FolderCounterSpan(unreadCount, hasUnmutedUnreadDialogs(folder)),
+                            counterStart,
+                            titleWithCounter.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    );
+                    title = titleWithCounter;
+                    folderItem.setContentDescription(
+                            TextUtils.concat(
+                                    folder.isDefault() ? getString(R.string.FilterAllChats) : folder.name,
+                                    "\n",
+                                    LocaleController.formatPluralString("AccDescrUnreadCount", unreadCount)
+                            )
+                    );
+                }
+
                 folderItem.setEmojiCacheType(folder.title_noanimate ? AnimatedEmojiDrawable.CACHE_TYPE_NOANIMATE_FOLDER : AnimatedEmojiDrawable.CACHE_TYPE_MESSAGES);
                 folderItem.setTextAndIcon(
                         title,
@@ -1807,8 +1843,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
             o.addView(foldersWrapper);
             o.addGap();
-            o.setBackgroundColor(MessageMenuHelper.getMessageMenuBackgroundColor());
-            o.setGapBackgroundColor(MessageMenuHelper.getMessageMenuGapColor());
+            o.setBackgroundColor(MessageMenuHelper.getMessageMenuBackgroundColor(resourceProvider));
+            o.setGapBackgroundColor(MessageMenuHelper.getMessageMenuGapColor(resourceProvider));
         }
 
         o.addIf(

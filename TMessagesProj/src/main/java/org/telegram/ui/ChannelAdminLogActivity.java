@@ -178,7 +178,7 @@ import me.vkryl.core.reference.ReferenceList;
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet;
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class ChannelAdminLogActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -932,7 +932,8 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
         actionBar.setBackground(null);
         actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
         BackDrawable backDrawable = new BackDrawable(false);
-        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        backDrawable.setMoveBackIcon(false);
+        backDrawable.setShowStick(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
         actionBar.setBackButtonDrawable(backDrawable);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override

@@ -353,7 +353,7 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
         items.add(UItem.asHeader(getString(R.string.EditAccountInfoHeader)));
         if (user != null) {
             numberRow = items.size();
-            items.add(SettingsActivity.SettingCell.Factory.of(INFO_PHONE, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_calls, PhoneFormat.getInstance().format("+" + user.phone), getString(R.string.PhoneNumber))); // TapToChangePhone
+            items.add(SettingsActivity.SettingCell.Factory.of(INFO_PHONE, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_calls, PhoneFormat.getInstance().format("+" + user.phone), getString(R.string.TapToChangePhone))); // PhoneNumber
         }
         usernameRow = items.size();
         if (UserObject.getPublicUsername(user) != null) {
@@ -541,9 +541,9 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
             presentFragment(new OpeningHoursActivity());
         } else if (item.id == BUTTON_AI) {
             presentFragment(new ChatbotsActivity());
-        } /*else if (item.id == INFO_PHONE) {
+        } else if (item.id == INFO_PHONE) {
             presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANGE_PHONE_NUMBER));
-        }*/ else if (item.id == INFO_USERNAME) {
+        } else if (item.id == INFO_USERNAME) {
             presentFragment(new ChangeUsernameActivity());
         } else if (item.id == BUTTON_LOGOUT) {
             presentFragment(new LogoutActivity());

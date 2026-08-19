@@ -49,19 +49,18 @@ public class TextCheckCell2 extends FrameLayout {
     private View collapsedArrow;
     private View checkBoxClickArea;
 
-    public void setCollapseArrow(String text, boolean collapsed, Runnable onCheckClick) {
+    public void setCollapseArrow(CharSequence text, boolean collapsed, Runnable onCheckClick) {
         if (collapseViewContainer == null) {
-            boolean fixPaddingsCG = imageView != null && imageView.getVisibility() == View.VISIBLE /*textView != null && textView.getText().equals(getString(R.string.Passcode))*/;
-
             collapseViewContainer = new LinearLayout(getContext());
             collapseViewContainer.setOrientation(LinearLayout.HORIZONTAL);
+            collapseViewContainer.setPadding(dp(8), dp(8), dp(8), dp(8));
             animatedTextView = new AnimatedTextView(getContext(), false, true, true);
             animatedTextView.setTextSize(dp(14));
             animatedTextView.getDrawable().setAllowCancel(true);
             animatedTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             animatedTextView.setTypeface(AndroidUtilities.bold());
             animatedTextView.setAnimationProperties(.4f, 0, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
-            collapseViewContainer.addView(animatedTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT,20));
+            collapseViewContainer.addView(animatedTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 20));
 
             collapsedArrow = new View(getContext());
             Drawable drawable = getContext().getResources().getDrawable(R.drawable.arrow_more).mutate();
@@ -71,23 +70,13 @@ public class TextCheckCell2 extends FrameLayout {
             collapseViewContainer.setClipChildren(false);
             setClipChildren(false);
 
-            if (fixPaddingsCG) {
-                animatedTextView.setTranslationY(dp(1));
-                collapsedArrow.setTranslationY(dp(1));
-
-                int containerGravity = (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL;
-                int marginEnd = 80;
-
-                addView(collapseViewContainer, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, containerGravity, LocaleController.isRTL ? marginEnd : 0, 0, LocaleController.isRTL ? 0 : marginEnd, 0));
-            } else {
-                addView(collapseViewContainer, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
-            }
+            addView(collapseViewContainer, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
 
             checkBoxClickArea = new View(getContext()) {
                 @Override
                 protected void onDraw(Canvas canvas) {
                     super.onDraw(canvas);
-                    canvas.drawLine(0, dp(14), 2, getMeasuredHeight()- dp(14), Theme.dividerPaint);
+                    canvas.drawLine(0, dp(14), 2, getMeasuredHeight() - dp(14), Theme.dividerPaint);
                 }
             };
             checkBoxClickArea.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 2));
@@ -97,6 +86,7 @@ public class TextCheckCell2 extends FrameLayout {
         collapsedArrow.animate().cancel();
         collapsedArrow.animate().rotation(collapsed ? 0 : 180).setDuration(340).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT).start();
         checkBoxClickArea.setOnClickListener(v -> onCheckClick.run());
+        requestLayout();
     }
 
     public void hideCollapseArrow() {
@@ -164,23 +154,26 @@ public class TextCheckCell2 extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        boolean fixPaddingsCG = imageView != null && imageView.getVisibility() == View.VISIBLE /*textView != null && textView.getText().equals(getString(R.string.Passcode))*/;
-        if (fixPaddingsCG) return;
-
         if (collapseViewContainer != null) {
+            boolean fixPaddingsCG = imageView != null && imageView.getVisibility() == View.VISIBLE;
+            float ty = fixPaddingsCG ? dp(1) : 0;
+            animatedTextView.setTranslationY(ty);
+            collapsedArrow.setTranslationY(ty);
+
+            int pad = collapseViewContainer.getPaddingLeft(); // = dp(8)
             if (LocaleController.isRTL) {
-                collapseViewContainer.setTranslationX(textView.getLeft() - collapseViewContainer.getMeasuredWidth() - dp(8));
+                collapseViewContainer.setTranslationX(textView.getLeft() - collapseViewContainer.getMeasuredWidth() - dp(8) + pad);
             } else {
-                collapseViewContainer.setTranslationX(textView.getRight() + dp(8));
+                collapseViewContainer.setTranslationX(textView.getRight() + dp(8) - pad);
             }
         }
     }
 
-    public void setTextAndCheck(String text, boolean checked, boolean divider) {
+    public void setTextAndCheck(CharSequence text, boolean checked, boolean divider) {
         setTextAndCheck(text, checked, divider, false);
     }
 
-    public void setTextAndCheck(String text, boolean checked, boolean divider, boolean animated) {
+    public void setTextAndCheck(CharSequence text, boolean checked, boolean divider, boolean animated) {
         imageView.setVisibility(GONE);
         imageView.setImageResource(0);
 
@@ -323,7 +316,7 @@ public class TextCheckCell2 extends FrameLayout {
     /** Cherrygram start */
     private final ImageView imageView;
 
-    public void setTextAndIconAndCheck(String text, int iconResId, boolean checked, boolean divider, boolean animated) {
+    public void setTextAndIconAndCheck(CharSequence text, int iconResId, boolean checked, boolean divider, boolean animated) {
         textView.setText(text);
         isMultiline = false;
         imageView.setVisibility(VISIBLE);
@@ -337,6 +330,12 @@ public class TextCheckCell2 extends FrameLayout {
         layoutParams.leftMargin = dp(64);
         textView.setLayoutParams(layoutParams);
         setWillNotDraw(!divider);
+    }
+
+    public void setCheckBoxHidden(boolean hidden) {
+        if (checkBox != null) {
+            checkBox.setVisibility(hidden ? View.GONE : View.VISIBLE);
+        }
     }
     /** Cherrygram finish */
 

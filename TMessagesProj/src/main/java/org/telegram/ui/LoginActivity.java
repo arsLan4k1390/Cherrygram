@@ -218,6 +218,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.QrHelper;
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 @SuppressLint("HardwareIds")
 public class LoginActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -4316,6 +4317,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         }
                         String finalNetworkOperator = networkOperator;
                         getConnectionsManager().sendRequest(req, null, ConnectionsManager.RequestFlagWithoutLogin);
+                        if (currentType == AUTH_TYPE_MESSAGE) {
+                            PopupHelper.showBlameAlert(context, R.string.CG_DidNotGetTheCode, "tg://openmessage?user_id=777000");
+                            return;
+                        }
                         new AlertDialog.Builder(context)
                                 .setTitle(getString(R.string.RestorePasswordNoEmailTitle))
                                 .setMessage(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DidNotGetTheCodeInfo, phone)))

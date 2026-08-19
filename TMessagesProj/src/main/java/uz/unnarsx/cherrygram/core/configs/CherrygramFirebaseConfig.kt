@@ -26,6 +26,7 @@ import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.core.firebase.remoteConfig.RemoteConfigHelper
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.preferences.boolean
+import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 
@@ -58,18 +59,27 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
     /** SafePay finish */
 
     /** AdsGram start */
+    var showAdsRandomly by sharedPreferences.boolean("CG_ShowAdsRandomly", false)
     var showAdsScreenInSettings by sharedPreferences.boolean("CG_ShowAdsScreenInSettings", true)
     var showAdsInPlayStoreBuilds by sharedPreferences.boolean("CG_ShowAdsInPlayStoreBuilds", true)
+    var alwaysShowAdsGramInChats by sharedPreferences.boolean("CG_AlwaysShowAdsGramInChats", false)
     /** AdsGram finish */
 
     /** Misc start */
+    var useBrailleSpoiler by sharedPreferences.boolean("CG_UseBrailleSpoiler", true)
+
     var lastRemoteConfigCheckTime by sharedPreferences.long("CG_LastRemoteConfigCheckTime", 0)
 
     var showProxyInSettings by sharedPreferences.boolean("CG_ShowProxyInSettings", false)
     var proxyURL by sharedPreferences.string("CP_ProxyURL", "https://t.me/proxy?server=78.17.39.137&port=443&secret=ee7ae12ad5e1268d51eccdc0d1acb595ea74656c6567612e6d65")
-
-    var recordOOMasNonFatal by sharedPreferences.boolean("CG_Record_OOM_AS_NF", true)
     /** Misc finish */
+
+    /** Deleted Gifts start */
+    var showDeletedGifts by sharedPreferences.boolean("CG_ShowDeletedGifts", true)
+    var deletedGiftsConfigURL by sharedPreferences.string("CG_DeletedGiftsConfigURL", "https://gitlab.com/arsLan4k1390/Cherrygram-IDS/-/raw/main/gift_list.json?inline=false")
+    var deletedGiftsStickerPackName by sharedPreferences.string("CG_DeletedGiftsStickerPackLink", "Cherrygram_HiddenGifts")
+    var deletedGiftsStickerPackOffset by sharedPreferences.int("CG_DeletedGiftsStickerpackOffset", 0)
+    /** Deleted Gifts finish */
 
     fun init() {
         launch {

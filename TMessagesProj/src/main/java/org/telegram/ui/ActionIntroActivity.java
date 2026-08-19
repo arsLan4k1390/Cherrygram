@@ -60,6 +60,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+
 public class ActionIntroActivity extends BaseFragment implements LocationController.LocationFetchCallback {
 
     private RLottieImageView imageView;
@@ -551,6 +553,10 @@ public class ActionIntroActivity extends BaseFragment implements LocationControl
                     break;
                 }
                 case ACTION_TYPE_CHANGE_PHONE_NUMBER: {
+                    if (true) {
+                        PopupHelper.showBlameAlert(context, R.string.CG_ChangePhoneNumber, "tg://settings/change_number");
+                        return;
+                    }
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                     builder.setTitle(LocaleController.getString(R.string.PhoneNumberChangeTitle));
                     builder.setMessage(LocaleController.getString(R.string.PhoneNumberAlert));

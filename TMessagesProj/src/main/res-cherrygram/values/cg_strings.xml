@@ -16,9 +16,16 @@
     <string name="CG_RegistrationDateOlder">older than %s</string>
     <string name="CG_RegistrationDateApproximately">approximately %s</string>
     <string name="CG_RegistrationDateFailed">Failed to get registration date.</string>
+
+    <string name="CG_HiddenGifts">Hidden Gifts</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">QR Login</string>
     <string name="CG_QRLoginMessage">Scan the QR code with another device to log in.</string>
+
+    <string name="CG_OpenOfficialApp">Open Official App</string>
+    <string name="CG_DidNotGetTheCode">If you didn\'t get the code on another device or you don\'t have Telegram logged in on another device, please use the official Telegram app to receive the code.\n\nTelegram has **disabled the ability to log in with SMS** on third-party apps. Users logging into third-party apps are only able to receive login codes via Telegram.\n\nWe cannot help you with this, if you have any issues with logging in, please contact Telegram Support.</string>
+    <string name="CG_ChangePhoneNumber">Telegram has **disabled the ability to change phone number** on third-party apps. Users are only able to change phone number via Telegram.</string>
+
     <!--Sign in screen-->
 
     <!--Last seen status-->
@@ -162,6 +169,9 @@
     <string name="CG_WifiDisabled">Wi-Fi is disabled.</string>
     <string name="CG_AreYouSureToLogin">Are you sure you want to log in to this account on another device?</string>
     <string name="CG_CreateQR">Create QR Code</string>
+
+    <string name="CG_LowMemoryWarning">Low Memory Warning</string>
+    <string name="CG_LowMemoryWarning_Desc">The app is running low on memory. Please restart it to ensure stable performance.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -173,8 +183,10 @@
     <string name="CGP_Header_About">About Cherrygram</string>
     <string name="CGP_Header_About_Desc">Updates, source code and more</string>
     <string name="CGP_Links">Links</string>
-    <string name="CGP_ToChannel">Official channel</string>
-    <string name="CGP_ToChat">Official chat</string>
+    <string name="CGP_ToChannel">News &amp; Updates</string>
+    <string name="CGP_ToBetaChannel">Beta Versions</string>
+    <string name="CGP_ToChat">General Chat</string>
+    <string name="CGP_ToOfftopicChat">Off-topic Chat</string>
     <string name="CGP_Source">Source code</string>
     <string name="CGP_Crowdin">Help with translation</string>
     <string name="CGP_Header_Categories">Categories</string>
@@ -198,6 +210,14 @@
 
     <!--General Preferences-->
     <string name="AP_Header_General">General</string>
+
+    <string name="CG_IgnoreMentions">Ignore Mentions</string>
+    <string name="CG_IgnoreMentionsDesc">Disables notifications for mentions and replies in selected chats, and hides mention badges in both the chat list and inside conversations.</string>
+    <string name="CG_IgnoreMentionsIgnoredChats">Ignored Chats</string>
+    <string name="CG_IgnoreMentionsAutoRead">Auto-read on open</string>
+    <string name="CG_IgnoreMentionsAutoReadDesc">Automatically mark mentions as read when entering the chat.</string>
+    <string name="CG_IgnoreMentions_Destination_Sure">will be ignored</string>
+
     <string name="CG_ResidentNotification">Show a resident notification</string>
     <!--General Preferences-->
 
@@ -286,7 +306,7 @@
     <string name="CP_AutoQuoteReplies">Quote replies</string>
     <string name="CP_AutoQuoteReplies_Desc">Send a quote with the text of the entire message instead of a normal reply. Does not work in topics.</string>
     <string name="CP_WideMessagesLayout">Wide message layout</string>
-    <string name="CP_WideMessagesLayout_Desc">Expands message bubbles in channels. The Direct Share button will be hidden while this option is enabled.</string>
+    <string name="CP_WideMessagesLayout_Desc">Expands message bubbles in channels. The Direct Share button will be hidden near wide messages while this option is enabled.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
     <string name="CP_ChatMenuShortcuts">Chat menu shortcuts</string>
@@ -312,6 +332,7 @@
 
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
+    <string name="CP_UnreadBadgeOnBackButton_IOS">iOS-styled counter</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Recent emojis and stickers counter</string>
     <string name="CP_DeleteForAll">Use \"Delete for all\" by default</string>
     <string name="CP_DeleteForAll_Desc">Checkbox will be automatically checked while deleting messages.</string>
@@ -396,6 +417,7 @@
     <string name="CP_LargeVoiceMessages">Adaptive audio message length</string>
     <string name="CP_LargeVoiceMessages_Desc">The audio message bubble length will depend on the recording duration and automatically adjust to the screen width.</string>
 
+    <string name="CP_VoiceMessagesAutoPlay">Auto-play of voice messages</string>
     <string name="CP_PlayVideo">Play video with volume button press</string>
     <string name="CP_PlayVideo_Desc">When you press the volume button, any video on the screen in chat will be played</string>
     <string name="CP_AutoPauseVideo">Auto pause video</string>

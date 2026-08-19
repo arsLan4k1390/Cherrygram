@@ -3597,7 +3597,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
         } else {
             sectionBackgroundPaint.setShadowLayer(0, 0, 0, 0);
         }
-        if (Theme.getCurrentTheme().isMonet()) {
+        if (MD3ListAdapter.shouldUseCustomColors()) {
             sectionBackgroundPaint.setColor(MD3ListAdapter.getBackgroundColor(resourcesProvider));
         } else {
             sectionBackgroundPaint.setColor(multAlpha(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider), alpha));
@@ -3729,7 +3729,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
                 canvas.save();
                 canvas.translate(-child.getX(), -child.getY());
                 canvas.clipPath(clipPath);
-                if (Theme.getCurrentTheme().isMonet()) {
+                if (MD3ListAdapter.shouldUseCustomColors()) {
                     paint.setColor(MD3ListAdapter.getBackgroundColor(resourcesProvider));
                 } else {
                     paint.setColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider), paint.getAlpha()));
