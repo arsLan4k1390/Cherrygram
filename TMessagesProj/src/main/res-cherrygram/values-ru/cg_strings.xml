@@ -168,7 +168,7 @@
     <string name="CG_AreYouSureToLogin">Вы уверены, что хотите войти в этот аккаунт на другом устройстве?</string>
     <string name="CG_CreateQR">Создать QR-код</string>
 
-    <string name="CG_LowMemoryWarning">Нехватка памяти</string>
+    <string name="CG_LowMemoryWarning">Предупреждение о нехватке памяти</string>
     <string name="CG_LowMemoryWarning_Desc">Приложению не хватает памяти для стабильной работы. Пожалуйста, перезапустите его.</string>
     <!--Misc-->
     <!--Telegram screens-->
