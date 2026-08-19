@@ -105,12 +105,12 @@ public class MessageMenuHelper extends BaseController {
         }
     }
 
-    public static int getMessageMenuBackgroundColor() {
-        return Theme.getColor(Theme.key_actionBarDefaultSubmenuBackground);
+    public static int getMessageMenuBackgroundColor(Theme.ResourcesProvider resourcesProvider) {
+        return Theme.getColor(Theme.key_actionBarDefaultSubmenuBackground, resourcesProvider);
     }
 
-    public static int getMessageMenuGapColor() {
-        return Theme.getColor(Theme.key_windowBackgroundGrayShadow);
+    public static int getMessageMenuGapColor(Theme.ResourcesProvider resourcesProvider) {
+        return Theme.getColor(Theme.key_windowBackgroundGrayShadow, resourcesProvider);
     }
 
     public boolean showDivider() {
