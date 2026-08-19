@@ -51,12 +51,20 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
     private fun getCachedDrawable(
         cacheKey: Triple<Int, Int?, Theme?>,
         wrappedId: Int,
+        originalId: Int,
         loader: () -> Drawable?
     ): Drawable? {
         return drawableCache.getOrPut(cacheKey) {
             cacheMisses++
             CherrygramLogger.d("CGUIResources") { "🛑 Cache MISS ($cacheMisses misses) - Loading new drawable for id=$wrappedId, key=$cacheKey" }
-            loader()
+            try {
+                loader()
+            } catch (e: NotFoundException) {
+                CherrygramLogger.e("CGUIResources", {
+                    "⚠️ Resource $wrappedId (from original $originalId) not found, falling back to original"
+                }, e)
+                runCatching { wrapped.getDrawable(originalId, cacheKey.third) }.getOrNull()
+            }
         }?.let { drawable ->
             drawable.constantState?.newDrawable(wrapped, cacheKey.third)?.mutate() ?: drawable
         }?.also {
@@ -71,7 +79,7 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         val wrappedId = activeReplacement.wrap(id)
         val cacheKey = Triple(wrappedId, null, null)
 
-        return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawable(wrappedId, null) }
+        return getCachedDrawable(cacheKey, wrappedId, id) { wrapped.getDrawable(wrappedId, null) }
     }
 
     @Throws(NotFoundException::class)
@@ -79,7 +87,7 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         val wrappedId = activeReplacement.wrap(id)
         val cacheKey = Triple(wrappedId, null, theme)
 
-        return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawable(wrappedId, theme) }
+        return getCachedDrawable(cacheKey, wrappedId, id) { wrapped.getDrawable(wrappedId, theme) }
     }
 
     @Deprecated("Deprecated in Java")
@@ -88,14 +96,14 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         val wrappedId = activeReplacement.wrap(id)
         val cacheKey = Triple(wrappedId, density, null)
 
-        return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawableForDensity(wrappedId, density, null) }
+        return getCachedDrawable(cacheKey, wrappedId, id) { wrapped.getDrawableForDensity(wrappedId, density, null) }
     }
 
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
         val wrappedId = activeReplacement.wrap(id)
         val cacheKey = Triple(wrappedId, density, theme)
 
-        return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawableForDensity(wrappedId, density, theme) }
+        return getCachedDrawable(cacheKey, wrappedId, id) { wrapped.getDrawableForDensity(wrappedId, density, theme) }
     }
 
 }

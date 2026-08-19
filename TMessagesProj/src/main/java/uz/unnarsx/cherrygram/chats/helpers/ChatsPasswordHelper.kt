@@ -9,7 +9,8 @@
 
 package uz.unnarsx.cherrygram.chats.helpers
 
-import android.os.Build
+import android.text.SpannableStringBuilder
+import android.text.Spanned
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -20,9 +21,13 @@ import org.telegram.messenger.MessageObject
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC.MessageEntity
 import org.telegram.tgnet.TLRPC.TL_messageEntitySpoiler
+import org.telegram.ui.Components.TextStyleSpan
+import org.telegram.ui.Components.TextStyleSpan.TextStyleRun
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
 import uz.unnarsx.cherrygram.core.CherrygramLogger
+import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
+import kotlin.random.Random
 
 class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
 
@@ -149,14 +154,56 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
             return null
         }
         return if (CherrygramPrivacyConfig.askBiometricsToOpenArchive || force) {
-            val stringBuilder = StringBuilder(originalText)
-            for (i in originalText.indices) {
-                stringBuilder.setCharAt(i, spoilerChars[i % spoilerChars.size])
+            val useRandomBraille = Random.nextBoolean()
+            if (CherrygramFirebaseConfig.useBrailleSpoiler && useRandomBraille) {
+                toBrailleSpoiler(originalText)
+            } else {
+                val stringBuilder = StringBuilder(originalText)
+                for (i in originalText.indices) {
+                    stringBuilder.setCharAt(i, spoilerChars[i % spoilerChars.size])
+                }
+                stringBuilder.toString()
             }
-            stringBuilder.toString()
         } else {
             originalText
         }
+    }
+
+    private fun toBrailleSpoiler(input: String?): String {
+        if (input.isNullOrEmpty()) return ""
+
+        val sb = StringBuilder(input.length)
+        for (char in input) {
+            if (char.isWhitespace()) {
+                sb.append(char)
+            } else {
+                val brailleCode = 0x2801 + Random.nextInt(255)
+                sb.append(brailleCode.toChar())
+            }
+        }
+        return sb.toString()
+    }
+
+    fun replaceStringToSpoilers(originalText: CharSequence?): SpannableStringBuilder {
+        if (originalText == null) {
+            return SpannableStringBuilder("")
+        }
+
+        val spannable = SpannableStringBuilder(originalText)
+
+        val run = TextStyleRun()
+        run.flags = run.flags or TextStyleSpan.FLAG_STYLE_SPOILER
+        run.start = 0
+        run.end = spannable.length
+
+        spannable.setSpan(
+            TextStyleSpan(run),
+            0,
+            spannable.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        return spannable
     }
 
     fun getLockedChatsCount(): Int {

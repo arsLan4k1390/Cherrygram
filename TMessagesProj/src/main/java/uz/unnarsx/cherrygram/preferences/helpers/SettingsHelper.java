@@ -46,16 +46,16 @@ public class SettingsHelper {
         return i;
     }
 
-    public static UItem asCustomWithBackground(int id, View view, int heightDp) {
+    public static UItem asCustomWithBackground(View view, int heightDp) {
         UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CUSTOM_WITH_BACKGROUND, false);
-        i.id = id;
         i.view = view;
         i.intValue = heightDp;
         return i;
     }
 
-    public static UItem asCustomWithBackground(View view, int heightDp) {
+    public static UItem asCustomWithBackground(int id, View view, int heightDp) {
         UItem i = new UItem(UniversalAdapter.VIEW_TYPE_CUSTOM_WITH_BACKGROUND, false);
+        i.id = id;
         i.view = view;
         i.intValue = heightDp;
         return i;

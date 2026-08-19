@@ -113,6 +113,7 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
                         CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenEncrypted(newValue);
                         CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(newValue);
 
+                        expandedBiometricSection = !expandedBiometricSection;
                         listView.adapter.update(true);
                     }))
             );
@@ -138,8 +139,12 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
             if (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
                 items.add(UItem.asButton(lockedChatsRow, R.drawable.msg_discussion, getString(R.string.SP_LockedChats), String.valueOf(getChatsPasswordHelper().getLockedChatsCount())));
             }
-            items.add(SettingsHelper.asSwitchCG(requireBiometricsToDeleteChatsRow, getString(R.string.SP_AskPinBeforeDelete), getString(R.string.SP_AskPinBeforeDelete_Desc)));
-            items.add(SettingsHelper.asSwitchCG(allowSystemPinRow, getString(R.string.SP_AllowUseSystemPasscode), getString(R.string.SP_AllowUseSystemPasscode_Desc)));
+            items.add(SettingsHelper.asSwitchCG(requireBiometricsToDeleteChatsRow, getString(R.string.SP_AskPinBeforeDelete), getString(R.string.SP_AskPinBeforeDelete_Desc))
+                    .setChecked(CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete())
+            );
+            items.add(SettingsHelper.asSwitchCG(allowSystemPinRow, getString(R.string.SP_AllowUseSystemPasscode), getString(R.string.SP_AllowUseSystemPasscode_Desc))
+                    .setChecked(CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode())
+            );
         }
         items.add(UItem.asButton(testFingerprintRow, R.drawable.fingerprint, getString(R.string.SP_TestFingerprint)));
         items.add(UItem.asShadow(getString(R.string.SP_TestFingerprint_Desc)));

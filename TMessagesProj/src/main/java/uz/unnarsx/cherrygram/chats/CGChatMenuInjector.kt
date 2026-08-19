@@ -53,7 +53,6 @@ import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.helpers.CreateQRSheet
 import uz.unnarsx.cherrygram.helpers.QRCodeSheet
 import uz.unnarsx.cherrygram.misc.Constants
-import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan
 import kotlin.math.abs
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
@@ -311,7 +310,7 @@ object CGChatMenuInjector {
     fun injectScanQR(io: ItemOptions, fragment: BaseFragment?) {
         io.add(
             R.drawable.msg_qrcode,
-            applyNewSpan(getString(R.string.AuthAnotherClient))
+            getString(R.string.AuthAnotherClient)
         ) {
             val activity = fragment?.parentActivity
 
@@ -337,7 +336,7 @@ object CGChatMenuInjector {
     fun injectCreateQR(io: ItemOptions, fragment: BaseFragment?) {
         io.add(
             R.drawable.msg_qrcode,
-            applyNewSpan(getString(R.string.CG_CreateQR))
+            getString(R.string.CG_CreateQR)
         ) {
             CreateQRSheet(fragment?.context, fragment, fragment?.resourceProvider).show()
         }

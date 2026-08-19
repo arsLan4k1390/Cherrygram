@@ -155,6 +155,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
                         CherrygramCameraConfig.INSTANCE.setFaceDetection(newValue);
                         CherrygramCameraConfig.INSTANCE.setBokehEffect(newValue);
 
+                        expandedCameraEnhancementsSection = !expandedCameraEnhancementsSection;
                         listView.adapter.update(true);
                     })
             );

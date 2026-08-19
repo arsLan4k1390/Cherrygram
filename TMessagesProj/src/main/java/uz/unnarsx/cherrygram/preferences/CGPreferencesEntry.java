@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import kotlin.Pair;
 import uz.unnarsx.cherrygram.chats.CGChatMenuInjector;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.firebase.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
@@ -124,16 +125,18 @@ public class CGPreferencesEntry extends UniversalFragment {
                         true
                 )
         );
-        /*items.add(
-                SettingsActivity.SettingCell.Factory.of(
-                        experimentalRow,
-                        IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
-                        R.drawable.settings_tube_filled_solar,
-                        getString(R.string.EP_Category_Experimental),
-                        getString(R.string.CGP_Experimental_Desc),
-                        true
-                )
-        );*/
+        if (CherrygramExperimentalConfig.INSTANCE.getUse_CG_OOMHandler()) {
+            items.add(
+                    SettingsActivity.SettingCell.Factory.of(
+                            experimentalRow,
+                            IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
+                            R.drawable.settings_tube_filled_solar,
+                            applyNewSpan(getString(R.string.EP_Category_Experimental)),
+                            getString(R.string.CGP_Experimental_Desc),
+                            true
+                    )
+            );
+        }
         items.add(
                 SettingsActivity.SettingCell.Factory.of(
                         privacyRow,

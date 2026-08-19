@@ -36,7 +36,7 @@ import java.io.PrintWriter;
 
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 
@@ -52,7 +52,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
     }
 
     public static void updateOOMReserve() {
-        if (CherrygramFirebaseConfig.INSTANCE.getRecordOOMasNonFatal()) {
+        if (CherrygramExperimentalConfig.INSTANCE.getRecordOOMasNonFatal()) {
             if (reservedMemory == null) {
                 reservedMemory = new byte[5 * 1024 * 1024];
             }

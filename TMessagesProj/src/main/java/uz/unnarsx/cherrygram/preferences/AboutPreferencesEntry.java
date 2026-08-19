@@ -11,6 +11,8 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
+
 import android.content.Context;
 import android.view.View;
 
@@ -44,10 +46,12 @@ public class AboutPreferencesEntry extends UniversalFragment {
     private final int debugPrefsRow = 3;
 
     private final int channelRow = 4;
-    private final int chatRow = 5;
-    private final int githubRow = 6;
-    private final int crowdinRow = 7;
-    private final int policyRow = 8;
+    private final int betaChannelRow = 5;
+    private final int chatRow = 6;
+    private final int offtopicChatRow = 7;
+    private final int githubRow = 8;
+    private final int crowdinRow = 9;
+    private final int policyRow = 10;
 
     @Override
     protected CharSequence getTitle() {
@@ -96,7 +100,12 @@ public class AboutPreferencesEntry extends UniversalFragment {
 
         items.add(UItem.asHeader(getString(R.string.CGP_Links)));
         items.add(UItem.asButton(channelRow, R.drawable.msg_channel_solar, getString(R.string.CGP_ToChannel)));
+        items.add(UItem.asButton(betaChannelRow, R.drawable.msg_channel_solar, getString(R.string.CGP_ToBetaChannel)));
+
+        items.add(UItem.asShadow(null));
         items.add(UItem.asButton(chatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToChat)));
+        items.add(UItem.asButton(offtopicChatRow, R.drawable.msg_discuss_solar, applyNewSpan(getString(R.string.CGP_ToOfftopicChat))));
+        items.add(UItem.asShadow(null));
 
         if (!CherrygramCoreConfig.isStandalonePremiumBuild()) {
             String value;
@@ -131,8 +140,12 @@ public class AboutPreferencesEntry extends UniversalFragment {
             CherrygramPreferencesNavigator.INSTANCE.createDebug(this);
         } else if (item.id == channelRow) {
             getMessagesController().openByUserName(Constants.CG_CHANNEL_USERNAME, this, 1);
+        } else if (item.id == betaChannelRow) {
+            getMessagesController().openByUserName(Constants.CG_BETA_APKS_CHANNEL_USERNAME, this, 1);
         } else if (item.id == chatRow) {
             getMessagesController().openByUserName(Constants.CG_CHAT_USERNAME, this, 1);
+        } else if (item.id == offtopicChatRow) {
+            getMessagesController().openByUserName(Constants.CG_OFFTOPIC_CHAT_USERNAME, this, 1);
         } else if (item.id == githubRow) {
             if (CherrygramCoreConfig.isStandaloneBetaBuild() || CherrygramCoreConfig.isDevBuild()) {
                 Browser.openUrl(getContext(), Constants.CG_GITHUB_URL);
@@ -160,8 +173,14 @@ public class AboutPreferencesEntry extends UniversalFragment {
         } else if (item.id == channelRow) {
             AndroidUtilities.addToClipboard("@" + Constants.CG_CHANNEL_USERNAME);
             return true;
+        } else if (item.id == betaChannelRow) {
+            AndroidUtilities.addToClipboard("@" + Constants.CG_BETA_APKS_CHANNEL_USERNAME);
+            return true;
         } else if (item.id == chatRow) {
             AndroidUtilities.addToClipboard("@" + Constants.CG_CHAT_USERNAME);
+            return true;
+        } else if (item.id == offtopicChatRow) {
+            AndroidUtilities.addToClipboard("@" + Constants.CG_OFFTOPIC_CHAT_USERNAME);
             return true;
         } else if (item.id == crowdinRow) {
             AndroidUtilities.addToClipboard(Constants.CG_CROWDIN_URL);

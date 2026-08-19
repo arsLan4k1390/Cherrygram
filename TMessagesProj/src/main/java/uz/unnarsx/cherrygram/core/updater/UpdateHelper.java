@@ -105,7 +105,7 @@ public class UpdateHelper extends BaseRemoteHelper {
         return ref;
     }
 
-    public boolean isNew(String currentVersion, String newVersion) {
+    public static boolean isNew(String currentVersion, String newVersion) {
         String[] current = currentVersion.split("\\.");
         String[] latest = newVersion.split("\\.");
         int cmp = compareVersions(current, latest);

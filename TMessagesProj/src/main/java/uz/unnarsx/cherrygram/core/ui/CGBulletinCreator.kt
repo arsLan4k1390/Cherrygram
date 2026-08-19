@@ -9,9 +9,11 @@
 
 package uz.unnarsx.cherrygram.core.ui
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.ContactsController
 import org.telegram.messenger.LocaleController.formatString
 import org.telegram.messenger.LocaleController.getString
@@ -20,10 +22,12 @@ import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
+import org.telegram.ui.ActionBar.AlertDialog
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.Bulletin
 import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.LaunchActivity
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 
@@ -37,6 +41,21 @@ object CGBulletinCreator {
         ) {
             AppRestartHelper.restartApp(fragment.context)
         }.show()
+    }
+
+    fun createAppRestartDialog(context: Context) {
+        if (!CherrygramExperimentalConfig.oomHandlerPopup) return
+        AndroidUtilities.runOnUIThread {
+            AlertDialog.Builder(context)
+                .setTitle(getString(R.string.CG_LowMemoryWarning))
+                .setMessage(getString(R.string.CG_LowMemoryWarning_Desc))
+                .setPositiveButton(
+                    getString(R.string.CG_Restart)
+                ) { dialog: AlertDialog?, which: Int ->
+                    AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
+                }
+                .show()
+        }
     }
 
     fun createDebugSuccessBulletin(fragment: BaseFragment) {

@@ -77,7 +77,7 @@ object CGMessageMenuInjector {
                 linearLayout.addView(
                     ActionBarPopupWindow.GapView(
                         chatActivity.context,
-                        MessageMenuHelper.getMessageMenuGapColor(),
+                        MessageMenuHelper.getMessageMenuGapColor(chatActivity.resourceProvider),
                         Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
                     ),
                     LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
@@ -186,7 +186,7 @@ object CGMessageMenuInjector {
             val gap = if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider(true)) {
                 ActionBarPopupWindow.GapView(
                     chatActivity.context,
-                    MessageMenuHelper.getMessageMenuGapColor(),
+                    MessageMenuHelper.getMessageMenuGapColor(chatActivity.resourceProvider),
                     Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
                 )
             } else {
@@ -229,7 +229,7 @@ object CGMessageMenuInjector {
                 popupLayout.addView(
                     ActionBarPopupWindow.GapView(
                         chatActivity.context,
-                        MessageMenuHelper.getMessageMenuGapColor(),
+                        MessageMenuHelper.getMessageMenuGapColor(chatActivity.resourceProvider),
                         Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
                     ),
                     LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)

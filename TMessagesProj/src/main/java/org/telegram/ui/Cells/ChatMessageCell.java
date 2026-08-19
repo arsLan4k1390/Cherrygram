@@ -7751,9 +7751,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     int wideWidth = getParentWidth() - bounds;
 
                     if (messageObject.isWideModeSupported() && defaultWidth >= wideWidth) {
+                        messageObject.setForceDrawDirectShare(false);
                         messageObject.textWidth = wideWidth;
                         backgroundWidth = wideWidth;
                     } else {
+                        messageObject.setForceDrawDirectShare(true);
                         backgroundWidth = defaultWidth;
                     }
                 } else {

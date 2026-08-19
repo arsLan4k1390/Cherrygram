@@ -8327,7 +8327,7 @@ public class MessageObject {
     }
 
     public boolean needDrawShareButton() {
-        if (isWideModeSupported()) {
+        if (isWideModeSupported() && !forceDrawDirectShare) {
             return false;
         }
         if (isRepostPreview) {
@@ -13557,6 +13557,12 @@ public class MessageObject {
 
     /** Cherrygram start */
     public Boolean messageBlocked;
+
+    private boolean forceDrawDirectShare = false;
+
+    public void setForceDrawDirectShare(boolean set) {
+        this.forceDrawDirectShare = set;
+    }
 
     public boolean isAdsGram;
     public boolean adsGramShowTracked;

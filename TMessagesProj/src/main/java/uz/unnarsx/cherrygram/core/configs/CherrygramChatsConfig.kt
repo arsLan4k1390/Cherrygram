@@ -29,7 +29,8 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Appearance start */
     var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle_v2", true)
     var centerChatTitle_AdaptiveWidth by sharedPreferences.boolean("AP_CenterChatTitle_AdaptiveWidth_v2", true)
-    var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
+    var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", centerChatTitle)
+    var unreadBadgeOnBackButton_iOS by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton_iOS", centerChatTitle)
 
     /** Chat shortcuts start */
     var shortcut_JumpToBegin by sharedPreferences.boolean("CP_Shortcut_JumpToBegin", true)
@@ -51,8 +52,8 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var discussInsteadOfMute by sharedPreferences.boolean("CP_DiscussInsteadOfMute", true)
     var iOSMessageInputField by sharedPreferences.boolean("CP_iOSMessageInputField", false)
-    var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
+    var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
     var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     /** Appearance finish */
@@ -68,6 +69,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Actions finish */
 
     /** Media start */
+    var voiceMessagesAutoPlay by sharedPreferences.boolean("CP_VoiceMessagesAutoPlay", true)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
     var videoSeekDuration by sharedPreferences.int("CP_VideoSeekDuration", 10)

@@ -21,6 +21,7 @@ import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig
 import uz.unnarsx.cherrygram.donates.SSLUtils.openSecureConnection
 import java.io.File
@@ -37,7 +38,7 @@ object RemoteConfigHelper {
         if (CherrygramCoreConfig.isDevBuild())
             30 * MINUTE
         else
-            2 * HOUR
+            1 * HOUR
 
     private const val FILE_NAME = "remote_config.json"
     private val REMOTE_URLS = listOf(
@@ -50,9 +51,13 @@ object RemoteConfigHelper {
     private var config = JSONObject()
 
     private val defaults = mapOf<String, Any>(
+        RemoteConfigConstants.show_ads_randomly to false,
         RemoteConfigConstants.show_ads_screen_in_settings to true,
         RemoteConfigConstants.show_ads_in_play_store_builds to true,
+        RemoteConfigConstants.always_show_adsgram_in_chats to true,
+
         RemoteConfigConstants.videomessages_resolution to 512,
+        RemoteConfigConstants.use_braille_spoiler to true,
 
         RemoteConfigConstants.humo_card_number to "9860100128256904",
         RemoteConfigConstants.tbank_card_number to "9860100128256904",
@@ -66,14 +71,20 @@ object RemoteConfigHelper {
         RemoteConfigConstants.safe_pay_URL to "https://t.me/safepaycard_bot?start=cherry",
 
         RemoteConfigConstants.record_oom_as_nf to true,
+        RemoteConfigConstants.use_cg_oom_handler to true,
 
         RemoteConfigConstants.show_proxy_in_settings to false,
         RemoteConfigConstants.proxy_link_in_settings to "https://t.me/proxy?server=45.67.131.84&port=8443&secret=ee0123456789abcdef0123456789abcdef7777772e676f6f676c652e636f6d",
+
+        RemoteConfigConstants.show_deleted_gifts to true,
+        RemoteConfigConstants.deleted_gifts_config_url to "https://gitlab.com/arsLan4k1390/Cherrygram-IDS/-/raw/main/gift_list.json?inline=false",
+        RemoteConfigConstants.deleted_gifts_stickerpack_name to "Cherrygram_HiddenGifts",
+        RemoteConfigConstants.deleted_gifts_stickerpack_offset to 0
     )
 
-    suspend fun fetchAndActivate(): Boolean {
+    suspend fun fetchAndActivate(force: Boolean = false): Boolean {
         return try {
-            startAutoRefresh(ApplicationLoader.applicationContext)
+            startAutoRefresh(ApplicationLoader.applicationContext, force)
             applyConfig()
             true
         } catch (e: Exception) {
@@ -82,11 +93,11 @@ object RemoteConfigHelper {
         }
     }
 
-    private suspend fun startAutoRefresh(context: Context) = coroutineScope {
+    private suspend fun startAutoRefresh(context: Context, force: Boolean) = coroutineScope {
         val lastUpdate = CherrygramFirebaseConfig.lastRemoteConfigCheckTime
         val now = System.currentTimeMillis()
 
-        if (now - lastUpdate > REFRESH_INTERVAL) {
+        if (force || now - lastUpdate > REFRESH_INTERVAL) {
             try {
                 downloadRemoteConfig(context)
                 showToast("Loading remote config")
@@ -245,10 +256,32 @@ object RemoteConfigHelper {
         }
     }
 
+    private inline fun <T> checkAndUpdate(
+        key: String,
+        getValue: (String) -> T,
+        current: () -> T,
+        update: (T) -> Unit
+    ) {
+        val oldValue = current()
+        val newValue = getValue(key)
+
+        CherrygramLogger.d { "RemoteConfig: $key value = $newValue" }
+        if (oldValue != newValue) {
+            CherrygramLogger.d { "RemoteConfig: $key changed $oldValue -> $newValue" }
+        }
+
+        update(newValue)
+    }
+
     fun applyConfig() {
+        checkShowAdsRandomly()
         checkAdsScreenInSettings()
         checkAdsInPlayStoreBuilds()
+        checkAlwaysShowAdsGramInChats()
+
+        checkBrailleSpoiler()
         checkVideoMessagesResolution()
+        checkMinCherryVersion()
 
         checkHumoCardNumber()
         checkTBankCardNumber()
@@ -262,188 +295,182 @@ object RemoteConfigHelper {
         checkSafePayURL()
 
         checkRecordOOMasNonFatal()
+        checkUseCGOOMHandler()
 
         checkProxyInSettings()
+
+        checkDeletedGifts()
     }
 
-    private fun checkAdsScreenInSettings() {
-        val oldShowAdsScreenInSettings = CherrygramFirebaseConfig.showAdsScreenInSettings
-        val newShowAdsScreenInSettings = getBoolean(RemoteConfigConstants.show_ads_screen_in_settings)
+    private fun checkShowAdsRandomly() = checkAndUpdate(
+        RemoteConfigConstants.show_ads_randomly,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.showAdsRandomly },
+        { CherrygramFirebaseConfig.showAdsRandomly = it }
+    )
 
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.show_ads_screen_in_settings} value = $newShowAdsScreenInSettings" }
-        if (oldShowAdsScreenInSettings != newShowAdsScreenInSettings) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.show_ads_screen_in_settings} changed $oldShowAdsScreenInSettings -> $newShowAdsScreenInSettings" }
-        }
+    private fun checkAdsScreenInSettings() = checkAndUpdate(
+        RemoteConfigConstants.show_ads_screen_in_settings,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.showAdsScreenInSettings },
+        { CherrygramFirebaseConfig.showAdsScreenInSettings = it }
+    )
 
-        CherrygramFirebaseConfig.showAdsScreenInSettings = newShowAdsScreenInSettings
-    }
+    private fun checkAdsInPlayStoreBuilds() = checkAndUpdate(
+        RemoteConfigConstants.show_ads_in_play_store_builds,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.showAdsInPlayStoreBuilds },
+        { CherrygramFirebaseConfig.showAdsInPlayStoreBuilds = it }
+    )
 
-    private fun checkAdsInPlayStoreBuilds() {
-        val oldShowAdsInPlayStoreBuilds = CherrygramFirebaseConfig.showAdsInPlayStoreBuilds
-        val newShowAdsInPlayStoreBuilds = getBoolean(RemoteConfigConstants.show_ads_in_play_store_builds)
+    private fun checkAlwaysShowAdsGramInChats() = checkAndUpdate(
+        RemoteConfigConstants.always_show_adsgram_in_chats,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.alwaysShowAdsGramInChats },
+        { CherrygramFirebaseConfig.alwaysShowAdsGramInChats = it }
+    )
 
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.show_ads_in_play_store_builds} value = $newShowAdsInPlayStoreBuilds" }
-        if (oldShowAdsInPlayStoreBuilds != newShowAdsInPlayStoreBuilds) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.show_ads_in_play_store_builds} changed $oldShowAdsInPlayStoreBuilds -> $newShowAdsInPlayStoreBuilds" }
-        }
+    private fun checkVideoMessagesResolution() = checkAndUpdate(
+        RemoteConfigConstants.videomessages_resolution,
+        ::getInt,
+        { CherrygramCameraConfig.videoMessagesResolution },
+        { CherrygramCameraConfig.videoMessagesResolution = it }
+    )
 
-        CherrygramFirebaseConfig.showAdsInPlayStoreBuilds = newShowAdsInPlayStoreBuilds
-    }
+    private fun checkBrailleSpoiler() = checkAndUpdate(
+        RemoteConfigConstants.always_show_adsgram_in_chats,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.useBrailleSpoiler },
+        { CherrygramFirebaseConfig.useBrailleSpoiler = it }
+    )
 
-    private fun checkVideoMessagesResolution() {
-        val oldResolutionValue = CherrygramCameraConfig.videoMessagesResolution
-        val newResolutionValue = getInt(RemoteConfigConstants.videomessages_resolution)
+    private fun checkMinCherryVersion() = checkAndUpdate(
+        RemoteConfigConstants.min_cherry_version,
+        ::getString,
+        { CherrygramCoreConfig.minCherryVersion },
+        { CherrygramCoreConfig.minCherryVersion = it }
+    )
 
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.videomessages_resolution} value = $newResolutionValue" }
-        if (oldResolutionValue != newResolutionValue) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.videomessages_resolution} changed $oldResolutionValue -> $newResolutionValue" }
-        }
+    private fun checkHumoCardNumber() = checkAndUpdate(
+        RemoteConfigConstants.humo_card_number,
+        ::getString,
+        { CherrygramFirebaseConfig.humoCardNumber },
+        { CherrygramFirebaseConfig.humoCardNumber = it }
+    )
 
-        CherrygramCameraConfig.videoMessagesResolution = newResolutionValue
-    }
+    private fun checkTBankCardNumber() = checkAndUpdate(
+        RemoteConfigConstants.tbank_card_number,
+        ::getString,
+        { CherrygramFirebaseConfig.tbankCardNumber },
+        { CherrygramFirebaseConfig.tbankCardNumber = it }
+    )
 
-    private fun checkHumoCardNumber() {
-        val oldHumoCardNumber = CherrygramFirebaseConfig.humoCardNumber
-        val newHumoCardNumber = getString(RemoteConfigConstants.humo_card_number)
+    private fun checkSafeStars() = checkAndUpdate(
+        RemoteConfigConstants.allow_use_safestars,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.allowSafeStars },
+        { CherrygramFirebaseConfig.allowSafeStars = it }
+    )
 
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.humo_card_number} value = $newHumoCardNumber" }
-        if (oldHumoCardNumber != newHumoCardNumber) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.humo_card_number} changed $oldHumoCardNumber -> $newHumoCardNumber" }
-        }
+    private fun checkSafeStarsURL() = checkAndUpdate(
+        RemoteConfigConstants.safe_stars_URL,
+        ::getString,
+        { CherrygramFirebaseConfig.safe_stars_URL },
+        { CherrygramFirebaseConfig.safe_stars_URL = it }
+    )
 
-        CherrygramFirebaseConfig.humoCardNumber = newHumoCardNumber
-    }
+    private fun checkSafeStarsURL_RU() = checkAndUpdate(
+        RemoteConfigConstants.safe_stars_URL_RU,
+        ::getString,
+        { CherrygramFirebaseConfig.safe_stars_URL_RU },
+        { CherrygramFirebaseConfig.safe_stars_URL_RU = it }
+    )
 
-    private fun checkTBankCardNumber() {
-        val oldTBankCardNumber = CherrygramFirebaseConfig.tbankCardNumber
-        val newTBankCardNumber = getString(RemoteConfigConstants.tbank_card_number)
+    private fun checkSafeSurf() = checkAndUpdate(
+        RemoteConfigConstants.allow_use_safesurf,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.allowSafeSurf },
+        { CherrygramFirebaseConfig.allowSafeSurf = it }
+    )
 
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.tbank_card_number} value = $newTBankCardNumber" }
-        if (oldTBankCardNumber != newTBankCardNumber) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.tbank_card_number} changed $oldTBankCardNumber -> $newTBankCardNumber" }
-        }
+    private fun checkSafeSurfURL() = checkAndUpdate(
+        RemoteConfigConstants.safe_surf_URL,
+        ::getString,
+        { CherrygramFirebaseConfig.safe_surf_URL },
+        { CherrygramFirebaseConfig.safe_surf_URL = it }
+    )
 
-        CherrygramFirebaseConfig.tbankCardNumber = newTBankCardNumber
-    }
+    private fun checkSafePay() = checkAndUpdate(
+        RemoteConfigConstants.allow_use_safepay,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.allowSafePay },
+        { CherrygramFirebaseConfig.allowSafePay = it }
+    )
 
-    private fun checkSafeStars() {
-        val oldSafeStars = CherrygramFirebaseConfig.allowSafeStars
-        val newSafeStars = getBoolean(RemoteConfigConstants.allow_use_safestars)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.allow_use_safestars} value = $newSafeStars" }
-        if (oldSafeStars != newSafeStars) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.allow_use_safestars} changed $oldSafeStars -> $newSafeStars" }
-        }
-
-        CherrygramFirebaseConfig.allowSafeStars = newSafeStars
-    }
-
-    private fun checkSafeStarsURL() {
-        val oldSafeStarsURL = CherrygramFirebaseConfig.safe_stars_URL
-        val newSafeStarsURL = getString(RemoteConfigConstants.safe_stars_URL)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.safe_stars_URL} value = $newSafeStarsURL" }
-        if (oldSafeStarsURL != newSafeStarsURL) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.safe_stars_URL} changed $oldSafeStarsURL -> $newSafeStarsURL" }
-        }
-
-        CherrygramFirebaseConfig.safe_stars_URL = newSafeStarsURL
-    }
-
-    private fun checkSafeStarsURL_RU() {
-        val oldSafeStarsURL_RU = CherrygramFirebaseConfig.safe_stars_URL_RU
-        val newSafeStarsURL_RU = getString(RemoteConfigConstants.safe_stars_URL_RU)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.safe_stars_URL_RU} value = $newSafeStarsURL_RU" }
-        if (oldSafeStarsURL_RU != newSafeStarsURL_RU) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.safe_stars_URL_RU} changed $oldSafeStarsURL_RU -> $newSafeStarsURL_RU" }
-        }
-
-        CherrygramFirebaseConfig.safe_stars_URL_RU = newSafeStarsURL_RU
-    }
-
-    private fun checkSafeSurf() {
-        val oldSafeSurf = CherrygramFirebaseConfig.allowSafeSurf
-        val newSafeSurf = getBoolean(RemoteConfigConstants.allow_use_safesurf)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.allow_use_safesurf} value = $newSafeSurf" }
-        if (oldSafeSurf != newSafeSurf) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.allow_use_safesurf} changed $oldSafeSurf -> $newSafeSurf" }
-        }
-
-        CherrygramFirebaseConfig.allowSafeSurf = newSafeSurf
-    }
-
-    private fun checkSafeSurfURL() {
-        val oldSafeSurfURL = CherrygramFirebaseConfig.safe_surf_URL
-        val newSafeSurfURL = getString(RemoteConfigConstants.safe_surf_URL)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.safe_surf_URL} value = $newSafeSurfURL" }
-        if (oldSafeSurfURL != newSafeSurfURL) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.safe_surf_URL} changed $oldSafeSurfURL -> $newSafeSurfURL" }
-        }
-
-        CherrygramFirebaseConfig.safe_surf_URL = newSafeSurfURL
-    }
-
-    private fun checkSafePay() {
-        val oldSafePay = CherrygramFirebaseConfig.allowSafePay
-        val newSafePay = getBoolean(RemoteConfigConstants.allow_use_safepay)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.allow_use_safepay} value = $newSafePay" }
-        if (oldSafePay != newSafePay) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.allow_use_safepay} changed $oldSafePay -> $newSafePay" }
-        }
-
-        CherrygramFirebaseConfig.allowSafePay = newSafePay
-    }
-
-    private fun checkSafePayURL() {
-        val oldSafePayURL = CherrygramFirebaseConfig.safe_pay_URL
-        val newSafePayURL = getString(RemoteConfigConstants.safe_pay_URL)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.safe_pay_URL} value = $newSafePayURL" }
-        if (oldSafePayURL != newSafePayURL) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.safe_pay_URL} changed $oldSafePayURL -> $newSafePayURL" }
-        }
-
-        CherrygramFirebaseConfig.safe_pay_URL = newSafePayURL
-    }
+    private fun checkSafePayURL() = checkAndUpdate(
+        RemoteConfigConstants.safe_pay_URL,
+        ::getString,
+        { CherrygramFirebaseConfig.safe_pay_URL },
+        { CherrygramFirebaseConfig.safe_pay_URL = it }
+    )
 
     private fun checkRecordOOMasNonFatal() {
-        val oldRecordOOMasNonFatal = CherrygramFirebaseConfig.recordOOMasNonFatal
-        val newRecordOOMasNonFatal = getBoolean(RemoteConfigConstants.record_oom_as_nf)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.record_oom_as_nf} value = $newRecordOOMasNonFatal" }
-        if (oldRecordOOMasNonFatal != newRecordOOMasNonFatal) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.record_oom_as_nf} changed $oldRecordOOMasNonFatal -> $newRecordOOMasNonFatal" }
-        }
-
-        CherrygramFirebaseConfig.recordOOMasNonFatal = newRecordOOMasNonFatal
+        checkAndUpdate(
+            RemoteConfigConstants.record_oom_as_nf,
+            ::getBoolean,
+            { CherrygramExperimentalConfig.recordOOMasNonFatal },
+            { CherrygramExperimentalConfig.recordOOMasNonFatal = it }
+        )
 //        Crashlytics.updateOOMReserve()
     }
 
+    private fun checkUseCGOOMHandler() = checkAndUpdate(
+        RemoteConfigConstants.use_cg_oom_handler,
+        ::getBoolean,
+        { CherrygramExperimentalConfig.use_CG_OOMHandler },
+        { CherrygramExperimentalConfig.use_CG_OOMHandler = it }
+    )
+
     private fun checkProxyInSettings() {
-        val oldProxyURL = CherrygramFirebaseConfig.proxyURL
-        val newProxyURL = getString(RemoteConfigConstants.proxy_link_in_settings)
+        checkAndUpdate(
+            RemoteConfigConstants.proxy_link_in_settings,
+            ::getString,
+            { CherrygramFirebaseConfig.proxyURL },
+            { CherrygramFirebaseConfig.proxyURL = it }
+        )
+        checkAndUpdate(
+            RemoteConfigConstants.show_proxy_in_settings,
+            ::getBoolean,
+            { CherrygramFirebaseConfig.showProxyInSettings },
+            { CherrygramFirebaseConfig.showProxyInSettings = it }
+        )
+    }
 
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.proxy_link_in_settings} value = $newProxyURL" }
-        if (oldProxyURL != newProxyURL) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.proxy_link_in_settings} changed $oldProxyURL -> $newProxyURL" }
-        }
-
-        CherrygramFirebaseConfig.proxyURL = newProxyURL
-
-
-        val oldProxyInSettings = CherrygramFirebaseConfig.showProxyInSettings
-        val newProxyInSettings = getBoolean(RemoteConfigConstants.show_proxy_in_settings)
-
-        CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.show_proxy_in_settings} value = $newProxyInSettings" }
-        if (oldProxyInSettings != newProxyInSettings) {
-            CherrygramLogger.d { "RemoteConfig: ${RemoteConfigConstants.show_proxy_in_settings} changed $oldProxyInSettings -> $newProxyInSettings" }
-        }
-
-        CherrygramFirebaseConfig.showProxyInSettings = newProxyInSettings
+    private fun checkDeletedGifts() {
+        checkAndUpdate(
+            RemoteConfigConstants.show_deleted_gifts,
+            ::getBoolean,
+            { CherrygramFirebaseConfig.showDeletedGifts },
+            { CherrygramFirebaseConfig.showDeletedGifts = it }
+        )
+        checkAndUpdate(
+            RemoteConfigConstants.deleted_gifts_config_url,
+            ::getString,
+            { CherrygramFirebaseConfig.deletedGiftsConfigURL },
+            { CherrygramFirebaseConfig.deletedGiftsConfigURL = it }
+        )
+        checkAndUpdate(
+            RemoteConfigConstants.deleted_gifts_stickerpack_name,
+            ::getString,
+            { CherrygramFirebaseConfig.deletedGiftsStickerPackName },
+            { CherrygramFirebaseConfig.deletedGiftsStickerPackName = it }
+        )
+        checkAndUpdate(
+            RemoteConfigConstants.deleted_gifts_stickerpack_offset,
+            ::getInt,
+            { CherrygramFirebaseConfig.deletedGiftsStickerPackOffset },
+            { CherrygramFirebaseConfig.deletedGiftsStickerPackOffset = it }
+        )
     }
 
 }

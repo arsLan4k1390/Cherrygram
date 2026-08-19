@@ -87,8 +87,6 @@ import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.common.api.Status;
 import com.google.common.primitives.Longs;
@@ -265,6 +263,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.updater.UpdateHelper;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
@@ -6111,6 +6110,12 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         /*if (!force && Math.abs(System.currentTimeMillis() - SharedConfig.lastUpdateCheckTime) < MessagesController.getInstance(0).updateCheckDelay * 1000) {
             return;
         }*/
+
+        if (UpdateHelper.isNew(CGResourcesHelper.getCherryVersion(), CherrygramCoreConfig.INSTANCE.getMinCherryVersion())) {
+            CherrygramCoreConfig.INSTANCE.setForceFound(true);
+            CherrygramCoreConfig.INSTANCE.setAutoOTA(true);
+        }
+
         if (!force && !CherrygramCoreConfig.INSTANCE.getForceFound()) {
             if (!CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
                 return;

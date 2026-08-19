@@ -2632,6 +2632,11 @@ public class ChatObject {
     public static boolean isChannelCG(TLRPC.Chat chat) {
         return (chat instanceof TLRPC.TL_channel || chat instanceof TLRPC.TL_channelForbidden) && !chat.megagroup && !chat.gigagroup;
     }
+
+    public static boolean isChannelCG(long dialogID) {
+        TLRPC.Chat chat = MessagesController.getInstance(UserConfig.selectedAccount).getChat(-dialogID);
+        return isChannelCG(chat);
+    }
     /** Cherrygram finish */
 
 }

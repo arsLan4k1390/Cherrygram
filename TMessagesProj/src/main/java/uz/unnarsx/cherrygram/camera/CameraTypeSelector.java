@@ -94,9 +94,26 @@ public class CameraTypeSelector extends LinearLayout {
                 int g = Color.green(color);
                 int b = Color.blue(color);
 
-                int left = getMeasuredWidth() / 2 - AndroidUtilities.dp(90);
-                int right = getMeasuredWidth() / 2 + AndroidUtilities.dp(90);
-                int top = AndroidUtilities.dp(18);
+                int offsetX = AndroidUtilities.dp(10);
+                int minSidePadding = AndroidUtilities.dp(4);
+                int halfPhoneWidth = AndroidUtilities.dp(90);
+
+                int previewWidth = getMeasuredWidth();
+
+                int maxHalfPhoneWidth = Math.max(AndroidUtilities.dp(40), previewWidth / 2 - minSidePadding);
+                if (halfPhoneWidth > maxHalfPhoneWidth) {
+                    halfPhoneWidth = maxHalfPhoneWidth;
+                }
+
+                int maxOffsetX = Math.max(0, previewWidth / 2 - halfPhoneWidth - minSidePadding);
+                if (offsetX > maxOffsetX) {
+                    offsetX = maxOffsetX;
+                }
+
+                int centerX = previewWidth / 2 - offsetX;
+                int left = centerX - halfPhoneWidth;
+                int right = centerX + halfPhoneWidth;
+                int top = AndroidUtilities.dp(10);
                 int bottom = getMeasuredHeight() - top;
 
                 outlinePaint.setStrokeWidth(Math.max(2, AndroidUtilities.dp(1)));
@@ -104,7 +121,7 @@ public class CameraTypeSelector extends LinearLayout {
                 float stroke = outlinePaint.getStrokeWidth() / 2;
 
                 Rect rect1 = new Rect();
-                int rad = AndroidUtilities.dp(15);
+                int rad = AndroidUtilities.dp(20);
                 ShapeDrawable phoneDrawable = new ShapeDrawable(new RoundRectShape(new float[]{rad, rad, rad, rad, 0, 0, 0, 0}, null, null));
 
                 rect.set(left, top, right, bottom);
@@ -131,9 +148,9 @@ public class CameraTypeSelector extends LinearLayout {
                 int ICON_WIDTH = AndroidUtilities.dp(16 + 2 * progress);
                 int iconOffsetY = AndroidUtilities.dp(10);
                 d.setBounds(
-                        getMeasuredWidth() / 2 - ICON_WIDTH,
+                        centerX - ICON_WIDTH,
                         getMeasuredHeight() / 2 + iconOffsetY,
-                        getMeasuredWidth() / 2 + ICON_WIDTH,
+                        centerX + ICON_WIDTH,
                         getMeasuredHeight() / 2 + iconOffsetY + 2 * ICON_WIDTH
                 );
                 d.setColorFilter(new PorterDuffColorFilter(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_switchTrack), (int) (0x4F * progress)), PorterDuff.Mode.MULTIPLY));
@@ -196,6 +213,7 @@ public class CameraTypeSelector extends LinearLayout {
 
     private static class CameraClusterDrawable {
         private final Paint outlinePaint;
+        private final Paint fillPaint;
         private final GradientDrawable fillDrawable;
 
         private final int bigSize;
@@ -204,12 +222,18 @@ public class CameraTypeSelector extends LinearLayout {
 
         private final int smallSize;
         private final int smallRadius;
+        private final int smallExtraOffset;
 
         private final int flashRadius;
+
+        private final int clusterPadding;
 
         public CameraClusterDrawable() {
             outlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             outlinePaint.setStyle(Paint.Style.STROKE);
+
+            fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            fillPaint.setStyle(Paint.Style.FILL);
 
             fillDrawable = new GradientDrawable();
             fillDrawable.setShape(GradientDrawable.OVAL);
@@ -220,8 +244,11 @@ public class CameraTypeSelector extends LinearLayout {
 
             smallSize = bigSize / 2;
             smallRadius = smallSize / 2;
+            smallExtraOffset = AndroidUtilities.dp(5);
 
             flashRadius = smallRadius / 2;
+
+            clusterPadding = AndroidUtilities.dp(7);
         }
 
         public void draw(Canvas canvas, int left, int top, int color, float strokeWidth) {
@@ -232,19 +259,31 @@ public class CameraTypeSelector extends LinearLayout {
             outlinePaint.setColor(ColorUtils.setAlphaComponent(color, 0x3F));
             outlinePaint.setStrokeWidth(strokeWidth);
 
+            fillPaint.setColor(Color.argb(15, r, g, b));
             fillDrawable.setColor(Color.argb(30, r, g, b));
 
             int bigX = left;
-            int smallX = bigX + bigSize + AndroidUtilities.dp(10);
+            int smallX = bigX + bigSize + AndroidUtilities.dp(10) + smallExtraOffset;
             int flashX = smallX + smallRadius;
 
             float cy1 = top + bigRadius;
             float cy2 = cy1 + bigSpacing;
             float cy3 = cy2 + bigSpacing;
 
-            drawModule(canvas, bigX, cy1, bigSize, bigRadius);
-            drawModule(canvas, bigX, cy2, bigSize, bigRadius);
-            drawModule(canvas, bigX, cy3, bigSize, bigRadius);
+            RectF clusterRect = new RectF(
+                    bigX - clusterPadding,
+                    cy1 - bigRadius - clusterPadding,
+                    bigX + bigSize + clusterPadding,
+                    cy3 + bigRadius + clusterPadding
+            );
+            float clusterCorner = clusterRect.width() / 2f;
+
+            canvas.drawRoundRect(clusterRect, clusterCorner, clusterCorner, fillPaint);
+            canvas.drawRoundRect(clusterRect, clusterCorner, clusterCorner, outlinePaint);
+
+            drawLens(canvas, bigX, cy1, bigSize, bigRadius);
+            drawLens(canvas, bigX, cy2, bigSize, bigRadius);
+            drawLens(canvas, bigX, cy3, bigSize, bigRadius);
 
             drawModule(canvas, smallX, cy1, smallSize, smallRadius);
             drawModule(canvas, smallX, cy2, smallSize, smallRadius);
@@ -262,6 +301,15 @@ public class CameraTypeSelector extends LinearLayout {
             );
             fillDrawable.draw(canvas);
 
+            canvas.drawCircle(
+                    x + radius,
+                    cy,
+                    radius,
+                    outlinePaint
+            );
+        }
+
+        private void drawLens(Canvas canvas, int x, float cy, int size, int radius) {
             canvas.drawCircle(
                     x + radius,
                     cy,

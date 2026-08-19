@@ -4615,9 +4615,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 presentFragment(new ChangeUsernameActivity());
             } else if (position == bioRow) {
                 presentFragment(new UserInfoActivity());
-            } /*else if (position == numberRow) {
+            } else if (position == numberRow) {
                 presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANGE_PHONE_NUMBER));
-            }*/ else if (position == setAvatarRow) {
+            } else if (position == setAvatarRow) {
                 onWriteButtonClick();
             } else if (position == premiumRow) {
                 presentFragment(new PremiumPreviewFragment("settings"));
@@ -13668,7 +13668,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             hasBirthday = true;
                         }
                     } else if (position == phoneRow) {
-                        String text;
+                        CharSequence text;
                         TLRPC.User user = getMessagesController().getUser(userId);
                         String phoneNumber;
                         if (user != null && !TextUtils.isEmpty(vcardPhone)) {
@@ -13773,7 +13773,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                     } else if (position == numberRow) {
                         TLRPC.User user = UserConfig.getInstance(currentAccount).getCurrentUser();
-                        AtomicReference<String> value = new AtomicReference<>();
+                        AtomicReference<CharSequence> value = new AtomicReference<>();
 
                         if (user != null && user.phone != null && user.phone.length() != 0) {
                             value.set(getChatsPasswordHelper().replaceStringToSpoilers(

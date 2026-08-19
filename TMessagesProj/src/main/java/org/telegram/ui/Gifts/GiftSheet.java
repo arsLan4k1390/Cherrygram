@@ -11,6 +11,8 @@ import static org.telegram.ui.Stars.StarsController.findAttribute;
 import static org.telegram.ui.Stars.StarsIntroActivity.StarsTransactionView.getPlatformDrawable;
 import static org.telegram.ui.bots.AffiliateProgramFragment.percents;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BlendMode;
@@ -144,6 +146,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
+import uz.unnarsx.cherrygram.core.helpers.DeletedGiftsManager;
 
 public class GiftSheet extends BottomSheetWithRecyclerListView implements NotificationCenter.NotificationCenterDelegate {
 
@@ -985,7 +990,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             }
 
             final ArrayList<CharSequence> tabs = new ArrayList<>();
-            TAB_ALL = TAB_IN_STOCK = TAB_LIMITED = TAB_MY_GIFTS = -1;
+            TAB_ALL = TAB_IN_STOCK = TAB_LIMITED = TAB_MY_GIFTS = TAB_HIDDEN = -1;
             if (!gifts.isEmpty()) {
                 TAB_ALL = tabs.size();
                 tabs.add(getString(R.string.Gift2TabAll));
@@ -994,6 +999,12 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 TAB_MY_GIFTS = tabs.size();
                 tabs.add(getString(R.string.Gift2TabMine));
             }
+
+            if (CherrygramFirebaseConfig.INSTANCE.getShowDeletedGifts()) {
+                TAB_HIDDEN = tabs.size();
+                tabs.add(applyNewSpan(getString(R.string.CG_HiddenGifts)));
+            }
+
             TAB_COLLECTIBLES = tabs.size();
             tabs.add(getString(R.string.Gift2TabCollectibles));
 
@@ -1001,7 +1012,9 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
             setShowCollectiblesInfo(selectedTab == TAB_COLLECTIBLES && !self && dialogId >= 0);
 
             final ArrayList<TL_stars.StarGift> finalGifts;
-            if (myGifts != null && selectedTab == TAB_MY_GIFTS) {
+            if (selectedTab == TAB_HIDDEN) {
+                finalGifts = DeletedGiftsManager.getInstance(currentAccount).getDeletedGifts(gifts);
+            } else if (myGifts != null && selectedTab == TAB_MY_GIFTS) {
                 finalGifts = new ArrayList<>();
                 for (TL_stars.SavedStarGift savedStarGift : myGifts.gifts) {
                     if (savedStarGift.gift instanceof TL_stars.TL_starGiftUnique) {
@@ -1016,6 +1029,7 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
                 final TL_stars.StarGift gift = finalGifts.get(i);
                 if (
                     selectedTab == TAB_ALL ||
+                    selectedTab == TAB_HIDDEN ||
                     selectedTab == TAB_MY_GIFTS ||
                     selectedTab == TAB_COLLECTIBLES && (gift.availability_resale > 0 || gift.require_premium || gift.locked_until_date != 0)
                 ) {
@@ -3128,5 +3142,9 @@ public class GiftSheet extends BottomSheetWithRecyclerListView implements Notifi
         }
 
     }
+
+    /** Cherrygram start */
+    private int TAB_HIDDEN = -1;
+    /** Cherrygram finish */
 
 }

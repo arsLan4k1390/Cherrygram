@@ -69,7 +69,6 @@ public class AdsScreen extends UniversalFragment {
 
                 if (returnTracking != null) {
                     AdsGramCell.openTracking(returnTracking);
-                    CherrygramLogger.d("ADSgram", () -> "return request sent");
                 }
             }
 
@@ -78,7 +77,6 @@ public class AdsScreen extends UniversalFragment {
 
                 if (returnTracking != null) {
                     AdsGramCell.openTracking(returnTracking);
-                    CherrygramLogger.d("ADSgram", () -> "return request sent");
                 }
             }
         }
@@ -231,6 +229,10 @@ public class AdsScreen extends UniversalFragment {
     }
 
     private void loadSingleAd(String blockId, int adHeight, Consumer<AdsGramResponse> callback) {
+        loadSingleAd(blockId, adHeight, callback, false);
+    }
+
+    private void loadSingleAd(String blockId, int adHeight, Consumer<AdsGramResponse> callback, boolean isRetryWithRu) {
         if (getContext() == null || getParentActivity() == null) {
             return;
         }
@@ -245,6 +247,7 @@ public class AdsScreen extends UniversalFragment {
                     AndroidUtilities.displaySize.x - dp(24),
                     adHeight,
                     ip,
+                    isRetryWithRu ? "ru" : null,
                     new Callback() {
                         @Override
                         public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -262,6 +265,42 @@ public class AdsScreen extends UniversalFragment {
 
                         @Override
                         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                            try (response) {
+                                if (!response.isSuccessful()) {
+                                    dismissProgress();
+                                    callback.accept(null);
+                                    return;
+                                }
+
+                                String body = response.body().string();
+
+                                AdsGramResponse parsed;
+                                try {
+                                    parsed = new Gson().fromJson(body, AdsGramResponse.class);
+                                } catch (Exception e) {
+                                    dismissProgress();
+                                    callback.accept(null);
+                                    return;
+                                }
+
+                                if (parsed == null || parsed.banner == null) {
+                                    if (!isRetryWithRu) {
+                                        AndroidUtilities.runOnUIThread(() ->
+                                                loadSingleAd(blockId, adHeight, callback, true)
+                                        );
+                                        return;
+                                    }
+                                    dismissProgress();
+                                    callback.accept(null);
+                                    return;
+                                }
+
+                                dismissProgress();
+                                callback.accept(parsed);
+                            }
+                        }
+
+                        private void dismissProgress() {
                             AndroidUtilities.runOnUIThread(() -> {
                                 try {
                                     if (!getParentActivity().isFinishing() && progressDialog.isShowing()) progressDialog.dismiss();
@@ -269,24 +308,6 @@ public class AdsScreen extends UniversalFragment {
                                     CherrygramLogger.e(e2);
                                 }
                             });
-
-                            try (response) {
-                                if (!response.isSuccessful()) {
-                                    CherrygramLogger.e(new IOException("Сервер вернул ошибку: " + response.code()), true);
-                                    callback.accept(null);
-                                    return;
-                                }
-
-                                String body = response.body().string();
-
-                                try {
-                                    AdsGramResponse parsed = new Gson().fromJson(body, AdsGramResponse.class);
-                                    callback.accept(parsed);
-                                } catch (Exception e) {
-                                    CherrygramLogger.e(new Exception("Ошибка парсинга JSON. Тело ответа: " + body, e), true);
-                                    callback.accept(null);
-                                }
-                            }
                         }
                     }
             );

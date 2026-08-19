@@ -3315,6 +3315,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         if (ChatObject.isMonoForum(localChat)) {
                             mentionCount = 0;
                         }
+                        if (localChat != null && parentFragment != null && parentFragment.getChatsNotificationHelper().shouldIgnoreMention(localChat.id)) {
+                            mentionCount = 0;
+                        }
                         markUnread = dialog.unread_mark;
                         currentEditDate = message != null ? message.messageOwner.edit_date : 0;
                         lastMessageDate = dialog.last_message_date;

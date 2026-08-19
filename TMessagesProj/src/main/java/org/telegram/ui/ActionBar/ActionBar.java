@@ -60,6 +60,7 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.Adapters.FiltersView;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
+import org.telegram.ui.Components.AnimatedTextView;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.ChatAvatarContainer;
 import org.telegram.ui.Components.CounterView;
@@ -223,12 +224,12 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         setBackground(null);
         setClipChildren(false);
         glassMode = true;
-        glassModeIsForum = isForum && !isCenterTitle;
+        glassModeIsForum = isForum && !isTitleCentered();
 
         glassDrawable = factory.create(this)
             .setColorProvider(colorProvider)
             .setPadding(dp(6));
-        if (isForum && !isCenterTitle) {
+        if (isForum && !isTitleCentered()) {
             glassDrawable.setRadius(dp(18.33f), dp(23), dp(23), dp(18.33f));
         } else {
             glassDrawable.setRadius(dp(23));
@@ -453,6 +454,12 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
     }
 
     public void setBackButtonImage(int resource) {
+        if (resource == R.drawable.ic_ab_back) {
+            BackDrawable backDrawable = new BackDrawable(false);
+            backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+            setBackButtonDrawable(backDrawable);
+            return;
+        }
         if (backButtonImageView == null) {
             createBackButtonImage();
         }
@@ -467,7 +474,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             return;
         }
         subtitleTextView = new SimpleTextView(getContext());
-        subtitleTextView.setGravity(isCenterTitle ? Gravity.CENTER : Gravity.LEFT);
+        subtitleTextView.setGravity(isTitleCentered() ? Gravity.CENTER : Gravity.LEFT);
         subtitleTextView.setVisibility(GONE);
         subtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
         addView(subtitleTextView, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
@@ -478,7 +485,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             return;
         }
         additionalSubtitleTextView = new SimpleTextView(getContext());
-        additionalSubtitleTextView.setGravity(isCenterTitle ? Gravity.CENTER : Gravity.LEFT);
+        additionalSubtitleTextView.setGravity(isTitleCentered() ? Gravity.CENTER : Gravity.LEFT);
         additionalSubtitleTextView.setVisibility(GONE);
         additionalSubtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
         addView(additionalSubtitleTextView, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
@@ -520,7 +527,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             return;
         }
         titleTextView[i] = new SimpleTextView(getContext());
-        titleTextView[i].setGravity(isCenterTitle ? Gravity.CENTER : Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        titleTextView[i].setGravity(isTitleCentered() ? Gravity.CENTER : Gravity.LEFT | Gravity.CENTER_VERTICAL);
         if (titleColorToSet != 0) {
             titleTextView[i].setTextColor(titleColorToSet);
         } else {
@@ -542,7 +549,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         }
     }
 
-    private boolean isCenterTitle = CherrygramAppearanceConfig.INSTANCE.getCenterTitle();
+    private boolean isCenterTitle = false;
 
     public void centerTitle() {
         isCenterTitle = true;
@@ -851,6 +858,9 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         }
         actionModeVisible = true;
         checkMenuItemsWidth();
+        if (iOSUnreadBadgeAvailable()) {
+            updateBackPillWidth(true);
+        }
         if (animated) {
             ArrayList<Animator> animators = new ArrayList<>();
             animators.add(ObjectAnimator.ofFloat(actionMode, View.ALPHA, 0.0f, 1.0f));
@@ -1022,6 +1032,9 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         actionMode.hideAllPopupMenus();
         actionModeVisible = false;
         checkMenuItemsWidth();
+        if (iOSUnreadBadgeAvailable()) {
+            updateBackPillWidth(true);
+        }
         ArrayList<Animator> animators = new ArrayList<>();
         animators.add(ObjectAnimator.ofFloat(actionMode, View.ALPHA, 0.0f));
         if (actionModeHidingViews != null) {
@@ -1414,7 +1427,10 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             backButtonImageView.measure(MeasureSpec.makeMeasureSpec(dp(54), MeasureSpec.EXACTLY), actionBarHeightSpec);
             textLeft = dp(AndroidUtilities.isTablet() ? 80 : 72);
 
-            if (countLayout != null) countLayout.measure(MeasureSpec.makeMeasureSpec(dp(100), MeasureSpec.EXACTLY), actionBarHeightSpec);
+            if (countLayout != null) {
+                countLayout.measure(MeasureSpec.makeMeasureSpec(dp(100), MeasureSpec.EXACTLY), actionBarHeightSpec);
+                updateBackPillWidth(true);
+            }
         } else {
             textLeft = dp(AndroidUtilities.isTablet() ? 26 : 18);
         }
@@ -1448,7 +1464,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
         for (int i = 0; i < 2; i++) {
             if (titleTextView[0] != null && titleTextView[0].getVisibility() != GONE || subtitleTextView != null && subtitleTextView.getVisibility() != GONE) {
-                int availableWidth = isCenterTitle ? (width - dp(120)) : width - (menu != null ? menu.getMeasuredWidth() : 0) - dp(16) - textLeft - titleRightMargin;
+                int availableWidth = isTitleCentered() ? (width - dp(120)) : width - (menu != null ? menu.getMeasuredWidth() : 0) - dp(16) - textLeft - titleRightMargin;
 
                 if (((fromBottom && i == 0) || (!fromBottom && i == 1)) && overlayTitleAnimation && titleAnimationRunning) {
                     titleTextView[i].setTextSize(glassMode ? 17 : !AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20);
@@ -1533,7 +1549,17 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             backButtonImageView.layout(0, additionalTop, backButtonImageView.getMeasuredWidth(), additionalTop + backButtonImageView.getMeasuredHeight());
             textLeft = glassMode ? dp(76) : dp(AndroidUtilities.isTablet() ? 80 : 72);
 
-            if (countLayout != null) countLayout.layout(dp(30), additionalTop - dp(15), countLayout.getMeasuredWidth(), additionalTop + countLayout.getMeasuredHeight());
+            if (countLayout != null) {
+                if (iOSUnreadBadgeAvailable()) {
+                    int cw = countLayout.getMeasuredWidth();
+                    int ch = countLayout.getMeasuredHeight();
+                    int cl = dp(BACK_COUNTER_LEFT_OFFSET_DP);
+                    int ct = additionalTop + (backButtonImageView.getMeasuredHeight() - ch) / 2;
+                    countLayout.layout(cl, ct, cl + cw, ct + ch);
+                } else {
+                    countLayout.layout(dp(30), additionalTop - dp(15), countLayout.getMeasuredWidth(), additionalTop + countLayout.getMeasuredHeight());
+                }
+            }
         } else {
             textLeft = glassMode ? dp(24) : dp(AndroidUtilities.isTablet() ? 26 : 18);
         }
@@ -1556,7 +1582,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
                         textTop = (getCurrentActionBarHeight() - titleTextView[i].getTextHeight()) / 2;
                     }
                 }
-                if (isCenterTitle) {
+                if (isTitleCentered()) {
                     titleTextView[i].layout(getMeasuredWidth() / 2 - titleTextView[i].getMeasuredWidth() / 2, additionalTop + textTop - titleTextView[i].getPaddingTop(), getMeasuredWidth() / 2 + titleTextView[i].getMeasuredWidth() / 2, additionalTop + textTop + titleTextView[i].getTextHeight() - titleTextView[i].getPaddingTop() + titleTextView[i].getPaddingBottom());
                 } else {
                     titleTextView[i].layout(textLeft, additionalTop + textTop - titleTextView[i].getPaddingTop(), textLeft + titleTextView[i].getMeasuredWidth(), additionalTop + textTop + titleTextView[i].getTextHeight() - titleTextView[i].getPaddingTop() + titleTextView[i].getPaddingBottom());
@@ -1565,7 +1591,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         }
         if (additionalSubTitleOverlayContainer != null) {
             int textTop = getCurrentActionBarHeight() / 2 + (getCurrentActionBarHeight() / 2 - additionalSubTitleOverlayContainer.getMeasuredHeight()) / 2 - dp(2);
-            if (isCenterTitle) {
+            if (isTitleCentered()) {
                 additionalSubTitleOverlayContainer.layout(getMeasuredWidth() / 2 - additionalSubTitleOverlayContainer.getMeasuredWidth() / 2, additionalTop + textTop, getMeasuredWidth() / 2 + additionalSubTitleOverlayContainer.getMeasuredWidth() / 2, additionalTop + textTop + additionalSubTitleOverlayContainer.getMeasuredHeight());
             } else {
                 additionalSubTitleOverlayContainer.layout(textLeft, additionalTop + textTop, textLeft + additionalSubTitleOverlayContainer.getMeasuredWidth(), additionalTop + textTop + additionalSubTitleOverlayContainer.getMeasuredHeight());
@@ -1573,7 +1599,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         }
         if (subtitleTextView != null && subtitleTextView.getVisibility() != GONE) {
             int textTop = getCurrentActionBarHeight() / 2 + (getCurrentActionBarHeight() / 2 - subtitleTextView.getTextHeight()) / 2 - dp(2);
-            if (isCenterTitle) {
+            if (isTitleCentered()) {
                 subtitleTextView.layout(getMeasuredWidth() / 2 - subtitleTextView.getMeasuredWidth() / 2, additionalTop + textTop, getMeasuredWidth() / 2 + subtitleTextView.getMeasuredWidth() / 2, additionalTop + textTop + subtitleTextView.getTextHeight());
             } else {
                 subtitleTextView.layout(textLeft, additionalTop + textTop, textLeft + subtitleTextView.getMeasuredWidth(), additionalTop + textTop + subtitleTextView.getTextHeight());
@@ -1582,7 +1608,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
         if (additionalSubtitleTextView != null && additionalSubtitleTextView.getVisibility() != GONE) {
             int textTop = getCurrentActionBarHeight() / 2 + (getCurrentActionBarHeight() / 2 - additionalSubtitleTextView.getTextHeight()) / 2 - dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 1 : 1);
-            if (isCenterTitle) {
+            if (isTitleCentered()) {
                 additionalSubtitleTextView.layout(getMeasuredWidth() / 2 - additionalSubtitleTextView.getMeasuredWidth() / 2, additionalTop + textTop, getMeasuredWidth() / 2 + additionalSubtitleTextView.getMeasuredWidth() / 2, additionalTop + textTop + additionalSubtitleTextView.getTextHeight());
             } else {
                 additionalSubtitleTextView.layout(textLeft, additionalTop + textTop, textLeft + additionalSubtitleTextView.getMeasuredWidth(), additionalTop + textTop + additionalSubtitleTextView.getTextHeight());
@@ -2188,7 +2214,10 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
         if (isAdaptiveWidthSupported()) {
             int titleWidth = (int) chatAvatarContainer2.getTitleTextView().getExactWidthIncludeDrawables();
-            int subtitleWidth = (int) ((SimpleTextView) chatAvatarContainer2.getSubtitleTextView()).getExactWidthIncludeDrawables();
+            int subtitleWidth = 0;
+            if (chatAvatarContainer2.getSubtitleTextView() instanceof SimpleTextView simpleTextView) {
+                subtitleWidth = (int) simpleTextView.getExactWidthIncludeDrawables();
+            }
             int textWidth = Math.max(titleWidth, subtitleWidth);
 
             int targetWidth = Math.max(dp(100), textWidth + dp(40));
@@ -2205,7 +2234,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             final int menuWidth = hasForcedMenuWidth ? forcedMenuWidth : lerp(defaultMenuWidth, actionMenuWidth, getActionModeFactor());
             final int menuWidthWithPadding = menuWidth > 0 ? (menuWidth + p) : 0;
             final int rightOffset = lerp(menuWidthWithPadding, Math.max(menuWidthWithPadding, p + s), 0f);
-            final int leftDefault = lerp(hasBackButton ? s + p : 0, s + p, 0f);
+            final int leftDefault = lerp(hasBackButton ? getBackPillWidth() - p : 0, s + p, 0f);
             final int rightDefault = getWidth() - rightOffset;
             final int widthDefault = rightDefault - leftDefault;
 
@@ -2281,12 +2310,12 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
         if (glassDrawable != null && !glassOnlyBack) {
             int menuWidthWithPadding = menuWidth + (hasForcedMenuWidth ? (menuWidth > 0 ? p : 0) : (int) (p * animatorHasMenuItems.getFloatValue()));
-            if (isCenterTitle) {
+            if (isTitleCentered()) {
                 menuWidthWithPadding = menuWidth > 0 ? (menuWidth + p) : 0;
             }
             final int rightOffset = lerp(menuWidthWithPadding, Math.max(menuWidthWithPadding, p + s), chatAvatarContainer == null ? 0f : 1f - animatorAvatarContainerHasAvatar.getFloatValue());
 
-            final int leftDefault = lerp(hasBackButton ? s + p : 0, s + p, chatAvatarContainer == null? 0f : 1f - animatorAvatarContainerHasAvatar.getFloatValue());
+            final int leftDefault = lerp(hasBackButton ? getBackPillWidth() - p : 0, s + p, chatAvatarContainer == null? 0f : 1f - animatorAvatarContainerHasAvatar.getFloatValue());
             final int rightDefault = getWidth() - rightOffset;
             final int widthDefault = rightDefault - leftDefault;
             final int left, right;
@@ -2299,24 +2328,65 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
                     - chatAvatarContainer.getLeftPadding()
                     + p + dp(3));
             } else {
+                final int baseLeftDefault = hasBackButton ? (s + p * 2) - p : 0;
+                final int baseLeft;
+
                 if (isAdaptiveWidthSupported()) {
                     int width = (int) animatorAdaptiveWidth.getFactor();
 
                     if (width <= 0) {
                         int titleWidth = (int) chatAvatarContainer2.getTitleTextView().getExactWidthIncludeDrawables();
-                        int subtitleWidth = (int) ((SimpleTextView) chatAvatarContainer2.getSubtitleTextView()).getExactWidthIncludeDrawables();
+                        int subtitleWidth = 0;
+                        if (chatAvatarContainer2.getSubtitleTextView() instanceof SimpleTextView simpleTextView) {
+                            subtitleWidth = (int) simpleTextView.getExactWidthIncludeDrawables();
+                        }
                         width = Math.max(dp(100), Math.max(titleWidth, subtitleWidth) + dp(40));
                         width += dp(15);
                         width = Math.min(widthDefault, width);
                         animatorAdaptiveWidth.forceFactor(width);
                     }
 
-                    int center = (leftDefault + rightDefault) / 2;
-                    left = center - width / 2;
+                    width = Math.min(width, widthDefault);
+
+                    final int baseCenter = (baseLeftDefault + rightDefault) / 2;
+                    baseLeft = baseCenter - width / 2;
+
+                    left = Math.max(baseLeft, leftDefault);
                     right = left + width;
+
+                    final int space = baseLeft - leftDefault;
+                    if (space < 5 && iOSUnreadBadgeAvailable() && !isActionModeShowed()) {
+                        int shift = Math.max(0, left - baseLeft);
+
+                        chatAvatarContainer2.setMoveText(true);
+
+                        chatAvatarContainer2.getTitleTextView().setTranslationX(shift);
+                        if (chatAvatarContainer2.getSubtitleTextView() instanceof SimpleTextView simpleTextView) {
+                            simpleTextView.setTranslationX(shift);
+                        } else if (chatAvatarContainer2.getSubtitleTextView() instanceof AnimatedTextView animatedTextView) {
+                            animatedTextView.setTranslationX(shift);
+                        }
+                    }
                 } else {
+                    final int width = widthDefault;
+                    final int baseCenter = (baseLeftDefault + rightDefault) / 2;
+                    baseLeft = baseCenter - width / 2;
+
                     left = leftDefault;
                     right = rightDefault;
+
+                    if (chatAvatarContainer2 != null && iOSUnreadBadgeAvailable() && !isActionModeShowed() && backButtonImageView != null && backButtonImageView.unreadCount > 0) {
+                        int shift = Math.max(0, left - baseLeft);
+
+                        chatAvatarContainer2.setMoveText(true);
+
+                        chatAvatarContainer2.getTitleTextView().setTranslationX(shift);
+                        if (chatAvatarContainer2.getSubtitleTextView() instanceof SimpleTextView simpleTextView) {
+                            simpleTextView.setTranslationX(shift);
+                        } else if (chatAvatarContainer2.getSubtitleTextView() instanceof AnimatedTextView animatedTextView) {
+                            animatedTextView.setTranslationX(shift);
+                        }
+                    }
                 }
             }
 
@@ -2324,12 +2394,17 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             glassDrawable.draw(canvas);
         }
         if (glassDrawableBack != null && hasBackButton) {
-            glassDrawableBack.setBounds(0, t, s + p * 2, b);
+            if (iOSUnreadBadgeAvailable() && countLayout != null) {
+                int extra = getBackPillCounterExtraWidth();
+                int fullWidth = Math.max(1, getBackPillCounterTargetWidth());
+                countLayout.setAlpha(Math.min(1f, extra / (float) fullWidth));
+            }
+            glassDrawableBack.setBounds(0, t, getBackPillWidth(), b);
             glassDrawableBack.draw(canvas);
         }
         if (glassDrawableMenu != null && menuWidth > 0 && !glassOnlyBack) {
             glassDrawableMenu.setBounds(getWidth() - Math.max(s, menuWidth) - p * 2, t, getWidth(), b);
-            glassDrawableMenu.setAlpha(hasForcedMenuWidth || isCenterTitle ? 255 : (int) (255 * animatorHasMenuItems.getFloatValue()));
+            glassDrawableMenu.setAlpha(hasForcedMenuWidth || isTitleCentered() ? 255 : (int) (255 * animatorHasMenuItems.getFloatValue()));
             glassDrawableMenu.draw(canvas);
         }
 
@@ -2531,68 +2606,37 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
     }
 
     /** Cherrygram start */
-    private CounterView countLayout;
+    private boolean countLayoutIsVisible;
+    private boolean isIOSUnreadBadgeAvailable;
+    private boolean forceAdaptiveWidth;
 
-    private final FactorAnimator animatorAdaptiveWidth = new FactorAnimator(0, this, CubicBezierInterpolator.EASE_OUT_QUINT, 500);
+    public CounterView countLayout;
     private ChatAvatarContainer chatAvatarContainer2;
+
+    private AnimatorSet countLayoutAnimator;
+
+    private final FactorAnimator animatorAdaptiveWidth = new FactorAnimator(0, this, CubicBezierInterpolator.EASE_OUT_QUINT, 380);
+
+    private final FactorAnimator animatorBackPillWidth = new FactorAnimator(0, this, CubicBezierInterpolator.EASE_OUT_QUINT, 380);
+    private static final int BACK_COUNTER_LEFT_OFFSET_DP = 30;
+    private static final int BACK_COUNTER_MAX_EXTRA_DP = 35;
 
     public void setChatAvatarContainer2(ChatAvatarContainer chatAvatarContainer) {
         this.chatAvatarContainer2 = chatAvatarContainer;
     }
 
+    public void setForceAdaptiveWidth(boolean forceAdaptiveWidth) {
+        this.forceAdaptiveWidth = forceAdaptiveWidth;
+    }
+
     private boolean isAdaptiveWidthSupported() {
-        return CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth()
+        return forceAdaptiveWidth || (CherrygramChatsConfig.INSTANCE.getCenterChatTitle_AdaptiveWidth()
                 && chatAvatarContainer2 != null && chatAvatarContainer2.isCentered()
+                && chatAvatarContainer2.getChatActivity() != null
                 && !chatAvatarContainer2.getChatActivity().hasSelectedMessages()
                 && !chatAvatarContainer2.getChatActivity().isInSearchMode()
 //                && !chatAvatarContainer2.getChatActivity().isInPreviewMode()
-                && !chatAvatarContainer2.getChatActivity().isInBubbleMode();
-    }
-
-    public class UnreadImageView extends ImageView {
-        private int unreadCount = 0;
-
-        public UnreadImageView(Context context) {
-            super(context);
-        }
-
-        public void createUnreadView(int count) {
-            if (countLayout != null) {
-                return;
-            }
-            countLayout = new CounterView(getContext(), resourcesProvider) {
-                @Override
-                public void invalidate() {
-                    super.invalidate();
-                }
-            };
-            countLayout.setReverse(true);
-            countLayout.setGravity(Gravity.LEFT);
-
-            addView(countLayout, LayoutHelper.createFrame(54, 54, Gravity.LEFT | Gravity.TOP));
-//            countLayout.setOnClickListener(v -> backButtonImageView.callOnClick());
-
-            setUnread(count);
-        }
-
-        public void checkUnreadView(int count) {
-            if (!CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton() || parentFragment != null && parentFragment.isInPreviewMode()) return;
-            if (countLayout == null) {
-                createUnreadView(count);
-            } else {
-                setUnread(count);
-            }
-        }
-
-        public void setUnread(int count) {
-            count = Math.max(0, count);
-            countLayout.setVisibility(count > 0 ? VISIBLE : GONE);
-            if (count != unreadCount) {
-                unreadCount = count;
-                countLayout.setCount(count, true);
-            }
-        }
-
+                && !chatAvatarContainer2.getChatActivity().isInBubbleMode());
     }
 
     public void onDrawCrossfadeBackground(Canvas canvas) {
@@ -2609,9 +2653,249 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         }
     }
 
-    public int getItemsColor() {
-        return itemsColor;
+    private boolean isTitleCentered() {
+        return CherrygramAppearanceConfig.INSTANCE.getCenterTitle() || chatAvatarContainer2 != null && chatAvatarContainer2.isCentered();
     }
+
+    /** Unread Badge start */
+    private int getBackPillCounterTargetWidth() {
+        if (countLayout == null) {
+            return 0;
+        }
+        return Math.min(dp(BACK_COUNTER_MAX_EXTRA_DP), Math.max(0, countLayout.getMeasuredWidth()));
+    }
+
+    public void updateBackPillWidth(boolean animated) {
+        boolean show = iOSUnreadBadgeAvailable()
+                && countLayout != null
+                && backButtonImageView != null
+                && backButtonImageView.getUnreadCount() > 0
+                && !isActionModeShowed()
+                && !isSearchFieldVisible;
+
+        int target = show ? getBackPillCounterTargetWidth() : 0;
+
+        if (countLayout != null) {
+            if (countLayoutIsVisible != show) {
+                countLayoutIsVisible = show;
+
+                if (countLayoutAnimator != null) {
+                    countLayoutAnimator.cancel();
+                }
+
+                if (animated) {
+                    countLayoutAnimator = new AnimatorSet();
+                    ArrayList<Animator> animators = new ArrayList<>();
+
+                    ValueAnimator progressAnimator = ValueAnimator.ofFloat(show ? 0.0f : 1.0f, show ? 1.0f : 0.0f);
+
+                    final boolean[] iconTriggered = {false};
+
+                    progressAnimator.addUpdateListener(animation -> {
+                        float progress = (float) animation.getAnimatedValue();
+
+                        countLayout.setScaleX(progress);
+                        countLayout.setScaleY(progress);
+                        countLayout.setAlpha(progress);
+
+                        float fraction = animation.getAnimatedFraction();
+
+                        if (show && fraction >= 0.5f && !iconTriggered[0]) {
+                            iconTriggered[0] = true;
+                            updateMoveBackIconState(true);
+                        }
+                    });
+
+                    animators.add(progressAnimator);
+
+                    countLayoutAnimator.playTogether(animators);
+                    countLayoutAnimator.setInterpolator(CubicBezierInterpolator.DEFAULT);
+                    countLayoutAnimator.setDuration(380);
+
+                    countLayoutAnimator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            if (!show) {
+                                updateMoveBackIconState(false);
+                            }
+                        }
+                    });
+
+                    countLayoutAnimator.start();
+                } else {
+                    countLayout.setScaleX(show ? 1.0f : 0.0f);
+                    countLayout.setScaleY(show ? 1.0f : 0.0f);
+                    countLayout.setAlpha(show ? 1.0f : 0.0f);
+                    updateMoveBackIconState(show);
+                }
+            }
+        }
+
+        if (animated) {
+            if (animatorBackPillWidth.getToFactor() != target) {
+                animatorBackPillWidth.animateTo(target);
+            }
+        } else {
+            animatorBackPillWidth.forceFactor(target);
+        }
+    }
+
+    private void updateMoveBackIconState(boolean show) {
+        if (backButtonImageView != null) {
+            Drawable drawable = backButtonImageView.getDrawable();
+            if (drawable instanceof BackDrawable backDrawable) {
+                backDrawable.setMoveBackIcon(show && !isSearchFieldVisible);
+            }
+        }
+    }
+
+    private int getBackPillCounterExtraWidth() {
+        if (!iOSUnreadBadgeAvailable() || countLayout == null) {
+            return 0;
+        }
+        return Math.max(0, (int) animatorBackPillWidth.getFactor());
+    }
+
+    private int getBackPillWidth() {
+        final int p = dp(6);
+        final int s = dp(46);
+        int width = s + p * 2;
+        int extra = getBackPillCounterExtraWidth();
+        if (extra > 0) {
+            width = Math.max(width, dp(BACK_COUNTER_LEFT_OFFSET_DP) + extra + getBackPillCounterRightPadding());
+        }
+        return width;
+    }
+
+    public int getBackPillCounterRightPadding() {
+        int count = (countLayout != null) ? backButtonImageView.getUnreadCount() : 0;
+
+        if (count <= 0) {
+            return 0;
+        }
+
+        String countStr = String.valueOf(Math.min(999, count));
+        int length = countStr.length();
+
+        if (length == 1) {
+            return dp(3.5F);
+        } else if (length == 2) {
+            return dp(7.5F);
+        } else {
+            return dp(13.5F);
+        }
+    }
+
+    public int getBackPillGrowth() {
+        return Math.max(0, getBackPillWidth() - (dp(46) + dp(6) * 2));
+    }
+
+    public void setIOSUnreadBadgeAvailable(boolean available) {
+        this.isIOSUnreadBadgeAvailable = available;
+        if (countLayout != null) countLayout.setIOSUnreadBadgeAvailable(available);
+
+        /*if (isIOSUnreadBadgeAvailable) {
+            if (backButtonImageView != null) {
+                backButtonImageView.invalidate();
+            }
+            invalidate();
+        }*/
+    }
+
+    public boolean iOSUnreadBadgeAvailable() {
+        return CherrygramChatsConfig.INSTANCE.getCenterChatTitle() && CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton_iOS() && isIOSUnreadBadgeAvailable;
+    }
+
+    public class UnreadImageView extends ImageView {
+        private int unreadCount = -1;
+
+        public UnreadImageView(Context context) {
+            super(context);
+        }
+
+        public void createUnreadView(int count) {
+            if (countLayout != null) {
+                return;
+            }
+            countLayout = new CounterView(getContext(), resourcesProvider) {
+                @Override
+                public void invalidate() {
+                    super.invalidate();
+                    if (iOSUnreadBadgeAvailable()) {
+                        updateBackPillWidth(true);
+                    }
+                }
+            };
+
+            countLayout.setReverse(!iOSUnreadBadgeAvailable());
+            countLayout.setGravity(Gravity.LEFT);
+
+            if (iOSUnreadBadgeAvailable()) {
+                countLayout.setColors(Theme.key_actionBarActionModeDefault, Theme.key_actionBarActionModeDefaultIcon);
+                countLayout.setTextSize(12f);
+            }
+
+            addView(countLayout, LayoutHelper.createFrame(
+                    iOSUnreadBadgeAvailable() ? LayoutHelper.WRAP_CONTENT : 54,
+                    iOSUnreadBadgeAvailable() ? 24 : 54,
+                    Gravity.LEFT | Gravity.TOP
+            ));
+
+            setUnread(count);
+        }
+
+        public void checkUnreadView(int count) {
+            if (!CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton() || (parentFragment != null && parentFragment.isInPreviewMode())) return;
+            if (countLayout == null) {
+                createUnreadView(count);
+            } else {
+                setUnread(count);
+            }
+        }
+
+        public int getUnreadCount() {
+            return unreadCount;
+        }
+
+        public void setUnread(int count) {
+            count = Math.max(0, count);
+
+            if (count > 999) {
+                count = 999;
+            }
+
+            if (countLayout == null) return;
+
+            if (count != unreadCount) {
+                unreadCount = count;
+                if (iOSUnreadBadgeAvailable()) {
+                    countLayout.setColors(Theme.key_actionBarActionModeDefault, Theme.key_actionBarActionModeDefaultIcon);
+                    countLayout.setTextSize(12f);
+
+                    String countStr = String.valueOf(count);
+
+                    float badgeWidthDp;
+                    if (countStr.length() == 1) {
+                        badgeWidthDp = 18f;
+                    } else if (countStr.length() == 2) {
+                        badgeWidthDp = 24f;
+                    } else {
+                        badgeWidthDp = 30f;
+                    }
+                    countLayout.setBackgroundSize(badgeWidthDp, 16f);
+
+                    countLayout.setCount(count, true);
+                } else {
+                    countLayout.setCount(count, true);
+                }
+            }
+
+            if (iOSUnreadBadgeAvailable()) {
+                updateBackPillWidth(true);
+            }
+        }
+    }
+    /** Unread Badge finish */
     /** Cherrygram finish */
 
 }

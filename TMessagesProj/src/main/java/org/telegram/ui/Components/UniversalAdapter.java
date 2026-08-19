@@ -1063,10 +1063,12 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
             case VIEW_TYPE_EXPANDABLE_SWITCH:
                 TextCheckCell2 switchCell = (TextCheckCell2) holder.itemView;
                 if (item.iconResId != 0) {
-                    switchCell.setTextAndIconAndCheck(item.text.toString(), item.iconResId, item.checked, divider, switchCell.id == item.id);
+                    switchCell.setTextAndIconAndCheck(item.text, item.iconResId, item.checked, divider, switchCell.id == item.id);
                 } else {
-                    switchCell.setTextAndCheck(item.text.toString(), item.checked, divider, switchCell.id == item.id);
+                    switchCell.setTextAndCheck(item.text, item.checked, divider, switchCell.id == item.id);
                 }
+                switchCell.setCheckBoxHidden(item.checkboxHidden);
+
                 switchCell.getCheckBox().setDrawIconType(item.intValue);
                 switchCell.getCheckBox().setColors(item.intValue == 0 ? Theme.key_switchTrack : Theme.key_fill_RedNormal,
                     Theme.key_switchTrackChecked, Theme.key_windowBackgroundWhite, Theme.key_windowBackgroundWhite);
@@ -1077,7 +1079,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
                         switchCell.hideCollapseArrow();
                     } else {
                         switchCell.setCollapseArrow(item.animatedText.toString(), item.collapsed, () -> {
-                            item.clickCallback.onClick(switchCell);
+                            if (item.clickCallback != null) item.clickCallback.onClick(switchCell);
                         });
                     }
                 }

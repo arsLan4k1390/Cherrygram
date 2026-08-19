@@ -392,7 +392,7 @@ public class ChatsHelper extends BaseController {
             if (chatActivity.getMessageMenuHelper().allowNewMessageMenu() && chatActivity.getMessageMenuHelper().showCustomDivider(false)) {
                 popupLayout.addView(new ActionBarPopupWindow.GapView(
                         chatActivity.getContext(),
-                        MessageMenuHelper.getMessageMenuGapColor(),
+                        MessageMenuHelper.getMessageMenuGapColor(chatActivity.getResourceProvider()),
                         Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.getResourceProvider())
                 ), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
             } else {

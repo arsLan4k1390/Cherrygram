@@ -16,15 +16,22 @@ import android.content.Intent;
 import android.os.Build;
 import android.view.View;
 
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.NotificationsService;
 import org.telegram.messenger.R;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
+import org.telegram.ui.UsersSelectActivity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
@@ -38,21 +45,26 @@ public class GeneralPreferencesEntry extends UniversalFragment {
     private final int predictiveBackRow = 3;
 
     private final int silenceNonContactsRow = 4;
-    private final int defaultNotificationIconRow = 5;
-    private final int residentNotificationRow = 6;
 
-    private final int hideStoriesRow = 7;
-    private final int archiveStoriesRow = 8;
-    private final int archiveStoriesUsersRow = 9;
-    private final int archiveStoriesChannelsRow = 10;
+    private final int ignoreMentionsRow = 5;
+    private final int ignoreMentionsExclusionsRow = 6;
+    private final int ignoreMentionsAutoReadRow = 7;
 
-    private final int useSystemEmojiRow = 11;
-    private final int useSystemFontsRow = 12;
-    private final int tabledModeRow = 13;
+    private final int defaultNotificationIconRow = 8;
+    private final int residentNotificationRow = 9;
 
-    private final int downloadSpeedBoostRow = 14;
-    private final int uploadSpeedBoostRow = 15;
-    private final int slowNetworkMode = 16;
+    private final int hideStoriesRow = 10;
+    private final int archiveStoriesRow = 11;
+    private final int archiveStoriesUsersRow = 12;
+    private final int archiveStoriesChannelsRow = 13;
+
+    private final int useSystemEmojiRow = 14;
+    private final int useSystemFontsRow = 15;
+    private final int tabledModeRow = 16;
+
+    private final int downloadSpeedBoostRow = 17;
+    private final int uploadSpeedBoostRow = 18;
+    private final int slowNetworkMode = 19;
 
     private boolean expandedArchiveStoriesSection = false;
 
@@ -99,6 +111,30 @@ public class GeneralPreferencesEntry extends UniversalFragment {
         }
         items.add(UItem.asShadow(null));
 
+        items.add(
+                SettingsHelper.asSwitchCG(
+                        ignoreMentionsRow,
+                        SettingsHelper.applyNewSpan(getString(R.string.CG_IgnoreMentions)),
+                        getString(R.string.CG_IgnoreMentionsDesc)
+                )
+                .setChecked(CherrygramCoreConfig.INSTANCE.getIgnoreMentions())
+        );
+
+        if (CherrygramCoreConfig.INSTANCE.getIgnoreMentions()) {
+            items.add(UItem.asButton(ignoreMentionsExclusionsRow, R.drawable.msg_mention, getString(R.string.CG_IgnoreMentionsIgnoredChats), String.valueOf(getChatsNotificationHelper().getIgnoredChatsCount())));
+
+            items.add(
+                    SettingsHelper.asSwitchCG(
+                            ignoreMentionsAutoReadRow,
+                            getString(R.string.CG_IgnoreMentionsAutoRead),
+                            getString(R.string.CG_IgnoreMentionsAutoReadDesc)
+                    )
+                    .setChecked(CherrygramCoreConfig.INSTANCE.getIgnoreMentionsMarkAsRead())
+            );
+        }
+
+        items.add(UItem.asShadow(null));
+
         items.add(UItem.asHeader(getString(R.string.FilterStories)));
         items.add(SettingsHelper.asSwitchCG(hideStoriesRow, getString(R.string.CP_HideStories), getString(R.string.CP_HideStories_Desc))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getHideStories())
@@ -119,6 +155,7 @@ public class GeneralPreferencesEntry extends UniversalFragment {
                     CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromUsers(newValue);
                     CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(newValue);
 
+                    expandedArchiveStoriesSection = !expandedArchiveStoriesSection;
                     listView.adapter.update(true);
                 })
         );
@@ -200,6 +237,16 @@ public class GeneralPreferencesEntry extends UniversalFragment {
         } else if (item.id == silenceNonContactsRow) {
             CherrygramCoreConfig.INSTANCE.setSilenceNonContacts(!CherrygramCoreConfig.INSTANCE.getSilenceNonContacts());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getSilenceNonContacts());
+        } else if (item.id == ignoreMentionsRow) {
+            CherrygramCoreConfig.INSTANCE.setIgnoreMentions(!CherrygramCoreConfig.INSTANCE.getIgnoreMentions());
+            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getIgnoreMentions());
+
+            listView.adapter.update(true);
+        } else if (item.id == ignoreMentionsExclusionsRow) {
+            createUsersSelectActivity(view);
+        } else if (item.id == ignoreMentionsAutoReadRow) {
+            CherrygramCoreConfig.INSTANCE.setIgnoreMentionsMarkAsRead(!CherrygramCoreConfig.INSTANCE.getIgnoreMentionsMarkAsRead());
+            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getIgnoreMentionsMarkAsRead());
         } else if (item.id == defaultNotificationIconRow) {
             CherrygramCoreConfig.INSTANCE.setOldNotificationIcon(!CherrygramCoreConfig.INSTANCE.getOldNotificationIcon());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getOldNotificationIcon());
@@ -331,6 +378,62 @@ public class GeneralPreferencesEntry extends UniversalFragment {
             case CherrygramCoreConfig.TABLET_MODE_DISABLE -> getString(R.string.LiteBatteryDisabled);
             default -> getString(R.string.QualityAuto);
         };
+    }
+
+    private void createUsersSelectActivity(View view) {
+        AndroidUtilities.runOnUIThread(() -> {
+            UsersSelectActivity activity = getUsersSelectActivity();
+            activity.setDelegate((ids, type) -> {
+                Set<Long> chatIds = new HashSet<>(ids);
+
+                Set<String> ignoredChats = new HashSet<>(getChatsNotificationHelper().getArrayList(getChatsNotificationHelper().getIgnoredArray()));
+
+                CherrygramLogger.d(() -> "old ignored chats array: " + ignoredChats);
+
+                ignoredChats.clear();
+
+                if (!chatIds.isEmpty()) {
+                    for (Long id : chatIds) {
+                        if (/*DialogObject.isUserDialog(id) ||*/ DialogObject.isChatDialog(id)) {
+                            ignoredChats.add(String.valueOf(id));
+                        }
+                    }
+                }
+
+                getChatsNotificationHelper().saveArrayList(
+                        new ArrayList<>(ignoredChats),
+                        getChatsNotificationHelper().getIgnoredArray()
+                );
+
+                CherrygramLogger.d(() -> "new ignored chats array: " + ignoredChats);
+
+                SettingsHelper.updateButtonValue(view, String.valueOf(getChatsNotificationHelper().getIgnoredChatsCount()));
+            });
+
+            presentFragment(activity);
+        }, 300);
+    }
+
+    private UsersSelectActivity getUsersSelectActivity() {
+        ArrayList<Long> chatsList = new ArrayList<>();
+        ArrayList<String> ignoredChatsIds = getChatsNotificationHelper().getArrayList(getChatsNotificationHelper().getIgnoredArray());
+
+        for (String chatIdStr : ignoredChatsIds) {
+            long chatId = Long.parseLong(chatIdStr);
+
+//            TLRPC.User user = getMessagesController().getUser(chatId);
+            TLRPC.Chat chat = getMessagesController().getChat(-chatId);
+
+            /*if (user != null) {
+                chatsList.add(user.id);
+            } else*/ if (chat != null) {
+                chatsList.add(-chat.id);
+            }
+        }
+
+        UsersSelectActivity activity = new UsersSelectActivity(true, chatsList, 0);
+        activity.asIgnoredChats();
+        return activity;
     }
 
 }

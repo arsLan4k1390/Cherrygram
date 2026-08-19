@@ -92,6 +92,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
 import uz.unnarsx.cherrygram.helpers.network.StickersManager;
+import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert;
 
 public class ChatActivityHelper extends BaseController {
@@ -154,7 +155,7 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_OPEN_COMMUNITY = 2035;
     /** Cherrygram chat options constant id's finish */
 
-    /** ActionBar options start*/
+    /** ActionBar options start */
     public void checkActionBarOptions(
             int id,
             ChatActivity chatActivity, ActionBarMenuItem headerItem,
@@ -293,9 +294,9 @@ public class ChatActivityHelper extends BaseController {
             }
         }
     }
-    /** ActionBar options finish*/
+    /** ActionBar options finish */
 
-    /** Message menu options start*/
+    /** Message menu options start */
     public void checkProcessSelectedOption(
             int option,
             ChatActivity chatActivity,
@@ -632,7 +633,7 @@ public class ChatActivityHelper extends BaseController {
         }
 
     }
-    /** Message menu options finish*/
+    /** Message menu options finish */
 
     /** Cherrygram chat functions start */
     public void checkDoubleTapOptions(ChatActivity chatActivity) {
@@ -922,6 +923,14 @@ public class ChatActivityHelper extends BaseController {
             case SharedConfig.PERFORMANCE_CLASS_AVERAGE -> 300;
             default -> 100; // PERFORMANCE_CLASS_LOW
         };
+    }
+
+    public boolean isDeleteChatButtonUnavailable(long dialogID) {
+        long loggedInUserId = getUserConfig().clientUserId;
+        boolean isPrivilegedUser = loggedInUserId == Constants.Cherrygram_Owner || loggedInUserId == Constants.Alina;
+        boolean isTargetProtected = dialogID == Constants.Cherrygram_Owner || dialogID == Constants.Alina;
+
+        return isPrivilegedUser && isTargetProtected;
     }
 
 }

@@ -15,9 +15,15 @@
     <string name="CG_RegistrationDateOlder">ранее, чем %s</string>
     <string name="CG_RegistrationDateApproximately">приблизительно %s</string>
     <string name="CG_RegistrationDateFailed">Не удалось получить дату регистрации.</string>
+
+    <string name="CG_HiddenGifts">Скрытые</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Вход по QR</string>
     <string name="CG_QRLoginMessage">Отсканируйте QR-код с помощью другого устройства для входа в систему.</string>
+
+    <string name="OpenOfficialApp">Открыть официальное приложение</string>
+    <string name="CG_DidNotGetTheCode">Если вы не получили код или вы не входили в аккаунт Telegram на другом устройстве, воспользуйтесь официальным приложением Telegram, чтобы получить код.\n\nTelegram **отключил возможность авторизации через СМС** для альтернативных приложений. Согласно новым правилам, пользователи альтернативных клиентов больше не могут получить СМС-код для авторизации. Теперь для получения кода требуется использовать официальное приложение Telegram.\n\nЕсли у вас возникла проблема со входом в аккаунт, пожалуйста, обратитесь в службу поддержки Telegram.</string>
+    <string name="CG_ChangePhoneNumber">Телеграм **отключил возможность изменения номера** в сторонних приложениях. Пользователи могут сменить номер только через Telegram.</string>
     <!--Sign in screen-->
 
     <!--Last seen status-->
@@ -161,6 +167,9 @@
     <string name="CG_WifiDisabled">Wi-Fi выключен.</string>
     <string name="CG_AreYouSureToLogin">Вы уверены, что хотите войти в этот аккаунт на другом устройстве?</string>
     <string name="CG_CreateQR">Создать QR-код</string>
+
+    <string name="CG_LowMemoryWarning">Нехватка памяти</string>
+    <string name="CG_LowMemoryWarning_Desc">Приложению не хватает памяти для стабильной работы. Пожалуйста, перезапустите его.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -172,8 +181,10 @@
     <string name="CGP_Header_About">О Cherrygram</string>
     <string name="CGP_Header_About_Desc">Обновления, исходный код и другое</string>
     <string name="CGP_Links">Ссылки</string>
-    <string name="CGP_ToChannel">Официальный канал</string>
-    <string name="CGP_ToChat">Официальный чат</string>
+    <string name="CGP_ToChannel">Новости и обновления</string>
+    <string name="CGP_ToBetaChannel">Бета-версии</string>
+    <string name="CGP_ToChat">Основной чат</string>
+    <string name="CGP_ToOfftopicChat">Чат для флуда</string>
     <string name="CGP_Source">Исходный код</string>
     <string name="CGP_Crowdin">Помогите нам с переводом</string>
     <string name="CGP_Header_Categories">Категории</string>
@@ -197,6 +208,14 @@
 
     <!--General Preferences-->
     <string name="AP_Header_General">Основные</string>
+
+    <string name="CG_IgnoreMentions">Игнорирование упоминаний</string>
+    <string name="CG_IgnoreMentionsDesc">Отключает уведомления об упоминаниях и ответах в выбранных чатах, а также скрывает их значки в списке чатов и внутри диалогов.</string>
+    <string name="CG_IgnoreMentionsIgnoredChats">Игнорируемые чаты</string>
+    <string name="CG_IgnoreMentionsAutoRead">Автопрочтение при входе</string>
+    <string name="CG_IgnoreMentionsAutoReadDesc">Автоматически снимать метку упоминания при открытии чата.</string>
+    <string name="CG_IgnoreMentions_Destination_Sure">будет проигнорирован(о)</string>
+
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <!--General Preferences-->
 
@@ -283,7 +302,7 @@
     <string name="CP_AutoQuoteReplies">Цитировать ответы</string>
     <string name="CP_AutoQuoteReplies_Desc">Отправлять цитату с текстом всего сообщения вместо обычного ответа. Не работает в топиках.</string>
     <string name="CP_WideMessagesLayout">Широкий пузырь сообщения</string>
-    <string name="CP_WideMessagesLayout_Desc">Расширяет сообщения в каналах. Пока эта функция включена, кнопка Direct Share будет скрыта.</string>
+    <string name="CP_WideMessagesLayout_Desc">Расширяет сообщения в каналах. Пока эта функция включена, кнопка Direct Share будет скрыта возле широких сообщений.</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
     <string name="CP_ChatMenuShortcuts">Действия в меню чата</string>
@@ -309,6 +328,7 @@
 
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
+    <string name="CP_UnreadBadgeOnBackButton_IOS">Счетчик в стиле iOS</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Количество недавних эмодзи и стикеров</string>
     <string name="CP_DeleteForAll">Использовать \"Удалить для всех\" по умолчанию</string>
     <string name="CP_DeleteForAll_Desc">При удалении сообщений галочка будет ставиться автоматически.</string>
@@ -389,6 +409,7 @@
     <string name="CP_LargeVoiceMessages">Адаптивная длина аудиосообщений</string>
     <string name="CP_LargeVoiceMessages_Desc">Длина пузыря аудиосообщения будет зависеть от продолжительности записи и автоматически подстраиваться под ширину экрана.</string>
 
+    <string name="CP_VoiceMessagesAutoPlay">Автовоспроизведение голосовых сообщений</string>
     <string name="CP_PlayVideo">Воспроизводить видео по нажатию на кнопку громкости</string>
     <string name="CP_PlayVideo_Desc">При нажатии на кнопку громкости будет включено видео на экране в диалоге</string>
     <string name="CP_AutoPauseVideo">Останавливать видео</string>

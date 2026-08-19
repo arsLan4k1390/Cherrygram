@@ -98,6 +98,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
+import uz.unnarsx.cherrygram.chats.helpers.ChatsNotificationsHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.chats.filters.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
@@ -608,6 +609,7 @@ public class NotificationsController extends BaseController implements Notificat
                 AndroidUtilities.runOnUIThread(() -> {
                     NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.notificationsCountUpdated, currentAccount);
                     getNotificationCenter().postNotificationName(NotificationCenter.dialogsUnreadCounterChanged, pushDialogsCount);
+                    getNotificationCenter().postNotificationName(NotificationCenter.cgUnreadCounterChanged);
                 });
             }
             notifyCheck = false;
@@ -694,6 +696,7 @@ public class NotificationsController extends BaseController implements Notificat
                 AndroidUtilities.runOnUIThread(() -> {
                     NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.notificationsCountUpdated, currentAccount);
                     getNotificationCenter().postNotificationName(NotificationCenter.dialogsUnreadCounterChanged, pushDialogsCount);
+                    getNotificationCenter().postNotificationName(NotificationCenter.cgUnreadCounterChanged);
                 });
             }
             notifyCheck = false;
@@ -1373,6 +1376,7 @@ public class NotificationsController extends BaseController implements Notificat
                         AndroidUtilities.runOnUIThread(() -> {
                             NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.notificationsCountUpdated, currentAccount);
                             getNotificationCenter().postNotificationName(NotificationCenter.dialogsUnreadCounterChanged, pushDialogsCount);
+                            getNotificationCenter().postNotificationName(NotificationCenter.cgUnreadCounterChanged);
                         });
                     }
                     notifyCheck = false;
@@ -1525,6 +1529,7 @@ public class NotificationsController extends BaseController implements Notificat
                 AndroidUtilities.runOnUIThread(() -> {
                     NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.notificationsCountUpdated, currentAccount);
                     getNotificationCenter().postNotificationName(NotificationCenter.dialogsUnreadCounterChanged, pushDialogsCount);
+                    getNotificationCenter().postNotificationName(NotificationCenter.cgUnreadCounterChanged);
                 });
             }
             notifyCheck = false;
@@ -1738,6 +1743,7 @@ public class NotificationsController extends BaseController implements Notificat
                 }
                 NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.notificationsCountUpdated, currentAccount);
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogsUnreadCounterChanged, pushDialogsCount);
+                getNotificationCenter().postNotificationName(NotificationCenter.cgUnreadCounterChanged);
             });
             showOrUpdateNotification(SystemClock.elapsedRealtime() / 1000 < 60);
 
@@ -4232,6 +4238,12 @@ public class NotificationsController extends BaseController implements Notificat
             if (lastMessageObject.messageOwner.mentioned) {
                 override_dialog_id = lastMessageObject.getFromChatId();
             }
+            if (lastMessageObject.messageOwner.mentioned) {
+                long mentionChatId = Math.abs(lastMessageObject.getDialogId());
+                if (ChatsNotificationsHelper.getInstance(currentAccount).shouldIgnoreMention(mentionChatId)) {
+                    return;
+                }
+            }
             int mid = lastMessageObject.getId();
             long chatId = lastMessageObject.messageOwner.peer_id.chat_id != 0 ? lastMessageObject.messageOwner.peer_id.chat_id : lastMessageObject.messageOwner.peer_id.channel_id;
             long userId = lastMessageObject.messageOwner.peer_id.user_id;
@@ -4363,6 +4375,14 @@ public class NotificationsController extends BaseController implements Notificat
                 boolean[] text = new boolean[1];
                 for (int i = 0; i < count; i++) {
                     MessageObject messageObject = pushMessages.get(i);
+
+                    if (messageObject.messageOwner.mentioned) {
+                        long mentionChatId = Math.abs(messageObject.getDialogId());
+                        if (ChatsNotificationsHelper.getInstance(currentAccount).shouldIgnoreMention(mentionChatId)) {
+                            continue;
+                        }
+                    }
+
                     String message = getStringForMessage(messageObject, false, text, null);
                     if (message == null || !messageObject.isStoryPush && messageObject.messageOwner.date <= dismissDate) {
                         continue;
@@ -4888,6 +4908,14 @@ public class NotificationsController extends BaseController implements Notificat
         LongSparseArray<ArrayList<MessageObject>> messagesByDialogs = new LongSparseArray<>();
         for (int a = 0; a < pushMessages.size(); a++) {
             MessageObject messageObject = pushMessages.get(a);
+
+            if (messageObject.messageOwner.mentioned) {
+                long mentionChatId = Math.abs(messageObject.getDialogId());
+                if (ChatsNotificationsHelper.getInstance(currentAccount).shouldIgnoreMention(mentionChatId)) {
+                    continue;
+                }
+            }
+
             long dialog_id = messageObject.getDialogId();
             long topicId = MessageObject.getTopicId(currentAccount, messageObject.messageOwner, getMessagesController().isForum(messageObject));
             int dismissDate = preferences.getInt("dismissDate" + dialog_id, 0);

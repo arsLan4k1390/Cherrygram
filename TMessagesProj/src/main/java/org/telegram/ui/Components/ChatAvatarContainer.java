@@ -805,9 +805,17 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int padding = isCentered() ? dp(isPreviewMode() ? 35 : 10) : 0;
         final int width = MeasureSpec.getSize(widthMeasureSpec) + (isCentered() ? 0 : titleTextView.getPaddingRight());
-        final int availableWidth = width - dp(((avatarImageView.getVisibility() == VISIBLE || isCentered()) ? 54 : 0) + 16);
+
+        int unreadCounterExtraPadding = 0;
+        if (actionBar != null && moveText) {
+            unreadCounterExtraPadding = actionBar.getBackPillGrowth()/* + dp(5)*/;
+        }
+
+        final int availableWidth = width - dp(((avatarImageView.getVisibility() == VISIBLE || isCentered()) ? 54 : 0) + 16) - unreadCounterExtraPadding;
+
         avatarImageView.measure(MeasureSpec.makeMeasureSpec(dp(avatarSizeInDp) - 2, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(avatarSizeInDp) - 2, MeasureSpec.EXACTLY));
         titleTextView.measure(MeasureSpec.makeMeasureSpec(availableWidth - padding, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(dp(24 + 8), MeasureSpec.AT_MOST));
+
         if (subtitleTextView != null) {
             subtitleTextView.measure(MeasureSpec.makeMeasureSpec(availableWidth - padding, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.AT_MOST));
         } else if (animatedSubtitleTextView != null) {
@@ -1913,6 +1921,12 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
     private final Rect avatarOptionsMenuRect = new Rect();
     private final int[] avatarOptionsMenuLocation = new int[2];
     private View avatarOptionsSelectedView;
+
+    private boolean moveText = false;
+
+    public void setMoveText(boolean moveText) {
+        this.moveText = moveText;
+    }
 
     public void setAvatarOptionsMenuItem(ActionBarMenuItem menuItem) {
         avatarOptionsMenuItem = menuItem;

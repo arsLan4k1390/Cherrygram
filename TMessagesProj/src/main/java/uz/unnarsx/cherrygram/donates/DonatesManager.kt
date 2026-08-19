@@ -287,7 +287,7 @@ object DonatesManager {
     }
     /** Stars finish */
 
-    /** Blocked start*/
+    /** Blocked start */
     private val FILE_NAME_BLOCKED = decodeBase64Array(Extra.FILE_NAME_BLOCKED_HASH)
     private val GITLAB_RAW_URL_BLOCKED = decodeBase64Array(Extra.GITLAB_RAW_URL_BLOCKED_HASH)
 
