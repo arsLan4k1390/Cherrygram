@@ -338,7 +338,7 @@ object RemoteConfigHelper {
     )
 
     private fun checkBrailleSpoiler() = checkAndUpdate(
-        RemoteConfigConstants.always_show_adsgram_in_chats,
+        RemoteConfigConstants.use_braille_spoiler,
         ::getBoolean,
         { CherrygramFirebaseConfig.useBrailleSpoiler },
         { CherrygramFirebaseConfig.useBrailleSpoiler = it }

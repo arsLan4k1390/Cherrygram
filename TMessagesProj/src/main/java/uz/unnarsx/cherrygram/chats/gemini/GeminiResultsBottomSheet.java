@@ -47,7 +47,6 @@ import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.TranslateController;
@@ -83,7 +82,7 @@ import java.util.Locale;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
-public class GeminiResultsBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
+public class GeminiResultsBottomSheet extends BottomSheet {
 
     private HeaderView headerView;
     private LoadingTextView loadingTextView;
@@ -768,26 +767,6 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         protected void onDetachedFromWindow() {
             super.onDetachedFromWindow();
             Bulletin.removeDelegate(this);
-        }
-    }
-
-    @Override
-    public void show() {
-        super.show();
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
-    }
-
-    @Override
-    public void dismiss() {
-        super.dismiss();
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
-    }
-
-    @Override
-    public void didReceivedNotification(int id, int account, Object... args) {
-        if (id == NotificationCenter.emojiLoaded) {
-            loadingTextView.invalidate();
-            textView.invalidate();
         }
     }
 
