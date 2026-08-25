@@ -1,39 +1,35 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
-        google()
         mavenCentral()
+        google()
         maven { url 'https://developer.huawei.com/repo/' }
-        maven { url "https://europe-west3-maven.pkg.dev/talsec-artifact-repository/freerasp" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.11.1'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0'
-        classpath 'com.google.gms:google-services:4.4.3'
+        classpath 'com.android.tools.build:gradle:8.10.1'
+        classpath 'com.google.gms:google-services:4.3.15'
         classpath 'com.huawei.agconnect:agcp:1.9.1.301'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.3'
-        classpath 'com.squareup.okhttp3:okhttp:5.1.0'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0"
     }
 }
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url 'https://developer.huawei.com/repo/' }
-        maven { url "https://jitpack.io" }
-        maven { url "https://europe-west3-maven.pkg.dev/talsec-artifact-repository/freerasp" }
-    }
+repositories {
+    google()
 }
 
+// Strip JLatexMath fonts we don't ship (transitive AAR assets from
+// io.noties.markwon:ext-latex -> ru.noties:jlatexmath-android, ~764 KB total under
+// assets/org/scilab/forge/jlatexmath/fonts/). Has to live in the APK modules — a
+// library's androidResources.ignoreAssetsPattern doesn't filter packaging in apps
+// that consume it. Using subprojects keeps it in one place.
+//   keep:  base/, latin/, maths/, euler/  (\mathbb, \mathcal, \mathfrak still work)
+//   drop:  latin/optional/, maths/optional/  (~290 KB; \textbf/\textit/\mathds fall back)
+//          licences/                          (~20 KB; pure license text files)
 subprojects {
-    afterEvaluate {
-        if (plugins.hasPlugin("com.android.library") ||
-                plugins.hasPlugin("com.android.application")) {
-            android {
-                buildFeatures {
-                    viewBinding true
-                }
+    plugins.withId('com.android.application') {
+        android {
+            androidResources {
+                ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~:!optional:!licences:!*stmary*:!*eufb*'
             }
         }
     }
