@@ -279,7 +279,7 @@ def apkFilePath = "${projectDir}/afat/standalone/${fileName}"
 def fileName2 = "Cherrygram-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-armeabi-v7a.apk"
 def apkFilePath2 = "${projectDir}/afat/standalone/${fileName2}"
 
-def fileName3 = "Cherrygram-Beta-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-universal.apk"
+def fileName3 = "Cherrygram-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-universal.apk"
 def apkFilePath3 = "${projectDir}/afat/standalone/${fileName3}"
 
 tasks.register('sendApk') {
