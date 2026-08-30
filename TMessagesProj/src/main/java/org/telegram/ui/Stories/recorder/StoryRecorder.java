@@ -7193,8 +7193,19 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                 CombinedDrawable drawable = new CombinedDrawable(new ColorDrawable(0xff222222), iconDrawable);
                 drawable.setIconSize(dp(64), dp(64));
                 collageLayoutView.setCameraThumb(drawable);
-                if (activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    new AlertDialog.Builder(getContext(), resourcesProvider)
+
+                boolean showRationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
+                if (!showRationale) {
+                    try {
+                        activity.requestPermissions(new String[]{Manifest.permission.CAMERA}, 111);
+                        requestedCameraPermission = true;
+                        return;
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
+                }
+
+                new AlertDialog.Builder(getContext(), resourcesProvider)
                         .setTopAnimation(R.raw.permission_request_camera, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
                         .setMessage(AndroidUtilities.replaceTags(getString(R.string.PermissionNoCameraWithHint)))
                         .setPositiveButton(getString(R.string.PermissionOpenSettings), (dialogInterface, i) -> {
@@ -7209,10 +7220,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                         .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), null)
                         .create()
                         .show();
-                    return;
-                }
-                activity.requestPermissions(new String[]{Manifest.permission.CAMERA}, 111);
-                requestedCameraPermission = true;
+                return;
             }
         }
 
@@ -7678,10 +7686,10 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
             }
             themeButtonDrawable.beginApplyLayerColors();
             int color = Theme.getColor(Theme.key_chats_menuName, resourcesProvider);
-            themeButtonDrawable.setLayerColor("Sunny.**", color);
-            themeButtonDrawable.setLayerColor("Path 6.**", color);
-            themeButtonDrawable.setLayerColor("Path.**", color);
-            themeButtonDrawable.setLayerColor("Path 5.**", color);
+            themeButtonDrawable.setLayerColor("Sunny", color);
+            themeButtonDrawable.setLayerColor("Path 6", color);
+            themeButtonDrawable.setLayerColor("Path", color);
+            themeButtonDrawable.setLayerColor("Path 5", color);
             themeButtonDrawable.commitApplyLayerColors();
             themeButton = new ImageView(getContext());
             themeButton.setScaleType(ImageView.ScaleType.CENTER);

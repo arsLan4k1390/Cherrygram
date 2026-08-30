@@ -2149,7 +2149,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
 
     @Override
     public void finishFragment() {
-        if (otherwiseReloginDays >= 0 && parentLayout.getFragmentStack().size() == 1) {
+        if (parentLayout != null && otherwiseReloginDays >= 0 && parentLayout.getFragmentStack() != null && parentLayout.getFragmentStack().size() == 1) {
             final Bundle args = new Bundle();
             args.putBoolean("afterSignup", true);
             MainTabsActivity mainTabsActivity = new MainTabsActivity();

@@ -455,7 +455,7 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
     public void updateUserAvatar(int currentAccount) {
         TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(UserConfig.getInstance(currentAccount).getClientUserId());
         AvatarDrawable avatarDrawable = new AvatarDrawable(user);
-        backupImageView.setForUserOrChat(user, avatarDrawable);
+        if (backupImageView != null) backupImageView.setForUserOrChat(user, avatarDrawable);
     }
 
     public static GlassTabView createAttachTab(Context context, Theme.ResourcesProvider resourcesProvider) {

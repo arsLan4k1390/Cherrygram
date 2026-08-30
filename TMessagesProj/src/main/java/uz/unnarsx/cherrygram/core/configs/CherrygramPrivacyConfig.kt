@@ -11,11 +11,16 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.telegram.messenger.ApplicationLoader
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.boolean
 
-object CherrygramPrivacyConfig {
+object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
+    context = SupervisorJob() + Dispatchers.Default
+) {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 

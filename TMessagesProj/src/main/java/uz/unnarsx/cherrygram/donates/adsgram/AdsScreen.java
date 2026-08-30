@@ -35,9 +35,10 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
+import uz.unnarsx.cherrygram.preferences.BaseCGPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class AdsScreen extends UniversalFragment {
+public class AdsScreen extends BaseCGPreferencesEntry {
 
     private final int adsRow = 1;
 
@@ -84,9 +85,6 @@ public class AdsScreen extends UniversalFragment {
 
     @Override
     public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-
         loadADS();
         return super.createView(context);
     }

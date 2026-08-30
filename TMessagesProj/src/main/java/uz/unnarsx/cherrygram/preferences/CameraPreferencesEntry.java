@@ -36,12 +36,11 @@ import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class CameraPreferencesEntry extends UniversalFragment {
+public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int cameraTypeSelectorRow = 0;
 
@@ -75,13 +74,6 @@ public class CameraPreferencesEntry extends UniversalFragment {
     }
 
     @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
-    }
-
-    @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         if (CameraXUtils.isCameraXSupported()) {
             items.add(UItem.asHeader(getString(R.string.CP_CameraType)));
@@ -92,7 +84,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
 
                     CherrygramCameraConfig.INSTANCE.setCameraType(cameraSelected);
 
-                    listView.adapter.update(true);
+                    updateRows(true);
                 }
             }));
             items.add(UItem.asShadow(null));
@@ -156,7 +148,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
                         CherrygramCameraConfig.INSTANCE.setBokehEffect(newValue);
 
                         expandedCameraEnhancementsSection = !expandedCameraEnhancementsSection;
-                        listView.adapter.update(true);
+                        updateRows(true);
                     })
             );
             if (expandedCameraEnhancementsSection) {
@@ -211,7 +203,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
             CherrygramCameraConfig.INSTANCE.setDisableAttachCamera(!CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == cameraAspectRatioRow) {
             showAspectRatioSelector(getContext(), () -> SettingsHelper.updateButtonValue(view, getCameraAspectRatio()));
         } else if (item.id == cameraUseDualCameraRow) {
@@ -225,7 +217,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
                 }
             }
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == rearCamRow) {
             CherrygramCameraConfig.INSTANCE.setRearCam(!CherrygramCameraConfig.INSTANCE.getRearCam());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getRearCam());
@@ -271,25 +263,25 @@ public class CameraPreferencesEntry extends UniversalFragment {
             expandedCameraEnhancementsSection = !expandedCameraEnhancementsSection;
             item.collapsed = !item.collapsed;
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == opticalStabilisationRow) {
             CherrygramCameraConfig.INSTANCE.setOpticalStabilisation(!CherrygramCameraConfig.INSTANCE.getOpticalStabilisation());
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == videoStabilisationRow) {
             CherrygramCameraConfig.INSTANCE.setVideoStabilisation(!CherrygramCameraConfig.INSTANCE.getVideoStabilisation());
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == continuousAutofocusRow) {
             CherrygramCameraConfig.INSTANCE.setContinuousAutofocus(!CherrygramCameraConfig.INSTANCE.getContinuousAutofocus());
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == noiceReductionRow) {
             CherrygramCameraConfig.INSTANCE.setNoiceReduction(!CherrygramCameraConfig.INSTANCE.getNoiceReduction());
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == faceDetectionRow) {
             CherrygramCameraConfig.INSTANCE.setFaceDetection(!CherrygramCameraConfig.INSTANCE.getFaceDetection());
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == bokehEffectRow) {
             CherrygramCameraConfig.INSTANCE.setBokehEffect(!CherrygramCameraConfig.INSTANCE.getBokehEffect());
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == exposureSliderRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();

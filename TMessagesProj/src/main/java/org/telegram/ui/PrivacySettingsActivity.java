@@ -489,12 +489,16 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 }
             } else if (position == passkeysRow) {
                 if (Build.VERSION.SDK_INT < 28 || !BuildVars.SUPPORTS_PASSKEYS) return;
-                if (currentPassword == null || !currentPassword.has_password) {
+                final TL_account.Password password = currentPassword;
+                if (password == null || !password.has_password) {
                     BulletinFactory.of(PrivacySettingsActivity.this).createSimpleBulletin(
                             R.raw.chats_infotip,
                             AndroidUtilities.replaceTags(getString(R.string.PaymentCardSavePaymentInformationInfoLine2).replace("*", "**")),
                             getString(R.string.Enable),
                             () -> {
+                                if (currentPassword == null) {
+                                    return;
+                                }
                                 int type;
                                 if (TextUtils.isEmpty(currentPassword.email_unconfirmed_pattern)) {
                                     type = TwoStepVerificationSetupActivity.TYPE_INTRO;
@@ -507,11 +511,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                     return;
                 }
                 if (currentPasskeys == null) return;
-                // if (currentPasskeys != null && currentPasskeys.size() > 0) {
                 presentFragment(new PasskeysActivity(currentPasskeys));
-                // } else {
-                //     PasskeysActivity.showLearnSheet(context, currentAccount, resourceProvider, true);
-                // }
             } else if (position == passcodeRow) {
                 presentFragment(PasscodeActivity.determineOpenFragment());
             } else if (position == secretWebpageRow) {

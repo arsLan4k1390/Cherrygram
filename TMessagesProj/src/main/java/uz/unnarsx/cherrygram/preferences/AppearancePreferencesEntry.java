@@ -32,12 +32,11 @@ import kotlin.Pair;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.TelegramSettingsHelper;
 
-public class AppearancePreferencesEntry extends UniversalFragment {
+public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int centerTitleRow = 1;
     private final int hideSearchBar = 2;
@@ -55,13 +54,6 @@ public class AppearancePreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("appearance_preferences_screen");
         return getString(R.string.AP_Header_Appearance);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -140,7 +132,7 @@ public class AppearancePreferencesEntry extends UniversalFragment {
             CherrygramAppearanceConfig.INSTANCE.setDrawSnowInActionBar(!CherrygramAppearanceConfig.INSTANCE.getDrawSnowInActionBar());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getDrawSnowInActionBar());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == iconPackRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();
@@ -166,14 +158,14 @@ public class AppearancePreferencesEntry extends UniversalFragment {
             CherrygramAppearanceConfig.INSTANCE.setOneUI_SwitchStyle(!CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle());
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == disableDividersRow) {
             CherrygramAppearanceConfig.INSTANCE.setDisableDividers(!CherrygramAppearanceConfig.INSTANCE.getDisableDividers());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getDisableDividers());
 
             Theme.applyCommonTheme();
-            listView.adapter.update(true);
-        }  else if (item.id == foldersRow) {
+            updateRows(true);
+        } else if (item.id == foldersRow) {
             CherrygramPreferencesNavigator.INSTANCE.createFoldersPrefs(this);
         } else if (item.id == bottomTabsRow) {
             CherrygramPreferencesNavigator.INSTANCE.createTabs(this);

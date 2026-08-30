@@ -39,10 +39,9 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class PrivacyPreferencesEntry extends UniversalFragment {
+public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
 
 
     private final int hideArchiveFromChatsListRow = 1;
@@ -67,13 +66,6 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("privacy_preferences_screen");
         return getString(R.string.SettingsPrivacySecurity);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -114,7 +106,7 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
                         CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(newValue);
 
                         expandedBiometricSection = !expandedBiometricSection;
-                        listView.adapter.update(true);
+                        updateRows(true);
                     }))
             );
             if (expandedBiometricSection) {
@@ -170,7 +162,7 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
             CherrygramPrivacyConfig.INSTANCE.setHideArchivedStories(!CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories());
             SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == hideArchiveFromChatsListRow) {
             CherrygramPrivacyConfig.INSTANCE.setHideArchiveFromChatsList(!CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
             SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
@@ -178,27 +170,27 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
             expandedBiometricSection = !expandedBiometricSection;
             item.collapsed = !item.collapsed;
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == askBiometricsToOpenChatsRow) {
             CGBiometricPrompt.prompt(getParentActivity(), () -> {
                 CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenChat(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat());
                 SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat());
 
-                listView.adapter.update(true);
+                updateRows(true);
             });
         } else if (item.id == askBiometricsToOpenSecretChatsRow) {
             CGBiometricPrompt.prompt(getParentActivity(), () -> {
                 CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenEncrypted(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted());
                 SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted());
 
-                listView.adapter.update(true);
+                updateRows(true);
             });
         } else if (item.id == askBiometricsToOpenArchivedChatsRow) {
             CGBiometricPrompt.prompt(getParentActivity(), () -> {
                 CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(!CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive());
                 SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive());
 
-                listView.adapter.update(true);
+                updateRows(true);
             });
         } else if (item.id == lockedChatsRow) {
             CGBiometricPrompt.prompt(getParentActivity(), () -> createUsersSelectActivity(view));
@@ -316,7 +308,7 @@ public class PrivacyPreferencesEntry extends UniversalFragment {
                 CGBiometricPrompt.cancelPendingAuthentications();
                 CGBiometricPrompt.reloadFingerprintState();
 
-                if (listView != null && listView.adapter != null) listView.adapter.update(true);
+                if (listView != null && listView.adapter != null) updateRows(true);
 
                 if (CGBiometricPrompt.hasFingerprintCached()) {
                     AndroidUtilities.runOnUIThread(() ->

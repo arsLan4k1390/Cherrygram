@@ -61,15 +61,11 @@ object Extra {
     )
     /** Donates links finish */
 
-    const val ENDPOINT_FOR_DATE = "abcdefg"
-    const val ENDPOINT_FOR_DATE_SECRET = "abcdefg"
-
-    fun getRegistrationDate(fragment: BaseFragment?, parentActivity: Activity, userID: Long, chatId: Long) {
-
-        if (fragment == null || fragment.getParentActivity() == null) return
+    fun getRegistrationDate(fragment: BaseFragment?, userID: Long, chatId: Long) {
+        if (fragment == null) return
 
         if (chatId != 0L) {
-            val chat = fragment.messagesController.getChat(chatId)
+            val chat = fragment.messagesController?.getChat(chatId)
             if (chat != null) {
                 val date: CharSequence = if (ChatObject.isInChat(chat)) {
                     AndroidUtilities.replaceTags(
@@ -97,52 +93,17 @@ object Extra {
         }
 
         val regDateFromTelegram = fragment.messagesController?.getPeerSettings(userID)?.registration_month
+        val finalRegDate = UserHelper.getUserTime(userID, regDateFromTelegram)
 
-        if (regDateFromTelegram != null) {
-            BulletinFactory.of(fragment.layoutContainer, fragment.resourceProvider)
-                .createSimpleBulletin(R.raw.chats_infotip, UserHelper.getInstance(UserConfig.selectedAccount).getCreationDate(userID, true, regDateFromTelegram))
-                .setDuration(Bulletin.DURATION_PROLONG)
-                .show()
-        } /*else {
-            val progressDialog = AlertDialog(parentActivity, AlertDialog.ALERT_TYPE_SPINNER, fragment.resourceProvider)
+        BulletinFactory.of(fragment.layoutContainer, fragment.resourceProvider)
+            .createSimpleBulletin(R.raw.chats_infotip, finalRegDate)
+            .setDuration(Bulletin.DURATION_PROLONG)
+            .show()
 
-            AndroidUtilities.runOnUIThread {
-                try {
-                    progressDialog.show()
-                } catch (e: Exception) {
-                    CherrygramLogger.e(e)
-                }
-            }
-
-            UserHelper.getInstance(UserConfig.selectedAccount).getCreationDate(userID,
-                {
-                    BulletinFactory.of(fragment.layoutContainer, fragment.resourceProvider)
-                        .createSimpleBulletin(R.raw.chats_infotip, getString(R.string.CG_RegistrationDateFailed))
-                        .setDuration(Bulletin.DURATION_PROLONG)
-                        .show()
-                }
-            ) {
-                AndroidUtilities.runOnUIThread {
-                    try {
-                        if (progressDialog.isShowing) progressDialog.dismiss()
-                    } catch (e: Exception) {
-                        CherrygramLogger.e(e)
-                    }
-                }
-
-                val window = Bulletin.BulletinWindow.make(fragment.getParentActivity())
-                window.setTouchable(true)
-
-                BulletinFactory.of(if (userID == fragment.userConfig.clientUserId) window else fragment.layoutContainer, fragment.getResourceProvider())
-                    .createSimpleBulletin(R.raw.chats_infotip, UserHelper.getInstance(UserConfig.selectedAccount).getCreationDate(userID, false, null))
-                    .setDuration(if (userID == fragment.userConfig.clientUserId) Bulletin.DURATION_SHORT else Bulletin.DURATION_PROLONG)
-                    .show()
-            }
-        }*/
     }
 
     fun addBirthdayToCalendar(parentActivity: Activity, userId: Long) {
-        UserHelper.getInstance(UserConfig.selectedAccount).addBirthdayEvent(parentActivity, userId)
+        UserHelper.addBirthdayEvent(parentActivity, userId)
     }
 
     fun getProfileDC(user: TLRPC.User?, chat: TLRPC.Chat?): StringBuilder {

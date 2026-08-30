@@ -12,11 +12,13 @@ package uz.unnarsx.cherrygram.misc.widgets;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.R;
 
 public class KaboomWidget extends AppWidgetProvider {
@@ -39,15 +41,16 @@ public class KaboomWidget extends AppWidgetProvider {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
     }
 
-    private void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+        ApplicationLoader.postInitApplication();
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.kaboom_widget);
 
-        Intent intent = new Intent(context, KaboomWidgetActivity.class);
+        Intent intent = new Intent(ApplicationLoader.applicationContext, KaboomWidgetActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
-                context,
+                ApplicationLoader.applicationContext,
                 appWidgetId,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
@@ -55,6 +58,15 @@ public class KaboomWidget extends AppWidgetProvider {
 
         views.setOnClickPendingIntent(R.id.tvWidget, pendingIntent);
         appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    public static void forceUpdateKaboomWidgets(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        ComponentName thisWidget = new ComponentName(context, KaboomWidget.class);
+        int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+        for (int appWidgetId : allWidgetIds) {
+            updateAppWidget(context, appWidgetManager, appWidgetId);
+        }
     }
 
 }

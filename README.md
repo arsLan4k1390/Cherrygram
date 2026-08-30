@@ -32,7 +32,7 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 
 ## Compilation Guide
 
-You will require Android Studio 2025.1.4, Android NDK 27.2.12479018 and Android SDK 35.
+You will require Android Studio 2025.1.4, Android NDK 27.2.12479018 and Android SDK 36.
 
 1. Clone the Cherrygram source code with its submodules:
    ```bash

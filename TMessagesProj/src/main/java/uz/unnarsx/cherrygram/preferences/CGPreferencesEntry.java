@@ -46,7 +46,7 @@ import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.TelegramSettingsHelper;
 
-public class CGPreferencesEntry extends UniversalFragment {
+public class CGPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int generalRow = 1;
     private final int appearanceRow = 2;
@@ -71,9 +71,6 @@ public class CGPreferencesEntry extends UniversalFragment {
 
     @Override
     public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-
         final ActionBarMenu menu = actionBar.createMenu();
         otherItem = menu.addItem(1, R.drawable.ic_ab_other);
         otherItem.setOnClickListener(view -> showItemOptions(otherItem));

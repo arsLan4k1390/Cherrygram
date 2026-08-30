@@ -688,6 +688,11 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         }
     }
 
+    public void hideActionsMenu() {
+        AndroidUtilities.cancelRunOnUIThread(showActionsRunnable);
+        hideActions();
+    }
+
     public TextSelectionOverlay getOverlayView(Context context) {
         if (textSelectionOverlay == null) {
             textSelectionOverlay = new TextSelectionOverlay(context);
@@ -3874,7 +3879,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 }
             }
 
-            if (stringBuilder.length() > 0) {
+            if (stringBuilder != null && stringBuilder.length() > 0) {
                 ReplaceCopyTextSpannable[] repl = stringBuilder.getSpans(0, stringBuilder.length() - 1, ReplaceCopyTextSpannable.class);
                 if (repl != null && repl.length > 0) {
                     java.util.Arrays.sort(repl, (a, b) -> stringBuilder.getSpanStart(b) - stringBuilder.getSpanStart(a));

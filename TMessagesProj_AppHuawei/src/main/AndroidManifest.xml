@@ -11,10 +11,7 @@
         <package android:name="com.huawei.maps.app"/>
     </queries>
 
-    <application
-        android:name="org.telegram.messenger.HuaweiApplicationLoader"
-        tools:replace="name"
-        android:extractNativeLibs="true"
+    <application android:name="org.telegram.messenger.HuaweiApplicationLoader" tools:replace="name"
         >
         <service
             android:name="org.telegram.messenger.GoogleVoiceClientService"

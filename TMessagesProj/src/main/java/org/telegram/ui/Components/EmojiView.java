@@ -84,7 +84,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
-import androidx.recyclerview.widget.LinearSmoothScrollerCustom;
+import org.telegram.ui.recyclerview.LinearSmoothScrollerCustom;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.viewpager.widget.PagerAdapter;
@@ -1297,6 +1297,9 @@ public class EmojiView extends FrameLayout implements
             if (draggingVertically) {
                 if (vTracker == null) {
                     vTracker = VelocityTracker.obtain();
+                }
+                if (vTracker == null) {
+                    return false;
                 }
                 vTracker.addMovement(ev);
                 if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {

@@ -39,6 +39,7 @@ object FirebaseCrashlyticsHelper {
             "@${ChatsHelper2.getActiveUsername(user.id)}"
         )
         crashlytics.setCustomKey("buildDate", CGResourcesHelper.getBuildDate())
+        crashlytics.setCustomKey("flavor", CGResourcesHelper.getBuildType())
     }
 
     fun logAsNonFatal(e: Throwable) {

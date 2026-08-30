@@ -229,6 +229,7 @@ public class BackDrawable extends Drawable {
     private final float moveBackDuration = 220f;
 
     public void setShowStick(boolean show) {
+        show = false;
         if (showStick != show) {
             showStick = show;
             invalidateSelf();

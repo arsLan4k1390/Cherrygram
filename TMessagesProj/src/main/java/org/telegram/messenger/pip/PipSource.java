@@ -85,6 +85,10 @@ public class PipSource {
         }
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
     public void setPlaceholderView(View placeholderView) {
         this.placeholderView = placeholderView;
     }
@@ -159,7 +163,7 @@ public class PipSource {
 
     private boolean isAvailable;
     private void checkAvailable(boolean notify) {
-        boolean isAvailable = params.isValid() && delegate.pipIsAvailable();
+        boolean isAvailable = params != null && params.isValid() && delegate != null && delegate.pipIsAvailable();
         if (this.isAvailable != isAvailable) {
             this.isAvailable = isAvailable;
             if (notify) {

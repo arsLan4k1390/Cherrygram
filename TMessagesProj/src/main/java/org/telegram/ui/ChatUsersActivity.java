@@ -938,6 +938,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
 
                             @Override
                             public void didKickParticipant(long uid) {
+                                if (info == null) return;
                                 if (participantsMap.get(uid) == null) {
                                     DiffCallback diffCallback = saveState();
                                     TLRPC.TL_channelParticipantBanned chatParticipant = new TLRPC.TL_channelParticipantBanned();

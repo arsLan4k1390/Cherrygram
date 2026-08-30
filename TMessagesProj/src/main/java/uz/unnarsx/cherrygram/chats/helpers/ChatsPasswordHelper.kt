@@ -22,7 +22,6 @@ import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC.MessageEntity
 import org.telegram.tgnet.TLRPC.TL_messageEntitySpoiler
 import org.telegram.ui.Components.TextStyleSpan
-import org.telegram.ui.Components.TextStyleSpan.TextStyleRun
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
 import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig
@@ -154,7 +153,7 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
             return null
         }
         return if (CherrygramPrivacyConfig.askBiometricsToOpenArchive || force) {
-            val useRandomBraille = Random.nextBoolean()
+            val useRandomBraille = /*Random.nextBoolean()*/ false
             if (CherrygramFirebaseConfig.useBrailleSpoiler && useRandomBraille) {
                 toBrailleSpoiler(originalText)
             } else {
@@ -191,7 +190,7 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
 
         val spannable = SpannableStringBuilder(originalText)
 
-        val run = TextStyleRun()
+        val run = TextStyleSpan.TextStyleRun()
         run.flags = run.flags or TextStyleSpan.FLAG_STYLE_SPOILER
         run.start = 0
         run.end = spannable.length

@@ -13,9 +13,14 @@
     <string name="CG_RegistrationDateOlder">старіше за %s</string>
     <string name="CG_RegistrationDateApproximately">приблизно %s</string>
     <string name="CG_RegistrationDateFailed">Помилка отримання дати реєстрації.</string>
+    <string name="CG_HiddenGifts">Приховані подарунки</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Увійти за QR</string>
     <string name="CG_QRLoginMessage">Відскануйте QR-код іншим пристроєм, аби увійти.</string>
+    <string name="CG_OpenOfficialApp">Відкрити офіційний додаток</string>
+    <string name="CG_DidNotGetTheCode">Якщо ви не отримали код на іншому пристрої або у вас його немає Telegram увійшли до системи з іншого пристрою, будь ласка, скористайтеся офіційною версією Telegram додатком, щоб отримати код.\n\nTelegram **вимкнув можливість входу за допомогою SMS** у сторонніх додатках. Користувачі, які входять у сторонні додатки, можуть отримувати коди входу лише через Telegram.\n\nМи не можемо вам з цим допомогти, якщо у вас виникнуть проблеми зі входом, зверніться до служби Підтримки Telegram.</string>
+    <string name="CG_ChangePhoneNumber">Telegram має **вимкнено можливість зміни номера телефону** у сторонніх додатках. Користувачі можуть змінити номер телефону лише через Telegram.</string>
+    <string name="CG_AddAccountWarning">Одночасне використання 5 або більше облікових записів може призвести до нестабільної роботи, особливо на пристроях нижнього цінового сегмента (включно з можливими аваріями під час запуску).\n\nДійте на власний ризик. **Cherrygram не несе відповідальності** за будь-яку втрату доступу до ваших облікових записів.</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">активність — щойно</string>
@@ -139,6 +144,8 @@
     <string name="CG_WifiDisabled">Wi-Fi вимкнено.</string>
     <string name="CG_AreYouSureToLogin">Ви впевнені, що хочете увійти в цей обліковий запис на іншому пристрої?</string>
     <string name="CG_CreateQR">Створити QR код</string>
+    <string name="CG_LowMemoryWarning">Попередження про низький рівень пам\'яті</string>
+    <string name="CG_LowMemoryWarning_Desc">Додатку бракує пам’яті. Будь ласка, перезавантажте його, щоб забезпечити стабільну роботу.</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -148,8 +155,10 @@
     <string name="CGP_Header_About">Про Cherrygram</string>
     <string name="CGP_Header_About_Desc">Оновлення, вихідний код та більше</string>
     <string name="CGP_Links">Посилання</string>
-    <string name="CGP_ToChannel">Офіційний канал</string>
-    <string name="CGP_ToChat">Офіційний чат</string>
+    <string name="CGP_ToChannel">Новини &amp; Оновлення</string>
+    <string name="CGP_ToBetaChannel">Бета Версії</string>
+    <string name="CGP_ToChat">Загальний Чат</string>
+    <string name="CGP_ToOfftopicChat">Чат не по темі</string>
     <string name="CGP_Source">Вихідний код</string>
     <string name="CGP_Crowdin">Допомогти з перекладом</string>
     <string name="CGP_Header_Categories">Категорії</string>
@@ -170,6 +179,12 @@
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">Основне</string>
+    <string name="CG_IgnoreMentions">Ігнорувати згадки</string>
+    <string name="CG_IgnoreMentionsDesc">Вимикає сповіщення про згадки та відповіді у вибраних чатах, а також приховує значки згадок як у списку чату, так і всередині розмов.</string>
+    <string name="CG_IgnoreMentionsIgnoredChats">Ігноровані чати</string>
+    <string name="CG_IgnoreMentionsAutoRead">Авточитання при відкритті</string>
+    <string name="CG_IgnoreMentionsAutoReadDesc">Автопозначання згадки як прочитані під час входу в чат.</string>
+    <string name="CG_IgnoreMentions_Destination_Sure">буде проігноровано</string>
     <string name="CG_ResidentNotification">Увімкнути постійне сповіщення</string>
     <!--General Preferences-->
     <!--Appearance Preferences-->
@@ -190,6 +205,7 @@
     <string name="AP_OneUI_Switch_Style">Вигляд інтерфейсу OneUI</string>
     <string name="AP_SystemEmoji">Системні емодзі</string>
     <string name="AP_ShowPencilIcon">Значок олівця для відредагованих повідомлень</string>
+    <string name="CP_StrokeOnViews">Відблиски ефектів</string>
     <string name="AP_CenterTitle">Заголовок по центру</string>
     <string name="AP_CenterTitle_AdaptiveWidth">Адаптивна ширина бульбашки</string>
     <string name="AP_HideSearchBar">Приховати панель пошуку в чатах</string>
@@ -249,6 +265,8 @@
     <!--Chats Preferences-->
     <string name="CP_AutoQuoteReplies">Цитувати відповіді</string>
     <string name="CP_AutoQuoteReplies_Desc">Відправити цитату з текстом всього повідомлення замість звичайної відповіді.</string>
+    <string name="CP_WideMessagesLayout">Широкий макет повідомлення</string>
+    <string name="CP_WideMessagesLayout_Desc">Розгортає бульбашки повідомлень у каналах. Увімкнувши цю опцію, кнопка \"Поділитися безпосередньо\" буде прихована поряд зі спільними повідомленнями.</string>
     <string name="CP_TimeOnStick">Приховати час надсилання на наліпках</string>
     <string name="CP_ChatMenuShortcuts">Ярлики меню чату</string>
     <string name="CP_AdminActions">Швидкі адмін-дії</string>
@@ -271,6 +289,7 @@
     <string name="CP_MessageMenuCompactLayout_Dot">Крапка поруч із кнопкою означає наявність дії за довгим натисканням.</string>
     <string name="CP_UnreadBadgeOnBackButton">Показувати лічильник непрочитаних</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включити лічильник непрочитаних чатів на кнопці «Назад» в відкритому чаті</string>
+    <string name="CP_UnreadBadgeOnBackButton_IOS">Лічильник у стилі iOS</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Кількість останніх емоджі та наліпок</string>
     <string name="CP_DeleteForAll">Використовувати \"Видалити для всіх\" за замовчуванням</string>
     <string name="CP_DeleteForAll_Desc">Відмітка буде автоматично перевірятися при видаленні повідомлень.</string>
@@ -281,6 +300,9 @@
     <string name="CG_MsgSlideAction">Дія при свайпі повідомлення</string>
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Вимкнути перехід на наступний канал при прокрутці будь якого каналу</string>
+    <string name="CP_BottomBar">Нижня панель</string>
+    <string name="CP_iOSMessageInputField">Поле введення повідомлення у \"стилі iOS\"</string>
+    <string name="CP_iOSMessageInputField_Desc">Переміщує іконку вкладення ліворуч і розділяє кнопки на окремі бульбашки.</string>
     <string name="CP_HideMuteUnmuteButton">Приховати нижню панель у каналах</string>
     <string name="CP_HideKbdOnScroll">Інтенсивність прокручування, щоб приховати клавіатуру</string>
     <string name="CP_HideSendAsChannel">Приховати \"Відправити як канал\"</string>
@@ -339,6 +361,7 @@
     <string name="CP_Slider_MediaAmplifier_Hint">Не працює з альбомами (згруповані)</string>
     <string name="CP_LargeVoiceMessages">Адаптивна довжина голосового повідомлення</string>
     <string name="CP_LargeVoiceMessages_Desc">Довжина бульбашки голосового повідомлення залежатиме від тривалості запису та автоматично підлаштовуватиметься під ширину екрана.</string>
+    <string name="CP_VoiceMessagesAutoPlay">Автовідтворення голосових повідомлень</string>
     <string name="CP_PlayVideo">Відтворювати відео після натискання на кнопку гучності</string>
     <string name="CP_PlayVideo_Desc">При натисканні на кнопку гучності буде ввімкнено відео на екранi в діалозі</string>
     <string name="CP_AutoPauseVideo">Зупиняти вiдео</string>
@@ -471,5 +494,11 @@
     <string name="DP_Donate_Exclusive">Ексклюзивно для тих, хто підтримує</string>
     <string name="DP_Donate_ExclusiveDesc">Підтримайте проект і розблокуйте всі функції.</string>
     <!--Donations-->
+    <!--Alternative Support-->
+    <string name="AS_Header">Альтернативна підтримка</string>
+    <string name="AS_ZeroCost">Безкоштовна підтримка</string>
+    <string name="AS_UsefulServices">Корисні послуги</string>
+    <string name="AS_DigitalGoods">Цифрові товари</string>
+    <!--Alternative Support-->
     <!--Cherrygram screens-->
 </resources>

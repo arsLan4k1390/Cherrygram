@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import uz.unnarsx.cherrygram.core.firebase.crashlytics.FirebaseCrashlyticsHelper;
+
 /**
  * Implements VideoSink by displaying the video stream on an EGL Surface. This class is intended to
  * be used as a helper class for rendering on SurfaceViews and TextureViews.
@@ -126,8 +128,9 @@ public class EglRenderer implements VideoSink {
         super.dispatchMessage(msg);
       } catch (Exception e) {
         Logging.e(TAG, "Exception on EglRenderer thread", e);
+        FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
         exceptionCallback.run();
-        throw e;
+//        throw e;
       }
     }
   }

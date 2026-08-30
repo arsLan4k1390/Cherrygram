@@ -27,6 +27,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
     /** Appearance start */
+    var glareEffects by sharedPreferences.boolean("CP_GlareEffects", true)
     var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle_v2", true)
     var centerChatTitle_AdaptiveWidth by sharedPreferences.boolean("AP_CenterChatTitle_AdaptiveWidth_v2", true)
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", centerChatTitle)
@@ -51,7 +52,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var customWallpapers by sharedPreferences.boolean("CP_CustomWallpapers", true)
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var discussInsteadOfMute by sharedPreferences.boolean("CP_DiscussInsteadOfMute", true)
-    var iOSMessageInputField by sharedPreferences.boolean("CP_iOSMessageInputField", false)
+    var iOSMessageInputField by sharedPreferences.boolean("CP_iOSMessageInputField", true)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
     var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)

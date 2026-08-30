@@ -30,8 +30,10 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
+import org.telegram.tgnet.TLMethod;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_ephemeral;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -54,7 +56,6 @@ import org.telegram.ui.Components.ViewPagerFixed;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class ReportBottomSheet extends BottomSheet {
@@ -261,7 +262,7 @@ public class ReportBottomSheet extends BottomSheet {
             req.option = option;
             request = req;
         } else if (ephemeral) {
-            TLRPC.TL_ephemeral_reportMessage req = new TLRPC.TL_ephemeral_reportMessage();
+            TL_ephemeral.TL_reportMessage req = new TL_ephemeral.TL_reportMessage();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             if (messageIds != null && !messageIds.isEmpty()) {
                 req.id = messageIds.get(0);
@@ -755,7 +756,16 @@ public class ReportBottomSheet extends BottomSheet {
         Context context,
         long dialogId
     ) {
-        open(currentAccount, context, dialogId, false, false, new ArrayList<>(), null, null, new byte[]{}, null, null);
+        openChat(currentAccount, context, null, dialogId);
+    }
+
+    public static void openChat(
+        int currentAccount,
+        Context context,
+        BulletinFactory bulletinFactory,
+        long dialogId
+    ) {
+        open(currentAccount, context, dialogId, false, false, new ArrayList<>(), bulletinFactory, null, new byte[]{}, null, null);
     }
 
     public static void openChat(
@@ -838,7 +848,7 @@ public class ReportBottomSheet extends BottomSheet {
     ) {
         if (context == null || messageIds == null) return;
         final boolean[] done = new boolean[] { false };
-        final TLObject request;
+        final TLMethod<TLRPC.ReportResult> request;
         if (stories) {
             TL_stories.TL_stories_report req = new TL_stories.TL_stories_report();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
@@ -847,7 +857,7 @@ public class ReportBottomSheet extends BottomSheet {
             req.message = TextUtils.isEmpty(message) ? "" : message;
             request = req;
         } else if (ephemeral) {
-            TLRPC.TL_ephemeral_reportMessage req = new TLRPC.TL_ephemeral_reportMessage();
+            TL_ephemeral.TL_reportMessage req = new TL_ephemeral.TL_reportMessage();
             req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
             if (!messageIds.isEmpty()) {
                 req.id = messageIds.get(0);
@@ -863,69 +873,65 @@ public class ReportBottomSheet extends BottomSheet {
             req.message = TextUtils.isEmpty(message) ? "" : message;
             request = req;
         }
-        ConnectionsManager.getInstance(currentAccount).sendRequest(request, (response, error) -> {
-            if (response != null) {
-                if (response instanceof TLRPC.TL_reportResultChooseOption || response instanceof TLRPC.TL_reportResultAddComment) {
-                    AndroidUtilities.runOnUIThread(() -> {
-                        final ReportBottomSheet sheet = new ReportBottomSheet(context, resourceProvider, stories, ephemeral, dialogId, messageIds);
-                        if (response instanceof TLRPC.TL_reportResultChooseOption) {
-                            sheet.setReportChooseOption((TLRPC.TL_reportResultChooseOption) response);
-                        } else if (response instanceof TLRPC.TL_reportResultAddComment) {
-                            sheet.setReportChooseOption((TLRPC.TL_reportResultAddComment) response);
-                        }
-                        sheet.setListener(new ReportBottomSheet.Listener() {
-                            @Override
-                            public void onReported() {
-                                if (!done[0] && whenDone != null) {
-                                    done[0] = true;
-                                    whenDone.run(true);
-                                }
-                                AndroidUtilities.runOnUIThread(() -> {
-                                    if (LaunchActivity.getSafeLastFragment() == null) return;
-                                    final BulletinFactory bf = bulletinFactory == null ? BulletinFactory.of(LaunchActivity.getSafeLastFragment()) : bulletinFactory;
-                                    if (bf == null) return;
-                                    bf
-                                        .createSimpleBulletin(
-                                            R.raw.msg_antispam,
-                                            LocaleController.getString(R.string.ReportChatSent),
-                                            LocaleController.getString(R.string.Reported2)
-                                        )
-                                        .setDuration(Bulletin.DURATION_PROLONG)
-                                        .show();
-                                }, 200);
-                            }
-                        });
-                        sheet.setOnDismissListener(() -> {
-                            if (!done[0] && whenDone != null) {
-                                done[0] = true;
-                                whenDone.run(false);
-                            }
-                        });
-                        sheet.show();
-                    });
-                } else if (response instanceof TLRPC.TL_reportResultReported) {
-                    AndroidUtilities.runOnUIThread(() -> {
+        ConnectionsManager.getInstance(currentAccount).sendRequestTyped(request, AndroidUtilities::runOnUIThread, (response, error) -> {
+            if (response instanceof TLRPC.TL_reportResultChooseOption || response instanceof TLRPC.TL_reportResultAddComment) {
+                final ReportBottomSheet sheet = new ReportBottomSheet(context, resourceProvider, stories, ephemeral, dialogId, messageIds);
+                if (response instanceof TLRPC.TL_reportResultChooseOption) {
+                    sheet.setReportChooseOption((TLRPC.TL_reportResultChooseOption) response);
+                } else if (response instanceof TLRPC.TL_reportResultAddComment) {
+                    sheet.setReportChooseOption((TLRPC.TL_reportResultAddComment) response);
+                }
+                sheet.setListener(new ReportBottomSheet.Listener() {
+                    @Override
+                    public void onReported() {
                         if (!done[0] && whenDone != null) {
                             done[0] = true;
                             whenDone.run(true);
                         }
-                        Runnable showToast = () -> {
-                            BaseFragment fragment = LaunchActivity.getSafeLastFragment();
-                            if (fragment == null) return;
-                            final BulletinFactory bf = BulletinFactory.of(fragment);
+                        AndroidUtilities.runOnUIThread(() -> {
+                            if (LaunchActivity.getSafeLastFragment() == null) return;
+                            final BulletinFactory bf = bulletinFactory == null ? BulletinFactory.of(LaunchActivity.getSafeLastFragment()) : bulletinFactory;
                             if (bf == null) return;
                             bf
                                 .createSimpleBulletin(
-                                        R.raw.msg_antispam,
-                                        LocaleController.getString(R.string.ReportChatSent),
-                                        LocaleController.getString(R.string.Reported2)
+                                    R.raw.msg_antispam,
+                                    LocaleController.getString(R.string.ReportChatSent),
+                                    LocaleController.getString(R.string.Reported2)
                                 )
                                 .setDuration(Bulletin.DURATION_PROLONG)
                                 .show();
-                        };
-                        AndroidUtilities.runOnUIThread(showToast, 220);
-                    }, 200);
-                }
+                        }, 200);
+                    }
+                });
+                sheet.setOnDismissListener(() -> {
+                    if (!done[0] && whenDone != null) {
+                        done[0] = true;
+                        whenDone.run(false);
+                    }
+                });
+                sheet.show();
+            } else if (response instanceof TLRPC.TL_reportResultReported || true) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (!done[0] && whenDone != null) {
+                        done[0] = true;
+                        whenDone.run(true);
+                    }
+                    Runnable showToast = () -> {
+                        BaseFragment fragment = LaunchActivity.getSafeLastFragment();
+                        if (fragment == null) return;
+                        final BulletinFactory bf = BulletinFactory.of(fragment);
+                        if (bf == null) return;
+                        bf
+                            .createSimpleBulletin(
+                                    R.raw.msg_antispam,
+                                    LocaleController.getString(R.string.ReportChatSent),
+                                    LocaleController.getString(R.string.Reported2)
+                            )
+                            .setDuration(Bulletin.DURATION_PROLONG)
+                            .show();
+                    };
+                    AndroidUtilities.runOnUIThread(showToast, 220);
+                }, 200);
             }
         });
     }

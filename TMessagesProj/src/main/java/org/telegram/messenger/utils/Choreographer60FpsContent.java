@@ -15,6 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import me.vkryl.core.reference.ReferenceList;
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 
 /**
  * A thin wrapper around Android {@link Choreographer} that delivers animation
@@ -243,66 +244,93 @@ public final class Choreographer60FpsContent implements Choreographer.FrameCallb
     }
 
     private void dispatchFrame(long frameTimeNanos) {
-        // Dispatch grouped persistent callbacks.
-        // Stride groups use mCounter % stride — zero per-group state, perfect sync.
-        // Accumulator groups add FRAME_INTERVAL_NS each tick — supports any fps.
-        for (int i = 0; i < mGroups.size(); i++) {
-            CallbackGroup group = mGroups.valueAt(i);
-            final boolean fire;
-            if (group.stride > 0) {
-                fire = mCounter % group.stride == 0;
-            } else {
-                group.accumulatedNs += FRAME_INTERVAL_NS;
-                if (group.accumulatedNs >= group.intervalNs) {
-                    group.accumulatedNs %= group.intervalNs;
-                    fire = true;
+        try {
+            for (int i = 0; i < mGroups.size(); i++) {
+                CallbackGroup group = mGroups.valueAt(i);
+                final boolean fire;
+                if (group.stride > 0) {
+                    fire = mCounter % group.stride == 0;
                 } else {
-                    fire = false;
-                }
-            }
-            if (fire) {
-                if (group.runnableCallbacksOnce != null) {
-                    ReferenceList<Runnable> referenceList = group.runnableCallbacksOnce;
-                    group.runnableCallbacksOnce = null;
-                    for (Runnable runnable : referenceList) {
-                        runnable.run();
+                    group.accumulatedNs += FRAME_INTERVAL_NS;
+                    if (group.accumulatedNs >= group.intervalNs) {
+                        group.accumulatedNs %= group.intervalNs;
+                        fire = true;
+                    } else {
+                        fire = false;
                     }
                 }
-
-                for (FrameCallback cb : group.callbacks) {
-                    cb.doFrame(frameTimeNanos);
-                }
-                for (Runnable runnable : group.runnableCallbacks) {
-                    runnable.run();
+                if (fire) {
+                    if (group.runnableCallbacksOnce != null) {
+                        ReferenceList<Runnable> referenceList = group.runnableCallbacksOnce;
+                        group.runnableCallbacksOnce = null;
+                        for (Runnable runnable : referenceList) {
+                            safeRun(runnable);
+                        }
+                    }
+                    for (FrameCallback cb : group.callbacks) {
+                        safeDoFrame(cb, frameTimeNanos);
+                    }
+                    for (Runnable runnable : group.runnableCallbacks) {
+                        safeRun(runnable);
+                    }
                 }
             }
-        }
 
-        // One-shot callbacks.
-        for (FrameCallback cb : mOneShot) {
+            for (FrameCallback cb : mOneShot) {
+                safeDoFrame(cb, frameTimeNanos);
+            }
+
+            for (View view : mViewsToInvalidate) {
+                safeInvalidateView(view);
+            }
+            for (Drawable drawable : mDrawablesToInvalidate) {
+                safeInvalidateDrawable(drawable);
+            }
+
+            if (mCounter % 2 == 0) {
+                for (Drawable drawable : mDrawablesToInvalidate30fps) {
+                    safeInvalidateDrawable(drawable);
+                }
+                mDrawablesToInvalidate30fps.clear();
+            }
+        } finally {
+            mViewsToInvalidate.clear();
+            mDrawablesToInvalidate.clear();
+            mOneShot.clear();
+            mCounter++;
+        }
+    }
+
+    private static void safeRun(Runnable r) {
+        try {
+            r.run();
+        } catch (Throwable t) {
+            CherrygramLogger.e("Choreographer60FpsContent", () -> "runnable callback failed", t);
+        }
+    }
+
+    private static void safeDoFrame(FrameCallback cb, long frameTimeNanos) {
+        try {
             cb.doFrame(frameTimeNanos);
+        } catch (Throwable t) {
+            CherrygramLogger.e("Choreographer60FpsContent", () -> "frame callback failed", t);
         }
+    }
 
-        // View / drawable invalidations.
-        for (View view : mViewsToInvalidate) {
+    private static void safeInvalidateView(View view) {
+        try {
             view.invalidate();
+        } catch (Throwable t) {
+            CherrygramLogger.e("Choreographer60FpsContent", () -> "view invalidate failed", t);
         }
-        for (Drawable drawable : mDrawablesToInvalidate) {
+    }
+
+    private static void safeInvalidateDrawable(Drawable drawable) {
+        try {
             drawable.invalidateSelf();
+        } catch (Throwable t) {
+            CherrygramLogger.e("Choreographer60FpsContent", () -> "drawable invalidate failed", t);
         }
-        mViewsToInvalidate.clear();
-        mDrawablesToInvalidate.clear();
-        mOneShot.clear();
-
-        // Legacy 30fps drawables.
-        if (mCounter % 2 == 0) {
-            for (Drawable drawable : mDrawablesToInvalidate30fps) {
-                drawable.invalidateSelf();
-            }
-            mDrawablesToInvalidate30fps.clear();
-        }
-
-        mCounter++;
     }
 
     private CallbackGroup getOrCreateGroup(int fps) {

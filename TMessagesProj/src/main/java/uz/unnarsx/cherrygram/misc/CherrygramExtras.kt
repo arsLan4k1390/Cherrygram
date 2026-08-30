@@ -23,11 +23,11 @@ import androidx.core.graphics.ColorUtils
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import org.telegram.messenger.AccountInstance
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
@@ -53,7 +53,9 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.math.sqrt
 
-object CherrygramExtras : CoroutineScope by MainScope() {
+object CherrygramExtras : CoroutineScope by CoroutineScope(
+    context = SupervisorJob() + Dispatchers.Default
+) {
 
     fun pause(seconds: Double) {
         try {
@@ -340,6 +342,22 @@ object CherrygramExtras : CoroutineScope by MainScope() {
     @JvmStatic
     fun largePhotosSupported(): Boolean {
         return SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE
+    }
+
+    @JvmStatic
+    fun isUserAccountAdded(userID: Long): Boolean {
+        if (userID == 0L) return false
+
+        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+            val userConfig = AccountInstance.getInstance(i).userConfig
+            val currentUser = userConfig?.currentUser
+            val userId = currentUser?.id ?: 0L
+
+            if (userConfig != null && userConfig.isClientActivated && userId == userID) {
+                return true
+            }
+        }
+        return false
     }
 
 }

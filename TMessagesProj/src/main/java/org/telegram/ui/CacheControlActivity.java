@@ -12,6 +12,7 @@ import static android.content.Context.ACTIVITY_SERVICE;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.formatString;
+import static org.telegram.messenger.LocaleController.getString;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -27,7 +28,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.StatFs;
 import android.text.SpannableString;
@@ -74,7 +74,6 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
-import org.telegram.messenger.utils.ViewOutlineProviderImpl;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
@@ -122,10 +121,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class CacheControlActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -1211,7 +1211,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             @Override
             public void onItemClick(int id) {
                 if (id == kaboom_id) {
-                    kaboomDurov(context);
+                    callKaboom();
                 } else if (id == -1) {
                     if (actionBar.isActionModeShowed()) {
                         if (cacheModel != null) {
@@ -3171,40 +3171,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         return this;
     }
 
-    private void kaboomDurov(Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-        builder.setTitle("Kaboom");
-        builder.setMessage(LocaleController.getString(R.string.CG_Kaboom));
-        builder.setPositiveButton("Kaboom!", (dialogInterface, i) -> {
-            try {
-                ((ActivityManager) context.getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData();
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
-        });
-        builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(dialog1 -> {
-            TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            button.setTextColor(Theme.getColor(Theme.key_text_RedRegular));
-            button.setEnabled(false);
-            var buttonText = button.getText();
-            new CountDownTimer(isInKaboomMode ? 1000 : 5000, 100) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    button.setText(String.format(Locale.getDefault(), "%s (%d)", buttonText, millisUntilFinished / 1000 + 1));
-                }
-
-                @Override
-                public void onFinish() {
-                    button.setText(buttonText);
-                    button.setEnabled(true);
-                }
-            }.start();
-        });
-        showDialog(alertDialog);
-    }
-
     public static class KaboomButton extends FrameLayout {
         FrameLayout button;
         AnimatedTextView.AnimatedTextDrawable textView;
@@ -3278,9 +3244,28 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         public KaboomButtonInternal(Context context) {
             super(context);
             ((MarginLayoutParams) button.getLayoutParams()).topMargin = AndroidUtilities.dp(5);
-            button.setOnClickListener(e -> kaboomDurov(context));
+            button.setOnClickListener(v -> callKaboom());
         }
 
+    }
+
+    private void callKaboom() {
+        PopupHelper.showWarning(
+                getContext(),
+                R.raw.group_pip_delete_icon, //ic_delete // swipe_delete // chat_audio_record_delete_3
+                getString(R.string.Warning),
+                AndroidUtilities.replaceTags(getString(R.string.CG_Kaboom)),
+                "Kaboom!",
+                isInKaboomMode ? 1 : 5,
+                true,
+                () -> {
+                    try {
+                        ((ActivityManager) getContext().getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData();
+                    } catch (Exception e) {
+                        CherrygramLogger.e(e);
+                    }
+                }
+        );
     }
     /** Cherrygram finish */
 

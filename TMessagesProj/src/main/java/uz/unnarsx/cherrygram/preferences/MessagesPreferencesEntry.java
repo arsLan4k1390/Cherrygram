@@ -33,12 +33,11 @@ import java.util.List;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class MessagesPreferencesEntry extends UniversalFragment {
+public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int messageMenuRow = 1, messageSizeRow = 2, directShareRow = 3,
             wideMessagesLayout = 4, hideTimeOnStickersRow = 5, showForwardDateRow = 6, pencilIconForEditedRow = 7;
@@ -53,13 +52,6 @@ public class MessagesPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("messages_preferences_screen");
         return getString(R.string.MessagesSettings);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -170,22 +162,22 @@ public class MessagesPreferencesEntry extends UniversalFragment {
             CherrygramMessagesConfig.INSTANCE.setDisableReactionsOverlay(!CherrygramMessagesConfig.INSTANCE.getDisableReactionsOverlay());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getDisableReactionsOverlay());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == reactionAnimationRow) {
             CherrygramMessagesConfig.INSTANCE.setDisableReactionAnim(!CherrygramMessagesConfig.INSTANCE.getDisableReactionAnim());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getDisableReactionAnim());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == tapsOnPremiumStickersRow) {
             CherrygramMessagesConfig.INSTANCE.setDisablePremStickAnim(!CherrygramMessagesConfig.INSTANCE.getDisablePremStickAnim());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getDisablePremStickAnim());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == premiumStickersAutoplayRow) {
             CherrygramMessagesConfig.INSTANCE.setDisablePremStickAutoPlay(!CherrygramMessagesConfig.INSTANCE.getDisablePremStickAutoPlay());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getDisablePremStickAutoPlay());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         }
     }
 

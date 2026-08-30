@@ -138,8 +138,12 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
         final TLRPC.User user = MessagesController.getInstance(account).getUser(user_id);
 
         final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return null;
 
         final Intent intent = new Intent(context, LaunchActivity.class).setAction("voip");
+
+        final int pendingIntentFlags = PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
+
         final Notification.Builder builder = new Notification.Builder(context)
             .setContentTitle(LocaleController.getString(video ? R.string.VoipInVideoCallBranding : R.string.VoipInCallBranding))
             .setSmallIcon(R.drawable.call)
@@ -147,7 +151,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
                 PendingIntent.getActivity(
                     context, 0,
                     intent,
-                    PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT
+                    pendingIntentFlags
                 )
             );
 
@@ -203,47 +207,39 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
         final Intent endIntent = new Intent(context, VoIPActionsReceiver.class);
         endIntent.setAction(context.getPackageName() + ".DECLINE_CALL");
         endIntent.putExtra("call_id", call_id);
-        CharSequence endTitle = LocaleController.getString(R.string.VoipDeclineCall);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            endTitle = new SpannableString(endTitle);
-            ((SpannableString) endTitle).setSpan(new ForegroundColorSpan(0xFFF44336), 0, endTitle.length(), 0);
-        }
         final PendingIntent endPendingIntent =
             PendingIntent.getBroadcast(
                 context,
                 0,
                 endIntent,
-                PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT
+                pendingIntentFlags
             );
 
-        final Intent answerIntent = new Intent(context, VoIPActionsReceiver.class);
-        answerIntent.setAction(context.getPackageName() + ".ANSWER_CALL");
-        answerIntent.putExtra("call_id", call_id);
-        CharSequence answerTitle = LocaleController.getString(R.string.VoipAnswerCall);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            answerTitle = new SpannableString(answerTitle);
-            ((SpannableString) answerTitle).setSpan(new ForegroundColorSpan(0xFF00AA00), 0, answerTitle.length(), 0);
-        }
         final PendingIntent answerPendingIntent =
             PendingIntent.getActivity(
                 context,
                 0,
                 new Intent(context, LaunchActivity.class).setAction("voip_answer"),
-                PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT
+                pendingIntentFlags
             );
 
         builder.setPriority(Notification.PRIORITY_MAX);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            builder.setShowWhen(false);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder.setColor(0xff2ca5e0);
-            builder.setVibrate(new long[0]);
-            builder.setCategory(Notification.CATEGORY_CALL);
-            builder.setFullScreenIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE), true);
-            if (user != null && !TextUtils.isEmpty(user.phone)) {
-                builder.addPerson("tel:" + user.phone);
-            }
+        builder.setShowWhen(false);
+        builder.setColor(0xff2ca5e0);
+        builder.setVibrate(new long[0]);
+        builder.setCategory(Notification.CATEGORY_CALL);
+
+        final PendingIntent fullScreenPendingIntent =
+            PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                pendingIntentFlags
+            );
+        builder.setFullScreenIntent(fullScreenPendingIntent, true);
+
+        if (user != null && !TextUtils.isEmpty(user.phone)) {
+            builder.addPerson("tel:" + user.phone);
         }
 
         final Intent hideIntent = new Intent(ApplicationLoader.applicationContext, VoIPActionsReceiver.class);
@@ -253,19 +249,27 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
                 ApplicationLoader.applicationContext,
                 0,
                 hideIntent,
-                PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+                pendingIntentFlags
             );
         builder.setDeleteIntent(hidePendingIntent);
 
-        Bitmap avatar = VoIPService.getRoundAvatarBitmap(context, account, user);
         String personName = ContactsController.formatName(user);
         if (TextUtils.isEmpty(personName)) {
             //java.lang.IllegalArgumentException: person must have a non-empty a name
             personName = "___";
         }
-        Person person = new Person.Builder()
-                .setName(personName)
-                .setIcon(Icon.createWithAdaptiveBitmap(avatar)).build();
+
+        Person.Builder personBuilder = new Person.Builder().setName(personName);
+        Bitmap avatar = VoIPService.getRoundAvatarBitmap(context, account, user);
+        if (avatar != null) {
+            try {
+                personBuilder.setIcon(Icon.createWithAdaptiveBitmap(avatar));
+            } catch (Throwable e) {
+                FileLog.e(e);
+            }
+        }
+        Person person = personBuilder.build();
+
         Notification.CallStyle notificationStyle = Notification.CallStyle.forIncomingCall(person, endPendingIntent, answerPendingIntent);
 
         builder.setStyle(notificationStyle);
@@ -401,7 +405,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
 
         final int account = intent.getIntExtra("account", UserConfig.selectedAccount);
         final long user_id = intent.getLongExtra("user_id", 0);
-        final boolean video = call != null && call.video;
+        final boolean video = call.video;
 
         currentState = new State(account, user_id, call);
 
@@ -410,8 +414,34 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
             pendingCall = call;
 
             final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            nm.notify(VoIPService.ID_INCOMING_CALL_PRENOTIFICATION, makeNotification(context, account, user_id, call.id, video));
-            startRinging(context, account, user_id);
+            if (nm != null) {
+                Notification notification = makeNotification(context, account, user_id, call.id, video);
+                if (notification != null) {
+                    try {
+                        nm.notify(VoIPService.ID_INCOMING_CALL_PRENOTIFICATION, notification);
+                        startRinging(context, account, user_id);
+                    } catch (IllegalArgumentException e) {
+                        FileLog.e("CallStyle notification failed (Android 14 restriction): " + e.getMessage());
+                        try {
+                            Intent serviceIntent = new Intent(context, VoIPService.class);
+                            serviceIntent.putExtra("account", account);
+                            serviceIntent.putExtra("user_id", user_id);
+                            serviceIntent.putExtra("is_incoming", true);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                context.startForegroundService(serviceIntent);
+                            } else {
+                                context.startService(serviceIntent);
+                            }
+                        } catch (Throwable ex) {
+                            FileLog.e(ex);
+                        }
+                    } catch (Throwable e) {
+                        FileLog.e(e);
+                    }
+                } else {
+                    FileLog.e("VoIPPreNotification.show(): makeNotification returned null");
+                }
+            }
         });
     }
 

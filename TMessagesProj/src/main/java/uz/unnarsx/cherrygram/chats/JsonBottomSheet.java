@@ -46,6 +46,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
@@ -56,6 +61,8 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_iv;
+import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
@@ -69,6 +76,11 @@ import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.HashSet;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
@@ -89,6 +101,12 @@ public class JsonBottomSheet extends BottomSheet {
 
     public Theme.ResourcesProvider resourcesProvider;
     public BaseFragment fragment;
+
+    public static final Gson gson = new GsonBuilder()
+            .registerTypeHierarchyAdapter(TL_iv.RichText.class, new RichTextTypeAdapter())
+            .registerTypeHierarchyAdapter(TL_iv.PageBlock.class, new PageBlockTypeAdapter())
+            .create();
+    public static final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 
     private JsonBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, MessageObject messageObject, TLRPC.Chat currentChat) {
         super(context, false, resourcesProvider);
@@ -244,10 +262,9 @@ public class JsonBottomSheet extends BottomSheet {
     public void colorizeJson(MessageObject messageObject) {
         String jsonString;
 
-        if (messageObject.messageOwner instanceof TLRPC.TL_messageService || !isJacksonSupportedAndEnabled()) {
+        if (forceUseGson(messageObject)) {
             try {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                jsonString = gson.toJson(messageObject.messageOwner);
+                jsonString = toPrettyJson(messageObject.messageOwner);
             } catch (Exception e) {
                 CherrygramLogger.e(e);
                 CherrygramMessagesConfig.INSTANCE.setJacksonJSON_Provider(true);
@@ -267,14 +284,26 @@ public class JsonBottomSheet extends BottomSheet {
 
         final SpannableString[] sb = new SpannableString[1];
         String finalJsonString = jsonString;
-        new CountDownTimer(400, 100) {
+        AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
+        progressDialog.setCanCancel(false);
+        new CountDownTimer(forceUseGson(messageObject) ? 3000 : 400, 100) {
             @Override
             public void onTick(long millisUntilFinished) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (progressDialog != null && !progressDialog.isShowing()) {
+                        progressDialog.show();
+                    }
+                });
                 sb[0] = CodeHighlighting.getHighlighted(finalJsonString, "json");
             }
 
             @Override
             public void onFinish() {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+                });
                 textView.setText(sb[0]);
             }
         }.start();
@@ -492,7 +521,7 @@ public class JsonBottomSheet extends BottomSheet {
             sb.append("message ID: ");
             sb.append(messageId);
             sb.append("\nJSON Library: ");
-            sb.append(messageObject.messageOwner instanceof TLRPC.TL_messageService || !isJacksonSupportedAndEnabled() ? "Google GSON" : "Jackson");
+            sb.append(forceUseGson(messageObject) ? "Google GSON" : "Jackson");
             messageIdTextView.setText(sb);
             messageIdTextView.setPadding(0, dp(2), 0, dp(2));
             messageIdTextView.setOnClickListener(v -> {
@@ -638,6 +667,77 @@ public class JsonBottomSheet extends BottomSheet {
         alert.dimBehindAlpha = 140;
         alert.setFragment(fragment);
         return alert;
+    }
+
+    private boolean forceUseGson(MessageObject messageObject) {
+        return (messageObject != null && (messageObject.messageOwner instanceof TLRPC.TL_messageService || messageObject.messageOwner.rich_message != null))
+                || !isJacksonSupportedAndEnabled();
+    }
+
+    private static String toPrettyJson(Object object) {
+        JsonElement jsonElement = JsonParser.parseString(gson.toJson(object));
+        return prettyGson.toJson(jsonElement);
+    }
+
+    private static class RichTextTypeAdapter implements JsonSerializer<TL_iv.RichText> {
+        @Override
+        public JsonElement serialize(TL_iv.RichText src, Type typeOfSrc, JsonSerializationContext context) {
+            return serializeTlObject(src, TL_iv.RichText.class, context);
+        }
+    }
+
+    private static class PageBlockTypeAdapter implements JsonSerializer<TL_iv.PageBlock> {
+        @Override
+        public JsonElement serialize(TL_iv.PageBlock src, Type typeOfSrc, JsonSerializationContext context) {
+            return serializeTlObject(src, TL_iv.PageBlock.class, context);
+        }
+    }
+
+    private static JsonObject serializeTlObject(Object src, Class<?> rootClass, JsonSerializationContext context) {
+        JsonObject object = new JsonObject();
+        object.addProperty("_type", src.getClass().getSimpleName());
+        HashSet<String> names = new HashSet<>();
+        for (Class<?> clazz = src.getClass(); clazz != null && rootClass.isAssignableFrom(clazz); clazz = clazz.getSuperclass()) {
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+                int modifiers = field.getModifiers();
+                if (field.isSynthetic() || Modifier.isStatic(modifiers) || Modifier.isTransient(modifiers)) {
+                    continue;
+                }
+                String name = field.getName();
+                if (!names.add(name) || shouldSkipJsonField(field.getDeclaringClass(), name)) {
+                    continue;
+                }
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(src);
+                    if (value != null) {
+                        object.add(name, context.serialize(value));
+                    }
+                } catch (Exception e) {
+                    CherrygramLogger.e(e);
+                }
+            }
+        }
+        return object;
+    }
+
+    private static boolean shouldSkipJsonField(Class<?> declaringClass, String name) {
+        if ("parentRichText".equals(name) || "bitmap".equals(name) || "mChangingConfigurations".equals(name)) {
+            return true;
+        }
+        if (TL_iv.Page.class.isAssignableFrom(declaringClass)) {
+            return "web".equals(name) || "local".equals(name);
+        }
+        if (TL_iv.textMath.class.isAssignableFrom(declaringClass)) {
+            return "w".equals(name) || "h".equals(name) || "depth".equals(name) || "tried".equals(name);
+        }
+        if (TL_iv.PageBlock.class.isAssignableFrom(declaringClass)) {
+            return "first".equals(name) || "bottom".equals(name) || "level".equals(name) || "quoteLevels".equals(name) ||
+                    "mid".equals(name) || "groupId".equals(name) || "thumb".equals(name) || "thumbObject".equals(name) ||
+                    "cachedWidth".equals(name) || "cachedHeight".equals(name);
+        }
+        return false;
     }
 
 }

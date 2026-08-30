@@ -29,7 +29,6 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.Components.Paint.PersistColorPalette;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.RestrictedLanguagesSelectActivity;
 
 import java.util.ArrayList;
@@ -38,11 +37,10 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class DebugPreferencesEntry extends UniversalFragment {
+public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int toastRpcRow = 1;
     private final int oldTimeStyleRow = 2;
@@ -72,13 +70,6 @@ public class DebugPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("debug_preferences_screen");
         return "Debug // W.I.P";
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -155,7 +146,7 @@ public class DebugPreferencesEntry extends UniversalFragment {
             CherrygramDebugConfig.INSTANCE.setShowRPCErrors(!CherrygramDebugConfig.INSTANCE.getShowRPCErrors());
             SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getShowRPCErrors());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == oldTimeStyleRow) {
             CherrygramDebugConfig.INSTANCE.setOldTimeStyle(!CherrygramDebugConfig.INSTANCE.getOldTimeStyle());
             SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getOldTimeStyle());
@@ -179,12 +170,12 @@ public class DebugPreferencesEntry extends UniversalFragment {
             CherrygramDebugConfig.INSTANCE.setReplacePunctuationMarks(!CherrygramDebugConfig.INSTANCE.getReplacePunctuationMarks());
             SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getReplacePunctuationMarks());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == editTextFixRow) {
             CherrygramDebugConfig.INSTANCE.setEditTextSuggestionsFix(!CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix());
             SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == audioSourceRow) {
             showAudioSourceDialog(() -> SettingsHelper.updateButtonValue(view, getAudioSourceValue()));
         } else if (item.id == sendMaxQualityRow) {
@@ -199,27 +190,27 @@ public class DebugPreferencesEntry extends UniversalFragment {
         } else if (item.id == resetDialogsRow) {
             getMessagesController().forceResetDialogs();
 
-            CGBulletinCreator.INSTANCE.createDebugSuccessBulletin(this);
+            showSuccessBulletin();
         } else if (item.id == clearMediaCacheRow) {
             clearMediaCache();
         } else if (item.id == readAllDialogsRow) {
             getMessagesStorage().readAllDialogs(-1);
 
-            CGBulletinCreator.INSTANCE.createDebugSuccessBulletin(this);
+            showSuccessBulletin();
         } else if (item.id == importContactsRow) {
             getUserConfig().syncContacts = true;
             getUserConfig().saveConfig(false);
             getContactsController().forceImportContacts();
 
-            CGBulletinCreator.INSTANCE.createDebugSuccessBulletin(this);
+            showSuccessBulletin();
         } else if (item.id == reloadContactsRow) {
             getContactsController().loadContacts(false, 0);
 
-            CGBulletinCreator.INSTANCE.createDebugSuccessBulletin(this);
+            showSuccessBulletin();
         } else if (item.id == resetContactsRow) {
             getContactsController().resetImportedContacts();
 
-            CGBulletinCreator.INSTANCE.createDebugSuccessBulletin(this);
+            showSuccessBulletin();
         }
     }
 
@@ -247,7 +238,7 @@ public class DebugPreferencesEntry extends UniversalFragment {
 
             SettingsHelper.updateButtonValue(view, SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass()));
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         });
         builder2.setNegativeButton(getString(R.string.Cancel), null);
         builder2.show();
@@ -359,7 +350,7 @@ public class DebugPreferencesEntry extends UniversalFragment {
         }
         editor.apply();
 
-        CGBulletinCreator.INSTANCE.createDebugSuccessBulletin(this);
+        showSuccessBulletin();
     }
 
 }

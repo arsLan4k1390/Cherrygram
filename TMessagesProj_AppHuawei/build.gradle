@@ -1,16 +1,17 @@
-import okhttp3.*
+import io.github.valacuz.proguard.dictionary.DictionaryGeneratorPluginExtension
+import io.github.valacuz.proguard.dictionary.tasks.generate.strategy.ObfuscationStrategy
 
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
+apply plugin: 'io.github.valacuz.proguard-dictionary-generator'
 
 /*repositories {
     mavenCentral()
@@ -29,15 +30,24 @@ configurations.configureEach {
 
 dependencies {
     implementation project(':TMessagesProj')
-    implementation 'androidx.fragment:fragment-ktx:1.8.9'
+    implementation 'androidx.fragment:fragment-ktx:1.9.0'
     implementation 'androidx.core:core-ktx:1.18.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
 
-    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-messaging:25.1.2'
     implementation 'com.huawei.hms:push:6.11.0.300'
     implementation 'com.huawei.hms:maps:6.11.0.304'
     implementation 'com.huawei.hms:location:6.11.0.301'
+}
+
+proguardDictGenerator {
+    createConfigFile = true
+    configFilePath = DictionaryGeneratorPluginExtension.DEFAULT_CONFIG_FILE_PATH
+    fieldMethodObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
+    classObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
+    packageObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
+    variantNameFilter = null // Regex pattern
 }
 
 android {
@@ -63,6 +73,10 @@ android {
         targetCompatibility JavaVersion.VERSION_17
 
         coreLibraryDesugaringEnabled true
+    }
+
+    androidResources {
+        localeFilters += ["en", "ar", "de", "es", "it", "ko", "nl", "pt-rBR", "ru", "uk", "be", "ja", "zh-rCN", "zh-rTW"]
     }
 
     signingConfigs {
@@ -152,7 +166,7 @@ android {
 
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionName APP_VERSION_NAME
         ndkVersion "27.2.12479018"
 
@@ -162,15 +176,10 @@ android {
 
         externalNativeBuild {
             cmake {
-                version '3.10.2'
+                version '3.22.1'
                 arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21' //, '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
+                targets 'tmessages.49'
             }
-        }
-    }
-
-    packagingOptions {
-        jniLibs {
-            useLegacyPackaging = true
         }
     }
 
@@ -221,6 +230,14 @@ env.each { key, value ->
     ext."$key" = value
 }
 
+/*task printSecrets {
+    doLast {
+        println "TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}"
+        println "TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}"
+        println "SYSTEM_USERNAME: ${SYSTEM_USERNAME}"
+    }
+}*/
+
 static def isWindows() {
     def osName = System.getProperty('os.name').toLowerCase()
     return osName.contains('win')
@@ -268,14 +285,19 @@ def apkFilePath = "${projectDir}/afat/release/${fileName}"
 def fileName2 = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-armeabi-v7a.apk"
 def apkFilePath2 = "${projectDir}/afat/release/${fileName2}"
 
+def fileName3 = "Cherrygram-Huawei-Beta-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-universal.apk"
+def apkFilePath3 = "${projectDir}/afat/release/${fileName3}"
+
 tasks.register('sendApk') {
     doLast {
         def file = new File(apkFilePath)
         def file2 = new File(apkFilePath2)
+        def file3 = new File(apkFilePath3)
 
-        if (!file.exists() && !file2.exists()) {
+        if (!file.exists() && !file2.exists() && !file3.exists()) {
             println "APK file not found: $apkFilePath"
             println "APK file not found: $apkFilePath2"
+            println "APK file not found: $apkFilePath3"
             return
         }
 
@@ -284,65 +306,84 @@ tasks.register('sendApk') {
         try {
             sendApkToTelegram(file)
             sendApkToTelegram(file2)
+            sendApkToTelegram(file3)
         } catch (Exception e) {
-            println "Error sending APK: ${e.message}"
+//            println "Error sending APK: ${e.message}"
             e.printStackTrace()
         }
     }
 }
 
-void sendApkToTelegram(File file) {
-    OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(90, TimeUnit.SECONDS)
-            .build()
+static String escapeHtml(String s) {
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+}
 
-    def appVersion = "App version: *${APP_VERSION_NAME_CHERRY} // ${APP_VERSION_NAME} (${APP_VERSION_CODE})*"
+void sendApkToTelegram(File file) {
+    def appVersion = "App version: <b>${APP_VERSION_NAME_CHERRY} // ${APP_VERSION_NAME} (${APP_VERSION_CODE})</b>"
 
     def currentDateAndTime = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))
-    def buildDate = "\n \nBuild date (UTC): *" + currentDateAndTime + "*\n"
+    def buildDate = "\n \nBuild date (UTC): <b>${currentDateAndTime}</b>\n"
 
-    def buildHost = "\nBuilt on: *${getOSName()}*"
+    def buildHost = "\nBuilt on: <b>${getOSName()}</b>"
 
     def currentRepo = 'git rev-parse --show-toplevel'.execute().text.trim().split('/').last()
     def currentBranch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
-    def projectName = "\n \nProject: *${currentRepo}*" + "/${currentBranch}"
+    def projectName = "\n \nProject: <b>${escapeHtml(currentRepo)}</b>/${escapeHtml(currentBranch)}"
 
     def lastCommitAuthor = 'git log -1 --pretty=%an'.execute().text.trim()
-    def author = "\nTriggered by: *${lastCommitAuthor}*"
+    def author = "\nTriggered by: <b>${escapeHtml(lastCommitAuthor)}</b>"
 
+    def fileSizeMb = String.format(Locale.US, "%.2f", file.length() / (1024.0 * 1024.0))
+    def fileSizeText = "\nFile size: <b>${fileSizeMb} MB</b>"
 
     def fileCaption
     if (file.name.contains("arm64-v8a")) {
-        fileCaption = appVersion + buildDate + "Architecture: *arm64-v8a*" + buildHost + projectName + author
+        fileCaption = appVersion + buildDate + "Architecture: <b>arm64-v8a</b>" + buildHost + fileSizeText + projectName + author
     } else if (file.name.contains("armeabi-v7a")) {
-        fileCaption = appVersion + buildDate + "Architecture: *armeabi-v7a*" + buildHost + projectName + author
+        fileCaption = appVersion + buildDate + "Architecture: <b>armeabi-v7a</b>" + buildHost + fileSizeText + projectName + author
     } else {
-        fileCaption = appVersion + buildDate + "Architecture: *universal*" + buildHost + projectName + author
+        fileCaption = appVersion + buildDate + "Architecture: <b>universal</b>" + buildHost + fileSizeText + projectName + author
     }
-
-    def requestBody = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("chat_id", "${TELEGRAM_CHAT_ID}")
-            .addFormDataPart("document", file.name,
-                    RequestBody.create(MediaType.parse("application/vnd.android.package-archive"), file)
-            )
-            .addFormDataPart("caption", fileCaption)
-            .addFormDataPart("parse_mode", "Markdown")
-            .build()
-
-    def request = new Request.Builder()
-            .url("https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument")
-            .post(requestBody)
-            .build()
 
     println "Uploading file: ${file.name}, size: ${file.length()} bytes"
 
-    client.newCall(request).execute().withCloseable { response ->
-        if (response.isSuccessful()) {
-            println "APK successfully sent to Cherrygram Support!"
-        } else {
-            throw new RuntimeException("HTTP ${response.code()} - ${response.message()}")
-        }
+    def captionFile = File.createTempFile("tg_caption_", ".txt")
+    captionFile.setText(fileCaption, "UTF-8")
+
+    def pythonBin = TG_PYTHON_BIN ?: "python"
+
+    def cmd = [
+            pythonBin.toString(),
+            "${projectDir}/scripts/send_telegram.py".toString(),
+            file.absolutePath.toString(),
+            captionFile.absolutePath.toString()
+    ]
+
+    def processBuilder = new ProcessBuilder(cmd)
+    processBuilder.environment().put("TG_APP_ID", TG_APP_ID)
+    processBuilder.environment().put("TG_APP_HASH", TG_APP_HASH)
+    processBuilder.environment().put("TELEGRAM_BOT_TOKEN", TELEGRAM_BOT_TOKEN)
+    processBuilder.environment().put("TELEGRAM_CHAT_ID", TELEGRAM_CHAT_ID.toString())
+    processBuilder.redirectErrorStream(true)
+
+    def process = processBuilder.start()
+    def output = new StringBuilder()
+    process.inputStream.eachLine { line -> output.append(line).append("\n") }
+    def exitCode = process.waitFor()
+    captionFile.delete()
+
+    if (exitCode == 0) {
+        println "APK successfully sent to Cherrygram Support!"
+        println output.toString()
+    } else {
+        throw new RuntimeException("""
+            ==================================================
+            FAILED TO SEND APK TO TELEGRAM (kurigram)!
+            --------------------------------------------------
+            Exit code: ${exitCode}
+            Output:
+            ${output}
+            ==================================================""")
     }
 }
 

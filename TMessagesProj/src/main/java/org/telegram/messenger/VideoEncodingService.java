@@ -10,9 +10,11 @@ package org.telegram.messenger;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -223,5 +225,31 @@ public class VideoEncodingService extends Service implements NotificationCenter.
     public static boolean isRunning() {
         return instance != null;
     }
+
+    /** Cherrygram start */
+    @Override
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE) // API 34
+    public void onTimeout(int startId, int fgsType) {
+        super.onTimeout(startId, fgsType);
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("VideoEncodingService: onTimeout fired (fgsType=" + fgsType + "), forcing stop");
+        }
+        try {
+            FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(
+                    new RuntimeException("VideoEncodingService onTimeout, fgsType=" + fgsType)
+            );
+        } catch (Throwable ignore) {}
+        stopForegroundAndSelf();
+    }
+
+    private void stopForegroundAndSelf() {
+        try {
+            stopForeground(true);
+        } catch (Throwable e) {
+            FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
+        }
+        stopSelf();
+    }
+    /** Cherrygram finish */
 
 }

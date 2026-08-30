@@ -3364,7 +3364,14 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
 
     @Override
     public void setItemAnimator(@Nullable ItemAnimator animator) {
-        super.setItemAnimator(animator);
+        try {
+            if (getItemAnimator() == animator && animator != null) {
+                return;
+            }
+            super.setItemAnimator(animator);
+        } catch (Throwable e) {
+            FileLog.e(e);
+        }
 //        if (hasSections() && getItemAnimator() != null) {
 //            getItemAnimator().listenToAnimationUpdates(this::invalidate);
 //        }

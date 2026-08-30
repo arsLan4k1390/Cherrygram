@@ -51,6 +51,7 @@ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager
 import uz.unnarsx.cherrygram.donates.DonatesManager
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.misc.CherrygramExtras
 import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
@@ -466,7 +467,15 @@ class TelegramSettingsHelper(
                 }
 
                 if (freeAccounts > 0 && availableAccount != null) {
-                    fragment.presentFragment(LoginActivity(availableAccount))
+                    val activeAccountsCount = UserConfig.getActivatedAccountsCount()
+
+                    if (activeAccountsCount >= 4) {
+                        PopupHelper.showLoginWarning(fragment.context) {
+                            fragment.presentFragment(LoginActivity(availableAccount))
+                        }
+                    } else {
+                        fragment.presentFragment(LoginActivity(availableAccount))
+                    }
                 } else if (!UserConfig.hasPremiumOnAccounts()) {
                     fragment.showDialog(
                         LimitReachedBottomSheet(

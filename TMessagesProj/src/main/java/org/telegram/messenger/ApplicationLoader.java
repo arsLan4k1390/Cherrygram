@@ -56,6 +56,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.firebase.crashlytics.FirebaseCrashlyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
+import uz.unnarsx.cherrygram.misc.widgets.KaboomWidget;
 
 public class ApplicationLoader extends Application {
 
@@ -300,7 +301,11 @@ public class ApplicationLoader extends Application {
 
         super.onCreate();
 
+        // AndroidUtilities must be initialized before FileLog
+        final String helloWorld = AndroidUtilities.getHelloWorld();
+
         if (BuildVars.LOGS_ENABLED) {
+            FileLog.d(helloWorld);
             FileLog.d("app start time = " + (startTime = SystemClock.elapsedRealtime()));
             try {
                 final PackageInfo info = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
@@ -347,6 +352,10 @@ public class ApplicationLoader extends Application {
                 }
             }
         };
+        if (BuildConfig.DEBUG_VERSION) {
+            new ANRDetector(FileLog::dumpANR);
+        }
+
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("load libs time = " + (SystemClock.elapsedRealtime() - startTime));
         }
@@ -738,6 +747,7 @@ public class ApplicationLoader extends Application {
 
     /** Cherrygram start */
     private void initCG() {
+        KaboomWidget.forceUpdateKaboomWidgets(applicationContext);
         FirebaseAnalyticsHelper.INSTANCE.init(applicationContext);
 
         if (CherrygramExperimentalConfig.INSTANCE.getUse_CG_OOMHandler()) {

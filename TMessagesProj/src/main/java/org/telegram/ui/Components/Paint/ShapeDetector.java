@@ -163,20 +163,35 @@ public class ShapeDetector {
         queue.postRunnable(() -> {
             try {
                 Context ctx = ApplicationLoader.applicationContext;
-                InputStream in = ctx.getAssets().open("shapes.dat");
-                while (in.available() > 5) {
-                    Template template = new Template();
-                    template.shapeType = in.read();
-                    int pointsCount = in.read();
-                    int ox = in.read() - 64, oy = in.read() - 64;
-                    if (in.available() >= pointsCount * 2) {
+                try (InputStream in = ctx.getAssets().open("shapes.dat")) {
+                    while (true) {
+                        int shapeType = in.read();
+                        if (shapeType == -1) break;
+
+                        int pointsCount = in.read();
+                        int ox = in.read();
+                        int oy = in.read();
+                        if (pointsCount == -1 || ox == -1 || oy == -1) break;
+                        ox -= 64;
+                        oy -= 64;
+
+                        Template template = new Template();
+                        template.shapeType = shapeType;
+
+                        boolean truncated = false;
                         for (int i = 0; i < pointsCount; ++i) {
-                            template.points.add(new Point(in.read() - ox - 127, in.read() - oy - 127));
+                            int px = in.read();
+                            int py = in.read();
+                            if (px == -1 || py == -1) {
+                                truncated = true;
+                                break;
+                            }
+                            template.points.add(new Point(px - ox - 127, py - oy - 127));
                         }
+                        if (truncated) break;
+
                         template.score = preferences.getInt("score" + templates.size(), 0);
                         templates.add(template);
-                    } else {
-                        break;
                     }
                 }
                 if (isLearning) {
@@ -199,7 +214,6 @@ public class ShapeDetector {
                         }
                     }
                 }
-                in.close();
             } catch (Exception e) {
                 FileLog.e(e);
             }

@@ -98,6 +98,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager;
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.folders.helpers.FolderIconHelper;
@@ -673,7 +674,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                     Theme.key_featuredStickers_addButton :
                     Theme.key_chats_tabUnreadUnactiveBackground
             ));
-            textPaint.setColor(getThemedColor(Theme.key_actionBarDefault));
+            textPaint.setColor(getThemedColor(hasUnmutedUnreadDialogs ? Theme.key_featuredStickers_buttonText : Theme.key_actionBarDefault));
             AndroidUtilities.rectTmp.set(left, centerY - halfHeight, left + counterWidth, centerY + halfHeight);
             canvas.drawRoundRect(AndroidUtilities.rectTmp, halfHeight, halfHeight, backgroundPaint);
             final Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
@@ -727,7 +728,16 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                     freeAccounts -= (UserConfig.MAX_ACCOUNT_COUNT - UserConfig.MAX_ACCOUNT_DEFAULT_COUNT);
                 }
                 if (freeAccounts > 0 && availableAccount != null) {
-                    presentFragment(new LoginActivity(availableAccount));
+                    int activeAccountsCount = UserConfig.getActivatedAccountsCount();
+
+                    if (activeAccountsCount >= 4) {
+                        int finalAvailableAccount = availableAccount;
+                        PopupHelper.showLoginWarning(
+                                getContext(), () -> presentFragment(new LoginActivity(finalAvailableAccount))
+                        );
+                    } else {
+                        presentFragment(new LoginActivity(availableAccount));
+                    }
                 } else if (!UserConfig.hasPremiumOnAccounts()) {
                     showDialog(new LimitReachedBottomSheet(this, getContext(), TYPE_ACCOUNTS, currentAccount, null));
                 }
@@ -810,11 +820,28 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         final TextView textView = new TextView(getContext());
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         textView.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
-        textView.setText(UserObject.getUserName(user));
         textView.setMaxLines(2);
         textView.setEllipsize(TextUtils.TruncateAt.END);
-        btn.addView(textView, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, Gravity.CENTER_VERTICAL, 13, 0, 14, 0));
 
+        CharSequence name = UserObject.getUserName(user);
+        final int unreadCount = MessagesStorage.getInstance(account).getMainUnreadCount();
+
+        if (unreadCount > 0) {
+            SpannableStringBuilder nameWithCounter = new SpannableStringBuilder(name);
+            final int counterStart = nameWithCounter.length();
+            nameWithCounter.append(String.valueOf(unreadCount));
+
+            nameWithCounter.setSpan(
+                    new FolderCounterSpan(unreadCount, true),
+                    counterStart,
+                    nameWithCounter.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+            textView.setText(nameWithCounter);
+        } else {
+            textView.setText(name);
+        }
+        btn.addView(textView, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, Gravity.CENTER_VERTICAL, 13, 0, 14, 0));
         return btn;
     }
 

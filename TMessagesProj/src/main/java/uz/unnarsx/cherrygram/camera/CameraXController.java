@@ -112,8 +112,8 @@ public class CameraXController {
     }
 
     public void closeCamera() {
-        provider.unbindAll();
-        lifecycle.stop();
+        if (provider != null) provider.unbindAll();
+        if (lifecycle != null) lifecycle.stop();
     }
 
     @SuppressLint("RestrictedApi")

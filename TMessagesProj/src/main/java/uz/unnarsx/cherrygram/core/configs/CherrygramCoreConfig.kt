@@ -152,10 +152,14 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     fun init() {
         launch {
-            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)
-
-            migratePreferences()
+            initAsync()
         }
+    }
+
+    private suspend fun initAsync() {
+        DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)
+
+        migratePreferences()
     }
 
 }

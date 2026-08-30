@@ -42,6 +42,7 @@ object CherrygramMessagesConfig {
     var msgMenuFixedHeight by sharedPreferences.boolean("CP_MsgMenuFixedHeightForce", true)
     var blurMessageMenuItems by sharedPreferences.boolean("CP_BlurMessageMenuItems", false)
     var msgMenuNativeBlur by sharedPreferences.boolean("CP_MsgMenuNativeBlur", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    var fixMsgMenuAnimation by sharedPreferences.boolean("CP_MsgMenuNativeBlur", Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
     /** Message menu items start */
     var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", true)
     var showGemini by sharedPreferences.boolean("CP_ShowGemini", GeminiButtonsLayout.geminiButtonsVisible())

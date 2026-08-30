@@ -86,6 +86,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements DialogCell.DialogCellDelegate {
     public final static int VIEW_TYPE_DIALOG = 0,
             VIEW_TYPE_FLICKER = 1,
@@ -1553,6 +1555,10 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
             }
             if (isTransitionSupport) {
                 height += AndroidUtilities.dp(1000);
+            }
+
+            if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom() && CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
+                height += AndroidUtilities.dp(DialogsActivity.MAIN_TABS_HEIGHT);
             }
             super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
         }

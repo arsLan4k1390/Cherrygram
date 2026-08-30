@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.icu.text.RelativeDateTimeFormatter;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -1488,11 +1489,14 @@ public class LocaleController {
             }
             if (value == null) {
                 try {
-                    value = ApplicationLoader.applicationContext.getString(res);
+                    // Cherrygram: use a locale-pinned Resources instance instead of the shared
+                    // applicationContext resources, which WebView is known to silently reset to
+                    // the system locale (without any Configuration-change callback firing).
+                    value = getLocalizedResources().getString(res);
                 } catch (Exception e) {
                     if (fallbackRes != 0) {
                         try {
-                            value = ApplicationLoader.applicationContext.getString(fallbackRes);
+                            value = getLocalizedResources().getString(fallbackRes);
                         } catch (Exception ignored) {}
                     }
                     FileLog.e(e);
@@ -4573,6 +4577,9 @@ public class LocaleController {
     }
 
     /** Cherrygram start */
+    private volatile Resources localizedResources;
+    private volatile Locale localizedResourcesLocale;
+
     public static String formatDateOnlineIOS(long date, boolean[] madeShorter) {
         try {
             date *= 1000;
@@ -4667,5 +4674,24 @@ public class LocaleController {
             }
         }
     }
+
+    private Resources getLocalizedResources() {
+        Locale locale = currentLocale != null ? currentLocale : Locale.getDefault();
+        Resources cached = localizedResources;
+        if (cached == null || localizedResourcesLocale == null || !localizedResourcesLocale.equals(locale)) {
+            synchronized (this) {
+                if (localizedResources == null || localizedResourcesLocale == null || !localizedResourcesLocale.equals(locale)) {
+                    Configuration config = new Configuration(ApplicationLoader.applicationContext.getResources().getConfiguration());
+                    config.setLocale(locale);
+                    Context localizedContext = ApplicationLoader.applicationContext.createConfigurationContext(config);
+                    localizedResources = localizedContext.getResources();
+                    localizedResourcesLocale = locale;
+                }
+                cached = localizedResources;
+            }
+        }
+        return cached;
+    }
     /** Cherrygram finish */
+
 }

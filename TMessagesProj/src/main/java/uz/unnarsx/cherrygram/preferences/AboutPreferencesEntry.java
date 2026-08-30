@@ -39,7 +39,7 @@ import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class AboutPreferencesEntry extends UniversalFragment {
+public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int readmeRow = 1;
     private final int updatesRow = 2;
@@ -57,13 +57,6 @@ public class AboutPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("about_preferences_screen");
         return getString(R.string.CGP_Header_About);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override

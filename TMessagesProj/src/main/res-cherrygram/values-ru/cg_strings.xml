@@ -24,6 +24,8 @@
     <string name="OpenOfficialApp">Открыть официальное приложение</string>
     <string name="CG_DidNotGetTheCode">Если вы не получили код или вы не входили в аккаунт Telegram на другом устройстве, воспользуйтесь официальным приложением Telegram, чтобы получить код.\n\nTelegram **отключил возможность авторизации через СМС** для альтернативных приложений. Согласно новым правилам, пользователи альтернативных клиентов больше не могут получить СМС-код для авторизации. Теперь для получения кода требуется использовать официальное приложение Telegram.\n\nЕсли у вас возникла проблема со входом в аккаунт, пожалуйста, обратитесь в службу поддержки Telegram.</string>
     <string name="CG_ChangePhoneNumber">Телеграм **отключил возможность изменения номера** в сторонних приложениях. Пользователи могут сменить номер только через Telegram.</string>
+
+    <string name="CG_AddAccountWarning">Использование 5 и более аккаунтов одновременно может привести к нестабильной работе приложения, особенно на слабых устройствах (вплоть до невозможности запуска).\n\nВы продолжаете на свой страх и риск. **Cherrygram не несет ответственности** за возможную потерю доступа к аккаунтам.</string>
     <!--Sign in screen-->
 
     <!--Last seen status-->
@@ -128,7 +130,7 @@
     <string name="CG_Restart">Перезапустить приложение</string>
     <string name="CG_RestartToApply">Перезапустите приложение</string>
     <string name="CG_PushService">Сервис уведомлений Cherrygram.</string>
-    <string name="CG_Kaboom">Доступ к этой функции можно получить без пароля Cherrygram, через системные настройки. Эта функция полностью удаляет все данные приложения. Ее можно использовать в аварийных ситуациях.</string>
+    <string name="CG_Kaboom">Доступ к этой функции можно получить без пароля Cherrygram, через системные настройки. \n\nЭта функция **полностью удаляет все данные приложения**. Ее можно использовать в аварийных ситуациях.</string>
     <string name="CG_AppCrashed">Что-то пошло не так</string>
     <string name="CG_AppCrashedDesc">Cherrygram перестал работать. Пожалуйста, отправьте логи разработчикам, чтобы они как можно скорее исправили эту ошибку.</string>
     <string name="CG_CopyReportDetails">Скопировать детали отчёта</string>
@@ -237,6 +239,7 @@
     <string name="AP_OneUI_Switch_Style">Переключатели в стиле OneUI</string>
     <string name="AP_SystemEmoji">Системные эмодзи</string>
     <string name="AP_ShowPencilIcon">Иконка карандаша для изменённых сообщений</string>
+    <string name="CP_StrokeOnViews">Эффекты бликов</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
     <string name="AP_CenterTitle_AdaptiveWidth">Адаптивная ширина пузыря</string>
     <string name="AP_HideSearchBar">Скрыть поле поиска в чатах</string>
