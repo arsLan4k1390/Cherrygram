@@ -592,13 +592,12 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         titleView.setText(UserObject.getUserName(user));
         final StringBuilder sb = new StringBuilder();
         if (hidePhoneNumber) {
-                sb.append(getChatsPasswordHelper().replaceStringToSpoilers(
-                        PhoneFormat.getInstance().format("+ " + user.phone),
-                        true
-                ));
-            } else {
-                sb.append(PhoneFormat.getInstance().format("+" + user.phone));
-            }
+            sb.append(getChatsPasswordHelper().replaceStringToSpoilers(
+                    PhoneFormat.getInstance().format("+ " + user.phone),
+                    true
+            ));
+        } else {
+            sb.append(PhoneFormat.getInstance().format("+" + user.phone));
         }
         final String username = UserObject.getPublicUsername(user);
         if (username != null) {
