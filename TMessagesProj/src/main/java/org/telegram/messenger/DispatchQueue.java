@@ -16,6 +16,8 @@ import android.os.SystemClock;
 
 import java.util.concurrent.CountDownLatch;
 
+import uz.unnarsx.cherrygram.core.firebase.crashlytics.FirebaseCrashlyticsHelper;
+
 public class DispatchQueue extends Thread {
 
     private static final int THREAD_PRIORITY_DEFAULT = -1000;
@@ -138,7 +140,15 @@ public class DispatchQueue extends Thread {
         if (threadPriority != THREAD_PRIORITY_DEFAULT) {
             Process.setThreadPriority(threadPriority);
         }
-        Looper.loop();
+        while (true) {
+            try {
+                Looper.loop();
+                return;
+            } catch (Exception e) {
+                FileLog.e(e, false);
+                FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
+            }
+        }
     }
 
     public boolean isReady() {

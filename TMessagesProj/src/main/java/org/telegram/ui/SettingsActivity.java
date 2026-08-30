@@ -591,8 +591,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         avatarView.setForUserOrChat(user, avatarDrawable, true);
         titleView.setText(UserObject.getUserName(user));
         final StringBuilder sb = new StringBuilder();
-        if (user != null) {
-            if (hidePhoneNumber) {
+        if (hidePhoneNumber) {
                 sb.append(getChatsPasswordHelper().replaceStringToSpoilers(
                         PhoneFormat.getInstance().format("+ " + user.phone),
                         true
@@ -641,14 +640,18 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         updateActionBarVisible(false, true);
     }
     private void updateActionBarVisible(boolean force, boolean animated) {
+        if (actionBar == null) {
+            return;
+        }
+
         final boolean visible;
-        if (searchItem.isSearchFieldVisible2()) {
+        if (searchItem != null && searchItem.isSearchFieldVisible2()) {
             visible = true;
-        } else if (listView.getChildCount() > 0) {
+        } else if (listView != null && listView.getChildCount() > 0) {
             final View firstChild = listView.getChildAt(0);
-            visible = (
-                listView.getChildAdapterPosition(firstChild) > 0 ||
-                firstChild.getY() + firstChild.getHeight() < actionBar.getHeight()
+            visible = firstChild != null && (
+                    listView.getChildAdapterPosition(firstChild) > 0 ||
+                            firstChild.getY() + firstChild.getHeight() < actionBar.getHeight()
             );
         } else {
             visible = false;
@@ -661,14 +664,23 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             actionBarVisibleAnimator = null;
         }
         if (!animated) {
-            actionBar.getTitlesContainer().setAlpha(visible ? 1.0f : 0.0f);
-            actionBarBackground.setAlpha(visible ? 1.0f : 0.0f);
+            if (actionBar.getTitlesContainer() != null) {
+                actionBar.getTitlesContainer().setAlpha(visible ? 1.0f : 0.0f);
+            }
+            if (actionBarBackground != null) {
+                actionBarBackground.setAlpha(visible ? 1.0f : 0.0f);
+            }
         } else {
-            actionBarVisibleAnimator = ValueAnimator.ofFloat(actionBar.getTitlesContainer().getAlpha(), visible ? 1.0f : 0.0f);
+            float startAlpha = actionBar.getTitlesContainer() != null ? actionBar.getTitlesContainer().getAlpha() : 0.0f;
+            actionBarVisibleAnimator = ValueAnimator.ofFloat(startAlpha, visible ? 1.0f : 0.0f);
             actionBarVisibleAnimator.addUpdateListener(a -> {
                 final float t = (float) a.getAnimatedValue();
-                actionBar.getTitlesContainer().setAlpha(t);
-                actionBarBackground.setAlpha(t);
+                if (actionBar != null && actionBar.getTitlesContainer() != null) {
+                    actionBar.getTitlesContainer().setAlpha(t);
+                }
+                if (actionBarBackground != null) {
+                    actionBarBackground.setAlpha(t);
+                }
             });
             actionBarVisibleAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             actionBarVisibleAnimator.setDuration(420);

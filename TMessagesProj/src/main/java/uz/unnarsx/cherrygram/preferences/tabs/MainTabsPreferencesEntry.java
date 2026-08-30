@@ -38,11 +38,11 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager;
+import uz.unnarsx.cherrygram.preferences.BaseCGPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class MainTabsPreferencesEntry extends UniversalFragment {
+public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int enableTabsRow = 1;
     private final int tabsPreviewRow = 2;
@@ -58,13 +58,6 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("tabs_preferences_screen");
         return getString(R.string.CP_MainTabs_Header);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -174,13 +167,13 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
             if (!CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
                 resetMainTabsOrder();
             }
-            listView.adapter.update(true);
+            updateRows(true);
 
-            if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()) CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()) showRestartBulletin();
         } else if (item.id == tabsPreviewRow) {
             /*if (MainTabsManager.getEnabledTabs().size() > 5) {
                 CherrygramAppearanceConfig.INSTANCE.setShowMainTabsTitle(false);
-                listView.adapter.update(true);
+                updateRows(true);
             }*/
         } else if (item.id == openSettingsBySwipeRow) {
             CherrygramAppearanceConfig.INSTANCE.setOpenSettingsBySwipe(!CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe());

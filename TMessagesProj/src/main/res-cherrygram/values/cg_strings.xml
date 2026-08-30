@@ -26,6 +26,7 @@
     <string name="CG_DidNotGetTheCode">If you didn\'t get the code on another device or you don\'t have Telegram logged in on another device, please use the official Telegram app to receive the code.\n\nTelegram has **disabled the ability to log in with SMS** on third-party apps. Users logging into third-party apps are only able to receive login codes via Telegram.\n\nWe cannot help you with this, if you have any issues with logging in, please contact Telegram Support.</string>
     <string name="CG_ChangePhoneNumber">Telegram has **disabled the ability to change phone number** on third-party apps. Users are only able to change phone number via Telegram.</string>
 
+    <string name="CG_AddAccountWarning">Using 5 or more accounts simultaneously may cause instability, especially on low-end devices (including potential launch crashes).\n\nProceed at your own risk. **Cherrygram is not responsible** for any lost access to your accounts.</string>
     <!--Sign in screen-->
 
     <!--Last seen status-->
@@ -130,7 +131,7 @@
     <string name="CG_Restart">Restart app</string>
     <string name="CG_RestartToApply">Restart app to apply changes</string>
     <string name="CG_PushService">Cherrygram Push Service.</string>
-    <string name="CG_Kaboom">This feature can be accessed without the Cherrygram password, through the system settings. This feature completely erases all your local (Cherrygram\'s) data. It can be used in emergency situations.</string>
+    <string name="CG_Kaboom">This feature can be accessed without the Cherrygram password, through the system settings. \n\nThis feature **completely erases all your local (Cherrygram\'s) data**. It can be used in emergency situations.</string>
     <string name="CG_AppCrashed">Something went wrong</string>
     <string name="CG_AppCrashedDesc">Cherrygram has stopped working. Please send logs to the developers so they can fix this bug as soon as possible.</string>
     <string name="CG_CopyReportDetails">Copy Report Details</string>
@@ -241,6 +242,7 @@
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">System emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
+    <string name="CP_StrokeOnViews">Glare effects</string>
     <string name="AP_CenterTitle">Center title</string>
     <string name="AP_CenterTitle_AdaptiveWidth">Adaptive bubble width</string>
     <string name="AP_HideSearchBar">Hide search bar in chats</string>

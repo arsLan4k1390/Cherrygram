@@ -2299,6 +2299,8 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
     }
 
     public void checkCall(boolean create) {
+        if (fragment == null) return;
+
         VoIPService voIPService = VoIPService.getSharedInstance();
         if (visible && currentStyle == STYLE_IMPORTING_MESSAGES && (voIPService == null || voIPService.isHangingUp())) {
             return;

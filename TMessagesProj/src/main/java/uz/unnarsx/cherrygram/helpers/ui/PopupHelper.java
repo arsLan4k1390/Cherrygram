@@ -9,16 +9,21 @@
 
 package uz.unnarsx.cherrygram.helpers.ui;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.net.Uri;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -36,6 +41,8 @@ import org.telegram.ui.Cells.RadioColorCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.RLottieImageView;
+import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
@@ -43,6 +50,7 @@ import java.util.Set;
 
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.preferences.ChatsPreferencesEntry;
 
 public class PopupHelper {
@@ -60,7 +68,7 @@ public class PopupHelper {
 
         for (int a = 0; a < entries.size(); a++) {
             RadioColorCell cell = new RadioColorCell(context);
-            cell.setPadding(AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4), 0);
+            cell.setPadding(dp(4), 0, dp(4), 0);
             cell.setTag(a);
             cell.setCheckColor(Theme.getColor(Theme.key_radioBackground, resourcesProvider), Theme.getColor(Theme.key_dialogRadioBackgroundChecked, resourcesProvider));
             cell.setTextAndValue(entries.get(a), checkedIndex == a);
@@ -92,7 +100,7 @@ public class PopupHelper {
 
         for (int a = 0; a < prefTitle.size(); a++) {
             RadioColorCell cell = new RadioColorCell(context);
-            cell.setPadding(AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4), 0);
+            cell.setPadding(dp(4), 0, dp(4), 0);
             cell.setTag(a);
             cell.setCheckColor(Theme.getColor(Theme.key_radioBackground, resourcesProvider), Theme.getColor(Theme.key_dialogRadioBackgroundChecked, resourcesProvider));
             cell.setTextAndText2AndValue(prefTitle.get(a), prefDesc.get(a), checkedIndex == a);
@@ -231,6 +239,94 @@ public class PopupHelper {
         var sheet = new BottomSheet(context, false);
         sheet.setCustomView(scrollView);
         sheet.show();
+    }
+
+    public static void showLoginWarning(Context context, Runnable onConfirm) {
+        showWarning(
+                context,
+                R.raw.ic_ban,
+                getString(R.string.Warning),
+                AndroidUtilities.replaceTags(getString(R.string.CG_AddAccountWarning)),
+                getString(R.string.GotIt),
+                5,
+                false,
+                onConfirm
+        );
+    }
+
+    public static void showWarning(
+            Context context,
+            int resID,
+            String title,
+            CharSequence message,
+            String buttonText,
+            int timerInSeconds,
+            boolean kaboom,
+            Runnable onConfirm
+    ) {
+        if (!kaboom && CherrygramExtras.isUserAccountAdded(1714120111L) && onConfirm != null) {
+            onConfirm.run();
+            return;
+        }
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        RLottieImageView imageView = new RLottieImageView(context);
+        imageView.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
+        imageView.setAnimation(resID, 50, 50);
+        imageView.playAnimation();
+        imageView.setScaleType(ImageView.ScaleType.CENTER);
+        imageView.setBackground(Theme.createCircleDrawable(dp(80), Theme.getColor(Theme.key_windowBackgroundWhiteValueText)));
+        if (kaboom) {
+            imageView.setAnimation(resID, 70, 70);
+            imageView.setBackground(Theme.createCircleDrawable(dp(80), Theme.getColor(Theme.key_fill_RedNormal)));
+        }
+        linearLayout.addView(imageView, LayoutHelper.createLinear(80, 80, Gravity.CENTER, 0, 14, 0, 0));
+
+        TextView headerTextView = new TextView(context);
+        headerTextView.setTypeface(AndroidUtilities.bold());
+        headerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        headerTextView.setGravity(Gravity.CENTER);
+        headerTextView.setText(title);
+        headerTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        linearLayout.addView(headerTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 28, 14, 28, 0));
+
+        TextView messageTextView = new TextView(context);
+        messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        messageTextView.setGravity(Gravity.CENTER);
+        messageTextView.setText(message);
+        messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        linearLayout.addView(messageTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 40, 9, 40, 0));
+
+        ButtonWithCounterView button = new ButtonWithCounterView(context, null).setRound();
+        ScaleStateListAnimator.apply(button, 0.02f, 1.5f);
+        button.setText(buttonText, true);
+        if (kaboom) {
+            button.setColor(Theme.getColor(Theme.key_fill_RedNormal));
+        }
+        linearLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 14, 20, 14, 4));
+
+        final BottomSheet sheet = new BottomSheet.Builder(context)
+                .setCustomView(linearLayout)
+                .show();
+
+        sheet.setCanDismissWithSwipe(false);
+        sheet.setCanDismissWithTouchOutside(false);
+        button.setTimer(timerInSeconds, () -> {
+            sheet.setCanDismissWithSwipe(true);
+            sheet.setCanDismissWithTouchOutside(true);
+        });
+        button.setOnClickListener(v -> {
+            if (button.isTimerActive()) {
+                AndroidUtilities.shakeViewSpring(button, 3);
+                BotWebViewVibrationEffect.APP_ERROR.vibrate();
+            } else {
+                sheet.dismiss();
+                if (onConfirm != null) {
+                    onConfirm.run();
+                }
+            }
+        });
     }
 
 }

@@ -497,6 +497,7 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
     }
 
     private void searchTopics(final String query) {
+        if (searchTopics == null) return;
         searchTopics.clear();
         if (delegate == null || delegate.getSearchForumDialogId() == 0) {
             return;
@@ -504,6 +505,7 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
         if (!TextUtils.isEmpty(query)) {
             long dialogId = delegate.getSearchForumDialogId();
             ArrayList<TLRPC.TL_forumTopic> topics = MessagesController.getInstance(currentAccount).getTopicsController().getTopics(-dialogId);
+            if (topics == null) return;
             String searchTrimmed = query.trim();
             for (int i = 0; i < topics.size(); i++) {
                 if (topics.get(i) != null && topics.get(i).title.toLowerCase().contains(searchTrimmed)) {

@@ -7750,12 +7750,14 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
             avatarDrawable.setInfo(currentAccount, object);
             String name;
+            if (object == null) return;
             if (object instanceof TLRPC.User) {
                 TLRPC.User user = (TLRPC.User) object;
                 imageView.setForUserOrChat(user, avatarDrawable);
                 name = UserObject.getFirstName(user);
             } else {
                 TLRPC.Chat chat = (TLRPC.Chat) object;
+                if (chat == null) return;
                 imageView.setForUserOrChat(chat, avatarDrawable);
                 name = chat.title;
             }

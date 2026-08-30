@@ -33,13 +33,13 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+import uz.unnarsx.cherrygram.preferences.BaseCGPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.folders.cells.FoldersPreviewCell;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class FoldersPreferencesEntry extends UniversalFragment {
+public class FoldersPreferencesEntry extends BaseCGPreferencesEntry {
 
     protected FoldersPreviewCell foldersPreviewCell;
 
@@ -58,13 +58,6 @@ public class FoldersPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("folders_preferences_screen");
         return getString(R.string.CP_Filters_Header);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -169,14 +162,14 @@ public class FoldersPreferencesEntry extends UniversalFragment {
             if (!DonatesManager.INSTANCE.didUserDonateForFeature()) {
                 AndroidUtilities.shakeViewSpring(view);
                 BotWebViewVibrationEffect.APP_ERROR.vibrate();
-                CGBulletinCreator.INSTANCE.createRequireDonateBulletin(this);
+                showDonateBulletin();
                 return;
             }
 
             CherrygramAppearanceConfig.INSTANCE.setFoldersAtBottom(!CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == telegramFoldersSettings) {
             presentFragment(new FiltersSetupActivity());
         }

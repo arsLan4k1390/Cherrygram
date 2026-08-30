@@ -802,48 +802,67 @@ public class ContentPreviewViewer {
                 View.OnClickListener onItemClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (parentActivity == null) {
+                        if (parentActivity == null || v == null || v.getTag() == null) {
                             return;
                         }
                         int which = (int) v.getTag();
-                        if (actions.get(which) == 0 || actions.get(which) == 6) {
-                            if (delegate != null) {
-                                delegate.sendSticker(currentDocument, currentQuery, parentObject, actions.get(which) == 0, 0, 0);
+                        if (which < 0 || which >= actions.size()) {
+                            return;
+                        }
+                        int action = actions.get(which);
+                        if (action == 0 || action == 6) {
+                            if (delegate != null && currentDocument != null) {
+                                delegate.sendSticker(currentDocument, currentQuery, parentObject, action == 0, 0, 0);
                             }
-                        } else if (actions.get(which) == 1) {
-                            if (delegate != null) {
+                        } else if (action == 1) {
+                            if (delegate != null && currentStickerSet != null) {
                                 delegate.openSet(currentStickerSet, clearsInputField);
                             }
-                        } else if (actions.get(which) == 2) {
-                            MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_FAVE, parentObject, currentDocument, (int) (System.currentTimeMillis() / 1000), inFavs);
-                        } else if (actions.get(which) == 3) {
+                        } else if (action == 2) {
+                            if (currentDocument != null) {
+                                MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_FAVE, parentObject, currentDocument, (int) (System.currentTimeMillis() / 1000), inFavs);
+                            }
+                        } else if (action == 3) {
                             TLRPC.Document sticker = currentDocument;
                             Object parent = parentObject;
                             String query = currentQuery;
                             ContentPreviewViewerDelegate stickerPreviewViewerDelegate = delegate;
-                            if (stickerPreviewViewerDelegate == null) {
-                                return;
+
+                            if (stickerPreviewViewerDelegate != null && sticker != null) {
+                                AlertsCreator.createScheduleDatePickerDialog(parentActivity, stickerPreviewViewerDelegate.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) ->
+                                        stickerPreviewViewerDelegate.sendSticker(sticker, query, parent, notify, scheduleDate, scheduleRepeatPeriod)
+                                );
                             }
-                            AlertsCreator.createScheduleDatePickerDialog(parentActivity, stickerPreviewViewerDelegate.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> stickerPreviewViewerDelegate.sendSticker(sticker, query, parent, notify, scheduleDate, scheduleRepeatPeriod));
-                        } else if (actions.get(which) == 4) {
-                            MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_IMAGE, parentObject, currentDocument, (int) (System.currentTimeMillis() / 1000), true);
-                        } else if (actions.get(which) == 5) {
-                            delegate.remove(importingSticker);
-                        } else if (actions.get(which) == 7) {
-                            delegate.editSticker(currentDocument);
-                        } else if (actions.get(which) == 8) {
-                            delegate.deleteSticker(currentDocument);
-                        } else if (actions.get(which) == 1390) {
-                            ChatsHelper.getInstance(currentAccount).saveStickerToGallery(parentActivity, currentDocument, (uri) -> {
-                                if (parentActivity instanceof LaunchActivity activity) {
-                                    if (activity.getActionBarLayout() != null && activity.getActionBarLayout().getLastFragment() != null) {
-                                        if (BulletinFactory.canShowBulletin(activity.getActionBarLayout().getLastFragment())) {
-                                            BulletinFactory.of(activity.getActionBarLayout().getLastFragment()).createDownloadBulletin(BulletinFactory.FileType.STICKER, resourcesProvider).show();
+                        } else if (action == 4) {
+                            if (currentDocument != null) {
+                                MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_IMAGE, parentObject, currentDocument, (int) (System.currentTimeMillis() / 1000), true);
+                            }
+                        } else if (action == 5) {
+                            if (delegate != null && importingSticker != null) {
+                                delegate.remove(importingSticker);
+                            }
+                        } else if (action == 7) {
+                            if (delegate != null && currentDocument != null) {
+                                delegate.editSticker(currentDocument);
+                            }
+                        } else if (action == 8) {
+                            if (delegate != null && currentDocument != null) {
+                                delegate.deleteSticker(currentDocument);
+                            }
+                        } else if (action == 1390) {
+                            if (currentDocument != null) {
+                                ChatsHelper.getInstance(currentAccount).saveStickerToGallery(parentActivity, currentDocument, (uri) -> {
+                                    if (parentActivity instanceof LaunchActivity activity && !activity.isFinishing() && !activity.isDestroyed()) {
+                                        if (activity.getActionBarLayout() != null && activity.getActionBarLayout().getLastFragment() != null) {
+                                            if (BulletinFactory.canShowBulletin(activity.getActionBarLayout().getLastFragment())) {
+                                                BulletinFactory.of(activity.getActionBarLayout().getLastFragment()).createDownloadBulletin(BulletinFactory.FileType.STICKER, resourcesProvider).show();
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
+
                         dismissPopupWindow();
                     }
                 };

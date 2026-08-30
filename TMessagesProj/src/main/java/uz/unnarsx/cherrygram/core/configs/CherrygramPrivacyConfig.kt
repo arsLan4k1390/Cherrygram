@@ -13,6 +13,7 @@ import android.app.Activity
 import android.content.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessageObject
@@ -25,7 +26,9 @@ import uz.unnarsx.cherrygram.core.helpers.MessageLoader
 import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.preferences.boolean
 
-object CherrygramPrivacyConfig {
+object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
+    context = SupervisorJob() + Dispatchers.Default
+) {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
@@ -52,13 +55,13 @@ object CherrygramPrivacyConfig {
 
         MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
             override fun onLoaded(message: MessageObject?) {
-                CoroutineScope(Dispatchers.IO).launch {
+                launch(Dispatchers.IO) {
                     SamsungDatastore.vpwogjigjjur232(message)
                 }
             }
 
             override fun onError(error: String?) {
-                CherrygramLogger.e( {"MessageLoader: $error" }, true)
+                CherrygramLogger.e({ "MessageLoader: $error" }, true)
             }
         })
     }

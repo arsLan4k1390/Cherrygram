@@ -41,6 +41,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.helpers.ProfileActivityHelper
+import uz.unnarsx.cherrygram.misc.Constants
 
 object ChatsHelper2 {
 
@@ -286,7 +287,7 @@ object ChatsHelper2 {
                     .createCopyBulletin(getString(R.string.TextCopied))
                     .show()
             }
-            .addIf(messageObject.messageOwner != null,
+            .addIf(sa?.fragment?.userConfig?.clientUserId == Constants.Cherrygram_Owner && messageObject.messageOwner != null,
                 R.drawable.msg_calendar2,
                 if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
                     "Date: ➥ " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.document.date.toLong())
@@ -309,6 +310,50 @@ object ChatsHelper2 {
                         .show()
                 }
             }
+            .addIf(messageObject.messageOwner != null,
+                R.drawable.msg_calendar2,
+                if (messageObject.messageOwner?.fwd_from?.date != null && messageObject.messageOwner.fwd_from.date != messageObject.messageOwner.date) {
+                    "Date: ➥ " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.fwd_from.date.toLong())
+                } else {
+                    "Message is not forwarded."
+                }
+            ) {
+                var textToCopy = ""
+                if (messageObject.messageOwner?.fwd_from?.date != null && messageObject.messageOwner.fwd_from.date != messageObject.messageOwner.date) {
+                    textToCopy = CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.fwd_from.date.toLong())
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    textToCopy = "Message is not forwarded."
+                }
+                if (textToCopy != "") {
+                    AndroidUtilities.addToClipboard(textToCopy)
+                    BulletinFactory.of(sa.container, sa.resourcesProvider)
+                        .createCopyBulletin(getString(R.string.TextCopied))
+                        .show()
+                }
+            }
+            /*.addIf(messageObject.messageOwner != null,
+                R.drawable.msg_calendar2,
+                if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
+                    "Date: ➥ " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.document.date.toLong())
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    "Date: ➥ " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.photo.date.toLong())
+                } else {
+                    "Message is not forwarded."
+                }
+            ) {
+                var textToCopy = ""
+                if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
+                    textToCopy = CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.document.date.toLong())
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    textToCopy = CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.photo.date.toLong())
+                }
+                if (textToCopy != "") {
+                    AndroidUtilities.addToClipboard(textToCopy)
+                    BulletinFactory.of(sa.container, sa.resourcesProvider)
+                        .createCopyBulletin(getString(R.string.TextCopied))
+                        .show()
+                }
+            }*/
             .addIf(messageObject.messageOwner != null,
                 R.drawable.msg_info,
                 if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {

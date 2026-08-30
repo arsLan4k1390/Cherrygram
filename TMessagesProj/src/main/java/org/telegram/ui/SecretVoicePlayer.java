@@ -40,7 +40,6 @@ import android.widget.TextView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.ChatListItemAnimator;
 
 import com.google.android.exoplayer2.ExoPlayer;
 
@@ -71,6 +70,7 @@ import org.telegram.ui.Components.ThanosEffect;
 import org.telegram.ui.Components.TimerParticles;
 import org.telegram.ui.Components.VideoPlayer;
 import org.telegram.ui.Stories.recorder.HintView2;
+import org.telegram.ui.recyclerview.ChatListItemAnimator;
 
 import java.io.File;
 
@@ -591,16 +591,6 @@ public class SecretVoicePlayer extends Dialog {
                         renderedFirstFrame = true;
                         myCell.invalidate();
                     });
-                }
-
-                @Override
-                public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-
-                }
-
-                @Override
-                public boolean onSurfaceDestroyed(SurfaceTexture surfaceTexture) {
-                    return false;
                 }
             });
             if (audioVisualizerDrawable != null) {

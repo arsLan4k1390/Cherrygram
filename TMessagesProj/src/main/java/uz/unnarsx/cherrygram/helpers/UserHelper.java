@@ -9,164 +9,164 @@
 
 package uz.unnarsx.cherrygram.helpers;
 
-import static org.telegram.messenger.LocaleController.getString;
-
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BaseController;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.ContactsController;
-import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.TLRPC;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
-import uz.unnarsx.cherrygram.helpers.network.NetworkHelper;
 
-public class UserHelper extends BaseController {
+public class UserHelper {
 
-    private static final UserHelper[] Instance = new UserHelper[UserConfig.MAX_ACCOUNT_COUNT];
+    /** Registration date start */
+    private static final String JSON_FILE = "id_date.json";
+    private static final ArrayList<ProfileDateData> profileDateDataList = new ArrayList<>();
 
-    public UserHelper(int num) {
-        super(num);
-    }
-
-    public static UserHelper getInstance(int num) {
-        UserHelper localInstance = Instance[num];
-        if (localInstance == null) {
-            synchronized (UserHelper.class) {
-                localInstance = Instance[num];
-                if (localInstance == null) {
-                    Instance[num] = localInstance = new UserHelper(num);
-                }
+    private static void loadData() {
+        try {
+            InputStream in = ApplicationLoader.applicationContext.getAssets().open(JSON_FILE);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[10240];
+            int c;
+            while ((c = in.read(buffer)) != -1) {
+                bos.write(buffer, 0, c);
             }
+            bos.close();
+            in.close();
+            String json = bos.toString("UTF-8");
+            JSONObject object = new JSONObject(json);
+            JSONArray data = object.getJSONArray("data");
+            profileDateDataList.clear();
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject o = data.getJSONObject(i);
+                profileDateDataList.add(new ProfileDateData(o.getLong("id"), o.getLong("date")));
+            }
+        } catch (Exception e) {
+            CherrygramLogger.e(e);
         }
-        return localInstance;
     }
 
-    public static final DispatchQueue regDateQueue = new DispatchQueue("regDateQueue");
+    private static String formatCreationDate(String prefix, long timestamp) {
+        String formattedDate = formatDateTime(timestamp, true);
 
-    private CharSequence formattedDate;
-
-    public interface OnResponseNotReceived {
-        void run();
+        return switch (prefix) {
+            case "~" -> LocaleController.formatString(R.string.CG_RegistrationDateApproximately, formattedDate);
+            case ">" -> LocaleController.formatString(R.string.CG_RegistrationDateNewer, formattedDate);
+            case "<" -> LocaleController.formatString(R.string.CG_RegistrationDateOlder, formattedDate);
+            default -> formattedDate;
+        };
     }
 
-    public interface OnResponseReceived {
-        void run();
-    }
+    public static CharSequence getUserTime(long userId, String regDateFromTelegram) {
+        TLRPC.User user = MessagesController.getInstance(UserConfig.selectedAccount).getUser(userId);
+        String name = user != null ? ContactsController.formatName(user.first_name, user.last_name) : "";
 
-    public void getCreationDate(long userID, OnResponseNotReceived onResponseNotReceived, OnResponseReceived onResponseReceived) {
-        regDateQueue.postRunnable(() -> {
-            try {
-                URL url = new URL(Extra.ENDPOINT_FOR_DATE);
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.setRequestMethod("POST");
-                con.setRequestProperty("User-Agent", NetworkHelper.formatUserAgent());
-                con.setRequestProperty("X-Api-Key", Extra.ENDPOINT_FOR_DATE_SECRET);
+        String formattedDateValue;
 
-                con.setDoOutput(true);
-
-                String requestBody = "{\"telegramId\":" + userID +"}";
-                byte[] outputInBytes = requestBody.getBytes(StandardCharsets.UTF_8);
-
-                OutputStream os = con.getOutputStream();
-                os.write(outputInBytes);
-                os.flush();
-                os.close();
-
-                int responseCode = con.getResponseCode();
-
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-
-                    JSONObject obj = new JSONObject(response.toString());
-                    JSONObject objectInside = obj.getJSONObject("data");
-
-                    String type, date;
-                    type = objectInside.getString("type");
-                    date = objectInside.getString("date");
-
-                    long timestamp = new SimpleDateFormat("yyyy-MM", Locale.getDefault())
-                            .parse(date)
-                            .getTime();
-
-                    switch (type) {
-                        case "TYPE_APPROX" ->
-                                formattedDate = LocaleController.formatString(R.string.CG_RegistrationDateApproximately, formatDateTime(timestamp, true));
-                        case "TYPE_NEWER" ->
-                                formattedDate = LocaleController.formatString(R.string.CG_RegistrationDateNewer, formatDateTime(timestamp, true));
-                        case "TYPE_OLDER" ->
-                                formattedDate = LocaleController.formatString(R.string.CG_RegistrationDateOlder, formatDateTime(timestamp, true));
-                        default -> formattedDate = formatDateTime(timestamp, true);
-                    }
-
-                    AndroidUtilities.runOnUIThread(() -> {
-                        if (onResponseReceived != null)
-                            onResponseReceived.run();
-                    });
-                } else {
-                    if (onResponseNotReceived != null)
-                        AndroidUtilities.runOnUIThread(onResponseNotReceived::run);
-
-                    CherrygramLogger.w(() -> "POST request did not work.");
-                }
-            } catch (Exception e) {
-                CherrygramLogger.e(e);
-            }
-        }, 0);
-    }
-
-    public CharSequence getCreationDate(long userID, boolean telegram, String telegramDate) {
-        CharSequence dateInfo;
-        TLRPC.User user = getMessagesController().getUser(userID);
-        String name = ContactsController.formatName(user.first_name, user.last_name);
-
-        if (!telegram && formattedDate == null) {
-            dateInfo = getString(R.string.CG_RegistrationDateFailed);
-        } else if (telegram) {
-            dateInfo = AndroidUtilities.replaceTags(
-                    LocaleController.formatString(
-                            R.string.CG_RegistrationDate, name,
-                            telegramDate
-                    )
-            );
+        if (regDateFromTelegram != null && !TextUtils.isEmpty(regDateFromTelegram)) {
+            formattedDateValue = regDateFromTelegram;
         } else {
-            dateInfo = AndroidUtilities.replaceTags(
-                    LocaleController.formatString(
-                            R.string.CG_RegistrationDate, name,
-                            formattedDate
-                    )
-            );
+            formattedDateValue = calculateDateFromJson(userId);
         }
-        return dateInfo;
+
+        return AndroidUtilities.replaceTags(
+                LocaleController.formatString(
+                        R.string.CG_RegistrationDate, name,
+                        formattedDateValue
+                )
+        );
     }
 
-    public void addBirthdayEvent(Activity parentActivity, long userID) {
-        TLRPC.UserFull userFull = getMessagesController().getUserFull(userID);
+    private static String calculateDateFromJson(long userId) {
+        if (profileDateDataList.isEmpty()) {
+            loadData();
+        }
+
+        if (profileDateDataList.isEmpty()) {
+            return LocaleController.getString(R.string.CG_RegistrationDateFailed);
+        }
+
+        for (int i = 1; i < profileDateDataList.size(); i++) {
+            ProfileDateData data1 = profileDateDataList.get(i - 1);
+            ProfileDateData data2 = profileDateDataList.get(i);
+            if (userId >= data1.id() && userId <= data2.id()) {
+                long idx = userId - data1.id();
+                long idxRange = data2.id() - data1.id();
+                double t = (double) idx / idxRange;
+                long date1 = data1.date();
+                long date2 = data2.date();
+                double date = (date1 + t * (date2 - date1)) * 1000.0;
+
+                return formatCreationDate("~", Math.round(date));
+            }
+        }
+
+        if (userId <= 1000000) {
+            return formatCreationDate("=", 1380326400000L);
+        }
+        return formatCreationDate(">", 1711889200000L);
+    }
+
+    public record ProfileDateData(long id, long date) {
+    }
+
+    private static String formatDateTime(long timestamp, boolean useToday) {
+        try {
+            Calendar calNow = Calendar.getInstance();
+            Calendar calDate = Calendar.getInstance();
+            calDate.setTimeInMillis(timestamp);
+
+            int dayNow = calNow.get(Calendar.DAY_OF_YEAR);
+            int yearNow = calNow.get(Calendar.YEAR);
+
+            int dayDate = calDate.get(Calendar.DAY_OF_YEAR);
+            int yearDate = calDate.get(Calendar.YEAR);
+
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM, yyyy", Locale.getDefault());
+            SimpleDateFormat fullFormat = new SimpleDateFormat("d MMMM, yyyy", Locale.getDefault());
+
+            if (useToday && yearNow == yearDate) {
+                if (dayNow == dayDate) {
+                    return "Today at " + timeFormat.format(new Date(timestamp));
+                } else if (dayNow - 1 == dayDate) {
+                    return "Yesterday at " + timeFormat.format(new Date(timestamp));
+                }
+            }
+
+            if (Math.abs(calNow.getTimeInMillis() - timestamp) < 31536000000L) {
+                return monthYearFormat.format(new Date(timestamp));
+            } else {
+                return fullFormat.format(new Date(timestamp));
+            }
+
+        } catch (Exception e) {
+            CherrygramLogger.e(e);
+            return "LOC_ERR";
+        }
+    }
+    /** Registration date finish */
+
+    public static void addBirthdayEvent(Activity parentActivity, long userID) {
+        TLRPC.UserFull userFull = MessagesController.getInstance(UserConfig.selectedAccount).getUserFull(userID);
         if (userFull != null && userFull.birthday != null) {
             try {
                 Calendar cal = Calendar.getInstance();
@@ -189,42 +189,6 @@ public class UserHelper extends BaseController {
                 intent.putExtra("title",  "Birthday of " + userFull.user.first_name);
                 parentActivity.startActivity(intent);
             } catch (Exception ignored) {}
-        }
-    }
-
-    private String formatDateTime(long timestamp, boolean useToday) {
-        try {
-            Calendar calNow = Calendar.getInstance();
-            Calendar calDate = Calendar.getInstance();
-            calDate.setTimeInMillis(timestamp);
-
-            int dayNow = calNow.get(Calendar.DAY_OF_YEAR);
-            int yearNow = calNow.get(Calendar.YEAR);
-
-            int dayDate = calDate.get(Calendar.DAY_OF_YEAR);
-            int yearDate = calDate.get(Calendar.YEAR);
-
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM, yyyy", Locale.getDefault());
-            SimpleDateFormat fullFormat = new SimpleDateFormat("dd MMMM, yyyy", Locale.getDefault());
-
-            if (useToday && yearNow == yearDate) {
-                if (dayNow == dayDate) {
-                    return "Today at " + timeFormat.format(new Date(timestamp));
-                } else if (dayNow - 1 == dayDate) {
-                    return "Yesterday at " + timeFormat.format(new Date(timestamp));
-                }
-            }
-
-            if (Math.abs(calNow.getTimeInMillis() - timestamp) < 31536000000L) {
-                return monthYearFormat.format(new Date(timestamp));
-            } else {
-                return fullFormat.format(new Date(timestamp));
-            }
-
-        } catch (Exception e) {
-            CherrygramLogger.e(e);
-            return "LOC_ERR";
         }
     }
 

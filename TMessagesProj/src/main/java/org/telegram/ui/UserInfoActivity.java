@@ -71,6 +71,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+
 public class UserInfoActivity extends UniversalFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private EditTextCell firstNameEdit;
@@ -481,7 +483,16 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
                 freeAccounts -= (UserConfig.MAX_ACCOUNT_COUNT - UserConfig.MAX_ACCOUNT_DEFAULT_COUNT);
             }
             if (freeAccounts > 0 && availableAccount != null) {
-                presentFragment(new LoginActivity(availableAccount));
+                int activeAccountsCount = UserConfig.getActivatedAccountsCount();
+
+                if (activeAccountsCount >= 4) {
+                    int finalAvailableAccount = availableAccount;
+                    PopupHelper.showLoginWarning(
+                            getContext(), () -> presentFragment(new LoginActivity(finalAvailableAccount))
+                    );
+                } else {
+                    presentFragment(new LoginActivity(availableAccount));
+                }
             } else if (!UserConfig.hasPremiumOnAccounts()) {
                 showDialog(new LimitReachedBottomSheet(this, getContext(), TYPE_ACCOUNTS, currentAccount, null));
             }

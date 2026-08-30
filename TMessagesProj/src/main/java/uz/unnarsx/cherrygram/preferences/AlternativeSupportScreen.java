@@ -34,12 +34,11 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class AlternativeSupportScreen extends UniversalFragment {
+public class AlternativeSupportScreen extends BaseCGPreferencesEntry {
 
     private final int safeStarsRow = 1;
     private final int safeSurfRow = 2;
@@ -54,13 +53,6 @@ public class AlternativeSupportScreen extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("alternative_support_screen");
         return getString(R.string.AS_Header);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -169,7 +161,7 @@ public class AlternativeSupportScreen extends UniversalFragment {
             CherrygramCoreConfig.INSTANCE.setCgBrandedScreenshots(!CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == rateInGooglePlayRow) {
             CherrygramExtras.INSTANCE.requestReviewFlow(this);
         }

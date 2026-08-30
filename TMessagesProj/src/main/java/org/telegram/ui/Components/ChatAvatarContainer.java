@@ -344,10 +344,16 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             }
         };
         if (baseFragment instanceof ChatActivity || baseFragment instanceof TopicsFragment) {
-            if (parentFragment == null || (parentFragment.getChatMode() != ChatActivity.MODE_QUICK_REPLIES && parentFragment.getChatMode() != ChatActivity.MODE_EDIT_BUSINESS_LINK) && parentFragment.getChatMode() != ChatActivity.MODE_SUGGESTIONS && !parentFragment.isInBotForumMode()) {
+            if (parentFragment == null || (parentFragment.getChatMode() != ChatActivity.MODE_QUICK_REPLIES && parentFragment.getChatMode() != ChatActivity.MODE_WELCOME_MESSAGES && parentFragment.getChatMode() != ChatActivity.MODE_EDIT_BUSINESS_LINK) && parentFragment.getChatMode() != ChatActivity.MODE_SUGGESTIONS && !parentFragment.isInBotForumMode()) {
                 sharedMediaPreloader = new SharedMediaLayout.SharedMediaPreloader(baseFragment);
             }
-            avatarImageIsHidden = parentFragment != null && (parentFragment.isThreadChat() || (parentFragment.getChatMode() == ChatActivity.MODE_PINNED && !isCentered()) || parentFragment.getChatMode() == ChatActivity.MODE_QUICK_REPLIES || parentFragment.getChatMode() == ChatActivity.MODE_EDIT_BUSINESS_LINK);
+            avatarImageIsHidden = parentFragment != null && (
+                parentFragment.isThreadChat() && !parentFragment.isReplyChatComment() ||
+                (parentFragment.getChatMode() == ChatActivity.MODE_PINNED && !isCentered()) ||
+                parentFragment.getChatMode() == ChatActivity.MODE_QUICK_REPLIES ||
+                parentFragment.getChatMode() == ChatActivity.MODE_WELCOME_MESSAGES ||
+                parentFragment.getChatMode() == ChatActivity.MODE_EDIT_BUSINESS_LINK
+            );
             if (avatarImageIsHidden) {
                 avatarImageView.setVisibility(GONE);
             }
@@ -550,7 +556,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         } else {
             canvas.save();
             final float s = bounce.getScale(.02f);
-            canvas.scale(s, s, getWidth() / 2f, getHeight() - ActionBar.getCurrentActionBarHeight() / 2f);
+            canvas.scale(s, s, getPivotX(), getHeight() - ActionBar.getCurrentActionBarHeight() / 2f);
             super.dispatchDraw(canvas);
             canvas.restore();
         }
@@ -954,7 +960,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 titleTextLargerCopyView.layout(l, viewTop + dp(1.66f), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(1.66f));
             }
         } else {
-            titleTextView.layout(l, viewTop + dp(10) - titleTextView.getPaddingTop(), l + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(10) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
+            titleTextView.layout(l, viewTop + dp(11) - titleTextView.getPaddingTop(), l + titleTextView.getMeasuredWidth(), viewTop + titleTextView.getTextHeight() + dp(11) - titleTextView.getPaddingTop() + titleTextView.getPaddingBottom());
             if (titleTextLargerCopyView != null) {
                 titleTextLargerCopyView.layout(l, viewTop + dp(10), l + titleTextLargerCopyView.getMeasuredWidth(), viewTop + titleTextLargerCopyView.getTextHeight() + dp(10));
             }
@@ -1908,9 +1914,9 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             width = Math.max(width, subtitleTextView.getExactWidthIncludeDrawables());
         }
         if (hasVisibleAvatar()) {
-            width += dp(52 + 12);
+            width += dp(52 + 18);
         } else {
-            width += dp(30);
+            width += dp(34);
         }
         return (int) width;
     }

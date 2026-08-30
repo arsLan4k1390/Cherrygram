@@ -34,7 +34,7 @@ import uz.unnarsx.cherrygram.core.memory.MemoryMonitor;
 import uz.unnarsx.cherrygram.core.memory.MemoryStressTest;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class ExperimentalPreferencesEntry extends UniversalFragment {
+public class ExperimentalPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int cleanupHeapRow = 1;
     private final int restartPopupRow = 2;
@@ -48,7 +48,7 @@ public class ExperimentalPreferencesEntry extends UniversalFragment {
         public void run() {
             if (CherrygramExperimentalConfig.INSTANCE.getUse_CG_OOMHandler()) {
                 if (listView != null && listView.adapter != null) {
-                    listView.adapter.update(false);
+                    updateRows(false);
                 }
                 AndroidUtilities.runOnUIThread(this, REFRESH_INTERVAL_MS);
             }
@@ -59,13 +59,6 @@ public class ExperimentalPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("experimental_preferences_screen");
         return getString(R.string.EP_Category_Experimental);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -158,7 +151,7 @@ public class ExperimentalPreferencesEntry extends UniversalFragment {
             SettingsHelper.updateCheckState(view, CherrygramExperimentalConfig.INSTANCE.getOomHandlerPopup());
 
             if (listView != null && listView.adapter != null) {
-                listView.adapter.update(true);
+                updateRows(true);
             }
         } else if (item.id == testOOMNotificationRow) {
             MemoryStressTest.fillHeapToTriggerMonitor();

@@ -40,7 +40,7 @@ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class GeminiPreferencesEntry extends UniversalFragment {
+public class GeminiPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int geminiModelsListButton = 1;
 
@@ -52,13 +52,6 @@ public class GeminiPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("gemini_preferences_screen");
         return getString(R.string.CP_GeminiAI_Header);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override

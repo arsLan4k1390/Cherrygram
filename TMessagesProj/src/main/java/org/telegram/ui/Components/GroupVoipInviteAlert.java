@@ -692,6 +692,8 @@ public class GroupVoipInviteAlert extends UsersAlertBase {
                         return;
                     }
 
+                    if (user == null) return;
+
                     String un = UserObject.getPublicUsername(user);
                     CharSequence username = null;
                     SpannableStringBuilder name = null;

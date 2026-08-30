@@ -92,7 +92,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSmoothScrollerCustom;
+import org.telegram.ui.recyclerview.LinearSmoothScrollerCustom;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -3581,6 +3581,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         } else {
             if (searchString != null || folderId != 0 || communityId != 0) {
                 actionBar.setBackButtonDrawable(backDrawable = new BackDrawable(false));
+                backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
             }
             if (folderId != 0) {
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.ArchivedChats), null, true);
@@ -4822,7 +4823,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             viewPage.scrollHelper.isDialogs = true;
             viewPage.scrollHelper.setScrollListener(() -> {
                 invalidateScrollY = true;
-                fragmentView.invalidate();
+                if (fragmentView != null) fragmentView.invalidate();
             });
 
             if (a != 0) {
@@ -5818,25 +5819,41 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private void toggleArciveForStory(long dialogId) {
         boolean hide = !isArchive();
         AndroidUtilities.runOnUIThread(() -> {
+            if (getMessagesController() == null || getMessagesController().getStoriesController() == null) {
+                return;
+            }
             getMessagesController().getStoriesController().toggleHidden(dialogId, hide, false, true);
             BulletinFactory.UndoObject undoObject = new BulletinFactory.UndoObject();
             undoObject.onUndo = () -> {
-                getMessagesController().getStoriesController().toggleHidden(dialogId, !hide, false, true);
+                if (getMessagesController() != null && getMessagesController().getStoriesController() != null) {
+                    getMessagesController().getStoriesController().toggleHidden(dialogId, !hide, false, true);
+                }
             };
             undoObject.onAction = () -> {
-                getMessagesController().getStoriesController().toggleHidden(dialogId, hide, true, true);
+                if (getMessagesController() != null && getMessagesController().getStoriesController() != null) {
+                    getMessagesController().getStoriesController().toggleHidden(dialogId, hide, true, true);
+                }
             };
             CharSequence str;
-            String name;
-            TLObject object;
+            String name = "";
+            TLObject object = null;
+
             if (dialogId >= 0) {
                 TLRPC.User user = getMessagesController().getUser(dialogId);
-                name = ContactsController.formatName(user.first_name, null, 15);
-                object = user;
+                if (user != null) {
+                    name = ContactsController.formatName(user.first_name, user.last_name, 15);
+                    object = user;
+                }
             } else {
                 TLRPC.Chat chat = getMessagesController().getChat(-dialogId);
-                name = chat.title;
-                object = chat;
+                if (chat != null) {
+                    name = chat.title;
+                    object = chat;
+                }
+            }
+
+            if (TextUtils.isEmpty(name)) {
+                name = LocaleController.getString(R.string.HiddenName);
             }
 
             if (isArchive()) {
@@ -5844,12 +5861,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 str = AndroidUtilities.replaceTags(LocaleController.formatString("StoriesMovedToContacts", R.string.StoriesMovedToContacts, ContactsController.formatName(name, null, 15)));
             }
-            storiesBulletin = BulletinFactory.global().createUsersBulletin(
-                Collections.singletonList(object),
-                str,
-                null,
-                undoObject
-            ).show();
+            if (object != null) {
+                storiesBulletin = BulletinFactory.global().createUsersBulletin(
+                        Collections.singletonList(object),
+                        str,
+                        null,
+                        undoObject
+                ).show();
+            }
         }, 200);
     }
 
@@ -6019,7 +6038,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             AndroidUtilities.rectTmp2.offset((int) actionBarTitle.getX(), (int) actionBarTitle.getY());
             yoff = -(actionBar.getHeight() - AndroidUtilities.rectTmp2.centerY()) - dp(16);
             xoff = AndroidUtilities.rectTmp2.centerX() - dp(16);
-            xoff += dp(4);
+            xoff += Math.round(actionBar.getTitlesContainer().getTranslationX());
             if (animatedStatusView != null) {
                 animatedStatusView.translate(AndroidUtilities.rectTmp2.centerX(), AndroidUtilities.rectTmp2.centerY());
             }

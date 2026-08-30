@@ -34,11 +34,10 @@ import java.util.Set;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class GeneralPreferencesEntry extends UniversalFragment {
+public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int springAnimationRow = 1;
     private final int actionbarCrossfadeRow = 2;
@@ -72,13 +71,6 @@ public class GeneralPreferencesEntry extends UniversalFragment {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("general_preferences_screen");
         return getString(R.string.AP_Header_General);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -156,7 +148,7 @@ public class GeneralPreferencesEntry extends UniversalFragment {
                     CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(newValue);
 
                     expandedArchiveStoriesSection = !expandedArchiveStoriesSection;
-                    listView.adapter.update(true);
+                    updateRows(true);
                 })
         );
         if (expandedArchiveStoriesSection) {
@@ -210,9 +202,9 @@ public class GeneralPreferencesEntry extends UniversalFragment {
                 CherrygramCoreConfig.INSTANCE.setSpringAnimation(configValues.get(i));
                 SettingsHelper.updateButtonValue(view, getSpringValue());
 
-                listView.adapter.update(true);
+                updateRows(true);
 
-                CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+                showRestartBulletin();
             });
         } else if (item.id == actionbarCrossfadeRow) {
             CherrygramCoreConfig.INSTANCE.setActionbarCrossfade(!CherrygramCoreConfig.INSTANCE.getActionbarCrossfade());
@@ -220,20 +212,20 @@ public class GeneralPreferencesEntry extends UniversalFragment {
 
             if (CherrygramCoreConfig.INSTANCE.getActionbarCrossfade() && CherrygramCoreConfig.INSTANCE.getPredictiveBack()) {
                 CherrygramCoreConfig.INSTANCE.setPredictiveBack(false);
-                listView.adapter.update(true);
+                updateRows(true);
             }
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == predictiveBackRow) {
             CherrygramCoreConfig.INSTANCE.setPredictiveBack(!CherrygramCoreConfig.INSTANCE.getPredictiveBack());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getPredictiveBack());
 
             if (CherrygramCoreConfig.INSTANCE.getPredictiveBack() && CherrygramCoreConfig.INSTANCE.getActionbarCrossfade()) {
                 CherrygramCoreConfig.INSTANCE.setActionbarCrossfade(false);
-                listView.adapter.update(true);
+                updateRows(true);
             }
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == silenceNonContactsRow) {
             CherrygramCoreConfig.INSTANCE.setSilenceNonContacts(!CherrygramCoreConfig.INSTANCE.getSilenceNonContacts());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getSilenceNonContacts());
@@ -241,7 +233,7 @@ public class GeneralPreferencesEntry extends UniversalFragment {
             CherrygramCoreConfig.INSTANCE.setIgnoreMentions(!CherrygramCoreConfig.INSTANCE.getIgnoreMentions());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getIgnoreMentions());
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == ignoreMentionsExclusionsRow) {
             createUsersSelectActivity(view);
         } else if (item.id == ignoreMentionsAutoReadRow) {
@@ -251,34 +243,34 @@ public class GeneralPreferencesEntry extends UniversalFragment {
             CherrygramCoreConfig.INSTANCE.setOldNotificationIcon(!CherrygramCoreConfig.INSTANCE.getOldNotificationIcon());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getOldNotificationIcon());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == residentNotificationRow) {
             CherrygramCoreConfig.INSTANCE.setResidentNotification(!CherrygramCoreConfig.INSTANCE.getResidentNotification());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getResidentNotification());
 
             ApplicationLoader.applicationContext.stopService(new Intent(ApplicationLoader.applicationContext, NotificationsService.class));
             ApplicationLoader.startPushService();
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == hideStoriesRow) {
             CherrygramCoreConfig.INSTANCE.setHideStories(!CherrygramCoreConfig.INSTANCE.getHideStories());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getHideStories());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == archiveStoriesRow) {
             expandedArchiveStoriesSection = !expandedArchiveStoriesSection;
             item.collapsed = !item.collapsed;
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == archiveStoriesUsersRow) {
             CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromUsers(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == archiveStoriesChannelsRow) {
             CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == useSystemEmojiRow) {
             CherrygramCoreConfig.INSTANCE.setSystemEmoji(!CherrygramCoreConfig.INSTANCE.getSystemEmoji());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getSystemEmoji());
@@ -286,11 +278,11 @@ public class GeneralPreferencesEntry extends UniversalFragment {
             CherrygramCoreConfig.INSTANCE.setSystemFonts(!CherrygramCoreConfig.INSTANCE.getSystemFonts());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getSystemFonts());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == tabledModeRow) {
             showTabletModeSelector(() -> {
                 SettingsHelper.updateButtonValue(view, getTabletModeValue());
-                CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+                showRestartBulletin();
             });
         } else if (item.id == downloadSpeedBoostRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
@@ -309,18 +301,18 @@ public class GeneralPreferencesEntry extends UniversalFragment {
                 CherrygramCoreConfig.INSTANCE.setDownloadSpeedBoost(configValues.get(i));
                 SettingsHelper.updateButtonValue(view, getDownloadSpeedBoostText());
 
-                CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+                showRestartBulletin();
             });
         } else if (item.id == uploadSpeedBoostRow) {
             CherrygramCoreConfig.INSTANCE.setUploadSpeedBoost(!CherrygramCoreConfig.INSTANCE.getUploadSpeedBoost());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getUploadSpeedBoost());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         } else if (item.id == slowNetworkMode) {
             CherrygramCoreConfig.INSTANCE.setSlowNetworkMode(!CherrygramCoreConfig.INSTANCE.getSlowNetworkMode());
             SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getSlowNetworkMode());
 
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            showRestartBulletin();
         }
     }
 

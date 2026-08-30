@@ -44,6 +44,7 @@ import org.telegram.ui.LaunchActivity
 import org.telegram.ui.ProxyListActivity
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
@@ -315,11 +316,15 @@ object CGChatMenuInjector {
             val activity = fragment?.parentActivity
 
             if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && activity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                activity.requestPermissions(
-                    arrayOf(Manifest.permission.CAMERA),
-                    ActionIntroActivity.CAMERA_PERMISSION_REQUEST_CODE
-                )
-                return@add
+                try {
+                    activity.requestPermissions(
+                        arrayOf(Manifest.permission.CAMERA),
+                        ActionIntroActivity.CAMERA_PERMISSION_REQUEST_CODE
+                    )
+                    return@add
+                } catch (e: Exception) {
+                    CherrygramLogger.e(e)
+                }
             }
 
             if (activity is LaunchActivity) {

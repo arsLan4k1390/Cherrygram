@@ -8,6 +8,7 @@
 
 package org.telegram.ui;
 
+import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS;
 
 import android.animation.AnimatorSet;
@@ -46,6 +47,8 @@ import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class LogoutActivity extends BaseFragment {
 
@@ -134,7 +137,16 @@ public class LogoutActivity extends BaseFragment {
                     freeAccounts -= (UserConfig.MAX_ACCOUNT_COUNT - UserConfig.MAX_ACCOUNT_DEFAULT_COUNT);
                 }
                 if (freeAccounts > 0 && availableAccount != null) {
-                    presentFragment(new LoginActivity(availableAccount));
+                    int activeAccountsCount = UserConfig.getActivatedAccountsCount();
+
+                    if (activeAccountsCount >= 4) {
+                        int finalAvailableAccount = availableAccount;
+                        PopupHelper.showLoginWarning(
+                                getContext(), () -> presentFragment(new LoginActivity(finalAvailableAccount))
+                        );
+                    } else {
+                        presentFragment(new LoginActivity(availableAccount));
+                    }
                 } else if (!UserConfig.hasPremiumOnAccounts()) {
                     LimitReachedBottomSheet limitReachedBottomSheet = new LimitReachedBottomSheet(this, getContext(), TYPE_ACCOUNTS, currentAccount, null);
                     showDialog(limitReachedBottomSheet);

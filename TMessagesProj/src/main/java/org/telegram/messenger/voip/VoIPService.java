@@ -166,6 +166,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 @SuppressLint("NewApi")
@@ -4035,21 +4036,9 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			builder.setLargeIcon(photo);
 		}
 		try {
-			if (foregroundStarted) {
-				try {
-					stopForeground(true);
-				} catch (Exception e) {
-					FileLog.e(e);
-				}
-			}
-			foregroundStarted = true;
-			if (Build.VERSION.SDK_INT >= 33) {
-				startForeground(foregroundId = ID_ONGOING_CALL_NOTIFICATION, foregroundNotification = builder.getNotification(), lastForegroundType = getCurrentForegroundType());
-			} else {
-				startForeground(foregroundId = ID_ONGOING_CALL_NOTIFICATION, foregroundNotification = builder.getNotification());
-			}
-		} catch (Exception e) {
-			if (photo != null && e instanceof IllegalArgumentException) {
+			startForegroundSafe(ID_ONGOING_CALL_NOTIFICATION, builder.getNotification(), !foregroundStarted);
+		} catch (IllegalArgumentException e) {
+			if (photo != null) {
 				showNotification(name, null);
 			}
 		}
@@ -4710,24 +4699,14 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 				} else {
 					bldr.setSmallIcon(R.drawable.call);
 				}
-				foregroundStarted = true;
-				if (Build.VERSION.SDK_INT >= 33) {
-					startForeground(foregroundId = ID_ONGOING_CALL_NOTIFICATION, foregroundNotification = bldr.build(), lastForegroundType = getCurrentForegroundType());
-				} else {
-					startForeground(foregroundId = ID_ONGOING_CALL_NOTIFICATION, foregroundNotification = bldr.build());
-				}
+				startForegroundSafe(ID_ONGOING_CALL_NOTIFICATION, bldr.build(), true);
 			} else {
 				NotificationsController.checkOtherNotificationsChannel();
 				Notification.Builder bldr = new Notification.Builder(this, NotificationsController.OTHER_NOTIFICATIONS_CHANNEL)
 						.setContentTitle(LocaleController.getString(R.string.VoipCallEnded))
 						.setShowWhen(false);
 				bldr.setSmallIcon(R.drawable.call);
-				foregroundStarted = true;
-				if (Build.VERSION.SDK_INT >= 33) {
-					startForeground(foregroundId = ID_ONGOING_CALL_NOTIFICATION, foregroundNotification = bldr.build(), lastForegroundType = getCurrentForegroundType());
-				} else {
-					startForeground(foregroundId = ID_ONGOING_CALL_NOTIFICATION, foregroundNotification = bldr.build());
-				}
+				startForegroundSafe(ID_ONGOING_CALL_NOTIFICATION, bldr.build(), true);
 			}
 		}
 	}
@@ -5317,12 +5296,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			builder.addAction(R.drawable.call, answerTitle, answerPendingIntent);
 			incomingNotification = builder.getNotification();
 		}
-		foregroundStarted = true;
-		if (Build.VERSION.SDK_INT >= 33) {
-			startForeground(foregroundId = ID_INCOMING_CALL_NOTIFICATION, foregroundNotification = incomingNotification, lastForegroundType = getCurrentForegroundType());
-		} else {
-			startForeground(foregroundId = ID_INCOMING_CALL_NOTIFICATION, foregroundNotification = incomingNotification);
-		}
+		startForegroundSafe(ID_INCOMING_CALL_NOTIFICATION, incomingNotification, true);
 		startRingtoneAndVibration();
 	}
 
@@ -5360,12 +5334,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 
 	public void updateCurrentForegroundType() {
 		if (lastForegroundType != getCurrentForegroundType() && foregroundStarted) {
-			stopForeground(true);
-			if (Build.VERSION.SDK_INT >= 33) {
-				startForeground(foregroundId, foregroundNotification, lastForegroundType = getCurrentForegroundType());
-			} else {
-				startForeground(foregroundId, foregroundNotification);
-			}
+			startForegroundSafe(foregroundId, foregroundNotification, false);
 		}
 	}
 
@@ -5839,4 +5808,27 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 		public boolean cameraAlertWasShowed;
 		public boolean wasVideoCall;
 	}
+
+	/** Cherrygram start */
+	private void startForegroundSafe(int id, Notification notification, boolean endCallOnDenial) {
+		foregroundId = id;
+		foregroundNotification = notification;
+		try {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				startForeground(id, notification, lastForegroundType = getCurrentForegroundType());
+			} else {
+				startForeground(id, notification);
+			}
+			foregroundStarted = true;
+		} catch (Throwable e) {
+			FileLog.e(e);
+			if (endCallOnDenial) {
+				foregroundStarted = false;
+				CherrygramLogger.e(() -> "startForeground failed on initial start, discarding the call");
+				callFailed();
+			}
+		}
+	}
+	/** Cherrygram finish */
+
 }

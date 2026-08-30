@@ -510,12 +510,14 @@ public class AnimatedEmojiDrawable extends Drawable {
     }
 
     private void updateSize() {
-        if (this.cacheType == CACHE_TYPE_MESSAGES || this.cacheType == CACHE_TYPE_NOANIMATE_FOLDER) {
-            sizedp = (int) ((Math.abs(Theme.chat_msgTextPaint.ascent()) + Math.abs(Theme.chat_msgTextPaint.descent())) * 1.15f / AndroidUtilities.density);
-        } else if (Theme.chat_msgTextPaintEmoji != null && (this.cacheType == CACHE_TYPE_MESSAGES_LARGE || this.cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE || this.cacheType == CACHE_TYPE_COLORABLE || this.cacheType == CACHE_TYPE_STANDARD_EMOJI)) {
-            sizedp = (int) ((Math.abs(Theme.chat_msgTextPaintEmoji[2].ascent()) + Math.abs(Theme.chat_msgTextPaintEmoji[2].descent())) * 1.15f / AndroidUtilities.density);
-        } else if (Theme.chat_msgTextPaintEmoji != null && this.cacheType == STANDARD_LOTTIE_FRAME) {
-            sizedp = (int) ((Math.abs(Theme.chat_msgTextPaintEmoji[0].ascent()) + Math.abs(Theme.chat_msgTextPaintEmoji[0].descent())) * 1.15f / AndroidUtilities.density);
+        float density = AndroidUtilities.density > 0 ? AndroidUtilities.density : 1.0f;
+
+        if ((this.cacheType == CACHE_TYPE_MESSAGES || this.cacheType == CACHE_TYPE_NOANIMATE_FOLDER) && Theme.chat_msgTextPaint != null) {
+            sizedp = (int) ((Math.abs(Theme.chat_msgTextPaint.ascent()) + Math.abs(Theme.chat_msgTextPaint.descent())) * 1.15f / density);
+        } else if (Theme.chat_msgTextPaintEmoji != null && Theme.chat_msgTextPaintEmoji.length > 2 && Theme.chat_msgTextPaintEmoji[2] != null && (this.cacheType == CACHE_TYPE_MESSAGES_LARGE || this.cacheType == CACHE_TYPE_ALERT_PREVIEW_LARGE || this.cacheType == CACHE_TYPE_COLORABLE || this.cacheType == CACHE_TYPE_STANDARD_EMOJI)) {
+            sizedp = (int) ((Math.abs(Theme.chat_msgTextPaintEmoji[2].ascent()) + Math.abs(Theme.chat_msgTextPaintEmoji[2].descent())) * 1.15f / density);
+        } else if (Theme.chat_msgTextPaintEmoji != null && Theme.chat_msgTextPaintEmoji.length > 0 && Theme.chat_msgTextPaintEmoji[0] != null && this.cacheType == STANDARD_LOTTIE_FRAME) {
+            sizedp = (int) ((Math.abs(Theme.chat_msgTextPaintEmoji[0].ascent()) + Math.abs(Theme.chat_msgTextPaintEmoji[0].descent())) * 1.15f / density);
         } else if (cacheType == CACHE_TYPE_AVATAR_CONSTRUCTOR_PREVIEW || cacheType == CACHE_TYPE_AVATAR_CONSTRUCTOR_PREVIEW2 || cacheType == CACHE_TYPE_EMOJI_CALL) {
             sizedp = 100;
         } else if (cacheType == CACHE_TYPE_FORUM_TOPIC_LARGE || cacheType == CACHE_TYPE_FORUM_TOPIC_PULL_DOWN) {

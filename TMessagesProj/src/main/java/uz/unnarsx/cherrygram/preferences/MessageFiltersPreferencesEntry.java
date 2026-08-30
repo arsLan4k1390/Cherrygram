@@ -40,11 +40,10 @@ import uz.unnarsx.cherrygram.chats.filters.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class MessageFiltersPreferencesEntry extends UniversalFragment {
+public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int enableFilterRow = 1;
     private final int filterWordsRow = 2;
@@ -72,9 +71,6 @@ public class MessageFiltersPreferencesEntry extends UniversalFragment {
 
     @Override
     public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -180,7 +176,7 @@ public class MessageFiltersPreferencesEntry extends UniversalFragment {
         if (requireDonate) {
             AndroidUtilities.shakeViewSpring(view);
             BotWebViewVibrationEffect.APP_ERROR.vibrate();
-            CGBulletinCreator.INSTANCE.createRequireDonateBulletin(this);
+            showDonateBulletin();
             return;
         }
 
@@ -188,7 +184,7 @@ public class MessageFiltersPreferencesEntry extends UniversalFragment {
             CherrygramMessagesConfig.INSTANCE.setEnableMsgFilters(!CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters());
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == detectTranslitRow) {
             CherrygramMessagesConfig.INSTANCE.setMsgFiltersDetectTranslit(!CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectTranslit());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectTranslit());

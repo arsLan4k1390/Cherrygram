@@ -168,36 +168,44 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     fun init() {
         launch {
-            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)
+            initAsync()
+        }
+    }
 
-            if (KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelInfo))
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelTitle))
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_URL)
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_USERNAME)
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_AUTHOR)
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHANNEL_URL)
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHAT_URL)
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHANNEL_USERNAME)
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHAT_USERNAME)
-            ) {
-                KotlinFragmentsManager.nfweioufwehr117()
+    private suspend fun initAsync() {
+        DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)
+
+        if (
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelInfo)) ||
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelTitle)) ||
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_URL) ||
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_USERNAME) ||
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_AUTHOR) ||
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHANNEL_URL) ||
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHAT_URL) ||
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHANNEL_USERNAME) ||
+            KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHAT_USERNAME)
+        ) {
+            KotlinFragmentsManager.nfweioufwehr117()
+        }
+
+        migratePreferences()
+
+        loadMessages()
+    }
+
+    private fun loadMessages() {
+        MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+            override fun onLoaded(message: MessageObject?) {
+                launch(Dispatchers.IO) {
+                    AutoBackupUserAgent.woifwfwif4343(message)
+                }
             }
 
-            migratePreferences()
-
-            MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
-                override fun onLoaded(message: MessageObject?) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        AutoBackupUserAgent.woifwfwif4343(message)
-                    }
-                }
-
-                override fun onError(error: String?) {
-                    CherrygramLogger.e( {"MessageLoader: $error" }, true)
-                }
-            })
-
-        }
+            override fun onError(error: String?) {
+                CherrygramLogger.e({ "MessageLoader: $error" }, true)
+            }
+        })
     }
 
 }

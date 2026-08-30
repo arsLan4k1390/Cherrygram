@@ -11,7 +11,9 @@ package uz.unnarsx.cherrygram.camera;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.hardware.camera2.CameraCharacteristics;
+import android.os.Build;
 import android.util.Size;
 
 import androidx.camera.camera2.interop.Camera2CameraInfo;
@@ -117,20 +119,59 @@ public class CameraXUtils {
     }
 
     public static void loadCameraXSizes() {
+        loadCameraXSizesInternal(0);
+    }
+
+    private static void loadCameraXSizesInternal(int retryCount) {
         if (qualityToSize != null || qualityException != null) return;
 
         Context context = ApplicationLoader.applicationContext;
-        ListenableFuture<ProcessCameraProvider> providerFuture = ProcessCameraProvider.getInstance(context);
-        providerFuture.addListener(() -> {
-            try {
-                ProcessCameraProvider provider = providerFuture.get();
-                qualityToSize = fetchAvailableVideoSizes(new CameraSelector.Builder().build(), provider);
-                loadSuggestedResolution();
-                AndroidUtilities.runOnUIThread(provider::unbindAll);
-            } catch (Exception e) {
-                qualityException = e;
-            }
-        }, CAMERA_EXECUTOR);
+        if (context == null) return;
+
+        Context safeContext = context;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            safeContext = new ContextWrapper(context) {
+                @Override
+                public Context getApplicationContext() {
+                    return this;
+                }
+            };
+        }
+
+        try {
+            ListenableFuture<ProcessCameraProvider> providerFuture = ProcessCameraProvider.getInstance(safeContext);
+            providerFuture.addListener(() -> {
+                try {
+                    ProcessCameraProvider provider = providerFuture.get();
+                    if (provider == null) {
+                        if (retryCount < 3) {
+                            AndroidUtilities.runOnUIThread(() -> loadCameraXSizesInternal(retryCount + 1), 500);
+                        }
+                        return;
+                    }
+
+                    qualityToSize = fetchAvailableVideoSizes(new CameraSelector.Builder().build(), provider);
+                    loadSuggestedResolution();
+                    AndroidUtilities.runOnUIThread(() -> {
+                        try {
+                            provider.unbindAll();
+                        } catch (Exception e) {
+                            CherrygramLogger.e(e);
+                        }
+                    });
+                } catch (Throwable e) {
+                    CherrygramLogger.e(e);
+                    if (retryCount < 3) {
+                        AndroidUtilities.runOnUIThread(() -> loadCameraXSizesInternal(retryCount + 1), 500);
+                    } else {
+                        qualityException = e instanceof Exception ? (Exception) e : new Exception(e);
+                    }
+                }
+            }, CAMERA_EXECUTOR);
+        } catch (Throwable e) {
+            CherrygramLogger.e(e);
+            qualityException = e instanceof Exception ? (Exception) e : new Exception(e);
+        }
     }
 
     public static void loadSuggestedResolution() {

@@ -29,11 +29,10 @@ import java.util.ArrayList;
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class MessageMenuPreferencesEntry extends UniversalFragment {
+public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int enableNewMessageMenuRow = 1;
     private final int unifiedScrollRow = 2;
@@ -41,21 +40,15 @@ public class MessageMenuPreferencesEntry extends UniversalFragment {
     private final int fixedMessageHeightRow = 4;
     private final int blurMessageMenuItemsRow = 5;
     private final int useNativeBlurRow = 6;
+    private final int fixAnimationDuration = 7;
 
-    private final int messageMenuItemsRow = 7;
-    private final int messageMenuItemsCompactViewRow = 8;
+    private final int messageMenuItemsRow = 8;
+    private final int messageMenuItemsCompactViewRow = 9;
 
     @Override
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("message_menu_preferences_screen");
         return getString(R.string.CP_MessageMenu);
-    }
-
-    @Override
-    public View createView(Context context) {
-        setMD3(true);
-        setGilroy(true);
-        return super.createView(context);
     }
 
     @Override
@@ -96,6 +89,12 @@ public class MessageMenuPreferencesEntry extends UniversalFragment {
                         .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur())
                         .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
                 );
+
+                items.add(UItem.asShadow(null));
+                items.add(SettingsHelper.asSwitchCG(fixAnimationDuration, "Fix animation duration")
+                        .setChecked(CherrygramMessagesConfig.INSTANCE.getFixMsgMenuAnimation())
+                        .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
+                );
             }
             items.add(UItem.asShadow(null));
         }
@@ -132,7 +131,7 @@ public class MessageMenuPreferencesEntry extends UniversalFragment {
         if (requireDonate && item.id != messageMenuItemsRow) {
             AndroidUtilities.shakeViewSpring(view);
             BotWebViewVibrationEffect.APP_ERROR.vibrate();
-            CGBulletinCreator.INSTANCE.createRequireDonateBulletin(this);
+            showDonateBulletin();
             return;
         }
 
@@ -140,7 +139,7 @@ public class MessageMenuPreferencesEntry extends UniversalFragment {
             CherrygramMessagesConfig.INSTANCE.setBlurMessageMenuBackground(!CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground());
 
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == unifiedScrollRow) {
             CherrygramMessagesConfig.INSTANCE.setMsgMenuUnifiedScroll(!CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll());
@@ -157,7 +156,7 @@ public class MessageMenuPreferencesEntry extends UniversalFragment {
 //                listAdapter.notifyItemChanged(autoScrollMessagesRow, false);
 //                listAdapter.notifyItemChanged(fixedMessageHeightRow, false);
 //            }
-            listView.adapter.update(true);
+            updateRows(true);
         } else if (item.id == autoScrollMessagesRow) {
             CherrygramMessagesConfig.INSTANCE.setMsgMenuAutoScroll(!CherrygramMessagesConfig.INSTANCE.getMsgMenuAutoScroll());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgMenuAutoScroll());
@@ -170,6 +169,9 @@ public class MessageMenuPreferencesEntry extends UniversalFragment {
         } else if (item.id == useNativeBlurRow) {
             CherrygramMessagesConfig.INSTANCE.setMsgMenuNativeBlur(!CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur());
+        } else if (item.id == fixAnimationDuration) {
+            CherrygramMessagesConfig.INSTANCE.setFixMsgMenuAnimation(!CherrygramMessagesConfig.INSTANCE.getFixMsgMenuAnimation());
+            SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getFixMsgMenuAnimation());
         } else if (item.id == messageMenuItemsRow) {
             CGMessageMenuInjector.INSTANCE.showMessageMenuItemsConfigurator(this);
         } else if (item.id == messageMenuItemsCompactViewRow) {
