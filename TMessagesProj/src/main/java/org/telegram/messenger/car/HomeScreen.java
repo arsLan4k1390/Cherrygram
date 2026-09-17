@@ -56,6 +56,7 @@ import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -328,6 +329,13 @@ public class HomeScreen extends Screen
      * gets the text body, which for a voice note is just a placeholder label.
      */
     private void attachVoiceNote(CarMessage.Builder builder, MessageObject mo, boolean previewAllowed) {
+        // Android Auto is only declared for standalone builds, so in a Play or Huawei build
+        // the host never binds the service and this is unreachable anyway. Kept as an
+        // explicit guard so restoring that manifest entry would not silently ship the
+        // attachment to those builds too.
+        if (CherrygramCoreConfig.isPlayStoreBuild()) {
+            return;
+        }
         if (!mo.isVoice()) {
             return;
         }
