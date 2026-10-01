@@ -21,7 +21,7 @@ object CherrygramExperimentalConfig {
 
     var recordOOMasNonFatal by sharedPreferences.boolean("CG_Record_OOM_AS_NF", true)
     var use_CG_OOMHandler by sharedPreferences.boolean("CG_Use_CG_OOMHandler", true)
-    var oomHandlerPopup by sharedPreferences.boolean("CG_OOMHandlerPopup", true)
+    var oomHandlerPopup by sharedPreferences.boolean("CG_OOMHandlerPopup", false)
     var oomHandlerPopupThreshold by sharedPreferences.float("CG_OOMHandlerPopupThreshold", 95f)
 
 }

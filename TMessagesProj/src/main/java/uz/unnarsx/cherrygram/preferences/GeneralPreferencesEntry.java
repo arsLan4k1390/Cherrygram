@@ -11,7 +11,6 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.view.View;
@@ -24,7 +23,6 @@ import org.telegram.messenger.R;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.UsersSelectActivity;
 
 import java.util.ArrayList;
@@ -34,6 +32,7 @@ import java.util.Set;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
@@ -67,6 +66,10 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
 
     private boolean expandedArchiveStoriesSection = false;
 
+    private static final Set<String> ARCHIVE_STORIES_SECTION_SLUGS = Set.of(
+            ""
+    );
+
     @Override
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("general_preferences_screen");
@@ -74,17 +77,26 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_General;
+    }
+
+    @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.LiteMode)));
-        items.add(UItem.asButton(springAnimationRow, getString(R.string.EP_NavigationAnimation), getSpringValue()));
+        items.add(UItem.asButton(springAnimationRow, getString(R.string.EP_NavigationAnimation), getSpringValue())
+                .slug("navigation")
+        );
         if (CherrygramCoreConfig.INSTANCE.getSpringAnimation() == CherrygramCoreConfig.ANIMATION_SPRING) {
             items.add(SettingsHelper.asSwitchCG(actionbarCrossfadeRow, getString(R.string.EP_NavigationAnimationCrossfading))
                     .setChecked(CherrygramCoreConfig.INSTANCE.getActionbarCrossfade())
+                    .slug("actionbarCrossfade")
             );
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             items.add(SettingsHelper.asSwitchCG(predictiveBackRow, getString(R.string.CG_PredictiveBackAnimation))
                     .setChecked(CherrygramCoreConfig.INSTANCE.getPredictiveBack())
+                    .slug("predictiveBack")
             );
         }
         items.add(UItem.asShadow(null));
@@ -92,13 +104,16 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(UItem.asHeader(getString(R.string.SettingsNotifications)));
         items.add(SettingsHelper.asSwitchCG(silenceNonContactsRow, getString(R.string.CP_SilenceNonContacts), getString(R.string.CP_SilenceNonContacts_Desc))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getSilenceNonContacts())
+                .slug("silenceNonContacts")
         );
         items.add(SettingsHelper.asSwitchCG(defaultNotificationIconRow, getString(R.string.AP_Old_Notification_Icon))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getOldNotificationIcon())
+                .slug("oldNotifIcon")
         );
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             items.add(SettingsHelper.asSwitchCG(residentNotificationRow, getString(R.string.CG_ResidentNotification), getString(R.string.NotificationsService))
                     .setChecked(CherrygramCoreConfig.INSTANCE.getResidentNotification())
+                    .slug("residentNotification")
             );
         }
         items.add(UItem.asShadow(null));
@@ -110,6 +125,7 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CG_IgnoreMentionsDesc)
                 )
                 .setChecked(CherrygramCoreConfig.INSTANCE.getIgnoreMentions())
+                .slug("ignoreMentions")
         );
 
         if (CherrygramCoreConfig.INSTANCE.getIgnoreMentions()) {
@@ -130,6 +146,7 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(UItem.asHeader(getString(R.string.FilterStories)));
         items.add(SettingsHelper.asSwitchCG(hideStoriesRow, getString(R.string.CP_HideStories), getString(R.string.CP_HideStories_Desc))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getHideStories())
+                .slug("hideStories")
         );
 
         items.add(
@@ -150,6 +167,7 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
                     expandedArchiveStoriesSection = !expandedArchiveStoriesSection;
                     updateRows(true);
                 })
+                .slug("archiveStories")
         );
         if (expandedArchiveStoriesSection) {
             items.add(UItem.asRoundCheckbox(archiveStoriesUsersRow, getString(R.string.FilterContacts))
@@ -168,20 +186,28 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
         items.add(SettingsHelper.asSwitchCG(useSystemEmojiRow, getString(R.string.AP_SystemEmoji))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getSystemEmoji())
+                .slug("systemEmoji")
         );
         items.add(SettingsHelper.asSwitchCG(useSystemFontsRow, getString(R.string.AP_SystemFonts))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getSystemFonts())
+                .slug("systemFonts")
         );
-        items.add(UItem.asButton(tabledModeRow, getString(R.string.AP_Tablet_Mode), getTabletModeValue()));
+        items.add(UItem.asButton(tabledModeRow, getString(R.string.AP_Tablet_Mode), getTabletModeValue())
+                .slug("tabletMode")
+        );
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.EP_Network)));
-        items.add(UItem.asButton(downloadSpeedBoostRow, getString(R.string.EP_DownloadSpeedBoost), getDownloadSpeedBoostText()));
+        items.add(UItem.asButton(downloadSpeedBoostRow, getString(R.string.EP_DownloadSpeedBoost), getDownloadSpeedBoostText())
+                .slug("downloadSpeedBoost")
+        );
         items.add(SettingsHelper.asSwitchCG(uploadSpeedBoostRow, getString(R.string.EP_UploadloadSpeedBoost))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getUploadSpeedBoost())
+                .slug("uploadSpeedBoost")
         );
         items.add(SettingsHelper.asSwitchCG(slowNetworkMode, getString(R.string.EP_SlowNetworkMode))
                 .setChecked(CherrygramCoreConfig.INSTANCE.getSlowNetworkMode())
+                .slug("slowNetworkMode")
         );
         items.add(UItem.asShadow(null));
     }
@@ -317,8 +343,16 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
+    public void scrollToRow(String slug, Runnable unknown) {
+        boolean needsExpand = false;
+        if (ARCHIVE_STORIES_SECTION_SLUGS.contains(slug) && !expandedArchiveStoriesSection) {
+            expandedArchiveStoriesSection = true;
+            needsExpand = true;
+        }
+        if (needsExpand) {
+            updateRows(true);
+        }
+        super.scrollToRow(slug, unknown);
     }
 
     private String getSpringValue()  {

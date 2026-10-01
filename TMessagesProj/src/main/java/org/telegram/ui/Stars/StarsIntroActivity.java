@@ -99,7 +99,6 @@ import org.telegram.tgnet.tl.TL_stars;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.ActionBar;
-import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.SimpleTextView;
@@ -331,7 +330,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
         starBalanceIcon = new SpannableStringBuilder("S");
         final ImageReceiverSpan starBalanceIconSpan = new ImageReceiverSpan(starBalanceTextView, currentAccount, 42);
-        starBalanceIconSpan.imageReceiver.setImageBitmap(new RLottieDrawable(R.raw.star_reaction, "s" + R.raw.star_reaction, dp(42), dp(42)));
+        starBalanceIconSpan.imageReceiver.setImageBitmap(new RLottieDrawable(R.raw.star_reaction, dp(42), dp(42)));
         starBalanceIconSpan.imageReceiver.setAutoRepeat(2);
         starBalanceIconSpan.enableShadow(false);
         starBalanceIconSpan.translate(-dp(3), 0);
@@ -2828,7 +2827,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             if (TextUtils.isEmpty(stringRes)) {
                 headerView.subtitleView.setText("");
             } else {
-                String str = LocaleController.nullable(formatString(stringRes, LocaleController.getStringResId(stringRes), botName));
+                String str = LocaleController.nullable(formatString(stringRes, 0, botName));
                 if (str == null) {
                     str = getString(stringRes);
                 }

@@ -50,6 +50,7 @@ object RemoteConfigConstants {
     const val videomessages_resolution = "videomessages_resolution"
 
     const val min_cherry_version = "min_cherry_version"
+    const val min_cherry_version_gp = "min_cherry_version_gp"
     /** Misc finish */
 
     /** Deleted Gifts start */

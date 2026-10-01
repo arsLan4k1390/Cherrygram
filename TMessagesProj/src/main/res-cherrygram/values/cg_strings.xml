@@ -54,6 +54,7 @@
     <string name="CG_FoldersTypeIconsTitles">Icons with Titles</string>
     <string name="CG_ChooseFolderIcon">Choose an Icon</string>
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
+    <string name="CP_IncludeMutedIn_FolderCounters">Include muted chats in counters</string>
     <string name="CG_SwipeToUnarchive">Swipe left to unarchive</string>
     <!--Telegram Folders Settings-->
 
@@ -253,6 +254,7 @@
 
     <string name="CP_ProfileReplyBackground">Messages and profiles</string>
     <string name="CP_CustomizeProfile">Customize profile</string>
+    <string name="CP_ProfileHidePhoneNumbers">Hide phone numbers</string>
     <string name="CP_ProfileChannelPreview">Personal channel</string>
     <string name="CP_ProfileBirthDatePreview">Date of Birth</string>
     <string name="CP_ProfileBusinessPreview">Business hours and location</string>
@@ -419,6 +421,10 @@
     <string name="CP_LargeVoiceMessages">Adaptive audio message length</string>
     <string name="CP_LargeVoiceMessages_Desc">The audio message bubble length will depend on the recording duration and automatically adjust to the screen width.</string>
 
+    <string name="CP_RecordMultiMic">Multi-microphone recording</string>
+    <string name="CP_RecordMultiMic_Desc">Records audio simultaneously from all device microphones for a more spatial and detailed voice capture</string>
+    <string name="CP_RecordInStereo">Stereo recording</string>
+    <string name="CP_RecordInStereo_Desc">Transmits your voice in stereo format. \n\n**Note:** if the listener is using a single earphone or speakerphone, they might hear you quietly or experience audio dropouts</string>
     <string name="CP_VoiceMessagesAutoPlay">Auto-play of voice messages</string>
     <string name="CP_PlayVideo">Play video with volume button press</string>
     <string name="CP_PlayVideo_Desc">When you press the volume button, any video on the screen in chat will be played</string>
@@ -468,6 +474,7 @@
     <string name="CP_Brightness">Brightness</string>
     <string name="CP_Flash_Hint">Hold the flash button to adjust the color and brightness of the flash.</string>
     <string name="CP_Flash_Hint_Rear">Hold the flash button to adjust the brightness of the flash.</string>
+    <string name="CP_Zoom_Hint">Drag your finger along the scale to expand the full zoom slider.</string>
     <!--Camera Preferences-->
 
     <!--Experimental Preferences-->

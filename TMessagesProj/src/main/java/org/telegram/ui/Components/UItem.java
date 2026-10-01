@@ -912,10 +912,17 @@ public class UItem extends AdapterWithDiffUtils.Item {
     }
 
     /** Cherrygram start */
+    public String slug;
+
     public boolean checkboxHidden;
 
     public UItem hideCheckbox(boolean checkboxHidden) {
         this.checkboxHidden = checkboxHidden;
+        return this;
+    }
+
+    public UItem slug(String slug) {
+        this.slug = slug;
         return this;
     }
     /** Cherrygram finish */

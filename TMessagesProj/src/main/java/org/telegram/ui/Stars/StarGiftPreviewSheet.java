@@ -49,6 +49,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.messenger.utils.tlutils.TlUtils;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_stars;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedTextView;
 import org.telegram.ui.Components.BackupImageView;
@@ -80,6 +81,7 @@ import java.util.Comparator;
 import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 import me.vkryl.core.BitwiseUtils;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
     private static final int TAB_MODELS = 0;
@@ -326,7 +328,9 @@ public class StarGiftPreviewSheet extends BottomSheetWithRecyclerListView {
 
         backButton = new ImageView(context);
         backButton.setBackground(Theme.createRadSelectorDrawable(0, 0x10FFFFFF, 16, 16));
-        backButton.setImageResource(R.drawable.ic_ab_back);
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        backButton.setImageDrawable(backDrawable);
         backButton.setScaleType(ImageView.ScaleType.CENTER);
         backButton.setOnClickListener(v -> dismiss());
         ScaleStateListAnimator.apply(backButton);

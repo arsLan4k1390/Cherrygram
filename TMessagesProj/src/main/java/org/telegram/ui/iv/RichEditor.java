@@ -67,6 +67,7 @@ import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_iv;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
@@ -103,6 +104,8 @@ import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class RichEditor extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -561,7 +564,9 @@ public class RichEditor extends BaseFragment implements NotificationCenter.Notif
         container.addView(topPanel, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8 + 44 + 16, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
         backButton = new ImageView(context);
-        backButton.setImageResource(R.drawable.ic_ab_back);
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
+        backButton.setImageDrawable(backDrawable);
         backButton.setScaleType(ImageView.ScaleType.CENTER);
         backButton.setBackground(withShadow(Theme.createRadSelectorDrawable(getThemedColor(Theme.key_windowBackgroundWhite), Theme.blendOver(getThemedColor(Theme.key_windowBackgroundWhite), getThemedColor(Theme.key_listSelector)), dp(22), dp(22))));
         backButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.SRC_IN));

@@ -295,11 +295,21 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
     }
 
     public void update(boolean animated) {
-        if (listView != null && listView.isComputingLayout()) {
-            listView.post(() -> updateInternal(animated));
-        } else {
+        if (listView == null) {
             updateInternal(animated);
+            return;
         }
+        if (updateDeferred) {
+            deferredAnimated &= animated;
+            return;
+        }
+        if (listView.isComputingLayout() || (animated && isItemAnimatorRunning())) {
+            updateDeferred = true;
+            deferredAnimated = animated;
+            scheduleDeferredUpdate();
+            return;
+        }
+        updateInternal(animated);
     }
 
     private void updateInternal(boolean animated) {
@@ -1303,6 +1313,9 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
     }
 
     /** Cherrygram start */
+    private boolean updateDeferred;
+    private boolean deferredAnimated = true;
+
     public static final int VIEW_TYPE_TEXT_DETAIL_SETTINGS = 100;
     public static final int VIEW_TYPE_SPACE_CG = 101;
     public static final int VIEW_TYPE_CUSTOM_WITH_BACKGROUND = 102;
@@ -1317,6 +1330,36 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
         int sectionId = getReorderSectionId(position);
         if (sectionId < 0) return false;
         return reorderSections.get(sectionId).end == position;
+    }
+
+    private boolean isItemAnimatorRunning() {
+        RecyclerView.ItemAnimator animator = listView.getItemAnimator();
+        return animator != null && animator.isRunning();
+    }
+
+    private void scheduleDeferredUpdate() {
+        RecyclerView.ItemAnimator animator = listView.getItemAnimator();
+        if (deferredAnimated && animator != null && animator.isRunning()) {
+            animator.isRunning(() -> listView.post(this::flushDeferredUpdate));
+        } else {
+            listView.post(this::flushDeferredUpdate);
+        }
+    }
+
+    private void flushDeferredUpdate() {
+        if (!updateDeferred) return;
+        if (listView == null) {
+            updateDeferred = false;
+            return;
+        }
+        if (listView.isComputingLayout() || (deferredAnimated && isItemAnimatorRunning())) {
+            scheduleDeferredUpdate();
+            return;
+        }
+        updateDeferred = false;
+        boolean animated = deferredAnimated;
+        deferredAnimated = true;
+        updateInternal(animated);
     }
     /** Cherrygram finish */
 

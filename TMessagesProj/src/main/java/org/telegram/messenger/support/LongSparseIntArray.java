@@ -56,7 +56,7 @@ public class LongSparseIntArray implements Cloneable {
     }
 
     @Override
-    public LongSparseIntArray clone() {
+    public synchronized LongSparseIntArray clone() {
         LongSparseIntArray clone = null;
         try {
             clone = (LongSparseIntArray) super.clone();
@@ -80,7 +80,7 @@ public class LongSparseIntArray implements Cloneable {
      * Gets the long mapped from the specified key, or the specified value
      * if no such mapping has been made.
      */
-    public int get(long key, int valueIfKeyNotFound) {
+    public synchronized int get(long key, int valueIfKeyNotFound) {
         int i = binarySearch(mKeys, 0, mSize, key);
 
         if (i < 0) {
@@ -93,7 +93,7 @@ public class LongSparseIntArray implements Cloneable {
     /**
      * Removes the mapping from the specified key, if there was any.
      */
-    public void delete(long key) {
+    public synchronized void delete(long key) {
         int i = binarySearch(mKeys, 0, mSize, key);
 
         if (i >= 0) {
@@ -104,7 +104,7 @@ public class LongSparseIntArray implements Cloneable {
     /**
      * Removes the mapping at the given index.
      */
-    public void removeAt(int index) {
+    public synchronized void removeAt(int index) {
         System.arraycopy(mKeys, index + 1, mKeys, index, mSize - (index + 1));
         System.arraycopy(mValues, index + 1, mValues, index, mSize - (index + 1));
         mSize--;
@@ -115,7 +115,7 @@ public class LongSparseIntArray implements Cloneable {
      * replacing the previous mapping from the specified key if there
      * was one.
      */
-    public void put(long key, int value) {
+    public synchronized void put(long key, int value) {
         int i = binarySearch(mKeys, 0, mSize, key);
 
         if (i >= 0) {
@@ -142,7 +142,7 @@ public class LongSparseIntArray implements Cloneable {
      * Returns the number of key-value mappings that this SparseIntArray
      * currently stores.
      */
-    public int size() {
+    public synchronized int size() {
         return mSize;
     }
 
@@ -151,7 +151,7 @@ public class LongSparseIntArray implements Cloneable {
      * the key from the <code>index</code>th key-value mapping that this
      * SparseLongArray stores.
      */
-    public long keyAt(int index) {
+    public synchronized long keyAt(int index) {
         return mKeys[index];
     }
 
@@ -160,7 +160,7 @@ public class LongSparseIntArray implements Cloneable {
      * the value from the <code>index</code>th key-value mapping that this
      * SparseLongArray stores.
      */
-    public int valueAt(int index) {
+    public synchronized int valueAt(int index) {
         return mValues[index];
     }
 
@@ -169,7 +169,7 @@ public class LongSparseIntArray implements Cloneable {
      * specified key, or a negative number if the specified
      * key is not mapped.
      */
-    public int indexOfKey(long key) {
+    public synchronized int indexOfKey(long key) {
         return binarySearch(mKeys, 0, mSize, key);
     }
 
@@ -181,7 +181,7 @@ public class LongSparseIntArray implements Cloneable {
      * and that multiple keys can map to the same value and this will
      * find only one of them.
      */
-    public int indexOfValue(long value) {
+    public synchronized int indexOfValue(long value) {
         for (int i = 0; i < mSize; i++)
             if (mValues[i] == value)
                 return i;
@@ -192,7 +192,7 @@ public class LongSparseIntArray implements Cloneable {
     /**
      * Removes all key-value mappings from this SparseIntArray.
      */
-    public void clear() {
+    public synchronized void clear() {
         mSize = 0;
     }
 
@@ -200,7 +200,7 @@ public class LongSparseIntArray implements Cloneable {
      * Puts a key/value pair into the array, optimizing for the case where
      * the key is greater than all existing keys in the array.
      */
-    public void append(long key, int value) {
+    public synchronized void append(long key, int value) {
         if (mSize != 0 && key <= mKeys[mSize - 1]) {
             put(key, value);
             return;

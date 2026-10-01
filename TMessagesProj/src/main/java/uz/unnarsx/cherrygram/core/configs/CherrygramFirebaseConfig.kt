@@ -15,6 +15,7 @@ import androidx.annotation.Keep
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.analytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -83,17 +84,17 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
 
     fun init() {
         launch {
-            if (ApplicationLoader.checkPlayServices()) {
-                FirebaseApp.initializeApp(ApplicationLoader.applicationContext)
-                Firebase.analytics.setUserProperty("cherrygram_version", CGResourcesHelper.getCherryVersion())
-                Firebase.analytics.setUserProperty("code_version", CGResourcesHelper.getCodeVersion())
-                Firebase.analytics.setUserProperty("source_code_version", CGResourcesHelper.getSourceCodeVersion())
-                /*FirebaseRemoteConfigHelper_deprecated.init()
-                val success = FirebaseRemoteConfigHelper_deprecated.fetchAndActivate()
-                if (success) {
-                    FirebaseRemoteConfigHelper_deprecated.applyConfig()
-                }*/
-            }
+            FirebaseApp.initializeApp(ApplicationLoader.applicationContext)
+            FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = true
+            Firebase.analytics.setUserProperty("cherrygram_version", CGResourcesHelper.getCherryVersion())
+            Firebase.analytics.setUserProperty("code_version", CGResourcesHelper.getCodeVersion())
+            Firebase.analytics.setUserProperty("source_code_version", CGResourcesHelper.getSourceCodeVersion())
+            /*FirebaseRemoteConfigHelper_deprecated.init()
+            val success = FirebaseRemoteConfigHelper_deprecated.fetchAndActivate()
+            if (success) {
+                FirebaseRemoteConfigHelper_deprecated.applyConfig()
+            }*/
+
             RemoteConfigHelper.fetchAndActivate()
 
             if (allowSafeStars) {

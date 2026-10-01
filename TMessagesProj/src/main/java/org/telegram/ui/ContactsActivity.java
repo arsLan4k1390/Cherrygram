@@ -117,6 +117,8 @@ import java.util.ArrayList;
 import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.helpers.ContactsVcfExporter;
 
 public class ContactsActivity extends BaseFragment implements FactorAnimator.Target, NotificationCenter.NotificationCenterDelegate, MainTabsActivity.TabFragmentDelegate, WindowAnimatedInsetsProvider.Listener {
     private final int ADDITIONAL_LIST_HEIGHT_DP = Build.VERSION.SDK_INT >= 31 ? 48 : 0;
@@ -294,6 +296,7 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
         }
 
         backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
         if (!hasMainTabs) {
             actionBar.setBackButtonDrawable(backDrawable);
         }
@@ -321,6 +324,8 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
         actionMode.addView(selectedContactsCountTextView, LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 1.0f, hasMainTabs ? 18 : 72, 0, 0, 0));
         selectedContactsCountTextView.setOnTouchListener((v, event) -> true);
 
+        actionMode.addItemWithWidth(select_all, R.drawable.msg_select_between_solar, dp(54), getString(R.string.SelectAll));
+        actionMode.addItemWithWidth(export, R.drawable.msg_shareout_solar, dp(54), getString(R.string.ExportTheme));
         actionMode.addItemWithWidth(delete, R.drawable.msg_delete, dp(54), getString(R.string.Delete));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -346,6 +351,10 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
                         searchField.editText.requestFocus();
                         AndroidUtilities.showKeyboard(searchField.editText);
                     });
+                } else if (id == export) {
+                    performSelectedContactsExport();
+                } else if (id == select_all) {
+                    selectAllContacts();
                 }
             }
         });
@@ -452,6 +461,7 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
                 final int result = super.getSectionCount();
                 checkUi_floatingButtonVisible();
                 checkUi_sortItem();
+                checkUi_selectAllItem(actionMode);
                 checkUi_searchFieldHint();
                 return result;
             }
@@ -529,6 +539,7 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
                 checkUi_emptyView();
                 checkUi_searchButton();
                 checkUi_sortItem();
+                checkUi_selectAllItem(actionMode);
                 checkUi_floatingButtonPosition();
                 checkUi_searchFieldY();
             }
@@ -1053,8 +1064,10 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
         boolean checked;
         if (cell instanceof UserCell) {
             checked = addOrRemoveSelectedContact((UserCell) cell);
+            checkUi_selectAllItem(actionBar.getActionMode());
         } else if (cell instanceof ProfileSearchCell) {
             checked = addOrRemoveSelectedContact((ProfileSearchCell) cell);
+            checkUi_selectAllItem(actionBar.getActionMode());
         } else {
             return;
         }
@@ -1558,6 +1571,7 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
         } else if (id == ANIMATOR_ID_SEARCH_HAS_QUERY) {
             checkUi_searchButton();
             checkUi_sortItem();
+            checkUi_selectAllItem(actionBar.getActionMode());
         }
     }
 
@@ -1749,8 +1763,80 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
     }
 
     /** Cherrygram start */
+    private final static int export = 1000;
+    private final static int select_all = 1001;
+
     public FragmentSearchField getFragmentSearchField() {
         return searchField;
+    }
+
+    private void performSelectedContactsExport() {
+        ArrayList<TLRPC.User> contacts = new ArrayList<>(selectedContacts.size());
+        for (int i = 0; i < selectedContacts.size(); i++) {
+            contacts.add(selectedContacts.get(selectedContacts.keyAt(i)));
+        }
+
+        ContactsVcfExporter.export(getContext(), contacts);
+
+        hideActionMode();
+    }
+
+    public void selectAllContacts() {
+        if (listViewAdapter == null) {
+            return;
+        }
+
+        int count = listViewAdapter.getItemCount();
+        for (int i = 0; i < count; i++) {
+            Object item = listViewAdapter.getItem(i);
+            if (!(item instanceof TLRPC.User user)) {
+                continue;
+            }
+            if (selectedContacts.indexOfKey(user.id) < 0) {
+                selectedContacts.put(user.id, user);
+            }
+        }
+
+        boolean wasShowed = actionBar.isActionModeShowed();
+        if (!wasShowed && !selectedContacts.isEmpty()) {
+            AndroidUtilities.hideKeyboard(fragmentView.findFocus());
+            actionBar.showActionMode();
+            backDrawable.setRotation(1, true);
+        }
+
+        selectedContactsCountTextView.setNumber(selectedContacts.size(), wasShowed);
+
+        listViewAdapter.notifyDataSetChanged();
+    }
+
+    private void checkUi_selectAllItem(ActionBarMenu actionMode) {
+        if (actionMode == null) {
+            return;
+        }
+        View selectAllItem = actionMode.getItem(select_all);
+        if (selectAllItem == null) {
+            return;
+        }
+
+        final float factor1 = 1f - animatorSearchHasQuery.getFloatValue();
+        final float factor2 = listViewAdapter == null || listViewAdapter.isEmpty() ? 0 : 1;
+        final float factor3 = selectedContacts.size() < getTotalContactsCount() ? 1 : 0;
+        final float factor = factor1 * factor2 * factor3;
+        FragmentFloatingButton.setAnimatedVisibility(selectAllItem, factor);
+    }
+
+    private int getTotalContactsCount() {
+        if (listViewAdapter == null) {
+            return 0;
+        }
+        int count = 0;
+        int total = listViewAdapter.getItemCount();
+        for (int i = 0; i < total; i++) {
+            if (listViewAdapter.getItem(i) instanceof TLRPC.User) {
+                count++;
+            }
+        }
+        return count;
     }
     /** Cherrygram finish */
 

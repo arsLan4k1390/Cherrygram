@@ -33,10 +33,10 @@ import uz.unnarsx.cherrygram.preferences.cells.StickerSliderCell;
 public class AlertDialogSwitchers {
 
     public static void showMessageSize(BaseFragment fragment) {
-        if (fragment.getParentActivity() == null) {
+        if (fragment.getContext() == null) {
             return;
         }
-        Context context = fragment.getParentActivity();
+        Context context = fragment.getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(getString(R.string.CP_Messages_Size));
 
@@ -58,9 +58,9 @@ public class AlertDialogSwitchers {
 
         int count = 3;
         for (int a = 0; a < count; a++) {
-            HeaderCell headerCell = new HeaderCell(fragment.getContext(), fragment.getResourceProvider());
-            TextInfoPrivacyCell textInfoPrivacyCell = new TextInfoPrivacyCell(fragment.getContext());
-            StickerSliderCell stickerSliderCell = new StickerSliderCell(fragment.getContext(), fragment.getResourceProvider());
+            HeaderCell headerCell = new HeaderCell(context, fragment.getResourceProvider());
+            TextInfoPrivacyCell textInfoPrivacyCell = new TextInfoPrivacyCell(context);
+            StickerSliderCell stickerSliderCell = new StickerSliderCell(context, fragment.getResourceProvider());
             StickerSliderCell.TGSLContract contract;
             switch (a) {
                 case 0: {
@@ -164,10 +164,10 @@ public class AlertDialogSwitchers {
     }
 
     public static void showRecentEmojisAndStickers(BaseFragment fragment) {
-        if (fragment.getParentActivity() == null) {
+        if (fragment.getContext() == null) {
             return;
         }
-        Context context = fragment.getParentActivity();
+        Context context = fragment.getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(getString(R.string.CP_Slider_RecentEmojisAndStickers));
 
@@ -180,8 +180,8 @@ public class AlertDialogSwitchers {
 
         int count = 2;
         for (int a = 0; a < count; a++) {
-            HeaderCell headerCell = new HeaderCell(fragment.getContext(), fragment.getResourceProvider());
-            StickerSliderCell stickerSliderCell = new StickerSliderCell(fragment.getContext(), fragment.getResourceProvider());
+            HeaderCell headerCell = new HeaderCell(context, fragment.getResourceProvider());
+            StickerSliderCell stickerSliderCell = new StickerSliderCell(context, fragment.getResourceProvider());
             StickerSliderCell.TGSLContract contract;
             switch (a) {
                 case 0: {

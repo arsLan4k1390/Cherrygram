@@ -219,6 +219,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
+import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 public class PeerStoriesView extends SizeNotifierFrameLayout implements NotificationCenter.NotificationCenterDelegate {
@@ -4415,15 +4416,18 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), 30))
         );
         buttonTextView.setOnClickListener(v -> {
-            if (ApplicationLoader.isStandaloneBuild()) {
+            if (LaunchActivity.instance != null) {
+                LaunchActivity.instance.checkAppUpdate(true, null);
+            }
+            /*if (ApplicationLoader.isStandaloneBuild()) {
                 if (LaunchActivity.instance != null) {
                     LaunchActivity.instance.checkAppUpdate(true, null);
                 }
-            } /*else if (BuildVars.isHuaweiStoreApp()){
+            } else if (BuildVars.isHuaweiStoreApp()) {
                 Browser.openUrl(getContext(), BuildVars.HUAWEI_STORE_URL);
-            }*/ else {
+            } else {
                 Browser.openUrl(getContext(), Constants.UPDATE_APP_URL);
-            }
+            }*/
         });
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         linearLayout.addView(buttonTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 24, 0, 0));
@@ -7826,9 +7830,21 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 return dialogId;
             }
 
+            @Override
+            public boolean hasReplyMessage() {
+                return CameraXUtils.isCurrentCameraCameraX();
+            }
+
         }, resourcesProvider, false);
         int i = Math.min(indexOfChild(chatActivityEnterView.getRecordCircle()), indexOfChild(chatActivityEnterView.controlsView));
         addView(instantCameraView, i, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP));
+
+        if (instantCameraView != null) {
+            instantCameraView.setButtonsBackground(blurredBackgroundDrawableFactory, blurredBackgroundColorProvider);
+            if (instantCameraView.zoomControlView != null) {
+                instantCameraView.zoomControlView.setLiquidGlassBackground(blurredBackgroundDrawableFactory, blurredBackgroundColorProvider);
+            }
+        }
     }
 
     private void afterMessageSend(boolean withBulletin) {
@@ -8219,9 +8235,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             optionsDrawable = ContextCompat.getDrawable(context, R.drawable.media_more);
             pipDrawable = ContextCompat.getDrawable(context, R.drawable.menu_stream_pip);
             deleteDrawable = ContextCompat.getDrawable(context, R.drawable.msg_delete);
-            muteDrawable = new RLottieDrawable(R.raw.media_mute_unmute, "media_mute_unmute", AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
+            muteDrawable = new RLottieDrawable(R.raw.media_mute_unmute, AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
            // muteDrawable = new ReplaceableIconDrawable(context);
-            noSoundDrawable = new RLottieDrawable(R.raw.media_mute_unmute, "media_mute_unmute", AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
+            noSoundDrawable = new RLottieDrawable(R.raw.media_mute_unmute, AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
             noSoundDrawable.setCurrentFrame(20, false, true);
             noSoundDrawable.stop();
           //  muteDrawable = new CrossOutDrawable(context, R.drawable.msg_unmute, -1);

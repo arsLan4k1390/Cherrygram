@@ -160,7 +160,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
             }
 
             message1 = new MessageObject(UserConfig.selectedAccount, message, true, false);
-            message1.notime = true;
+            message1.notime = false;
             message1.forceAvatar = true;
             message1.resetLayout();
             message1.eventId = 1;
@@ -198,6 +198,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
             message.peer_id.user_id = 0;
 
             message1 = new MessageObject(UserConfig.selectedAccount, message, true, false);
+            message1.notime = false;
             message1.forceAvatar = true;
             message1.resetLayout();
             message1.eventId = 1;

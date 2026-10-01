@@ -54,8 +54,8 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     const val ANIMATION_CLASSIC = 1
     var springAnimation by sharedPreferences.int("CG_SpringAnimation", ANIMATION_SPRING)
 
-    var actionbarCrossfade by sharedPreferences.boolean("CG_ActionbarCrossfade", true)
-    var predictiveBack by sharedPreferences.boolean("CG_PredictiveBack", false)
+    var actionbarCrossfade by sharedPreferences.boolean("CG_ActionbarCrossfade", false)
+    var predictiveBack by sharedPreferences.boolean("CG_PredictiveBack", true)
     /** Animations finish */
 
     /** Notifications start */
@@ -100,9 +100,10 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** OTA start */
     var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isStandaloneBetaBuild())
-    var autoOTA by sharedPreferences.boolean("CG_Check_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
+    var autoOTA by sharedPreferences.boolean("CG_Check_Auto_OTA", true)
     var forceFound by sharedPreferences.boolean("CG_ForceFound", false)
     var minCherryVersion by sharedPreferences.string("CG_Min_Cherry_Version", "0")
+    var minCherryVersionGP by sharedPreferences.string("CG_Min_Cherry_Version_GP", "0")
     /** OTA finish */
 
     /** Misc start */

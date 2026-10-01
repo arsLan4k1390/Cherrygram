@@ -28,7 +28,7 @@ object CherrygramCameraConfig {
     const val CAMERA_X = 1
     const val CAMERA_2 = 2
     const val SYSTEM_CAMERA = 3
-    var cameraType by sharedPreferences.int("CP_CameraType", if (CameraXUtils.isCameraXSupported()) CAMERA_X else TELEGRAM_CAMERA)
+    var cameraType by sharedPreferences.int("CP_CameraType1", if (CameraXUtils.isCameraXSupported()) CAMERA_X else TELEGRAM_CAMERA)
     /** Camera type finish */
 
     /** Camera start */
@@ -41,6 +41,8 @@ object CherrygramCameraConfig {
     const val CameraAspectDefault = 3
     var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", CameraAspectDefault)
     /** Camera finish */
+
+    var newCamera2Design by sharedPreferences.boolean("CP_NewCamera2Design1", false)
 
     /** Videomessages start */
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
@@ -78,6 +80,7 @@ object CherrygramCameraConfig {
     var videoMessagesFlashIntensity by sharedPreferences.float("CG_Round_Flash_Intensity", 1f)
     var videoMessagesRearFlashIntensity by sharedPreferences.float("CG_Round_Rear_Flash_Intensity", 1f)
     var videoMessagesHintCount by sharedPreferences.int("CG_Round_Flash_Hint_Count", 0)
+    var zoomHintCount by sharedPreferences.int("CG_Round_Zoom_Hint_Count", 0)
 
     fun checkVideoMessagesHint() {
         try {
@@ -86,6 +89,7 @@ object CherrygramCameraConfig {
 
             if (dayOfMonth == 1) {
                 videoMessagesHintCount = 0
+                zoomHintCount = 0
             }
         } catch (_: Exception) {}
     }

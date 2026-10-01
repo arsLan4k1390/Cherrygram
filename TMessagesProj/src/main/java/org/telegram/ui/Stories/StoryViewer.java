@@ -45,13 +45,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.graphics.Insets;
-import androidx.core.math.MathUtils;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import androidx.media3.exoplayer.ExoPlayer;
+import org.telegram.ui.AspectRatioFrameLayout;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
@@ -71,11 +70,9 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.pip.PipSource;
 import org.telegram.messenger.pip.source.IPipSourceDelegate;
-import org.telegram.messenger.pip.utils.PipPermissions;
 import org.telegram.messenger.pip.utils.PipUtils;
 import org.telegram.messenger.support.LongSparseIntArray;
 import org.telegram.messenger.video.VideoPlayerHolderBase;
-import org.telegram.messenger.voip.VoIPService;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.AdjustPanLayoutHelper;
@@ -90,11 +87,12 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RadialProgress;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
-import org.telegram.ui.Stories.LiveStoryPipOverlay;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.Stories.recorder.LivePlayerView;
 
 import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.core.firebase.crashlytics.FirebaseCrashlyticsHelper;
 
 public class StoryViewer implements NotificationCenter.NotificationCenterDelegate, BaseFragment.AttachedSheet, IPipSourceDelegate {
 
@@ -1780,6 +1778,10 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
         if (ATTACH_TO_FRAGMENT && fragment != null) {
             AndroidUtilities.removeFromParent(windowView);
             windowView.setTag(R.id.sheet_attached_to_fragment_tag, new Object());
+            try {
+                windowManager.removeView(windowView);
+            } catch (Exception ignored) {}
+
             fragment.getLayoutContainer().addView(windowView);
             if (!ATTACHED_FRAGMENT_IS_EDGE_TO_EDGE) {
                 AndroidUtilities.requestAdjustResize(fragment.getParentActivity(), fragment.getClassGuid());
@@ -1800,7 +1802,16 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                 return;
             }
 
-            windowManager.addView(windowView, windowLayoutParams);
+            AndroidUtilities.removeFromParent(windowView);
+            try {
+                windowManager.removeView(windowView);
+            } catch (Exception ignored) {}
+
+            try {
+                windowManager.addView(windowView, windowLayoutParams);
+            } catch (Exception e) {
+                FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 final OnBackInvokedDispatcher dispatcher = windowView.findOnBackInvokedDispatcher();

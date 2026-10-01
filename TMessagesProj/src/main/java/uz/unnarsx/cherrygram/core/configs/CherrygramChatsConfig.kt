@@ -70,6 +70,8 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Actions finish */
 
     /** Media start */
+    var recordMultiMic by sharedPreferences.boolean("CP_RecordMultiMic", true)
+    var recordInStereo by sharedPreferences.boolean("CP_RecordInStereo", false)
     var voiceMessagesAutoPlay by sharedPreferences.boolean("CP_VoiceMessagesAutoPlay", true)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)

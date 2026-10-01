@@ -50,31 +50,16 @@ public final class RLottieNative {
      *
      * @param path             absolute path to the .json / .tgs file
      * @param json             override JSON string, or {@code null} to read from file
-     * @param w                render width in pixels
-     * @param h                render height in pixels
-     * @param precache         whether to enable frame pre-caching
      * @param colorReplacement optional color replacement table, may be {@code null}
-     * @param limitFps         cap rendering to 30 fps
      * @param fitzModifier     Fitzpatrick skin-tone modifier (0 = none)
      * @return a new instance, or {@code null} if the native layer failed
      */
     public static RLottieNative createFromFile(
-            String path,
-            String json,
-            int w, int h,
-            boolean precache,
-            int[] colorReplacement,
-            boolean limitFps,
-            int fitzModifier) {
-        return createFromFile(path, json, w, h, null, precache, colorReplacement, limitFps, fitzModifier, null);
-    }
-
-    public static RLottieNative createFromFile(
-            String path, String json, int w, int h, @Nullable int[] metaOut,
-            boolean precache, int[] colorReplacement, boolean limitFps, int fitzModifier,
+            String path, String json, @Nullable int[] metaOut,
+            @Nullable int[] colorReplacement, int fitzModifier,
             @Nullable Map<String, Integer> layerColors) {
         int[] meta = new int[3];
-        long ptr = create(path, json, w, h, meta, precache, colorReplacement, limitFps, fitzModifier, layerColors);
+        long ptr = create(path, json, meta, colorReplacement, fitzModifier, layerColors);
         if (ptr == 0) {
             return null;
         }
@@ -84,32 +69,21 @@ public final class RLottieNative {
         return new RLottieNative(ptr, meta);
     }
 
+    public static RLottieNative createFromFile(String path) {
+        return createFromFile(path, null, null, null, 0, null);
+    }
+
+
     /**
      * Creates an instance from a raw JSON string using an animation
      * {@code name} for debugging.
      *
      * @param json             Lottie JSON string (must not be null or empty)
-     * @param name             debug name shown in logs
      * @param colorReplacement optional color replacement table, may be {@code null}
      * @return a new instance, or {@code null} if the native layer failed
      */
     public static RLottieNative createFromRawJson(
-            String json,
-            String name,
-            int[] colorReplacement) {
-        return createFromRawJson(json, name, null, colorReplacement);
-    }
-
-    public static RLottieNative createFromRawJson(
-            String json,
-            String name,
-            @Nullable int[] metaOut,
-            int[] colorReplacement) {
-        return createFromRawJson(json, name, metaOut, colorReplacement, null);
-    }
-
-    public static RLottieNative createFromRawJson(
-            String json, String name, @Nullable int[] metaOut, int[] colorReplacement,
+            String json, @Nullable int[] metaOut, int[] colorReplacement,
             @Nullable Map<String, Integer> layerColors) {
         if (json == null || json.isEmpty()) {
             return null;
@@ -117,7 +91,7 @@ public final class RLottieNative {
         int[] meta = new int[3];
         String[] layerNames = layerColors == null ? null : layerColors.keySet().toArray(new String[0]);
         int[] layerValues = layerColors == null ? null : layerNamesToColors(layerNames, layerColors);
-        long ptr = createWithJson(json, name, meta, colorReplacement, layerNames, layerValues);
+        long ptr = createWithJson(json, meta, colorReplacement, layerNames, layerValues);
         if (ptr == 0) {
             return null;
         }
@@ -125,6 +99,14 @@ public final class RLottieNative {
             System.arraycopy(meta, 0, metaOut, 0, 3);
         }
         return new RLottieNative(ptr, meta);
+    }
+
+    public static RLottieNative createFromRawJson(String json) {
+        return createFromRawJson(json, null, null, null);
+    }
+
+    public static RLottieNative createFromRawJson(String json, @Nullable int[] metaOut) {
+        return createFromRawJson(json, metaOut, null, null);
     }
 
     // -------------------------------------------------------------------------
@@ -218,24 +200,12 @@ public final class RLottieNative {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Static native wrappers — for legacy code that still operates on raw pointers
-    // -------------------------------------------------------------------------
-
-    /**
-     * Creates a native animation from a file and returns the raw pointer.
-     * Prefer {@link #createFromFile} for new code.
-     */
-    public static long create(String src, String json, int w, int h, int[] params, boolean precache, int[] colorReplacement, boolean limitFps, int fitzModifier) {
-        return create(src, json, w, h, params, precache, colorReplacement, limitFps, fitzModifier, null);
-    }
-
-    private static long create(String src, String json, int w, int h, int[] params, boolean precache, int[] colorReplacement, boolean limitFps, int fitzModifier, @Nullable Map<String, Integer> layerColors) {
+    private static long create(String src, String json, int[] params, int[] colorReplacement, int fitzModifier, @Nullable Map<String, Integer> layerColors) {
         Trace.beginSection("RLottieNative#create");
         try {
             String[] layerNames = layerColors == null ? null : layerColors.keySet().toArray(new String[0]);
             int[] layerValues = layerColors == null ? null : layerNamesToColors(layerNames, layerColors);
-            return nCreate(src, json, w, h, params, precache, colorReplacement, limitFps, fitzModifier, layerNames, layerValues);
+            return nCreate(src, json, params, colorReplacement, fitzModifier, layerNames, layerValues);
         } finally {
             Trace.endSection();
         }
@@ -245,10 +215,10 @@ public final class RLottieNative {
      * Creates a native animation from a JSON string and returns the raw pointer.
      * Prefer {@link #createFromRawJson} for new code.
      */
-    private static long createWithJson(String json, String name, int[] params, int[] colorReplacement, String[] layerNames, int[] layerColors) {
+    private static long createWithJson(String json, int[] params, int[] colorReplacement, String[] layerNames, int[] layerColors) {
         Trace.beginSection("RLottieNative#createWithJson");
         try {
-            return nCreateWithJson(json, name, params, colorReplacement, layerNames, layerColors);
+            return nCreateWithJson(json, params, colorReplacement, layerNames, layerColors);
         } finally {
             Trace.endSection();
         }
@@ -258,7 +228,7 @@ public final class RLottieNative {
      * Renders a frame directly using a raw pointer.
      * Prefer the instance method {@link #getFrame(int, Bitmap, boolean)} for new code.
      */
-    public static int getFrame(long ptr, int frame, Bitmap bitmap, boolean clear) {
+    private static int getFrame(long ptr, int frame, Bitmap bitmap, boolean clear) {
         Trace.beginSection("RLottieNative#getFrame");
         try {
             return nGetFrame(ptr, frame, bitmap, clear);
@@ -279,7 +249,7 @@ public final class RLottieNative {
      * Destroys a native animation directly using a raw pointer.
      * Prefer {@link #recycle()} for new code.
      */
-    public static void destroy(long ptr) {
+    private static void destroy(long ptr) {
         Trace.beginSection("RLottieNative#destroy");
         try {
             nDestroy(ptr);
@@ -297,7 +267,7 @@ public final class RLottieNative {
      * Safe to call on any thread; does not produce an instance.
      */
     public static long getFramesCount(String src, String json) {
-        final RLottieNative rLottieNative = createFromFile(src, json, 0, 0, false, null, false, 0);
+        final RLottieNative rLottieNative = createFromFile(src, json, null, null, 0, null);
         if (rLottieNative != null) {
             final int framesCount = rLottieNative.getFrameCount();
             rLottieNative.recycle();
@@ -310,7 +280,7 @@ public final class RLottieNative {
      * Returns the animation duration in seconds without keeping the file open.
      */
     public static double getDuration(String src, String json) {
-        final RLottieNative rLottieNative = createFromFile(src, json, 0, 0, false, null, false, 0);
+        final RLottieNative rLottieNative = createFromFile(src, json, null, null, 0, null);
         if (rLottieNative != null) {
             final int framesCount = rLottieNative.getFrameCount();
             final int fps = rLottieNative.getFps();
@@ -326,9 +296,9 @@ public final class RLottieNative {
     // Native
     // -------------------------------------------------------------------------
 
-    private static native long nCreate(String src, String json, int w, int h, int[] params, boolean precache, int[] colorReplacement, boolean limitFps, int fitzModifier, String[] layerNames, int[] layerColors);
+    private static native long nCreate(String src, String json, int[] params, int[] colorReplacement, int fitzModifier, String[] layerNames, int[] layerColors);
 
-    private static native long nCreateWithJson(String json, String name, int[] params, int[] colorReplacement, String[] layerNames, int[] layerColors);
+    private static native long nCreateWithJson(String json, int[] params, int[] colorReplacement, String[] layerNames, int[] layerColors);
 
     private static native int nGetFrame(long ptr, int frame, Bitmap bitmap, boolean clear);
 

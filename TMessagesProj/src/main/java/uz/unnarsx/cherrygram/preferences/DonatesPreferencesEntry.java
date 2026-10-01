@@ -198,15 +198,15 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             }
         });
 
-        listAdapter = new ListAdapter(context);
+        listAdapter = new ListAdapter(getContext());
 
-        fragmentView = new FrameLayout(context);
+        fragmentView = new FrameLayout(getContext());
         fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
         FrameLayout frameLayout = (FrameLayout) fragmentView;
 
-        listView = new RecyclerListView(context);
+        listView = new RecyclerListView(getContext());
         listView.setVerticalScrollBarEnabled(false);
-        listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        listView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         listView.setAdapter(listAdapter);
         if (listView.getItemAnimator() != null) {
             ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
@@ -557,14 +557,14 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_TABLE:
-                    view = new TableView(getContext(), getResourceProvider());
+                    view = new TableView(mContext, getResourceProvider());
                     view.setPadding(dp(15), 0, dp(15), dp(10));
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_STICKER: {
-                    FrameLayout stickerFrame = new FrameLayout(parent.getContext());
+                    FrameLayout stickerFrame = new FrameLayout(mContext);
 
-                    StickerImageView stickerImageView = new StickerImageView(parent.getContext(), getCurrentAccount());
+                    StickerImageView stickerImageView = new StickerImageView(mContext, getCurrentAccount());
                     stickerFrame.addView(stickerImageView, LayoutHelper.createFrame(
                             RecyclerView.LayoutParams.WRAP_CONTENT,
                             RecyclerView.LayoutParams.WRAP_CONTENT,
@@ -822,13 +822,13 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         CharSequence compactMessageMenuText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MsgMenuCompactView_Desc),
                 Theme.key_windowBackgroundWhiteLinkText,
                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                () -> CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(DonatesPreferencesEntry.this)
+                () -> Browser.openUrl(getContext(), "https://t.me/cgSettings/message_menu?r=compactMsgMenu")
         );
 
         CharSequence foldersAtTheBottomText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_FoldersAtBottom_Desc),
                 Theme.key_windowBackgroundWhiteLinkText,
                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                () -> CherrygramPreferencesNavigator.INSTANCE.createFoldersPrefs(DonatesPreferencesEntry.this)
+                () -> Browser.openUrl(getContext(), "https://t.me/cgSettings/folders?r=foldersAtBottom")
         );
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
@@ -870,7 +870,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         CharSequence messageMenuText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MessageMenu_Desc),
                 Theme.key_windowBackgroundWhiteLinkText,
                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                () -> CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(DonatesPreferencesEntry.this)
+                () -> Browser.openUrl(getContext(), "https://t.me/cgSettings/message_menu?r=iosMsgMenu")
         );
 
         SpannableStringBuilder sb = new SpannableStringBuilder();

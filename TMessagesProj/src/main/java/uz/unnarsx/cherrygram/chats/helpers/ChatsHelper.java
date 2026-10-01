@@ -170,7 +170,7 @@ public class ChatsHelper extends BaseController {
         return spannableStringBuilder;
     }
 
-    public static CharSequence createEditedString(MessageObject messageObject) {
+    public static CharSequence createEditedString(MessageObject messageObject, int editDate) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         boolean hasForwards = messageObject.messageOwner.forwards > 0;
         boolean isMusic = messageObject.isMusic();
@@ -202,13 +202,14 @@ public class ChatsHelper extends BaseController {
                 .append(hasForwards && !isMusic ? "• " : "");
 
         if (primaryEditedDate) {
-            spannableStringBuilder.append(LocaleController.formatPmEditedDate(messageObject.messageOwner.edit_date));
+            spannableStringBuilder.append(LocaleController.formatPmEditedDate(editDate));
         } else {
             spannableStringBuilder
                     .append(CherrygramMessagesConfig.INSTANCE.getShowPencilIcon() ? editedSpan : getString(R.string.EditedMessage))
                     .append(hasForwards && !isMusic ? " • " : " ")
                     .append(LocaleController.getInstance().getFormatterDay().format((long) messageObject.messageOwner.date * 1000));
         }
+
         return spannableStringBuilder;
     }
 

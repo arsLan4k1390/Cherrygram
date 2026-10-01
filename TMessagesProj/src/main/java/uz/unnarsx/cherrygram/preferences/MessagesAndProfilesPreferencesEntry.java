@@ -13,6 +13,8 @@ import static org.telegram.messenger.AndroidUtilities.distance;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,6 +26,7 @@ import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.SparseIntArray;
 import android.view.Gravity;
 import android.view.View;
@@ -34,22 +37,27 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
+import androidx.core.math.MathUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.MessageDrawable;
 import org.telegram.ui.ActionBar.SimpleTextView;
@@ -64,6 +72,7 @@ import org.telegram.ui.Cells.TextDetailCell;
 import org.telegram.ui.Cells.ThemePreviewMessagesCell;
 import org.telegram.ui.Components.AnimatedColor;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
+import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -75,6 +84,7 @@ import org.telegram.ui.Components.SimpleThemeDescription;
 import org.telegram.ui.Components.ViewPagerFixed;
 import org.telegram.ui.Stars.StarGiftPatterns;
 import org.telegram.ui.Stories.StoriesUtilities;
+import org.telegram.ui.Stories.recorder.HintView2;
 import org.telegram.ui.UserInfoActivity;
 
 import java.text.DecimalFormat;
@@ -103,7 +113,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
     public Page profilePage;
 
     public Page getCurrentPage() {
-        return viewPager.getCurrentPosition() == 0 ? messagePage : profilePage;
+        return viewPager.getCurrentPosition() == PAGE_PROFILE ? profilePage : messagePage;
     }
 
     private class Page extends FrameLayout {
@@ -115,6 +125,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
         private int selectedColor;
         private long selectedEmoji;
+        private TLRPC.TL_emojiStatusCollectible selectedEmojiCollectible = null;
+        private TLRPC.TL_peerColorCollectible selectedPeerCollectible = null;
         private ThemePreviewMessagesCell messagesCellPreview;
 
         int rowCount;
@@ -130,12 +142,14 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         int replyEmojiSwitchRow = -1;
 
         int infoHeaderRow;
+        int phoneRow;
         int idDcPreviewRow;
         int birthdayPreviewRow;
         int businessHoursPreviewRow;
         int businessLocationPreviewRow;
         int channelPreviewRow;
 
+        int hidePhoneSwitchRow = -1;
         int channelPreviewSwitchRow = -1;
         int showDcIdSwitchRow = -1;
         int birthdayPreviewSwitchRow = -1;
@@ -160,6 +174,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             TLRPC.User user = getUserConfig().getCurrentUser();
 
             if (type == PAGE_PROFILE) {
+                selectedEmojiCollectible = user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible
+                        ? (TLRPC.TL_emojiStatusCollectible) user.emoji_status : null;
+                selectedPeerCollectible = user != null && user.color instanceof TLRPC.TL_peerColorCollectible
+                        ? (TLRPC.TL_peerColorCollectible) user.color : null;
+
                 if (user.premium && UserObject.getProfileColorId(user) != -1) {
                     selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(user) : -1;
                 } else {
@@ -172,6 +191,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                 }
             } else {
+                selectedEmojiCollectible = null;
+                selectedPeerCollectible = null;
                 if (user.premium && UserObject.getColorId(user) != -1) {
                     selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : -1;
                 } else {
@@ -184,18 +205,20 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                 }
             }
+            if (selectedEmojiCollectible != null || selectedPeerCollectible != null) {
+                selectedColor = -1;
+                selectedEmoji = 0;
+            }
 
             listView = new RecyclerListView(getContext(), getResourceProvider()) {
-                @Override
-                protected void onMeasure(int widthSpec, int heightSpec) {
-                    super.onMeasure(widthSpec, heightSpec);
-                }
-
                 @Override
                 protected void onLayout(boolean changed, int l, int t, int r, int b) {
                     super.onLayout(changed, l, t, r, b);
                 }
             };
+            listView.setClipToPadding(false);
+            listView.setSections(true);
+
             ((DefaultItemAnimator) listView.getItemAnimator()).setSupportsChangeAnimations(false);
             listView.setLayoutManager(new LinearLayoutManager(getContext()));
             listView.setAdapter(listAdapter = new RecyclerListView.SelectionAdapter() {
@@ -237,7 +260,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             view = textDetailCell;
                             break;
                         case VIEW_TYPE_CHANNEL:
-                            view = new ProfileChannelCell(MessagesAndProfilesPreferencesEntry.this);
+                            view = new ProfileChannelCell(MessagesAndProfilesPreferencesEntry.this, false, true);
                             view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
                             break;
                         case VIEW_TYPE_SHADOW:
@@ -278,6 +301,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                 switchCell.setTextAndCheck(getString(R.string.CP_ReplyCustomColors), CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors(), false);
                             } else if (position == replyEmojiSwitchRow) {
                                 switchCell.setTextAndCheck(getString(R.string.CP_ReplyBackgroundEmoji), CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji(), false);
+                            } else if (position == hidePhoneSwitchRow) {
+                                switchCell.setTextAndCheck(applyNewSpan(getString(R.string.CP_ProfileHidePhoneNumbers)), CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber(), false);
                             } else if (position == channelPreviewSwitchRow) {
                                 switchCell.setTextAndCheck(getString(R.string.CP_ProfileChannelPreview), CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview(), false);
                             } else if (position == showDcIdSwitchRow) {
@@ -297,7 +322,29 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             TextDetailCell detailCell = (TextDetailCell) holder.itemView;
                             final TLRPC.User me = getUserConfig().getCurrentUser();
 
-                            if (position == idDcPreviewRow) {
+                            if (position == phoneRow) {
+                                CharSequence text = "+1 234 567 890";
+                                TLRPC.User user = getUserConfig().getCurrentUser();
+                                boolean isFragmentPhoneNumber = false;
+                                if (user != null && !TextUtils.isEmpty(user.phone)) {
+                                    String phoneNumber = user.phone;
+
+                                    if (CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber()) {
+                                        text = getChatsPasswordHelper().replaceStringToSpoilers(
+                                                PhoneFormat.getInstance().format("+ " + phoneNumber),
+                                                true
+                                        );
+                                    } else {
+                                        text = PhoneFormat.getInstance().format("+ " + phoneNumber);
+                                    }
+
+                                    isFragmentPhoneNumber = phoneNumber != null && phoneNumber.matches("888\\d{8}");
+                                    if (isFragmentPhoneNumber && !TextUtils.isEmpty(phoneNumber)) {
+                                        text = PhoneFormat.getInstance().format("+ " + phoneNumber);
+                                    }
+                                }
+                                detailCell.setTextAndValue(text, LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile), false);
+                            } else if (position == idDcPreviewRow) {
                                 StringBuilder sb = new StringBuilder();
                                 if (me.photo != null && me.photo.dc_id > 0) {
                                     sb = new StringBuilder();
@@ -320,7 +367,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
                                     drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
                                 }
-                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getUserConfig().getClientUserId(), 0));
+                                detailCell.setImageClickListener(v -> {
+                                    showCreationDateHint(detailCell.getImageView(), Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getUserConfig().getClientUserId(), 0));
+                                });
                             } else if (position == birthdayPreviewRow) {
                                 TLRPC.UserFull meFull = getMessagesController().getUserFull(me.id);
                                 if (meFull != null && meFull.birthday != null) {
@@ -371,10 +420,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         return VIEW_TYPE_HEADER;
                     }
                     if (position == timeWithSecondsSwitchRow || position == premiumStatusSwitchRow || position == replyBackgroundSwitchRow || position == replyColorSwitchRow || position == replyEmojiSwitchRow
-                            || position == channelPreviewSwitchRow || position == showDcIdSwitchRow || position == birthdayPreviewSwitchRow || position == businessPreviewSwitchRow || position == profileBackgroundSwitchRow || position == profileEmojiSwitchRow) {
+                            || position == hidePhoneSwitchRow || position == channelPreviewSwitchRow || position == showDcIdSwitchRow || position == birthdayPreviewSwitchRow || position == businessPreviewSwitchRow || position == profileBackgroundSwitchRow || position == profileEmojiSwitchRow) {
                         return VIEW_TYPE_SWITCH;
                     }
-                    if (position == idDcPreviewRow || position == birthdayPreviewRow
+                    if (position == phoneRow || position == idDcPreviewRow || position == birthdayPreviewRow
                             || position == businessHoursPreviewRow || position == businessLocationPreviewRow) {
                         return VIEW_TYPE_TEXT_DETAIL;
                     }
@@ -431,7 +480,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     }
 
                     if (me.premium && UserObject.getColorId(me) != -1) {
-                        selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(me) : -1;
+                        if (selectedEmojiCollectible != null) {
+                            selectedColor = -1;
+                        } else {
+                            selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(me) : -1;
+                        }
                     } else {
                         selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
                     }
@@ -452,6 +505,14 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     updateMessages();
                 } else if (position == channelPreviewRow) {
                     Browser.openUrl(getParentActivity(), Constants.CG_CHANNEL_URL);
+                } else if (position == hidePhoneSwitchRow) {
+                    CherrygramAppearanceConfig.INSTANCE.setProfileHidePhoneNumber(!CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber());
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber());
+                    }
+
+                    listAdapter.notifyItemChanged(phoneRow);
+                    profilePage.updateRows();
                 } else if (position == channelPreviewSwitchRow) {
                     CherrygramAppearanceConfig.INSTANCE.setProfileChannelPreview(!CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview());
                     if (view instanceof TextCheckCell) {
@@ -461,6 +522,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemChanged(channelPreviewSwitchRow);
                     listAdapter.notifyItemChanged(channelPreviewRow);
                     listAdapter.notifyItemChanged(profilePreviewDivisorRow);
+                    listAdapter.notifyItemChanged(phoneRow);
                     listAdapter.notifyItemChanged(idDcPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewRow);
                     listAdapter.notifyItemChanged(businessHoursPreviewRow);
@@ -476,6 +538,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemChanged(channelPreviewRow);
                     listAdapter.notifyItemChanged(showDcIdSwitchRow);
                     listAdapter.notifyItemChanged(profilePreviewDivisorRow);
+                    listAdapter.notifyItemChanged(phoneRow);
                     listAdapter.notifyItemChanged(idDcPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewRow);
                     listAdapter.notifyItemChanged(businessHoursPreviewRow);
@@ -491,6 +554,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemChanged(channelPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewSwitchRow);
                     listAdapter.notifyItemChanged(profilePreviewDivisorRow);
+                    listAdapter.notifyItemChanged(phoneRow);
                     listAdapter.notifyItemChanged(idDcPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewRow);
                     listAdapter.notifyItemChanged(businessHoursPreviewRow);
@@ -506,6 +570,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemChanged(channelPreviewRow);
                     listAdapter.notifyItemChanged(businessPreviewSwitchRow);
                     listAdapter.notifyItemChanged(profilePreviewDivisorRow);
+                    listAdapter.notifyItemChanged(phoneRow);
                     listAdapter.notifyItemChanged(idDcPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewRow);
                     listAdapter.notifyItemChanged(businessHoursPreviewRow);
@@ -529,11 +594,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         messagePage.updateMessages();
                     }
                     if (type == PAGE_PROFILE && colorBar != null) {
-                        colorBar.setColor(currentAccount, selectedColor, true);
+                        colorBar.setColor(getSelectedProfilePeerColor(), true);
                     }
-                    if (profilePreview != null) {
-                        profilePreview.setColor(selectedColor, true);
-                    }
+                    updateProfilePreviewColor(true);
                     if (profilePage != null && profilePage.profilePreview != null && messagePage != null) {
                         profilePage.profilePreview.overrideAvatarColor(messagePage.selectedColor);
                     }
@@ -554,7 +617,15 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         messagePage.updateMessages();
                     }
                     if (profilePreview != null) {
-                        profilePreview.setEmoji(selectedEmoji, true);
+                        if (selectedEmojiCollectible != null) {
+                            profilePreview.setEmoji(
+                                    CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? selectedEmojiCollectible.pattern_document_id : 0,
+                                    true,
+                                    true
+                            );
+                        } else {
+                            profilePreview.setEmoji(selectedEmoji, false, true);
+                        }
                     }
                 }
             });
@@ -569,8 +640,17 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
             if (type == PAGE_PROFILE) {
                 profilePreview = new ProfilePreview(getContext(), currentAccount, resourceProvider);
-                profilePreview.setColor(selectedColor, false);
-                profilePreview.setEmoji(selectedEmoji, false);
+                if (selectedEmojiCollectible != null) {
+                    profilePreview.setStatusEmoji(selectedEmojiCollectible.document_id, true, true);
+                    profilePreview.setEmoji(
+                            CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? selectedEmojiCollectible.pattern_document_id : 0,
+                            true,
+                            false
+                    );
+                } else {
+                    profilePreview.setEmoji(selectedEmoji, false, false);
+                }
+                updateProfilePreviewColor(false);
                 addView(profilePreview, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
             }
 
@@ -655,6 +735,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     }
                 }
 
+                phoneRow = rowCount++;
+
                 // DC ID
                 int prevIdDcPreviewRow = idDcPreviewRow;
                 idDcPreviewRow = -1;
@@ -715,6 +797,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
                 profilePreviewDivisorRow = rowCount++;
                 headerRow = rowCount++;
+                hidePhoneSwitchRow = rowCount++;
                 channelPreviewSwitchRow = rowCount++;
                 showDcIdSwitchRow = rowCount++;
                 birthdayPreviewSwitchRow = rowCount++;
@@ -729,15 +812,46 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             }
         }
 
+        private MessagesController.PeerColor getSelectedProfilePeerColor() {
+            if (type != PAGE_PROFILE || !CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
+                return null;
+            }
+            if (selectedPeerCollectible != null) {
+                return MessagesController.PeerColor.fromPeerCollectible(selectedPeerCollectible);
+            }
+            if (selectedEmojiCollectible != null) {
+                return MessagesController.PeerColor.fromCollectible(selectedEmojiCollectible);
+            }
+            if (selectedColor >= 0) {
+                MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
+                return peerColors == null ? null : peerColors.getColor(selectedColor);
+            }
+            return null;
+        }
+
+        private void updateProfilePreviewColor(boolean animated) {
+            if (profilePreview == null) {
+                return;
+            }
+            MessagesController.PeerColor peerColor = getSelectedProfilePeerColor();
+            profilePreview.setColor(peerColor, animated);
+        }
+
         private void updateMessages() {
             if (messagesCellPreview != null) {
+                TLRPC.TL_peerColorCollectible previewPeerCollectible = selectedPeerCollectible;
+                if (type == PAGE_MESSAGE && profilePage != null) {
+                    previewPeerCollectible = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()
+                            ? profilePage.selectedPeerCollectible : null;
+                }
+
                 ChatMessageCell[] cells = messagesCellPreview.getCells();
                 for (ChatMessageCell cell : cells) {
                     if (cell != null) {
                         MessageObject msg = cell.getMessageObject();
                         if (msg != null) {
-                            msg.overrideLinkColor = selectedColor;
                             msg.overrideLinkEmoji = selectedEmoji;
+                            msg.overrideLinkPeerColor = previewPeerCollectible;
                             cell.setAvatar(msg);
 
                             if (cell.currentNameStatusDrawable == null) {
@@ -770,7 +884,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 messagesCellPreview.invalidate();
             }
             if (profilePreview != null) {
-                profilePreview.setColor(selectedColor, false);
+                updateProfilePreviewColor(false);
                 AndroidUtilities.forEachViews(listView, view -> {
                     if (view instanceof ProfileChannelCell) {
                         ((ProfileChannelCell) view).updateColors();
@@ -886,9 +1000,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             protected void onUpdateColor() {
                 updateLightStatusBar();
                 updateActionBarButtonsColor();
-                if (tabsView != null) {
-                    tabsView.setBackgroundColor(getTabsViewBackgroundColor());
-                }
+                updateTabColors();
             }
 
             private int lastBtnColor = 0;
@@ -903,15 +1015,18 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             }
         };
         if (profilePage != null) {
-            colorBar.setColor(currentAccount, profilePage.selectedColor, false);
+            colorBar.setColor(profilePage.getSelectedProfilePeerColor(), false);
         }
+        colorBar.newMode = false;
         frameLayout.addView(colorBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
         viewPager = new ViewPagerFixed(context) {
             @Override
             public void onTabAnimationUpdate(boolean manual) {
-                tabsView.setSelected(viewPager.getPositionAnimated());
-                colorBar.setProgressToGradient(viewPager.getPositionAnimated());
+                final float position = viewPager.getPositionAnimated();
+                tabsView.setSelected(position);
+                colorBar.setProgressToGradient(getTabProgressFromPageProgress(position));
+                updateTabColors();
             }
         };
         viewPager.setAdapter(new ViewPagerFixed.Adapter() {
@@ -952,6 +1067,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 viewPager.scrollToPosition(tab);
             }
         });
+        updateTabColors();
         actionBarContainer.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 40, Gravity.CENTER));
 
         if (startAtProfile) {
@@ -968,7 +1084,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         backButton = new ImageView(context);
         backButton.setScaleType(ImageView.ScaleType.CENTER);
         backButton.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_actionBarWhiteSelector), Theme.RIPPLE_MASK_CIRCLE_20DP));
-        backButton.setImageResource(R.drawable.ic_ab_back);
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        backButton.setImageDrawable(backDrawable);
         backButton.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
         backButton.setOnClickListener(v -> {
             if (onBackPressed(true)) {
@@ -1024,7 +1142,29 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         if (colorBar != null) {
             colorBar.updateColors();
         }
+        updateTabColors();
         setNavigationBarColor(getNavigationBarColor());
+    }
+
+    private void updateTabColors() {
+        if (colorBar == null) {
+            return;
+        }
+        final int profileBackgroundColor = colorBar.getTabsViewBackgroundColor();
+        if (tabsView != null) {
+            final float progressP = viewPager == null ? 0f : viewPager.getPositionAnimated();
+            final float progress = 1 - getTabProgressFromPageProgress(progressP);
+            tabsView.setColors(
+                    ColorUtils.blendARGB(profileBackgroundColor, getThemedColor(Theme.key_windowBackgroundWhite), progress),
+                    ColorUtils.blendARGB(Color.WHITE, getThemedColor(Theme.key_windowBackgroundGray), progress),
+                    ColorUtils.blendARGB(Color.WHITE, getThemedColor(Theme.key_windowBackgroundWhiteGrayText2), progress),
+                    ColorUtils.blendARGB(profileBackgroundColor, getThemedColor(Theme.key_windowBackgroundWhiteBlackText), progress)
+            );
+        }
+    }
+
+    private float getTabProgressFromPageProgress(float progress) {
+        return MathUtils.clamp((progress - 0.333333f) / 0.333333f, 0 ,1);
     }
 
     private static class ColoredActionBar extends View {
@@ -1054,9 +1194,14 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 isDefault = true;
                 color1 = color2 = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
             } else {
-                final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
-                color1 = peerColor.getBgColor1(isDark);
-                color2 = peerColor.getBgColor2(isDark);
+                if (peerColor != null) {
+                    final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
+                    color1 = peerColor.getBgColor1(isDark);
+                    color2 = peerColor.getBgColor2(isDark);
+                } else {
+                    isDefault = true;
+                    color1 = color2 = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
+                }
             }
             if (!animated) {
                 color1Animated.set(color1, true);
@@ -1104,15 +1249,14 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 backgroundPaint.setShader(backgroundGradient);
                 onUpdateColor();
             }
-            if (progressToGradient < 1) {
+            if (progressToGradient < 1 && !newMode) {
                 canvas.drawColor(defaultColor);
             }
-            if (progressToGradient > 0) {
-                backgroundPaint.setAlpha((int) (0xFF * progressToGradient));
-                canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
-            }
+            backgroundPaint.setAlpha(newMode ? 255 : (int) (0xFF * progressToGradient));
+            canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
         }
 
+        protected boolean newMode;
         protected boolean ignoreMeasure;
 
         @Override
@@ -1121,7 +1265,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         }
 
         public void updateColors() {
-            defaultColor = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
+            defaultColor = Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider);
             onUpdateColor();
             invalidate();
         }
@@ -1161,6 +1305,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emoji = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, false, dp(20), AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_STATIC);
         private final StoriesUtilities.StoryGradientTools storyGradient = new StoriesUtilities.StoryGradientTools(this, false);
 
+        private boolean isEmojiCollectible;
+        private final AnimatedFloat emojiCollectible = new AnimatedFloat(this, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
+
         public ProfilePreview(Context context, int currentAccount, Theme.ResourcesProvider resourcesProvider) {
             super(context);
 
@@ -1197,18 +1344,24 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 16, 0, 16, 20.66f));
 
             imageReceiver.setRoundRadius(dp(96));
+            long emojiStatusId = 0;
             CharSequence title;
-            TLRPC.User user = getUserConfig().getCurrentUser();
+            TLRPC.User user = UserConfig.getInstance(currentAccount).getCurrentUser();
             title = UserObject.getUserName(user);
 
             avatarDrawable.setInfo(currentAccount, user);
             imageReceiver.setForUserOrChat(user, avatarDrawable);
+
+            emojiStatusId = user != null ? DialogObject.getEmojiStatusDocumentId(user.emoji_status) : 0;
             try {
                 title = Emoji.replaceEmoji(title, null, false);
             } catch (Exception ignore) {
             }
 
             titleView.setText(title);
+            statusEmoji.set(emojiStatusId, false);
+            if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) titleView.setRightDrawable(statusEmoji);
+
             String tgPremium = CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
             subtitleView.setText(getString(R.string.Online) + tgPremium);
 
@@ -1218,7 +1371,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         public void overrideAvatarColor(int colorId) {
             final int color1, color2;
             if (colorId >= 14) {
-                MessagesController.PeerColors peerColors = getMessagesController().peerColors;
+                MessagesController messagesController = MessagesController.getInstance(UserConfig.selectedAccount);
+                MessagesController.PeerColors peerColors = messagesController != null ? messagesController.peerColors : null;
                 MessagesController.PeerColor peerColor = peerColors != null ? peerColors.getColor(colorId) : null;
                 if (peerColor != null) {
                     final int peerColorValue = peerColor.getColor1();
@@ -1256,7 +1410,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
         private MessagesController.PeerColor peerColor;
         public void setColor(int colorId, boolean animated) {
-            MessagesController.PeerColors peerColors = getMessagesController().profilePeerColors;
+            MessagesController.PeerColors peerColors = MessagesController.getInstance(UserConfig.selectedAccount).profilePeerColors;
             MessagesController.PeerColor peerColor = peerColors == null ? null : peerColors.getColor(colorId);
             setColor(peerColor, animated);
         }
@@ -1295,7 +1449,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             invalidate();
         }
 
-        public void setEmoji(long docId, boolean animated) {
+        public void setEmoji(long docId, boolean isCollectible, boolean animated) {
             if (docId == 0) {
                 emoji.set((Drawable) null, animated);
             } else {
@@ -1320,7 +1474,22 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             } else {
                 statusEmoji.setColor(Theme.getColor(Theme.key_profile_verifiedBackground, resourcesProvider));
             }
+            isEmojiCollectible = isCollectible;
+            if (!animated) {
+                emojiCollectible.force(isEmojiCollectible);
+            }
             invalidate();
+        }
+
+        public void setStatusEmoji(long docId, boolean isCollectible, boolean animated) {
+            statusEmoji.set(docId, animated);
+            statusEmoji.setParticles(isCollectible, animated);
+            final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
+            if (peerColor != null) {
+                statusEmoji.setColor(ColorUtils.blendARGB(peerColor.getColor2(isDark), peerColor.hasColor6(isDark) ? peerColor.getColor5(isDark) : peerColor.getColor3(isDark), .5f));
+            } else {
+                statusEmoji.setColor(Theme.getColor(Theme.key_profile_verifiedBackground, resourcesProvider));
+            }
         }
 
         private final RectF rectF = new RectF();
@@ -1332,6 +1501,17 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 (getWidth() + dp(86)) / 2f,
                 getHeight() - dp(82)
             );
+
+            StarGiftPatterns.drawProfileAnimatedPattern(
+                    canvas,
+                    emoji,
+                    getWidth(),
+                    getHeight(),
+                    1.0f,
+                    rectF,
+                    1.0f
+            );
+
             imageReceiver.setRoundRadius(dp(54));
             imageReceiver.setImageCoords(rectF);
             imageReceiver.draw(canvas);
@@ -1345,16 +1525,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 rectF.centerY() + r,
                 rr, rr,
                 storyGradient.getPaint(rectF)
-            );
-
-            StarGiftPatterns.drawProfileAnimatedPattern(
-                canvas,
-                emoji,
-                getWidth(),
-                getHeight(),
-                1.0f,
-                rectF,
-                1.0f
             );
 
             super.dispatchDraw(canvas);
@@ -1399,6 +1569,48 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
     @Override
     public boolean isSupportEdgeToEdge() {
         return false; // Breaks status bar
+    }
+
+    public HintView2 creationDateHint;
+    public void showCreationDateHint(View view, CharSequence text) {
+        if (TextUtils.isEmpty(text) || getContext() == null || view == null || contentView == null) {
+            return;
+        }
+        final HintView2 oldHint = creationDateHint;
+        if (oldHint != null) {
+            oldHint.setOnHiddenListener(() -> {
+                if (oldHint.getParent() instanceof ViewGroup) {
+                    ((ViewGroup) oldHint.getParent()).removeView(oldHint);
+                }
+            });
+            oldHint.hide();
+            creationDateHint = null;
+        }
+        final HintView2 hint = new HintView2(getContext(), HintView2.DIRECTION_TOP)
+                .setMultilineText(true)
+                .setDuration(5000L)
+                .setBgColor(getThemedColor(Theme.key_undo_background))
+                .setTextColor(getThemedColor(Theme.key_undo_infoColor))
+                .setRounding(12f);
+        creationDateHint = hint;
+        hint.setText(text);
+        hint.setMaxWidthPx(HintView2.cutInFancyHalf(hint.getText(), hint.getTextPaint()));
+        contentView.addView(hint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 120, Gravity.TOP | Gravity.LEFT, 16, 0, 16, 0));
+        contentView.post(() -> {
+            float x = 0, y = 0;
+            View v = view;
+            while (v != null && v != contentView) {
+                x += v.getX();
+                y += v.getY();
+                if (!(v.getParent() instanceof View)) {
+                    break;
+                }
+                v = (View) v.getParent();
+            }
+            hint.setTranslationY(y + view.getHeight());
+            hint.setJointPx(0f, -dp(16) + x + view.getWidth() / 2f);
+            hint.show();
+        });
     }
 
 }

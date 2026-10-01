@@ -139,8 +139,8 @@ static bool writeMetadata(JNIEnv *env, jintArray data, TLottieInstance *instance
 extern "C" {
 
 JNIEXPORT jlong JNICALL Java_org_telegram_ui_Components_RLottieNative_nCreate(
-        JNIEnv *env, jclass, jstring src, jstring json, jint, jint, jintArray data,
-        jboolean, jintArray colorReplacement, jboolean, jint fitzModifier,
+        JNIEnv *env, jclass, jstring src, jstring json, jintArray data,
+        jintArray colorReplacement, jint fitzModifier,
         jobjectArray layerNames, jintArray layerColors) {
     std::string input;
     if (json != nullptr) {
@@ -167,7 +167,7 @@ JNIEXPORT jlong JNICALL Java_org_telegram_ui_Components_RLottieNative_nCreate(
 }
 
 JNIEXPORT jlong JNICALL Java_org_telegram_ui_Components_RLottieNative_nCreateWithJson(
-        JNIEnv *env, jclass, jstring json, jstring, jintArray data, jintArray colorReplacement,
+        JNIEnv *env, jclass, jstring json, jintArray data, jintArray colorReplacement,
         jobjectArray layerNames, jintArray layerColors) {
     if (json == nullptr) return 0;
     const char *chars = env->GetStringUTFChars(json, nullptr);

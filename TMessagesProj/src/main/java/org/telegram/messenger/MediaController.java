@@ -70,14 +70,17 @@ import android.webkit.MimeTypeMap;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.exifinterface.media.ExifInterface;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.extractor.jpeg.MotionPhotoDescription;
-import com.google.android.exoplayer2.extractor.jpeg.XmpMotionPhotoDescriptionParser;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import androidx.media3.common.C;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.common.Player;
+import androidx.media3.extractor.jpeg.MotionPhotoDescription;
+import androidx.media3.extractor.jpeg.XmpMotionPhotoDescriptionParser;
+
+import org.telegram.ui.AspectRatioFrameLayout;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.common.images.WebImage;
 
@@ -135,12 +138,11 @@ import java.util.concurrent.CountDownLatch;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.chats.AudioEnhance;
 import uz.unnarsx.cherrygram.core.PermissionsUtils;
-import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 
 public class MediaController implements AudioManager.OnAudioFocusChangeListener, NotificationCenter.NotificationCenterDelegate, SensorEventListener {
 
-    private native int startRecord(String path, int sampleRate);
+    private native int startRecord(String path, int sampleRate, int channels);
 
     private native int writeFrame(ByteBuffer frame, int len);
 
@@ -856,8 +858,9 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                     }
                 }
             }
-
-            b.recycle();
+            if (b != null) {
+                b.recycle();
+            }
         }
     }
 
@@ -1140,7 +1143,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                     buffer.order(ByteOrder.nativeOrder());
                 }
                 buffer.rewind();
-                int len = audioRecorder.read(buffer, buffer.capacity());
+                int len = monoMixer.read(audioRecorder, buffer, buffer.capacity(), voiceOutChannels == 2);
                 if (len > 0) {
                     buffer.limit(len);
                     double sum = 0;
@@ -1194,7 +1197,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                             if (fileBuffer.position() == fileBuffer.limit() || flush) {
                                 if (writeFrame(fileBuffer, !flush ? fileBuffer.limit() : finalBuffer.position()) != 0) {
                                     fileBuffer.rewind();
-                                    recordTimeCount += fileBuffer.limit() / 2 / (sampleRate / 1000);
+                                    recordTimeCount += fileBuffer.limit() / (2 * voiceOutChannels) / (sampleRate / 1000);
                                     writtenFrame++;
                                 } else {
                                     FileLog.e("writing frame failed");
@@ -1489,7 +1492,8 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             }
         });
 
-        fileBuffer = ByteBuffer.allocateDirect(1920);
+        fileBuffer = ByteBuffer.allocateDirect(1920 * 2); // room for one 20ms frame in stereo
+        fileBuffer.limit(1920);
 
         AndroidUtilities.runOnUIThread(() -> {
             for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
@@ -4688,7 +4692,10 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                             return super.delete();
                         }
                     };
-                    if (startRecord(recordingAudioFile.getPath(), sampleRate) == 0) {
+                    final AudioRecord recorder = AudioEnhance.createRecorder(sampleRate, recordBufferSize);
+                    final int recChannels = AudioEnhance.outputChannels(recorder);
+                    if (startRecord(recordingAudioFile.getPath(), sampleRate, recChannels) == 0) {
+                        recorder.release();
                         AndroidUtilities.runOnUIThread(() -> {
                             recordStartRunnable = null;
                             NotificationCenter.getInstance(recordingCurrentAccount).postNotificationName(NotificationCenter.recordStartError, recordingGuid);
@@ -4698,16 +4705,17 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                         }
                         return;
                     }
+                    voiceOutChannels = recChannels;
 
                     AndroidUtilities.runOnUIThread(() -> {
                         requestRecordAudioFocus(true);
 //                        MediaDataController.getInstance(recordingCurrentAccount).pushDraftVoiceMessage(recordDialogId, recordTopicId, null);
 //
-                        audioRecorder = new AudioRecord(AudioEnhance.INSTANCE.getAudioSource(), sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, recordBufferSize);
+                        audioRecorder = recorder;
                         recordStartTime = System.currentTimeMillis();
                         writtenFrame = 0;
                         samplesCount = 0;
-                        fileBuffer.rewind();
+                        resetFileBuffer(recChannels);
                         audioRecorder.startRecording();
                         recordQueue.postRunnable(recordRunnable);
 
@@ -4770,7 +4778,10 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             }
             AutoDeleteMediaTask.lockFile(recordingAudioFile);
             try {
-                if (startRecord(recordingAudioFile.getPath(), sampleRate) == 0) {
+                final AudioRecord recorder = AudioEnhance.createRecorder(sampleRate, recordBufferSize);
+                final int recChannels = AudioEnhance.outputChannels(recorder);
+                if (startRecord(recordingAudioFile.getPath(), sampleRate, recChannels) == 0) {
+                    recorder.release();
                     AndroidUtilities.runOnUIThread(() -> {
                         recordStartRunnable = null;
                         NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.recordStartError, guid);
@@ -4781,8 +4792,9 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                     return;
                 }
 
+                voiceOutChannels = recChannels;
                 audioRecorderPaused = false;
-                audioRecorder = new AudioRecord(AudioEnhance.INSTANCE.getAudioSource(), sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, recordBufferSize);
+                audioRecorder = recorder;
                 recordStartTime = System.currentTimeMillis();
                 recordTimeCount = 0;
                 writtenFrame = 0;
@@ -4796,7 +4808,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 recordReplyingTopMsg = replyToTopMsg;
                 recordReplyingStory = replyStory;
                 recordSendMessageChatArguments = sendMessageChatArguments;
-                fileBuffer.rewind();
+                resetFileBuffer(recChannels);
 
                 audioRecorder.startRecording();
             } catch (Exception e) {
@@ -4922,35 +4934,40 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                         FileLog.e(new RuntimeException("file not found :( recordTimeCount " + recordTimeCount + " writedFrames" + writtenFrame));
                     }
                     MediaDataController.getInstance(recordingCurrentAccount).pushDraftVoiceMessage(recordDialogId, recordTopicId, null);
-                    audioToSend.date = ConnectionsManager.getInstance(recordingCurrentAccount).getCurrentTime();
-                    audioToSend.size = recordingAudioFileToSend == null ? 0 : (int) recordingAudioFileToSend.length();
-                    TLRPC.TL_documentAttributeAudio attributeAudio = new TLRPC.TL_documentAttributeAudio();
-                    attributeAudio.voice = true;
-                    attributeAudio.waveform = getWaveform(recordingAudioFileToSend.getAbsolutePath());
-                    if (attributeAudio.waveform != null) {
-                        attributeAudio.flags |= 4;
-                    }
-                    long duration = recordTimeCount;
-                    attributeAudio.duration = recordTimeCount / 1000.0;
-                    audioToSend.attributes.clear();
-                    audioToSend.attributes.add(attributeAudio);
-                    if (duration > 700) {
-                        if (send == 1) {
-                            SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(audioToSend, null, recordingAudioFileToSend.getAbsolutePath(), recordDialogId, recordReplyingMsg, recordReplyingTopMsg, null, null, null, null, notify, scheduleDate, 0, once ? 0x7FFFFFFF : 0, null, null, false);
-                            params.monoForumPeer = recordMonoForumPeerId;
-                            params.suggestionParams = recordMonoForumSuggestionParams;
-                            params.replyToStoryItem = recordReplyingStory;
-                            params.sendMessageChatArguments = recordSendMessageChatArguments;
-                            params.payStars = payStars;
-                            SendMessagesHelper.getInstance(recordingCurrentAccount).sendMessage(params);
+                    if (audioToSend != null) {
+                        audioToSend.date = ConnectionsManager.getInstance(recordingCurrentAccount).getCurrentTime();
+                        audioToSend.size = recordingAudioFileToSend == null ? 0 : (int) recordingAudioFileToSend.length();
+                        TLRPC.TL_documentAttributeAudio attributeAudio = new TLRPC.TL_documentAttributeAudio();
+                        attributeAudio.voice = true;
+                        attributeAudio.waveform = getWaveform(recordingAudioFileToSend.getAbsolutePath());
+                        if (attributeAudio.waveform != null) {
+                            attributeAudio.flags |= 4;
                         }
-                        NotificationCenter.getInstance(recordingCurrentAccount).postNotificationName(NotificationCenter.audioDidSent, recordingGuid, send == 2 ? audioToSend : null, send == 2 ? recordingAudioFileToSend.getAbsolutePath() : null);
-                    } else {
-                        NotificationCenter.getInstance(recordingCurrentAccount).postNotificationName(NotificationCenter.audioRecordTooShort, recordingGuid, false, (int) duration);
-                        if (recordingAudioFileToSend != null) {
-                            AutoDeleteMediaTask.unlockFile(recordingAudioFileToSend);
-                            recordingAudioFileToSend.delete();
+                        long duration = recordTimeCount;
+                        attributeAudio.duration = recordTimeCount / 1000.0;
+                        audioToSend.attributes.clear();
+                        audioToSend.attributes.add(attributeAudio);
+                        if (duration > 700) {
+                            if (send == 1) {
+                                SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(audioToSend, null, recordingAudioFileToSend.getAbsolutePath(), recordDialogId, recordReplyingMsg, recordReplyingTopMsg, null, null, null, null, notify, scheduleDate, 0, once ? 0x7FFFFFFF : 0, null, null, false);
+                                params.monoForumPeer = recordMonoForumPeerId;
+                                params.suggestionParams = recordMonoForumSuggestionParams;
+                                params.replyToStoryItem = recordReplyingStory;
+                                params.sendMessageChatArguments = recordSendMessageChatArguments;
+                                params.payStars = payStars;
+                                SendMessagesHelper.getInstance(recordingCurrentAccount).sendMessage(params);
+                            }
+                            NotificationCenter.getInstance(recordingCurrentAccount).postNotificationName(NotificationCenter.audioDidSent, recordingGuid, send == 2 ? audioToSend : null, send == 2 ? recordingAudioFileToSend.getAbsolutePath() : null);
+                        } else {
+                            NotificationCenter.getInstance(recordingCurrentAccount).postNotificationName(NotificationCenter.audioRecordTooShort, recordingGuid, false, (int) duration);
+                            if (recordingAudioFileToSend != null) {
+                                AutoDeleteMediaTask.unlockFile(recordingAudioFileToSend);
+                                recordingAudioFileToSend.delete();
+                            }
                         }
+                    } else if (recordingAudioFileToSend != null) {
+                        AutoDeleteMediaTask.unlockFile(recordingAudioFileToSend);
+                        recordingAudioFileToSend.delete();
                     }
                     requestRecordAudioFocus(false);
                 });
@@ -7046,4 +7063,15 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             audio = null;
         }
     }
+
+    /** Cherrygram start */
+    private final AudioEnhance.MonoMixer monoMixer = new AudioEnhance.MonoMixer();
+    private volatile int voiceOutChannels = 1;
+
+    private void resetFileBuffer(int channels) {
+        fileBuffer.clear();
+        fileBuffer.limit(1920 * channels);
+    }
+    /** Cherrygram finish */
+
 }

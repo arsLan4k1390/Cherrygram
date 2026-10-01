@@ -52,10 +52,12 @@ public class ProfileChannelCell extends FrameLayout implements Theme.Colorable {
 
     public final DialogCell dialogCell;
 
-    public ProfileChannelCell(BaseFragment fragment) {
+    public ProfileChannelCell(BaseFragment fragment, boolean isFromUser, boolean isFromGroup) {
         super(fragment.getContext());
         final Context context = fragment.getContext();
         this.resourcesProvider = fragment.getResourceProvider();
+        this.isFromUser = isFromUser;
+        this.isFromGroup = isFromGroup;
 
         LinearLayout headerLayout = new LinearLayout(context);
         headerLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -64,7 +66,11 @@ public class ProfileChannelCell extends FrameLayout implements Theme.Colorable {
         headerView = new TextView(context);
         headerView.setTypeface(AndroidUtilities.bold());
         headerView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        headerView.setText(LocaleController.getString(R.string.ProfileChannel));
+        if (isFromUser) {
+            headerView.setText(LocaleController.getString(R.string.ProfileChannel));
+        } else {
+            headerView.setText(LocaleController.getString(isFromGroup ? R.string.LinkedChannel : R.string.Discussion));
+        }
         headerLayout.addView(headerView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
 
         subscribersView = new ClickableAnimatedTextView(context);
@@ -208,7 +214,7 @@ public class ProfileChannelCell extends FrameLayout implements Theme.Colorable {
             int[] result = new int[1];
             boolean ignoreShort = AndroidUtilities.isAccessibilityScreenReaderEnabled();
             String shortNumber = ignoreShort ? String.valueOf(result[0] = channel.participants_count) : LocaleController.formatShortNumber(channel.participants_count, result);
-            subscribersView.setText(LocaleController.formatPluralString("Subscribers", result[0]).replace(String.format("%d", result[0]), shortNumber), true);
+            subscribersView.setText(LocaleController.formatPluralString(isFromGroup || isFromUser ? "Subscribers" : "Members", result[0]).replace(String.format("%d", result[0]), shortNumber), true);
 
             if (loading = (messageObjects == null || messageObjects.isEmpty())) {
                 dialogCell.setDialog(-channel.id, null, 0, false, animated);
@@ -221,41 +227,6 @@ public class ProfileChannelCell extends FrameLayout implements Theme.Colorable {
         if (!animated) {
             loadingAlpha.set(loading, true);
         }
-        invalidate();
-
-        set = true;
-    }
-
-    public void setCherry() {
-        subscribersView.cancelAnimation();
-        subscribersView.setPivotX(0);
-        subscribersView.setAlpha(1f);
-        subscribersView.setScaleX(1f);
-        subscribersView.setScaleY(1f);
-
-        int[] result = new int[1];
-        boolean ignoreShort = AndroidUtilities.isAccessibilityScreenReaderEnabled();
-        String shortNumber = ignoreShort ? String.valueOf(result[0] = 1234567) : LocaleController.formatShortNumber(1234567, result);
-        subscribersView.setText(LocaleController.formatPluralString("Subscribers", result[0]).replace(String.format("%d", result[0]), shortNumber), true);
-
-        ArrayList<DialogCell.CustomDialog> dialogs = new ArrayList<>();
-
-        DialogCell.CustomDialog customDialog = new DialogCell.CustomDialog();
-        customDialog.name = LocaleController.getString(R.string.CG_AppName) + " \uD83C\uDF52";
-        customDialog.message = LocaleController.getString(R.string.CG_FollowChannelInfo);
-        customDialog.id = 1390;
-        customDialog.unread_count = 0;
-        customDialog.pinned = false;
-        customDialog.muted = false;
-        customDialog.type = 0;
-        customDialog.date = (int) (System.currentTimeMillis() / 1000);
-        customDialog.verified = true;
-        customDialog.isMedia = false;
-        customDialog.sent = DialogCell.SENT_STATE_NOTHING;
-        dialogs.add(customDialog);
-
-        dialogCell.setDialog(dialogs.get(0));
-
         invalidate();
 
         set = true;
@@ -375,14 +346,17 @@ public class ProfileChannelCell extends FrameLayout implements Theme.Colorable {
                         }
                     }
 
-                    final TLRPC.TL_channels_getMessages req = new TLRPC.TL_channels_getMessages();
-                    req.channel = MessagesController.getInstance(currentAccount).getInputChannel(channel_id);
-                    for (int i = 10; i >= 0; --i) {
-                        final int id = message_id - i;
-                        if (id >= 0)
-                            req.id.add(id);
-                    }
+                    final TLRPC.TL_messages_getHistory req = new TLRPC.TL_messages_getHistory();
+                    req.peer = MessagesController.getInstance(currentAccount).getInputPeer(-channel_id);
+                    req.offset_id = message_id > 0 ? message_id + 1 : 0;
+                    req.offset_date = 0;
+                    req.add_offset = 0;
+                    req.limit = message_id > 0 ? 11 : 1;
+                    req.max_id = 0;
+                    req.min_id = 0;
+                    req.hash = 0;
                     ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, err) -> AndroidUtilities.runOnUIThread(() -> {
+                        if (thisSearchId != searchId) return;
                         if (response instanceof TLRPC.messages_Messages) {
                             final TLRPC.messages_Messages res = (TLRPC.messages_Messages) response;
                             MessagesController.getInstance(currentAccount).putUsers(res.users, false);
@@ -390,11 +364,9 @@ public class ProfileChannelCell extends FrameLayout implements Theme.Colorable {
                             storage.putUsersAndChats(res.users, res.chats, true, true);
                             storage.putMessages(res, -channel_id, MessagesController.LOAD_AROUND_MESSAGE, 0, false, 0, 0);
 
-                            if (thisSearchId != searchId) return;
-
                             if (!res.messages.isEmpty()) {
                                 messageObjects.clear();
-                                Collections.sort(messages, Comparator.comparingInt(msg -> msg.id));
+                                Collections.sort(res.messages, Comparator.comparingInt(msg -> msg.id));
                                 final TLRPC.Message lastMessage = res.messages.get(res.messages.size() - 1);
                                 final long grouped_id = lastMessage.grouped_id;
                                 if (grouped_id != 0) {
@@ -407,12 +379,11 @@ public class ProfileChannelCell extends FrameLayout implements Theme.Colorable {
                                     messageObjects.add(new MessageObject(currentAccount, lastMessage, false, true));
                                 }
 
-                                if (!messageObjects.isEmpty()) {
-                                    done(false);
-                                }
+                                done(false);
+                            } else {
+                                done(false);
                             }
                         } else {
-                            if (thisSearchId != searchId) return;
                             done(true);
                         }
                     }));
@@ -450,5 +421,45 @@ public class ProfileChannelCell extends FrameLayout implements Theme.Colorable {
         subscribersView.setBackground(Theme.createRoundRectDrawable(dp(9f), dp(9f), Theme.multAlpha(headerColor, .1f)));
         headerView.setTextColor(headerColor);
     }
+
+    /** Cherrygram start */
+    private final boolean isFromGroup;
+    private final boolean isFromUser;
+
+    public void setCherry() {
+        subscribersView.cancelAnimation();
+        subscribersView.setPivotX(0);
+        subscribersView.setAlpha(1f);
+        subscribersView.setScaleX(1f);
+        subscribersView.setScaleY(1f);
+
+        int[] result = new int[1];
+        boolean ignoreShort = AndroidUtilities.isAccessibilityScreenReaderEnabled();
+        String shortNumber = ignoreShort ? String.valueOf(result[0] = 1234567) : LocaleController.formatShortNumber(1234567, result);
+        subscribersView.setText(LocaleController.formatPluralString("Subscribers", result[0]).replace(String.format("%d", result[0]), shortNumber), true);
+
+        ArrayList<DialogCell.CustomDialog> dialogs = new ArrayList<>();
+
+        DialogCell.CustomDialog customDialog = new DialogCell.CustomDialog();
+        customDialog.name = LocaleController.getString(R.string.CG_AppName) + " \uD83C\uDF52";
+        customDialog.message = LocaleController.getString(R.string.CG_FollowChannelInfo);
+        customDialog.id = 1390;
+        customDialog.unread_count = 0;
+        customDialog.pinned = false;
+        customDialog.muted = false;
+        customDialog.type = 0;
+        customDialog.date = (int) (System.currentTimeMillis() / 1000);
+        customDialog.verified = true;
+        customDialog.isMedia = false;
+        customDialog.sent = DialogCell.SENT_STATE_NOTHING;
+        dialogs.add(customDialog);
+
+        dialogCell.setDialog(dialogs.get(0));
+
+        invalidate();
+
+        set = true;
+    }
+    /** Cherrygram finish */
 
 }

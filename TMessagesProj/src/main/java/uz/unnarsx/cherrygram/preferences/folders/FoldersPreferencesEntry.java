@@ -11,21 +11,21 @@ package uz.unnarsx.cherrygram.preferences.folders;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
 import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyProSpan;
 
-import android.content.Context;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BotWebViewVibrationEffect;
+import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.FiltersSetupActivity;
 import org.telegram.ui.SettingsActivity;
 
@@ -33,6 +33,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.BaseCGPreferencesEntry;
@@ -46,18 +47,24 @@ public class FoldersPreferencesEntry extends BaseCGPreferencesEntry {
     private final int hideAllChatsTabRow = 1;
 
     private final int hideCounterRow = 2;
-    private final int tabIconTypeRow = 3;
-    private final int addStrokeRow = 4;
+    private final int includeMutedChatsInCounter = 3;
+    private final int tabIconTypeRow = 4;
+    private final int addStrokeRow = 5;
 
-    private final int folderNameAppHeaderRow = 5;
-    private final int foldersAtBottomRow = 6;
+    private final int folderNameAppHeaderRow = 6;
+    private final int foldersAtBottomRow = 7;
 
-    private final int telegramFoldersSettings = 7;
+    private final int telegramFoldersSettings = 8;
 
     @Override
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("folders_preferences_screen");
         return getString(R.string.CP_Filters_Header);
+    }
+
+    @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Folders;
     }
 
     @Override
@@ -69,21 +76,32 @@ public class FoldersPreferencesEntry extends BaseCGPreferencesEntry {
 
         items.add(SettingsHelper.asSwitchCG(hideAllChatsTabRow, getString(R.string.CP_NewTabs_RemoveAllChats))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats())
+                .slug("hideAllChatsTab")
         );
         items.add(SettingsHelper.asSwitchCG(hideCounterRow, getString(R.string.CP_NewTabs_NoCounter))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread())
+                .slug("hideCounterInTabs")
         );
+        if (!CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread()) {
+            items.add(SettingsHelper.asSwitchCG(includeMutedChatsInCounter, applyNewSpan(getString(R.string.CP_IncludeMutedIn_FolderCounters)))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsIncludeMutedInCounter())
+                    .slug("includeMutedInCounters")
+            );
+        }
         items.add(UItem.asButton(tabIconTypeRow, getString(R.string.AP_Tab_Style), getTabModeValue()));
         items.add(SettingsHelper.asSwitchCG(addStrokeRow, getString(R.string.AP_Tab_Style_Stroke))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke())
+                .slug("stroke")
         );
         items.add(UItem.asShadow(null));
 
         items.add(SettingsHelper.asSwitchCG(folderNameAppHeaderRow, getString(R.string.AP_FolderNameInHeader), getString(R.string.AP_FolderNameInHeader_Desc))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader())
+                .slug("folderNameInHeader")
         );
         items.add(SettingsHelper.asSwitchCG(foldersAtBottomRow, applyProSpan(getString(R.string.AP_FoldersAtBottom), getResourceProvider()))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()).setLocked(!DonatesManager.INSTANCE.didUserDonateForFeature())
+                .slug("foldersAtBottom")
         );
         items.add(UItem.asShadow(null));
 
@@ -117,10 +135,15 @@ public class FoldersPreferencesEntry extends BaseCGPreferencesEntry {
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread());
 
             foldersPreviewCell.updateTabCounter(true);
+//            getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
+            getNotificationCenter().postNotificationName(NotificationCenter.updateInterfaces, MessagesController.UPDATE_MASK_READ_DIALOG_MESSAGE);
 
-            if (parentLayout != null) parentLayout.rebuildAllFragmentViews(false, false);
+            updateRows(true);
+        } else if (item.id == includeMutedChatsInCounter) {
+            CherrygramAppearanceConfig.INSTANCE.setTabsIncludeMutedInCounter(!CherrygramAppearanceConfig.INSTANCE.getTabsIncludeMutedInCounter());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getTabsIncludeMutedInCounter());
 
-            getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
+           showRestartBulletin();
         } else if (item.id == tabIconTypeRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();
@@ -173,11 +196,6 @@ public class FoldersPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == telegramFoldersSettings) {
             presentFragment(new FiltersSetupActivity());
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
     }
 
     private String getTabModeValue() {

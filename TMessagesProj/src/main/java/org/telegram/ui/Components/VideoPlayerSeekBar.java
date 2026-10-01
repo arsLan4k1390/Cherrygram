@@ -664,6 +664,9 @@ public class VideoPlayerSeekBar {
     }
 
     private StaticLayout makeStaticLayout(CharSequence text, int width) {
+        if (width < 0) {
+            width = 0;
+        }
         if (timestampLabelPaint == null) {
             timestampLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
             timestampLabelPaint.setTextSize(AndroidUtilities.dp(12));
@@ -691,7 +694,7 @@ public class VideoPlayerSeekBar {
                 0,
                 false,
                 TextUtils.TruncateAt.END,
-                Math.min(AndroidUtilities.dp(400), (int) width)
+                Math.min(AndroidUtilities.dp(400), width)
             );
         }
     }

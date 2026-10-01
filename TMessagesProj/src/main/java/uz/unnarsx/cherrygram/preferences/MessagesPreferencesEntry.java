@@ -11,19 +11,15 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
 import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyProSpan;
 
-import android.content.Context;
 import android.view.View;
 
-import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.SettingsActivity;
 
 import java.util.ArrayList;
@@ -55,27 +51,42 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Messages;
+    }
+
+    @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.AP_Header_Appearance)));
-        items.add(UItem.asButton(messageMenuRow, R.drawable.msg_list, getString(R.string.CP_MessageMenu)));
-        items.add(UItem.asButton(messageSizeRow, R.drawable.msg_photo_settings, getString(R.string.CP_Messages_Size)));
-        items.add(UItem.asButton(directShareRow, R.drawable.msg_share, getString(R.string.DirectShare)));
+        items.add(UItem.asButton(messageMenuRow, R.drawable.msg_list, getString(R.string.CP_MessageMenu))
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Message_Menu)
+        );
+        items.add(UItem.asButton(messageSizeRow, R.drawable.msg_photo_settings, getString(R.string.CP_Messages_Size))
+                .slug("bubbleSize")
+        );
+        items.add(UItem.asButton(directShareRow, R.drawable.msg_share, getString(R.string.DirectShare))
+                .slug("directShare")
+        );
         items.add(
                 SettingsHelper.asSwitchCG(
                         wideMessagesLayout,
-                        applyNewSpan(getString(R.string.CP_WideMessagesLayout)),
+                        getString(R.string.CP_WideMessagesLayout),
                         getString(R.string.CP_WideMessagesLayout_Desc)
                 )
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getWideMessagesLayout())
+                .slug("wideLayout")
         );
         items.add(SettingsHelper.asSwitchCG(hideTimeOnStickersRow, getString(R.string.CP_TimeOnStick))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getHideStickerTime())
+                .slug("hideTimeOnStickers")
         );
         items.add(SettingsHelper.asSwitchCG(showForwardDateRow, getString(R.string.CP_ForwardMsgDate))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgForwardDate())
+                .slug("showForwardDate")
         );
         items.add(SettingsHelper.asSwitchCG(pencilIconForEditedRow, getString(R.string.AP_ShowPencilIcon))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getShowPencilIcon())
+                .slug("showPencilIcon")
         );
         items.add(UItem.asShadow(null));
 
@@ -85,8 +96,11 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
                         R.drawable.settings_magic_stick_filled_solar,
                         getString(R.string.CP_GeminiAI_Header)
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Gemini)
         );
-        items.add(UItem.asButton(voiceTranscriptionRow, getString(R.string.CP_GeminiAI_VoiceTranscriptionProvider), getTranscriptionProviderValue()));
+        items.add(UItem.asButton(voiceTranscriptionRow, getString(R.string.CP_GeminiAI_VoiceTranscriptionProvider), getTranscriptionProviderValue())
+                .slug("vttProvider")
+        );
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.ActionsChartTitle)));
@@ -98,27 +112,39 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_MessagesFilter_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Message_Filters)
         );
-        items.add(UItem.asButton(leftBottomBtnRow, getString(R.string.CP_LeftBottomButtonAction), getLeftBottomButtonValue()));
-        items.add(UItem.asButton(doubleTapRow, getString(R.string.CP_DoubleTapAction), getDoubleTapActionValue()));
-        items.add(UItem.asButton(slideActionRow, getString(R.string.CG_MsgSlideAction), getSlideActionValue()));
+        items.add(UItem.asButton(leftBottomBtnRow, getString(R.string.CP_LeftBottomButtonAction), getLeftBottomButtonValue())
+                .slug("leftButtonAction")
+        );
+        items.add(UItem.asButton(doubleTapRow, getString(R.string.CP_DoubleTapAction), getDoubleTapActionValue())
+                .slug("doubleTapAction")
+        );
+        items.add(UItem.asButton(slideActionRow, getString(R.string.CG_MsgSlideAction), getSlideActionValue())
+                .slug("slideAction")
+        );
         items.add(SettingsHelper.asSwitchCG(deleteForAllRow, getString(R.string.CP_DeleteForAll), getString(R.string.CP_DeleteForAll_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getDeleteForAll())
+                .slug("deleteForAll")
         );
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.TelegramPremium)));
         items.add(SettingsHelper.asSwitchCG(reactionsOverlayRow, getString(R.string.CP_DisableReactionsOverlay), getString(R.string.CP_DisableReactionsOverlay_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getDisableReactionsOverlay())
+                .slug("reactionsOverlay")
         );
         items.add(SettingsHelper.asSwitchCG(reactionAnimationRow, getString(R.string.CP_DisableReactionAnim), getString(R.string.CP_DisableReactionAnim_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getDisableReactionAnim())
+                .slug("reactionsAnimation")
         );
         items.add(SettingsHelper.asSwitchCG(tapsOnPremiumStickersRow, getString(R.string.CP_DisablePremStickAnim), getString(R.string.CP_DisablePremStickAnim_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getDisablePremStickAnim())
+                .slug("tapsOnPremStickers")
         );
         items.add(SettingsHelper.asSwitchCG(premiumStickersAutoplayRow, getString(R.string.CP_DisablePremStickAutoPlay), getString(R.string.CP_DisablePremStickAutoPlay_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getDisablePremStickAutoPlay())
+                .slug("premStickersAutoPlay")
         );
         items.add(UItem.asShadow(null));
     }
@@ -179,21 +205,6 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
 
             showRestartBulletin();
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == geminiSettingsRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Gemini);
-            return true;
-        } else if (item.id == messageMenuRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Message_Menu);
-            return true;
-        } else if (item.id == messageFilterRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Message_Filters);
-            return true;
-        }
-        return false;
     }
 
     private void showDirectShareConfigurator(BaseFragment fragment) {

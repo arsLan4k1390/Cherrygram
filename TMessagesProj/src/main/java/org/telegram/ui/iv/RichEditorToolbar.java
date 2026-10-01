@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AiButtonDrawable;
 import org.telegram.ui.Components.ChatActivityEnterView;
@@ -31,6 +32,8 @@ import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.DialogsActivity;
 
 import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class RichEditorToolbar extends FrameLayout {
 
@@ -125,7 +128,9 @@ public class RichEditorToolbar extends FrameLayout {
         addView(topPanel, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
         backButton = new ImageView(context);
-        backButton.setImageResource(R.drawable.ic_ab_back);
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
+        backButton.setImageDrawable(backDrawable);
         backButton.setScaleType(ImageView.ScaleType.CENTER);
         backButton.setBackground(RichEditor.withShadow(Theme.createRadSelectorDrawable(color(Theme.key_glass_targetMainTabs), Theme.blendOver(color(Theme.key_glass_targetMainTabs), color(Theme.key_listSelector)), dp(22), dp(22))));
         backButton.setColorFilter(new PorterDuffColorFilter(color(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.SRC_IN));

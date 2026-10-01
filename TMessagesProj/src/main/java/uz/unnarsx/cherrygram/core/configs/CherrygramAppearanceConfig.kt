@@ -49,6 +49,7 @@ object CherrygramAppearanceConfig {
     /** Folders start */
     var tabsHideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
     var tabsNoUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
+    var tabsIncludeMutedInCounter by sharedPreferences.boolean("CP_TabsIncludeMutedInCounter", true)
 
     const val TAB_TYPE_MIX = 0
     const val TAB_TYPE_TEXT = 1
@@ -75,6 +76,7 @@ object CherrygramAppearanceConfig {
     var replyBackground by sharedPreferences.boolean("CP_ReplyBackground", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var replyCustomColors by sharedPreferences.boolean("CP_ReplyCustomColors", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var replyBackgroundEmoji by sharedPreferences.boolean("CP_ReplyBackgroundEmoji", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
+    var profileHidePhoneNumber by sharedPreferences.boolean("CP_ProfileHidePhoneNumber", true)
     var profileChannelPreview by sharedPreferences.boolean("CP_ProfileChannelPreview", true)
 
     const val ID_DC_NONE = 0

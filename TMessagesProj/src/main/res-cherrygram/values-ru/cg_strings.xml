@@ -21,7 +21,7 @@
     <string name="CG_QRLoginTitle">Вход по QR</string>
     <string name="CG_QRLoginMessage">Отсканируйте QR-код с помощью другого устройства для входа в систему.</string>
 
-    <string name="OpenOfficialApp">Открыть официальное приложение</string>
+    <string name="CG_OpenOfficialApp">Открыть официальное приложение</string>
     <string name="CG_DidNotGetTheCode">Если вы не получили код или вы не входили в аккаунт Telegram на другом устройстве, воспользуйтесь официальным приложением Telegram, чтобы получить код.\n\nTelegram **отключил возможность авторизации через СМС** для альтернативных приложений. Согласно новым правилам, пользователи альтернативных клиентов больше не могут получить СМС-код для авторизации. Теперь для получения кода требуется использовать официальное приложение Telegram.\n\nЕсли у вас возникла проблема со входом в аккаунт, пожалуйста, обратитесь в службу поддержки Telegram.</string>
     <string name="CG_ChangePhoneNumber">Телеграм **отключил возможность изменения номера** в сторонних приложениях. Пользователи могут сменить номер только через Telegram.</string>
 
@@ -53,6 +53,7 @@
     <string name="CG_FoldersTypeIconsTitles">Иконки с названиями</string>
     <string name="CG_ChooseFolderIcon">Выберите иконку</string>
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
+    <string name="CP_IncludeMutedIn_FolderCounters">Учитывать чаты без звука в счётчиках</string>
     <string name="CG_SwipeToUnarchive">Свайп влево для разархивации</string>
     <!--Telegram Folders Settings-->
 
@@ -250,6 +251,7 @@
 
     <string name="CP_ProfileReplyBackground">Сообщения и профили</string>
     <string name="CP_CustomizeProfile">Настроить профиль</string>
+    <string name="CP_ProfileHidePhoneNumbers">Скрывать номера телефонов</string>
     <string name="CP_ProfileChannelPreview">Личный канал</string>
     <string name="CP_ProfileBirthDatePreview">Дата рождения</string>
     <string name="CP_ProfileBusinessPreview">Часы работы и адрес</string>
@@ -412,6 +414,10 @@
     <string name="CP_LargeVoiceMessages">Адаптивная длина аудиосообщений</string>
     <string name="CP_LargeVoiceMessages_Desc">Длина пузыря аудиосообщения будет зависеть от продолжительности записи и автоматически подстраиваться под ширину экрана.</string>
 
+    <string name="CP_RecordMultiMic">Мультимикрофонная запись</string>
+    <string name="CP_RecordMultiMic_Desc">Записывает звук одновременно со всех микрофонов устройства для более объемного и детального захвата голоса</string>
+    <string name="CP_RecordInStereo">Стереозапись</string>
+    <string name="CP_RecordInStereo_Desc">Передает голос в формате стерео. \n\n**Важно:** если собеседник слушает вас в одном наушнике или с динамика громкой связи, он может слышать вас тихо или с провалами</string>
     <string name="CP_VoiceMessagesAutoPlay">Автовоспроизведение голосовых сообщений</string>
     <string name="CP_PlayVideo">Воспроизводить видео по нажатию на кнопку громкости</string>
     <string name="CP_PlayVideo_Desc">При нажатии на кнопку громкости будет включено видео на экране в диалоге</string>
@@ -461,6 +467,7 @@
     <string name="CP_Brightness">Яркость</string>
     <string name="CP_Flash_Hint">Удерживайте кнопку вспышки, чтобы изменить цвет и яркость вспышки.</string>
     <string name="CP_Flash_Hint_Rear">Удерживайте кнопку вспышки, чтобы изменить ее яркость.</string>
+    <string name="CP_Zoom_Hint">Ведите палец по шкале в стороны, чтобы развернуть полный слайдер для зума.</string>
     <!--Camera Preferences-->
 
     <!--Experimental Preferences-->

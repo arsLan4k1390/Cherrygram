@@ -43,6 +43,20 @@ object CGBulletinCreator {
         }.show()
     }
 
+    fun createAppUpdateRestartDialog(context: Context, runnable: Runnable) {
+        AndroidUtilities.runOnUIThread {
+            AlertDialog.Builder(context)
+                .setTitle(getString(R.string.AppUpdate).replace("Telegram", getString(R.string.CG_AppName)))
+                .setMessage(getString(R.string.CG_RestartToApply))
+                .setPositiveButton(
+                    getString(R.string.AppUpdateNow)
+                ) { dialog: AlertDialog?, which: Int ->
+                    runnable.run()
+                }
+                .show()
+        }
+    }
+
     fun createAppRestartDialog(context: Context) {
         if (!CherrygramExperimentalConfig.oomHandlerPopup) return
         AndroidUtilities.runOnUIThread {

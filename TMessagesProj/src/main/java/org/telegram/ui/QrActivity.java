@@ -89,6 +89,7 @@ import org.telegram.tgnet.ResultCallback;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBarLayout;
 import org.telegram.ui.ActionBar.AlertDialog;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.EdgeToEdgeSupportMode;
 import org.telegram.ui.ActionBar.EmojiThemes;
@@ -117,6 +118,8 @@ import org.telegram.ui.Components.ThemeSmallPreviewView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class QrActivity extends BaseFragment {
 
@@ -384,7 +387,9 @@ public class QrActivity extends BaseFragment {
         closeImageView = new ImageView(context);
         closeImageView.setContentDescription(getString(R.string.AccDescrGoBack));
         closeImageView.setBackground(Theme.createSimpleSelectorCircleDrawable(dp(34), 0x28000000, 0x28ffffff));
-        closeImageView.setImageResource(R.drawable.ic_ab_back);
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramChatsConfig.INSTANCE.getCenterChatTitle());
+        closeImageView.setImageDrawable(backDrawable);
         closeImageView.setScaleType(ImageView.ScaleType.CENTER);
         closeImageView.setOnClickListener(v -> finishFragment());
         rootLayout.addView(closeImageView, LayoutHelper.createFrame(34, 34));
@@ -1161,7 +1166,7 @@ public class QrActivity extends BaseFragment {
                 return;
             }
             if (hasTimer && loadingMatrix == null) {
-                loadingMatrix = new RLottieDrawable(R.raw.qr_matrix, "qr_matrix", dp(200), dp(200));
+                loadingMatrix = new RLottieDrawable(R.raw.qr_matrix, dp(200), dp(200));
                 loadingMatrix.setMasterParent(this);
                 loadingMatrix.getPaint().setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
                 loadingMatrix.setAutoRepeat(1);
@@ -1536,7 +1541,7 @@ public class QrActivity extends BaseFragment {
 
             int drawableColor = fragment.getThemedColor(Theme.key_featuredStickers_addButton);
             int drawableSize = dp(28);
-            darkThemeDrawable = new RLottieDrawable(R.raw.sun_outline, "" + R.raw.sun_outline, drawableSize, drawableSize, false, null);
+            darkThemeDrawable = new RLottieDrawable(R.raw.sun_outline, drawableSize, drawableSize, false, null);
             forceDark = !Theme.getActiveTheme().isDark();
             setForceDark(Theme.getActiveTheme().isDark(), false);
             darkThemeDrawable.setPlayInDirectionOfCustomEndFrame(true);

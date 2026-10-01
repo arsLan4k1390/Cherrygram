@@ -69,6 +69,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_iv;
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
@@ -85,6 +86,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class TranslateAlert2 extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
@@ -1213,7 +1216,9 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
 
             backButton = new ImageView(context);
             backButton.setScaleType(ImageView.ScaleType.CENTER);
-            backButton.setImageResource(R.drawable.ic_ab_back);
+            BackDrawable backDrawable = new BackDrawable(false);
+            backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+            backButton.setImageDrawable(backDrawable);
             backButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_dialogTextBlack), PorterDuff.Mode.MULTIPLY));
             backButton.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector)));
             backButton.setAlpha(0f);

@@ -168,19 +168,6 @@ object CGChatMenuInjector {
             "Telegram Browser"
         )
 
-        if (
-            CherrygramChatsConfig.centerChatTitle
-            && (currentUser != null && currentUser.linked_community_id.toInt() != 0 || currentChat != null && currentChat.linked_community_id.toInt() != 0)
-        ) {
-            headerItem.lazilyAddColoredGap()
-
-            headerItem.lazilyAddSubItem(
-                ChatActivityHelper.OPTION_OPEN_COMMUNITY,
-                R.drawable.msg_groups,
-                getString(R.string.Community)
-            )
-        }
-
     }
 
     fun injectAdminShortcuts(headerItem: ActionBarMenuItem, currentChat: TLRPC.Chat) {

@@ -12,7 +12,6 @@ package uz.unnarsx.cherrygram.preferences;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.content.Context;
 import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -21,7 +20,6 @@ import org.telegram.messenger.R;
 import org.telegram.ui.Components.TableView;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
@@ -30,6 +28,7 @@ import java.util.Locale;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.memory.MemoryMonitor;
 import uz.unnarsx.cherrygram.core.memory.MemoryStressTest;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
@@ -59,6 +58,11 @@ public class ExperimentalPreferencesEntry extends BaseCGPreferencesEntry {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("experimental_preferences_screen");
         return getString(R.string.EP_Category_Experimental);
+    }
+
+    @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Experimental;
     }
 
     @Override
@@ -105,6 +109,7 @@ public class ExperimentalPreferencesEntry extends BaseCGPreferencesEntry {
                             "Show restart popup when heap usage is > 95% to prevent crashes"*/
                         )
                         .setChecked(CherrygramExperimentalConfig.INSTANCE.getOomHandlerPopup())
+                        .slug("oomPopup")
                 );
                 items.add(UItem.asShadow(null));
 
@@ -156,11 +161,6 @@ public class ExperimentalPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == testOOMNotificationRow) {
             MemoryStressTest.fillHeapToTriggerMonitor();
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
     }
 
 }

@@ -13,7 +13,6 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
 
-import android.content.Context;
 import android.os.Build;
 import android.view.View;
 
@@ -24,7 +23,6 @@ import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.SettingsActivity;
 import org.telegram.ui.Stars.StarsIntroActivity;
 
@@ -71,6 +69,7 @@ public class AlternativeSupportScreen extends BaseCGPreferencesEntry {
                             getString(R.string.CG_SafeStars_Desc),
                             true
                     )
+                    .slug(DeeplinkHelper.DeepLinksRepo.CG_Stars)
             );
         }
 
@@ -82,6 +81,7 @@ public class AlternativeSupportScreen extends BaseCGPreferencesEntry {
                             R.drawable.settings_safesurf_logo,
                             "SafeSurf VPN"
                     )
+                    .slug(DeeplinkHelper.DeepLinksRepo.CG_Proxy)
             );
         }
 
@@ -96,6 +96,7 @@ public class AlternativeSupportScreen extends BaseCGPreferencesEntry {
                             R.drawable.settings_wallet,
                             applyNewSpan("SafePay")
                     )
+                    .slug(DeeplinkHelper.DeepLinksRepo.CG_SafePay)
             );
         }
 
@@ -119,8 +120,9 @@ public class AlternativeSupportScreen extends BaseCGPreferencesEntry {
                             watchADSRow,
                             0xFFF6538A, 0xFF581668,
                             R.drawable.settings_watch_ads_filled_solar,
-                            applyNewSpan(getString(R.string.CGP_ADS))
+                            getString(R.string.CGP_ADS)
                     )
+                    .slug(DeeplinkHelper.DeepLinksRepo.CG_ADS)
             );
             items.add(UItem.asShadow(null));
         }
@@ -132,14 +134,17 @@ public class AlternativeSupportScreen extends BaseCGPreferencesEntry {
 
         items.add(UItem.asShadow(null));
 
-        if (CherrygramCoreConfig.isPlayStoreBuild()) {
+        if (CherrygramCoreConfig.isPlayStoreBuild() || CherrygramCoreConfig.isDevBuild()) {
             items.add(
-                    SettingsHelper.asTextDetail(
+                    SettingsActivity.SettingCell.Factory.of(
                             rateInGooglePlayRow,
-                            0,
+                            0xFFE54C7F, 0xFFA33156,
+                            R.drawable.settings_google_play_logo,
                             getString(R.string.DP_EnjoyingUs),
-                            getString(R.string.DP_RateUs)
+                            getString(R.string.DP_RateUs),
+                            true
                     )
+                    .slug("rateUs")
             );
         }
 
@@ -165,21 +170,6 @@ public class AlternativeSupportScreen extends BaseCGPreferencesEntry {
         } else if (item.id == rateInGooglePlayRow) {
             CherrygramExtras.INSTANCE.requestReviewFlow(this);
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == safeStarsRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Stars);
-            return true;
-        } else if (item.id == safeSurfRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Proxy);
-            return true;
-        } else if (item.id == watchADSRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_ADS);
-            return true;
-        }
-        return false;
     }
 
 }

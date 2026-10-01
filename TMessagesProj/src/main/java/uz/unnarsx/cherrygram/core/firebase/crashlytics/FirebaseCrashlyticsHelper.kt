@@ -14,6 +14,9 @@ import androidx.core.content.edit
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 
 object FirebaseCrashlyticsHelper {
@@ -45,5 +48,7 @@ object FirebaseCrashlyticsHelper {
     fun logAsNonFatal(e: Throwable) {
         crashlytics.recordException(e)
     }
+
+    class BlaBlaBlaDebug(message: String) : Exception(message)
 
 }

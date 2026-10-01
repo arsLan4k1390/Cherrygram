@@ -36,6 +36,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.json.JSONObject;
+import org.telegram.messenger.utils.Choreographer60FpsContent;
 import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
@@ -82,7 +83,6 @@ public class ApplicationLoader extends Application {
     public static volatile boolean mainInterfacePausedStageQueue = true;
     public static boolean canDrawOverlays;
     public static volatile long mainInterfacePausedStageQueueTime;
-    public static boolean hasPlayServices;
 
     private static PushListenerController.IPushListenerServiceProvider pushProvider;
     private static IMapsProvider mapsProvider;
@@ -364,11 +364,19 @@ public class ApplicationLoader extends Application {
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
 
-        initCG();
-
         LauncherIconController.tryFixLauncherIconIfNeeded();
         ProxyRotationController.init();
+
+        //if (BuildConfig.DEBUG_PRIVATE_VERSION) {
+        //    Choreographer60FpsContent.getInstance().addFrameCallback(debugEverySecondChecks, 1);
+        //}
+
+        initCG();
     }
+
+    private final Runnable debugEverySecondChecks = () -> AndroidUtilities.runOnUIThread(() -> {
+        NotificationCenter.sanitize();
+    });
 
     public static void startPushService() {
         if (applicationContext == null) {
@@ -741,11 +749,21 @@ public class ApplicationLoader extends Application {
         return null;
     }
 
+    /** Cherrygram start */
+    public static boolean hasPlayServices;
+
     public boolean showUpdaterBottomSheet(BaseFragment fragment, boolean available, TLRPC.TL_help_appUpdate update) {
         return false;
     }
 
-    /** Cherrygram start */
+    public boolean playUpdaterRegisterWatcher() {
+        return false;
+    }
+
+    public boolean playUpdaterCheckPendingDownload() {
+        return false;
+    }
+
     private void initCG() {
         KaboomWidget.forceUpdateKaboomWidgets(applicationContext);
         FirebaseAnalyticsHelper.INSTANCE.init(applicationContext);

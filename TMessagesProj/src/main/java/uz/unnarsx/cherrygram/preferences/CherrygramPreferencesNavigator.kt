@@ -16,34 +16,64 @@ import uz.unnarsx.cherrygram.preferences.tabs.MainTabsPreferencesEntry
 
 object CherrygramPreferencesNavigator {
 
-    fun createCherrySettings(fragment: BaseFragment) = fragment.presentFragment(CGPreferencesEntry())
+    fun createCherrySettings(fragment: BaseFragment): BaseFragment =
+        CGPreferencesEntry().also(fragment::presentFragment)
 
-    fun createGeneral(fragment: BaseFragment) = fragment.presentFragment(GeneralPreferencesEntry())
+    fun createGeneral(fragment: BaseFragment): BaseFragment =
+        GeneralPreferencesEntry().also(fragment::presentFragment)
 
-    fun createAppearance(fragment: BaseFragment) = fragment.presentFragment(AppearancePreferencesEntry())
-    fun createFoldersPrefs(fragment: BaseFragment) = fragment.presentFragment(FoldersPreferencesEntry())
-    fun createTabs(fragment: BaseFragment) = fragment.presentFragment(MainTabsPreferencesEntry())
-    fun createMessagesAndProfiles(fragment: BaseFragment) = fragment.presentFragment(MessagesAndProfilesPreferencesEntry())
+    fun createAppearance(fragment: BaseFragment): BaseFragment =
+        AppearancePreferencesEntry().also(fragment::presentFragment)
 
-    fun createChats(fragment: BaseFragment) = fragment.presentFragment(ChatsPreferencesEntry())
-    fun createMessages(fragment: BaseFragment) = fragment.presentFragment(MessagesPreferencesEntry())
-    fun createGemini(fragment: BaseFragment) = fragment.presentFragment(GeminiPreferencesEntry())
-    fun createMessageFilter(fragment: BaseFragment) = fragment.presentFragment(MessageFiltersPreferencesEntry())
-    fun createMessageMenu(fragment: BaseFragment) = fragment.presentFragment(MessageMenuPreferencesEntry())
+    fun createFoldersPrefs(fragment: BaseFragment): BaseFragment =
+        FoldersPreferencesEntry().also(fragment::presentFragment)
 
-    fun createCamera(fragment: BaseFragment) = fragment.presentFragment(CameraPreferencesEntry())
+    fun createTabs(fragment: BaseFragment): BaseFragment =
+        MainTabsPreferencesEntry().also(fragment::presentFragment)
 
-    fun createExperimental(fragment: BaseFragment) = fragment.presentFragment(ExperimentalPreferencesEntry())
+    fun createMessagesAndProfiles(fragment: BaseFragment): BaseFragment =
+        MessagesAndProfilesPreferencesEntry().also(fragment::presentFragment)
 
-    fun createPrivacy(fragment: BaseFragment) = fragment.presentFragment(PrivacyPreferencesEntry())
+    fun createChats(fragment: BaseFragment): BaseFragment =
+        ChatsPreferencesEntry().also(fragment::presentFragment)
+
+    fun createMessages(fragment: BaseFragment): BaseFragment =
+        MessagesPreferencesEntry().also(fragment::presentFragment)
+
+    fun createGemini(fragment: BaseFragment): BaseFragment =
+        GeminiPreferencesEntry().also(fragment::presentFragment)
+
+    fun createMessageFilter(fragment: BaseFragment): BaseFragment =
+        MessageFiltersPreferencesEntry().also(fragment::presentFragment)
+
+    fun createMessageMenu(fragment: BaseFragment): BaseFragment =
+        MessageMenuPreferencesEntry().also(fragment::presentFragment)
+
+    fun createCamera(fragment: BaseFragment): BaseFragment =
+        CameraPreferencesEntry().also(fragment::presentFragment)
+
+    fun createExperimental(fragment: BaseFragment): BaseFragment =
+        ExperimentalPreferencesEntry().also(fragment::presentFragment)
+
+    fun createPrivacy(fragment: BaseFragment): BaseFragment =
+        PrivacyPreferencesEntry().also(fragment::presentFragment)
 
     @JvmOverloads
-    fun createDonate(fragment: BaseFragment, force: Boolean = false) = fragment.presentFragment(DonatesPreferencesEntry().forceShowDonates(force))
-    fun createAlternativeSupport(fragment: BaseFragment) = fragment.presentFragment(AlternativeSupportScreen())
-    fun createStars(fragment: BaseFragment, customTitle: String?, userName: String?, type: Int) = fragment.presentFragment(StarsIntroActivityCG(customTitle, userName, type))
-    fun createADS(fragment: BaseFragment) = fragment.presentFragment(AdsScreen())
+    fun createDonate(fragment: BaseFragment, force: Boolean = false): BaseFragment =
+        DonatesPreferencesEntry().forceShowDonates(force).also(fragment::presentFragment)
 
-    fun createAbout(fragment: BaseFragment) = fragment.presentFragment(AboutPreferencesEntry())
-    fun createDebug(fragment: BaseFragment) = fragment.presentFragment(DebugPreferencesEntry())
+    fun createAlternativeSupport(fragment: BaseFragment): BaseFragment =
+        AlternativeSupportScreen().also(fragment::presentFragment)
+
+    fun createStars(fragment: BaseFragment, customTitle: String?, userName: String?, type: Int) = fragment.presentFragment(StarsIntroActivityCG(customTitle, userName, type))
+
+    fun createADS(fragment: BaseFragment): BaseFragment =
+        AdsScreen().also(fragment::presentFragment)
+
+    fun createAbout(fragment: BaseFragment): BaseFragment =
+        AboutPreferencesEntry().also(fragment::presentFragment)
+
+    fun createDebug(fragment: BaseFragment): BaseFragment =
+        DebugPreferencesEntry().also(fragment::presentFragment)
 
 }

@@ -30,7 +30,6 @@ import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.SettingsActivity;
 
 import java.util.ArrayList;
@@ -61,8 +60,6 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int alternativeSupportRow = 10;
 
-    public ActionBarMenuItem otherItem;
-
     @Override
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("main_preferences_screen");
@@ -70,9 +67,14 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Settings;
+    }
+
+    @Override
     public View createView(Context context) {
         final ActionBarMenu menu = actionBar.createMenu();
-        otherItem = menu.addItem(1, R.drawable.ic_ab_other);
+        ActionBarMenuItem otherItem = menu.addItem(1, R.drawable.ic_ab_other);
         otherItem.setOnClickListener(view -> showItemOptions(otherItem));
 
         return super.createView(context);
@@ -90,6 +92,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_General_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_General)
         );
         Pair<Integer, Integer> colors = TelegramSettingsHelper.Helper.INSTANCE.getProfileButtonColor(getUserConfig().getCurrentUser(), true);
         items.add(
@@ -102,6 +105,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_Appearance_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Appearance)
         );
         items.add(
                 SettingsActivity.SettingCell.Factory.of(
@@ -111,6 +115,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_Chats_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Chats)
         );
         items.add(
                 SettingsActivity.SettingCell.Factory.of(
@@ -121,6 +126,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_Camera_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Camera)
         );
         if (CherrygramExperimentalConfig.INSTANCE.getUse_CG_OOMHandler()) {
             items.add(
@@ -128,10 +134,11 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                             experimentalRow,
                             IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
                             R.drawable.settings_tube_filled_solar,
-                            applyNewSpan(getString(R.string.EP_Category_Experimental)),
+                            getString(R.string.EP_Category_Experimental),
                             getString(R.string.CGP_Experimental_Desc),
                             true
                     )
+                    .slug(DeeplinkHelper.DeepLinksRepo.CG_Experimental)
             );
         }
         items.add(
@@ -143,6 +150,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_Privacy_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Privacy)
         );
         items.add(
                 SettingsActivity.SettingCell.Factory.of(
@@ -153,6 +161,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_Header_About_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_About)
         );
         items.add(UItem.asShadow(null));
 
@@ -164,6 +173,7 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                         R.drawable.settings_support_filled_solar,
                         applyProSpan(getString(R.string.DP_DonateBadge), getResourceProvider())
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Support_Force)
         );
         if (!getConnectionsManager().isTestBackend()) {
             items.add(
@@ -171,8 +181,9 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                             alternativeSupportRow,
                             0xFFF6538A, 0xFF581668,
                             R.drawable.settings_stars,
-                            applyNewSpan(getString(R.string.AS_Header))
+                            getString(R.string.AS_Header)
                     )
+                    .slug(DeeplinkHelper.DeepLinksRepo.CG_Alternative_Support)
             );
         }
         if (CherrygramFirebaseConfig.INSTANCE.getShowProxyInSettings() && CGChatMenuInjector.INSTANCE.showProxyButton()) {
@@ -212,39 +223,6 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == alternativeSupportRow) {
             CherrygramPreferencesNavigator.INSTANCE.createAlternativeSupport(this);
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == generalRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_General);
-            return true;
-        } else if (item.id == appearanceRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Appearance);
-            return true;
-        } else if (item.id == chatsRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Chats);
-            return true;
-        } else if (item.id == cameraRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Camera);
-            return true;
-        } else if (item.id == experimentalRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Experimental);
-            return true;
-        } else if (item.id == privacyRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Privacy);
-            return true;
-        } else if (item.id == supportRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Support_Force);
-            return true;
-        } else if (item.id == aboutRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_About);
-            return true;
-        } else if (item.id == alternativeSupportRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Alternative_Support);
-            return true;
-        }
-        return false;
     }
 
     private void showItemOptions(View button) {

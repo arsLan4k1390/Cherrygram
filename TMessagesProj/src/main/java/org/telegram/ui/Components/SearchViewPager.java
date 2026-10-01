@@ -627,7 +627,7 @@ public class SearchViewPager extends ViewPagerFixed implements FilteredSearchVie
     }
 
     public boolean isDownloadsTab(int position) {
-        return viewPagerAdapter != null && viewPagerAdapter.getItemViewType(position) == 2;
+        return viewPagerAdapter != null && position >= 0 && position < viewPagerAdapter.getItemCount() && viewPagerAdapter.getItemViewType(position) == 2;
     }
 
     public ActionBarMenu getActionMode() {
@@ -661,6 +661,9 @@ public class SearchViewPager extends ViewPagerFixed implements FilteredSearchVie
 
     public void updateTabs(boolean animated) {
         viewPagerAdapter.updateItems();
+        if (viewPagerAdapter.getItemCount() > 0 && getCurrentPosition() >= viewPagerAdapter.getItemCount()) {
+            setPosition(viewPagerAdapter.getItemCount() - 1);
+        }
         fillTabs(animated);
         if (tabsView != null) {
             tabsView.finishAddingTabs();
@@ -1396,14 +1399,24 @@ public class SearchViewPager extends ViewPagerFixed implements FilteredSearchVie
         return tabsView;
     }
 
+    private NotificationCenter.ObserversGroup observersGroup;
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.channelRecommendationsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.dialogDeleted);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.dialogsNeedReload);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.reloadWebappsHints);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.storiesListUpdated);
+        if (observersGroup != null) {
+            observersGroup.removeAllObservers();
+            observersGroup = null;
+        }
+
+        observersGroup = NotificationCenter.getInstance(currentAccount)
+            .createObserversGroup(this)
+            .add(NotificationCenter.channelRecommendationsLoaded)
+            .add(NotificationCenter.dialogDeleted)
+            .add(NotificationCenter.dialogsNeedReload)
+            .add(NotificationCenter.reloadWebappsHints)
+            .add(NotificationCenter.storiesListUpdated);
+
         attached = true;
 
         if (channelsSearchAdapter != null) {
@@ -1418,11 +1431,11 @@ public class SearchViewPager extends ViewPagerFixed implements FilteredSearchVie
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         attached = false;
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.channelRecommendationsLoaded);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.dialogDeleted);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.dialogsNeedReload);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.reloadWebappsHints);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.storiesListUpdated);
+
+        if (observersGroup != null) {
+            observersGroup.removeAllObservers();
+            observersGroup = null;
+        }
     }
 
     @Override
