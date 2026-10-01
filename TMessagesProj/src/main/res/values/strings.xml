@@ -2696,14 +2696,14 @@
     <string name="UseProxyUsername">Username</string>
     <string name="UseProxySocks5">SOCKS5 Proxy</string>
     <string name="UseProxyTelegram">MTProto Proxy</string>
+    <string name="UseProxyWeb">WEB Proxy</string>
     <string name="UseProxyTelegramError">The proxy you are using is not configured correctly and will be disabled. Please find another one.</string>
     <string name="UseProxySponsor">Proxy sponsor</string>
     <string name="UseProxySponsorInfo">This channel is shown by your proxy server. To remove this channel from your chat list, disable the proxy in Telegram Settings.</string>
     <string name="UseProxyInfo">SOCKS5 proxy settings.</string>
     <string name="UseProxyTelegramInfo">MTProto proxy settings.</string>
     <string name="UseProxyTelegramInfo2">This proxy may display a sponsored channel in your chat list. This doesn\'t reveal any of your Telegram traffic.</string>
-    <string name="UseProxyForCalls">Use proxy for calls</string>
-    <string name="UseProxyForCallsInfo">Proxy servers may degrade the quality of your calls.</string>
+    <string name="UseProxyWebInfo">WEB proxy uses an HTTPS page inside a private WebView. Enter a hostname without a scheme or path and a 16-byte MTProxy secret. This proof of concept requires a current Android System WebView and is intended for foreground testing.</string>
     <string name="ConnectingToProxyEnable">Enable</string>
     <string name="LowDiskSpaceTitle">Attention</string>
     <string name="LowDiskSpaceMessage">Your device is almost out of disk space. To free some space, you can set up Telegram to cache only recent media.</string>
@@ -11230,4 +11230,18 @@
     <string name="UnsupportedMessageTitle">Unsupported Message</string>
     <string name="UnsupportedMessageMessage">Update Telegram to view this message</string>
     <string name="UnsupportedUpdate">Update</string>
+    <string name="RoundVideoSettings">Round Video</string>
+    <string name="RoundVideoGeneral">Recorder</string>
+    <string name="RoundVideoUseNewRecorder">Use Camera2 recorder</string>
+    <string name="RoundVideoOutputResolution">Output resolution</string>
+    <string name="RoundVideoCameraResolution">Camera resolution</string>
+    <string name="RoundVideoCameraResolutionHigh">High</string>
+    <string name="RoundVideoCameraResolutionMedium">Medium</string>
+    <string name="RoundVideoCameraResolutionLow">Low</string>
+    <string name="RoundVideoFrameRate">Frame rate</string>
+    <string name="RoundVideoBitrate">Video bitrate</string>
+    <string name="RoundVideoGeneralInfo">60 FPS is used only when both front and rear cameras support it. Otherwise recording falls back to 30 FPS.</string>
+    <string name="RoundVideoComposition">Composition</string>
+    <string name="RoundVideoCompositionEnabled">Round video styling</string>
+    <string name="RoundVideoCompositionInfo">Disable styling to record a plain square without outside-circle blur, dimming or Telegram overlays.</string>
 </resources>

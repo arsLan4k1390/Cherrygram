@@ -25,11 +25,14 @@ public class KaboomWidget extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (context == null || intent == null) return;
         super.onReceive(context, intent);
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        if (context == null || appWidgetManager == null || appWidgetIds == null) return;
+
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
@@ -37,12 +40,16 @@ public class KaboomWidget extends AppWidgetProvider {
 
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+        if (context == null || appWidgetManager == null) return;
+
         updateAppWidget(context, appWidgetManager, appWidgetId);
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
     }
 
     public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         ApplicationLoader.postInitApplication();
+
+        if (context == null || appWidgetManager == null) return;
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.kaboom_widget);
 
@@ -61,9 +68,16 @@ public class KaboomWidget extends AppWidgetProvider {
     }
 
     public static void forceUpdateKaboomWidgets(Context context) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        if (context == null) return;
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ApplicationLoader.applicationContext);
+        if (appWidgetManager == null) return;
+
         ComponentName thisWidget = new ComponentName(context, KaboomWidget.class);
         int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+
+        if (allWidgetIds == null) return;
+
         for (int appWidgetId : allWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }

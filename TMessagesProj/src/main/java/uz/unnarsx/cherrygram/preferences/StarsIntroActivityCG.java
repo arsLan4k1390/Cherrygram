@@ -207,7 +207,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
 
         starBalanceIcon = new SpannableStringBuilder("S");
         final ImageReceiverSpan starBalanceIconSpan = new ImageReceiverSpan(starBalanceTextView, currentAccount, 42);
-        starBalanceIconSpan.imageReceiver.setImageBitmap(new RLottieDrawable(R.raw.star_reaction, "s" + R.raw.star_reaction, dp(42), dp(42)));
+        starBalanceIconSpan.imageReceiver.setImageBitmap(new RLottieDrawable(R.raw.star_reaction, dp(42), dp(42)));
         starBalanceIconSpan.imageReceiver.setAutoRepeat(2);
         starBalanceIconSpan.enableShadow(false);
         starBalanceIconSpan.translate(-dp(3), 0);
@@ -422,7 +422,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
             stringRes = "StarsNeededText";
         }
 
-        String str = LocaleController.nullable(formatString(stringRes, LocaleController.getStringResId(stringRes), botName));
+        String str = LocaleController.nullable(formatString(stringRes, 0, botName));
         if (str == null) {
             str = getString(stringRes);
         }

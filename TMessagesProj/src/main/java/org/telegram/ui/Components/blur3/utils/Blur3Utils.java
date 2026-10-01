@@ -52,9 +52,8 @@ public class Blur3Utils {
     public static void captureRelativeParent(IBlur3Capture capture, Canvas canvas, RectF position, View view, ViewGroup parent) {
         captureRelativeParent(capture, canvas, position, view, parent, 255);
     }
-
     public static void captureRelativeParent(IBlur3Capture capture, Canvas canvas, RectF position, View view, ViewGroup parent, int alpha) {
-        if (alpha <= 0) {
+        if (alpha <= 0 || capture == null) {
             return;
         }
 

@@ -3869,11 +3869,15 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 } else {
                     int n = childCountByPosition.get(i);
                     for (int k = startViewChildPosition; k < n; k++) {
+                        CharSequence text = textByPosition.get(i + (k << 16));
+                        if (text == null) {
+                            continue;
+                        }
                         CharSequence prefix = prefixTextByPosition.get(i + (k << 16));
                         if (prefix != null) {
                             stringBuilder.append(prefix).append(' ');
                         }
-                        stringBuilder.append(textByPosition.get(i + (k << 16)));
+                        stringBuilder.append(text);
                         stringBuilder.append('\n');
                     }
                 }

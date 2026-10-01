@@ -166,6 +166,10 @@ public class CameraXView extends BaseCameraView {
         return controller.isFrontface();
     }
 
+    public CameraXController getController() {
+        return controller;
+    }
+
     //ugly api behaviour after permission check
     public void rebind() {
         if (isStreaming) {
@@ -416,7 +420,7 @@ public class CameraXView extends BaseCameraView {
     }
 
     public boolean isFlashAvailable() {
-        return CameraXController.isFlashAvailable();
+        return getController().isFlashAvailable();
     }
 
     @Override

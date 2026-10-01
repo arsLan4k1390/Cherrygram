@@ -72,7 +72,6 @@ import org.telegram.ui.Components.TranslateAlert2;
 import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.StatisticActivity;
-import org.telegram.ui.community.CommunitySheet;
 import org.telegram.ui.web.SearchEngine;
 
 import java.io.File;
@@ -152,7 +151,6 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_EXPLANATION_GEMINI = 2032;
     public final static int OPTION_SUMMARIZE_GEMINI = 2033;
     public final static int OPTION_ADVANCED_SEARCH = 2034;
-    public final static int OPTION_OPEN_COMMUNITY = 2035;
     /** Cherrygram chat options constant id's finish */
 
     /** ActionBar options start */
@@ -162,7 +160,7 @@ public class ChatActivityHelper extends BaseController {
             ArrayList<MessageObject> messages,
             SparseArray<MessageObject>[] selectedMessagesIds,
             long mergeDialogId, int editTextStart, int editTextEnd,
-            TLRPC.TL_forumTopic forumTopic, TLRPC.Chat currentChat, TLRPC.User currentUser
+            TLRPC.TL_forumTopic forumTopic, TLRPC.Chat currentChat
     ) {
         if (id == OPTION_ADVANCED_SEARCH) {
             createSearchWithIDAlert(chatActivity);
@@ -286,12 +284,6 @@ public class ChatActivityHelper extends BaseController {
             });
         } else if (id == OPTION_OPEN_TELEGRAM_BROWSER) {
             Browser.openInTelegramBrowser(chatActivity.getContext(), SearchEngine.getCurrent().getSearchURL(""), null);
-        } else if (id == OPTION_OPEN_COMMUNITY) {
-            if (currentUser != null && currentUser.linked_community_id != 0) {
-                chatActivity.showDialog(new CommunitySheet(chatActivity, currentUser.linked_community_id));
-            } else if (currentChat != null && currentChat.linked_community_id != 0) {
-                chatActivity.showDialog(new CommunitySheet(chatActivity, currentChat.linked_community_id));
-            }
         }
     }
     /** ActionBar options finish */

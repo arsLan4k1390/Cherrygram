@@ -40,6 +40,7 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_stars;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
@@ -56,6 +57,8 @@ import org.telegram.ui.Stars.StarGiftSheet;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class AuctionWearingSheet extends BottomSheetWithRecyclerListView implements GiftAuctionController.OnAuctionUpdateListener {
     private final TL_stars.StarGift starGift;
@@ -258,7 +261,9 @@ public class AuctionWearingSheet extends BottomSheetWithRecyclerListView impleme
         horizontalLayout.addView(giftCell, LayoutHelper.createLinear(116, 116, 0f));
 
         ImageView imageView = new ImageView(context);
-        imageView.setImageResource(R.drawable.ic_ab_back);
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        imageView.setImageDrawable(backDrawable);
         imageView.setScaleX(-1);
         imageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.SRC_IN));
         horizontalLayout.addView(imageView, LayoutHelper.createLinear(24, 24, 0f, Gravity.CENTER_VERTICAL, 12, 0, 12, 0));

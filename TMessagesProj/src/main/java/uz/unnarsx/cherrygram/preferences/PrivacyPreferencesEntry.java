@@ -11,7 +11,6 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.Settings;
@@ -26,7 +25,6 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.UsersSelectActivity;
 
 import java.util.ArrayList;
@@ -39,6 +37,8 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
+import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
@@ -62,6 +62,10 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
 
     private boolean expandedBiometricSection = false;
 
+    private static final Set<String> BIOMETRIC_SECTION_SLUGS = Set.of(
+            ""
+    );
+
     @Override
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("privacy_preferences_screen");
@@ -69,15 +73,21 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Privacy;
+    }
+
+    @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.FilterChats)));
-        if ((CherrygramCoreConfig.isStandalonePremiumBuild() || CherrygramCoreConfig.isDevBuild()) && (getUserConfig().clientUserId == 6578415824L || getUserConfig().clientUserId == 282287840L)) {
+        if ((CherrygramCoreConfig.isStandalonePremiumBuild() || CherrygramCoreConfig.isDevBuild()) && (getUserConfig().clientUserId == 6578415824L || getUserConfig().clientUserId == Constants.Cherrygram_Owner)) {
             items.add(SettingsHelper.asSwitchCG(hideArchivedStoriesRow, "Скрыть архивированные истории", "Скрывает раздел архивированных историй в профиле")
                     .setChecked(CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories())
             );
         }
         items.add(SettingsHelper.asSwitchCG(hideArchiveFromChatsListRow, getString(R.string.SP_HideArchive), getString(R.string.SP_HideArchive_Desc))
                 .setChecked(CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList())
+                .slug("hideArchive")
         );
         if (getChatsPasswordHelper().checkBiometricAvailable()) {
             items.add(UItem.asShadow(null));
@@ -108,6 +118,7 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
                         expandedBiometricSection = !expandedBiometricSection;
                         updateRows(true);
                     }))
+                    .slug("passcodeLock")
             );
             if (expandedBiometricSection) {
                 items.add(UItem.asRoundCheckbox(askBiometricsToOpenChatsRow, getString(R.string.FilterChats))
@@ -133,9 +144,11 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
             }
             items.add(SettingsHelper.asSwitchCG(requireBiometricsToDeleteChatsRow, getString(R.string.SP_AskPinBeforeDelete), getString(R.string.SP_AskPinBeforeDelete_Desc))
                     .setChecked(CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete())
+                    .slug("askPasscodeToDelete")
             );
             items.add(SettingsHelper.asSwitchCG(allowSystemPinRow, getString(R.string.SP_AllowUseSystemPasscode), getString(R.string.SP_AllowUseSystemPasscode_Desc))
                     .setChecked(CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode())
+                    .slug("useSystemPin")
             );
         }
         items.add(UItem.asButton(testFingerprintRow, R.drawable.fingerprint, getString(R.string.SP_TestFingerprint)));
@@ -151,6 +164,7 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
                 R.drawable.msg_delete,
                 getString(R.string.SP_DeleteAccount)
         );
+        deleteAccountButton.slug("deleteAccount");
         deleteAccountButton.red = true;
         items.add(deleteAccountButton);
         items.add(UItem.asShadow(null));
@@ -217,8 +231,16 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
+    public void scrollToRow(String slug, Runnable unknown) {
+        boolean needsExpand = false;
+        if (BIOMETRIC_SECTION_SLUGS.contains(slug) && !expandedBiometricSection) {
+            expandedBiometricSection = true;
+            needsExpand = true;
+        }
+        if (needsExpand) {
+            updateRows(true);
+        }
+        super.scrollToRow(slug, unknown);
     }
 
     private String getBiometricCountText() {
@@ -335,11 +357,11 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
                         title,
                         getString(R.string.SP_BiometricUnavailable_Test_Wrong_Desc),
                         getString(R.string.Settings),
-                        () -> openFingerprintSettings(getContext())
+                        this::openFingerprintSettings
                 ).show();
             }
 
-            private void openFingerprintSettings(Context context) {
+            private void openFingerprintSettings() {
                 Intent fallbackIntent = new Intent(Settings.ACTION_SECURITY_SETTINGS);
 
                 try {
@@ -347,15 +369,15 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
                         Intent fingerprintIntent = new Intent(Settings.ACTION_FINGERPRINT_ENROLL);
                         fingerprintIntent.setPackage("com.android.settings");
 
-                        if (fingerprintIntent.resolveActivity(context.getPackageManager()) != null) {
-                            context.startActivity(fingerprintIntent);
+                        if (fingerprintIntent.resolveActivity(getContext().getPackageManager()) != null) {
+                            getContext().startActivity(fingerprintIntent);
                             return;
                         }
                     }
-                    context.startActivity(fallbackIntent);
+                    getContext().startActivity(fallbackIntent);
                 } catch (SecurityException e) {
                     CherrygramLogger.e(e);
-                    context.startActivity(fallbackIntent);
+                    getContext().startActivity(fallbackIntent);
                 } catch (Exception e) {
                     CherrygramLogger.e(e);
                 }

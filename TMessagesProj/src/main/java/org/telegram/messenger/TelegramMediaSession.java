@@ -14,6 +14,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.media.browse.MediaBrowser;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -33,6 +34,7 @@ import org.telegram.ui.LaunchActivity;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -84,6 +86,7 @@ public class TelegramMediaSession {
     private final LongSparseArray<TLRPC.Chat> chats = new LongSparseArray<>();
     private final LongSparseArray<ArrayList<MessageObject>> musicObjects = new LongSparseArray<>();
     private final LongSparseArray<ArrayList<MediaSessionCompat.QueueItem>> musicQueues = new LongSparseArray<>();
+    private final LongSparseArray<ArrayList<Runnable>> pendingMusicLoads = new LongSparseArray<>();
 
     private Paint roundPaint;
     private RectF bitmapRect;
@@ -133,13 +136,12 @@ public class TelegramMediaSession {
                 MessagesController.getNotificationsSettings(currentAccount), "auto_lastSelectedDialog", 0);
         chatsLoaded = false;
         loadingChats = false;
-        synchronized (musicQueueLock) {
-            dialogs.clear();
-            users.clear();
-            chats.clear();
-            musicObjects.clear();
-            musicQueues.clear();
-        }
+        dialogs.clear();
+        users.clear();
+        chats.clear();
+        musicObjects.clear();
+        musicQueues.clear();
+        pendingMusicLoads.clear();
         try {
             session.setQueue(null);
             session.setQueueTitle(null);
@@ -152,10 +154,7 @@ public class TelegramMediaSession {
     }
 
     public ArrayList<Long> getMusicDialogsSortedByVisibleOrder() {
-        ArrayList<Long> sorted;
-        synchronized (musicQueueLock) {
-            sorted = new ArrayList<>(dialogs);
-        }
+        ArrayList<Long> sorted = new ArrayList<>(dialogs);
         ArrayList<TLRPC.Dialog> all = MessagesController.getInstance(currentAccount).getAllDialogs();
         final java.util.HashMap<Long, Integer> rank = new java.util.HashMap<>();
         for (int i = 0; i < all.size(); i++) {
@@ -217,28 +216,19 @@ public class TelegramMediaSession {
     }
 
     public ArrayList<Long> getMusicDialogs() {
-        synchronized (musicQueueLock) {
-            return new ArrayList<>(dialogs);
-        }
+        return dialogs;
     }
 
     public TLRPC.User getMusicUser(long userId) {
-        synchronized (musicQueueLock) {
-            return users.get(userId);
-        }
+        return users.get(userId);
     }
 
     public TLRPC.Chat getMusicChat(long chatId) {
-        synchronized (musicQueueLock) {
-            return chats.get(chatId);
-        }
+        return chats.get(chatId);
     }
 
     public ArrayList<MessageObject> getMusicMessages(long dialogId) {
-        synchronized (musicQueueLock) {
-            ArrayList<MessageObject> list = musicObjects.get(dialogId);
-            return list != null ? new ArrayList<>(list) : null;
-        }
+        return musicObjects.get(dialogId);
     }
 
     public Bitmap getRoundedAvatar(File path) {
@@ -255,36 +245,56 @@ public class TelegramMediaSession {
         });
     }
 
+    private static final class PendingBrowseRequest {
+        final String parentMediaId;
+        final BrowseChildrenCallback callback;
+
+        PendingBrowseRequest(String parentMediaId, BrowseChildrenCallback callback) {
+            this.parentMediaId = parentMediaId;
+            this.callback = callback;
+        }
+    }
+
+    private final ArrayList<PendingBrowseRequest> pendingBrowseRequests = new ArrayList<>();
+
     public void loadBrowseChildren(String parentMediaId, BrowseChildrenCallback callback) {
-        if (chatsLoaded) {
-            callback.onResult(loadChildrenSync(parentMediaId));
+        if (!chatsLoaded) {
+            pendingBrowseRequests.add(new PendingBrowseRequest(parentMediaId, callback));
+            loadChats();
             return;
         }
+
+        long did = getDialogIdFromMediaId(parentMediaId);
+        if (did != 0 && musicObjects.get(did) == null) {
+            loadMusicForDialog(did, () -> callback.onResult(loadChildrenSync(parentMediaId)));
+            return;
+        }
+
+        callback.onResult(loadChildrenSync(parentMediaId));
+    }
+
+    private void loadChats() {
         if (loadingChats) {
-            // queue up: when load completes we still want a response. Caller may detach result.
-            // For simplicity, attempt again once done by polling on the storage queue.
+            return;
         }
         loadingChats = true;
-        MessagesStorage messagesStorage = MessagesStorage.getInstance(currentAccount);
+
+        final int account = currentAccount;
+        MessagesStorage messagesStorage = MessagesStorage.getInstance(account);
         messagesStorage.getStorageQueue().postRunnable(() -> {
-
-            ArrayList<Long> localDialogs = new ArrayList<>();
-            LongSparseArray<ArrayList<MessageObject>> localMusicObjects = new LongSparseArray<>();
-            LongSparseArray<ArrayList<MediaSessionCompat.QueueItem>> localMusicQueues = new LongSparseArray<>();
-            ArrayList<TLRPC.User> loadedUsers = new ArrayList<>();
-            ArrayList<TLRPC.Chat> loadedChats = new ArrayList<>();
-
+            ArrayList<Long> loadedDialogs = new ArrayList<>();
+            LongSparseArray<TLRPC.User> loadedUsers = new LongSparseArray<>();
+            LongSparseArray<TLRPC.Chat> loadedChats = new LongSparseArray<>();
             try {
                 ArrayList<Long> usersToLoad = new ArrayList<>();
                 ArrayList<Long> chatsToLoad = new ArrayList<>();
-                SQLiteCursor cursor = messagesStorage.getDatabase().queryFinalized(String.format(Locale.US,
-                        "SELECT DISTINCT uid FROM media_v4 WHERE uid != 0 AND mid > 0 AND type = %d", MediaDataController.MEDIA_MUSIC));
+                SQLiteCursor cursor = messagesStorage.getDatabase().queryFinalized(String.format(Locale.US, "SELECT DISTINCT uid FROM media_v4 WHERE uid != 0 AND mid > 0 AND type = %d", MediaDataController.MEDIA_MUSIC));
                 while (cursor.next()) {
                     long dialogId = cursor.longValue(0);
                     if (DialogObject.isEncryptedDialog(dialogId)) {
                         continue;
                     }
-                    localDialogs.add(dialogId);
+                    loadedDialogs.add(dialogId);
                     if (DialogObject.isUserDialog(dialogId)) {
                         usersToLoad.add(dialogId);
                     } else {
@@ -292,94 +302,148 @@ public class TelegramMediaSession {
                     }
                 }
                 cursor.dispose();
-                if (!localDialogs.isEmpty()) {
-                    String ids = TextUtils.join(",", localDialogs);
-                    cursor = messagesStorage.getDatabase().queryFinalized(String.format(Locale.US,
-                            "SELECT uid, data, mid FROM media_v4 WHERE uid IN (%s) AND mid > 0 AND type = %d ORDER BY date DESC, mid DESC",
-                            ids, MediaDataController.MEDIA_MUSIC));
-                    while (cursor.next()) {
-                        NativeByteBuffer data = cursor.byteBufferValue(1);
-                        if (data == null) continue;
-                        TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
-                        message.readAttachPath(data, UserConfig.getInstance(currentAccount).clientUserId);
-                        data.reuse();
-                        if (!MessageObject.isMusicMessage(message)) continue;
-                        long did = cursor.longValue(0);
-                        message.id = cursor.intValue(2);
-                        message.dialog_id = did;
-                        ArrayList<MessageObject> arrayList = localMusicObjects.get(did);
-                        ArrayList<MediaSessionCompat.QueueItem> queueList = localMusicQueues.get(did);
-                        if (arrayList == null) {
-                            arrayList = new ArrayList<>();
-                            localMusicObjects.put(did, arrayList);
-                            queueList = new ArrayList<>();
-                            localMusicQueues.put(did, queueList);
-                        }
-                        MessageObject messageObject = new MessageObject(currentAccount, message, false, true);
-                        arrayList.add(0, messageObject);
-                        MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
-                                .setMediaId(did + "_" + arrayList.size());
-                        builder.setTitle(messageObject.getMusicTitle());
-                        builder.setSubtitle(messageObject.getMusicAuthor());
-                        queueList.add(0, new MediaSessionCompat.QueueItem(builder.build(), queueList.size()));
+
+                if (!usersToLoad.isEmpty()) {
+                    ArrayList<TLRPC.User> usersArrayList = new ArrayList<>();
+                    messagesStorage.getUsersInternal(usersToLoad, usersArrayList);
+                    for (TLRPC.User user : usersArrayList) {
+                        loadedUsers.put(user.id, user);
                     }
-                    cursor.dispose();
-                    if (!usersToLoad.isEmpty()) {
-                        messagesStorage.getUsersInternal(usersToLoad, loadedUsers);
-                    }
-                    if (!chatsToLoad.isEmpty()) {
-                        messagesStorage.getChatsInternal(TextUtils.join(",", chatsToLoad), loadedChats);
+                }
+                if (!chatsToLoad.isEmpty()) {
+                    ArrayList<TLRPC.Chat> chatsArrayList = new ArrayList<>();
+                    messagesStorage.getChatsInternal(TextUtils.join(",", chatsToLoad), chatsArrayList);
+                    for (TLRPC.Chat chat : chatsArrayList) {
+                        loadedChats.put(chat.id, chat);
                     }
                 }
             } catch (Exception e) {
                 FileLog.e(e);
             }
 
-            synchronized (musicQueueLock) {
-                dialogs.addAll(localDialogs);
-                for (int i = 0; i < localMusicObjects.size(); i++) {
-                    musicObjects.put(localMusicObjects.keyAt(i), localMusicObjects.valueAt(i));
-                    musicQueues.put(localMusicQueues.keyAt(i), localMusicQueues.valueAt(i));
+            AndroidUtilities.runOnUIThread(() -> {
+                if (account != currentAccount) {
+                    return;
                 }
-                for (TLRPC.User user : loadedUsers) {
-                    users.put(user.id, user);
+                dialogs.clear();
+                dialogs.addAll(loadedDialogs);
+                users.clear();
+                for (int i = 0; i < loadedUsers.size(); i++) {
+                    users.put(loadedUsers.keyAt(i), loadedUsers.valueAt(i));
                 }
-                for (TLRPC.Chat chat : loadedChats) {
-                    chats.put(chat.id, chat);
+                chats.clear();
+                for (int i = 0; i < loadedChats.size(); i++) {
+                    chats.put(loadedChats.keyAt(i), loadedChats.valueAt(i));
                 }
+                chatsLoaded = true;
+                loadingChats = false;
+                if (lastSelectedDialog == 0 && !dialogs.isEmpty()) {
+                    lastSelectedDialog = dialogs.get(0);
+                }
+
+                ArrayList<PendingBrowseRequest> requests = new ArrayList<>(pendingBrowseRequests);
+                pendingBrowseRequests.clear();
+                for (int i = 0; i < requests.size(); i++) {
+                    PendingBrowseRequest request = requests.get(i);
+                    loadBrowseChildren(request.parentMediaId, request.callback);
+                }
+            });
+        });
+    }
+
+    private void loadMusicForDialog(long did, Runnable onLoaded) {
+        ArrayList<Runnable> callbacks = pendingMusicLoads.get(did);
+        if (callbacks != null) {
+            if (onLoaded != null) {
+                callbacks.add(onLoaded);
+            }
+            return;
+        }
+
+        callbacks = new ArrayList<>();
+        if (onLoaded != null) {
+            callbacks.add(onLoaded);
+        }
+        pendingMusicLoads.put(did, callbacks);
+
+        final int account = currentAccount;
+        MessagesStorage messagesStorage = MessagesStorage.getInstance(account);
+        messagesStorage.getStorageQueue().postRunnable(() -> {
+            ArrayList<MessageObject> arrayList = new ArrayList<>();
+            ArrayList<MediaSessionCompat.QueueItem> queueList = new ArrayList<>();
+            try {
+                SQLiteCursor cursor = messagesStorage.getDatabase().queryFinalized(String.format(Locale.US, "SELECT data, mid FROM media_v4 WHERE uid = %d AND mid > 0 AND type = %d ORDER BY date DESC, mid DESC", did, MediaDataController.MEDIA_MUSIC));
+                while (cursor.next()) {
+                    NativeByteBuffer data = cursor.byteBufferValue(0);
+                    if (data == null) {
+                        continue;
+                    }
+                    TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
+                    message.readAttachPath(data, UserConfig.getInstance(account).clientUserId);
+                    data.reuse();
+                    if (!MessageObject.isMusicMessage(message)) {
+                        continue;
+                    }
+
+                    message.id = cursor.intValue(1);
+                    message.dialog_id = did;
+                    MessageObject messageObject = new MessageObject(account, message, false, true);
+                    arrayList.add(messageObject);
+                    MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder()
+                            .setMediaId(did + "_" + arrayList.size())
+                            .setTitle(messageObject.getMusicTitle())
+                            .setSubtitle(messageObject.getMusicAuthor());
+                    queueList.add(new MediaSessionCompat.QueueItem(builder.build(), queueList.size()));
+                }
+                cursor.dispose();
+                Collections.reverse(arrayList);
+                Collections.reverse(queueList);
+            } catch (Exception e) {
+                FileLog.e(e);
             }
 
             AndroidUtilities.runOnUIThread(() -> {
-                chatsLoaded = true;
-                loadingChats = false;
-                synchronized (musicQueueLock) {
-                    if (lastSelectedDialog == 0 && !dialogs.isEmpty()) {
-                        lastSelectedDialog = dialogs.get(0);
+                if (account != currentAccount) {
+                    return;
+                }
+                musicObjects.put(did, arrayList);
+                musicQueues.put(did, queueList);
+                ArrayList<Runnable> loadedCallbacks = pendingMusicLoads.get(did);
+                pendingMusicLoads.remove(did);
+                if (did == lastSelectedDialog) {
+                    applyQueueFor(did);
+                }
+                if (loadedCallbacks != null) {
+                    for (int i = 0; i < loadedCallbacks.size(); i++) {
+                        loadedCallbacks.get(i).run();
                     }
                 }
-                applyQueueFor(lastSelectedDialog);
-                callback.onResult(loadChildrenSync(parentMediaId));
             });
         });
+    }
+
+    private long getDialogIdFromMediaId(String parentMediaId) {
+        if (parentMediaId == null || !parentMediaId.startsWith(MEDIA_ID_CHAT_PREFIX)) {
+            return 0;
+        }
+        try {
+            return Long.parseLong(parentMediaId.substring(MEDIA_ID_CHAT_PREFIX.length()));
+        } catch (Exception e) {
+            FileLog.e(e);
+            return 0;
+        }
     }
 
     private List<MediaBrowser.MediaItem> loadChildrenSync(String parentMediaId) {
         List<MediaBrowser.MediaItem> mediaItems = new ArrayList<>();
         if (MEDIA_ID_ROOT.equals(parentMediaId)) {
-            ArrayList<Long> dialogsCopy;
-            synchronized (musicQueueLock) {
-                dialogsCopy = new ArrayList<>(dialogs);
-            }
-            for (int a = 0; a < dialogsCopy.size(); a++) {
-                long dialogId = dialogsCopy.get(a);
+            for (int a = 0; a < dialogs.size(); a++) {
+                long dialogId = dialogs.get(a);
                 android.media.MediaDescription.Builder builder = new android.media.MediaDescription.Builder()
                         .setMediaId(MEDIA_ID_CHAT_PREFIX + dialogId);
                 TLRPC.FileLocation avatar = null;
                 if (DialogObject.isUserDialog(dialogId)) {
-                    TLRPC.User user;
-                    synchronized (musicQueueLock) {
-                        user = users.get(dialogId);
-                    }
+                    TLRPC.User user = users.get(dialogId);
                     if (user != null) {
                         builder.setTitle(ContactsController.formatName(user.first_name, user.last_name));
                         if (user.photo != null && !(user.photo.photo_small instanceof TLRPC.TL_fileLocationUnavailable)) {
@@ -389,10 +453,7 @@ public class TelegramMediaSession {
                         builder.setTitle("DELETED USER");
                     }
                 } else {
-                    TLRPC.Chat chat;
-                    synchronized (musicQueueLock) {
-                        chat = chats.get(-dialogId);
-                    }
+                    TLRPC.Chat chat = chats.get(-dialogId);
                     if (chat != null) {
                         builder.setTitle(chat.title);
                         if (chat.photo != null && !(chat.photo.photo_small instanceof TLRPC.TL_fileLocationUnavailable)) {
@@ -421,11 +482,7 @@ public class TelegramMediaSession {
             } catch (Exception e) {
                 FileLog.e(e);
             }
-            ArrayList<MessageObject> arrayList;
-            synchronized (musicQueueLock) {
-                ArrayList<MessageObject> src = musicObjects.get(did);
-                arrayList = src != null ? new ArrayList<>(src) : null;
-            }
+            ArrayList<MessageObject> arrayList = musicObjects.get(did);
             if (arrayList != null) {
                 for (int a = 0; a < arrayList.size(); a++) {
                     MessageObject messageObject = arrayList.get(a);
@@ -442,37 +499,20 @@ public class TelegramMediaSession {
 
     private void applyQueueFor(long did) {
         if (did == 0) return;
-
-        ArrayList<MediaSessionCompat.QueueItem> queueCopy;
-        MessageObject messageObject;
-
-        synchronized (musicQueueLock) {
-            ArrayList<MessageObject> arrayList = musicObjects.get(did);
-            ArrayList<MediaSessionCompat.QueueItem> queueList = musicQueues.get(did);
-            if (arrayList == null || arrayList.isEmpty() || queueList == null) return;
-
-            queueCopy = new ArrayList<>(queueList);
-            messageObject = arrayList.get(0);
-        }
-
-        session.setQueue(queueCopy);
-
+        ArrayList<MessageObject> arrayList = musicObjects.get(did);
+        ArrayList<MediaSessionCompat.QueueItem> queueList = musicQueues.get(did);
+        if (arrayList == null || arrayList.isEmpty() || queueList == null) return;
+        session.setQueue(queueList);
         if (DialogObject.isUserDialog(did)) {
-            TLRPC.User user;
-            synchronized (musicQueueLock) {
-                user = users.get(did);
-            }
+            TLRPC.User user = users.get(did);
             session.setQueueTitle(user != null
                     ? ContactsController.formatName(user.first_name, user.last_name)
                     : "DELETED USER");
         } else {
-            TLRPC.Chat chat;
-            synchronized (musicQueueLock) {
-                chat = chats.get(-did);
-            }
+            TLRPC.Chat chat = chats.get(-did);
             session.setQueueTitle(chat != null ? chat.title : "DELETED CHAT");
         }
-
+        MessageObject messageObject = arrayList.get(0);
         MediaMetadataCompat.Builder mb = new MediaMetadataCompat.Builder()
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, (long) (messageObject.getDuration() * 1000))
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, messageObject.getMusicAuthor())
@@ -678,35 +718,25 @@ public class TelegramMediaSession {
             try {
                 long did = Long.parseLong(args[0]);
                 int id = Integer.parseInt(args[1]);
-
-                ArrayList<MessageObject> arrayList;
-                ArrayList<MediaSessionCompat.QueueItem> queueList;
-                synchronized (musicQueueLock) {
-                    ArrayList<MessageObject> srcArrayList = musicObjects.get(did);
-                    ArrayList<MediaSessionCompat.QueueItem> srcQueueList = musicQueues.get(did);
-                    if (srcArrayList == null || id < 0 || id >= srcArrayList.size()) return;
-                    arrayList = new ArrayList<>(srcArrayList);
-                    queueList = srcQueueList != null ? new ArrayList<>(srcQueueList) : null;
+                ArrayList<MessageObject> arrayList = musicObjects.get(did);
+                if (arrayList == null) {
+                    loadMusicForDialog(did, () -> onPlayFromMediaId(mediaId, extras));
+                    return;
                 }
-
+                ArrayList<MediaSessionCompat.QueueItem> queueList = musicQueues.get(did);
+                if (id < 0 || id >= arrayList.size()) return;
                 lastSelectedDialog = did;
                 MessagesController.getNotificationsSettings(currentAccount).edit()
                         .putLong("auto_lastSelectedDialog", did).apply();
                 MediaController.getInstance().setPlaylist(arrayList, arrayList.get(id), 0, false, null);
                 session.setQueue(queueList);
                 if (DialogObject.isUserDialog(did)) {
-                    TLRPC.User user;
-                    synchronized (musicQueueLock) {
-                        user = users.get(did);
-                    }
+                    TLRPC.User user = users.get(did);
                     session.setQueueTitle(user != null
                             ? ContactsController.formatName(user.first_name, user.last_name)
                             : "DELETED USER");
                 } else {
-                    TLRPC.Chat chat;
-                    synchronized (musicQueueLock) {
-                        chat = chats.get(-did);
-                    }
+                    TLRPC.Chat chat = chats.get(-did);
                     session.setQueueTitle(chat != null ? chat.title : "DELETED CHAT");
                 }
             } catch (Exception e) {
@@ -718,19 +748,10 @@ public class TelegramMediaSession {
         public void onPlayFromSearch(String query, Bundle extras) {
             if (query == null || query.length() == 0) return;
             String q = query.toLowerCase();
-
-            ArrayList<Long> dialogsCopy;
-            synchronized (musicQueueLock) {
-                dialogsCopy = new ArrayList<>(dialogs);
-            }
-
-            for (int a = 0; a < dialogsCopy.size(); a++) {
-                long did = dialogsCopy.get(a);
+            for (int a = 0; a < dialogs.size(); a++) {
+                long did = dialogs.get(a);
                 if (DialogObject.isUserDialog(did)) {
-                    TLRPC.User user;
-                    synchronized (musicQueueLock) {
-                        user = users.get(did);
-                    }
+                    TLRPC.User user = users.get(did);
                     if (user == null) continue;
                     String first = user.first_name != null ? user.first_name.toLowerCase() : null;
                     String last = user.last_name != null ? user.last_name.toLowerCase() : null;
@@ -739,10 +760,7 @@ public class TelegramMediaSession {
                         return;
                     }
                 } else {
-                    TLRPC.Chat chat;
-                    synchronized (musicQueueLock) {
-                        chat = chats.get(-did);
-                    }
+                    TLRPC.Chat chat = chats.get(-did);
                     if (chat == null) continue;
                     if (chat.title != null && chat.title.toLowerCase().contains(q)) {
                         onPlayFromMediaId(did + "_" + 0, null);
@@ -770,8 +788,6 @@ public class TelegramMediaSession {
     }
 
     /** Cherrygram start */
-    private final Object musicQueueLock = new Object();
-
     public void clearPlaybackState() {
         try {
             session.setPlaybackState(new PlaybackStateCompat.Builder()

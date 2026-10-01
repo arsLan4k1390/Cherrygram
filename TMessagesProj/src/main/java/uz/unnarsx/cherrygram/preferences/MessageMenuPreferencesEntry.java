@@ -13,7 +13,6 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyProSpan;
 
-import android.content.Context;
 import android.os.Build;
 import android.view.View;
 
@@ -22,13 +21,14 @@ import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.R;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
@@ -52,6 +52,11 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Message_Menu;
+    }
+
+    @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         boolean requireDonate = !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
         boolean requireDonate2 = !DonatesManager.INSTANCE.checkAllDonatedAccounts() && !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
@@ -67,18 +72,22 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
                             )
                     .setChecked(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
                     .setLocked(requireDonate)
+                    .slug("iosMsgMenu")
             );
             items.add(SettingsHelper.asSwitchCG(unifiedScrollRow, getString(R.string.CP_MessageMenuUnifiedScroll), getString(R.string.CP_MessageMenuUnifiedScroll_Desc))
                     .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll())
                     .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
+                    .slug("unifiedScroll")
             );
             items.add(SettingsHelper.asSwitchCG(autoScrollMessagesRow, getString(R.string.CP_MessageMenuAutoscroll), getString(R.string.CP_MessageMenuAutoscroll_Desc))
                     .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuAutoScroll())
                     .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground() && !CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll())
+                    .slug("messageAutoscroll")
             );
             items.add(SettingsHelper.asSwitchCG(fixedMessageHeightRow, getString(R.string.CP_MessageMenuFixedHeight), getString(R.string.CP_MessageMenuFixedHeight_Desc))
                     .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuFixedHeight())
                     .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground() && !CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll())
+                    .slug("comfortableHEight")
             );
             /*items.add(SettingsHelper.asSwitchCG(blurMessageMenuItemsRow, getString(R.string.CP_BlurMessageMenuItems), getString(R.string.CP_BlurMessageMenuItems_Desc))
                     .setChecked(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuItems())
@@ -88,19 +97,24 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
                 items.add(SettingsHelper.asSwitchCG(useNativeBlurRow, getString(R.string.CP_MessageMenuNativeBlur), getString(R.string.CP_MessageMenuNativeBlur_Desc))
                         .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur())
                         .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
+                        .slug("nativeBlur")
                 );
 
                 items.add(UItem.asShadow(null));
-                items.add(SettingsHelper.asSwitchCG(fixAnimationDuration, "Fix animation duration")
-                        .setChecked(CherrygramMessagesConfig.INSTANCE.getFixMsgMenuAnimation())
-                        .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
-                );
+                if (CherrygramCoreConfig.isDevBuild()) {
+                    items.add(SettingsHelper.asSwitchCG(fixAnimationDuration, "Fix animation duration")
+                            .setChecked(CherrygramMessagesConfig.INSTANCE.getFixMsgMenuAnimation())
+                            .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
+                    );
+                }
             }
             items.add(UItem.asShadow(null));
         }
 
         items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
-        items.add(UItem.asButton(messageMenuItemsRow, R.drawable.msg_list, getString(R.string.CP_MessageMenuItems)));
+        items.add(UItem.asButton(messageMenuItemsRow, R.drawable.msg_list, getString(R.string.CP_MessageMenuItems))
+                .slug("menuItems")
+        );
         items.add(
                 SettingsHelper.asSwitchCG
                         (
@@ -110,6 +124,7 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
                         )
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuItemsCompactView())
                 .setLocked(requireDonate2)
+                .slug("compactMsgMenu")
         );
         items.add(UItem.asShadow(null));
     }
@@ -178,11 +193,6 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
             CherrygramMessagesConfig.INSTANCE.setMsgMenuItemsCompactView(!CherrygramMessagesConfig.INSTANCE.getMsgMenuItemsCompactView());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgMenuItemsCompactView());
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
     }
 
 }

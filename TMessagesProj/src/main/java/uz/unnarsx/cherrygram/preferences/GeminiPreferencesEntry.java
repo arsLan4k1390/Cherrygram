@@ -12,7 +12,6 @@ package uz.unnarsx.cherrygram.preferences;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.content.Context;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -27,7 +26,6 @@ import org.telegram.messenger.R;
 import org.telegram.ui.Components.OutlineEditText;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -37,6 +35,7 @@ import uz.unnarsx.cherrygram.chats.gemini.network.ModelInfo;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
@@ -52,6 +51,11 @@ public class GeminiPreferencesEntry extends BaseCGPreferencesEntry {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("gemini_preferences_screen");
         return getString(R.string.CP_GeminiAI_Header);
+    }
+
+    @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Gemini;
     }
 
     @Override
@@ -75,7 +79,9 @@ public class GeminiPreferencesEntry extends BaseCGPreferencesEntry {
         geminiApiKeyField.setMinimumHeight(200);
         geminiApiKeyField.setPadding(dp(16), dp(12), dp(16), dp(12));
         geminiApiKeyField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
-        items.add(SettingsHelper.asCustomWithBackground(geminiApiKeyField));
+        items.add(SettingsHelper.asCustomWithBackground(geminiApiKeyField)
+                .slug("apiKeyField")
+        );
         items.add(UItem.asShadow(getGeminiApiKeyAdvice()));
 
         items.add(UItem.asHeader(getString(R.string.CP_GeminiAI_Model)));
@@ -96,7 +102,9 @@ public class GeminiPreferencesEntry extends BaseCGPreferencesEntry {
         geminiModelNameField.setMinimumHeight(200);
         geminiModelNameField.setPadding(dp(16), dp(12), dp(16), dp(12));
         geminiModelNameField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
-        items.add(SettingsHelper.asCustomWithBackground(geminiModelNameField));
+        items.add(SettingsHelper.asCustomWithBackground(geminiModelNameField)
+                .slug("modelName")
+        );
 
         items.add(
                 SettingsHelper.asTextDetail(
@@ -125,7 +133,9 @@ public class GeminiPreferencesEntry extends BaseCGPreferencesEntry {
         geminiSystemPromptField.setMinimumHeight(200);
         geminiSystemPromptField.setPadding(dp(16), dp(12), dp(16), dp(12));
         geminiSystemPromptField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
-        items.add(SettingsHelper.asCustomWithBackground(geminiSystemPromptField));
+        items.add(SettingsHelper.asCustomWithBackground(geminiSystemPromptField)
+                .slug("systemPrompt")
+        );
         items.add(UItem.asShadow(getString(R.string.CP_GeminiAI_System_Prompt_Desc)));
 
         items.add(UItem.asHeader(getString(R.string.CP_GeminiAI_Temperature)));
@@ -138,6 +148,7 @@ public class GeminiPreferencesEntry extends BaseCGPreferencesEntry {
                         val -> String.format(Locale.US, "%.1f", val / 10f),
                         CherrygramMessagesConfig.INSTANCE::setGeminiTemperatureValue
                 )
+                .slug("temperature")
         );
         items.add(UItem.asShadow(getString(R.string.CP_GeminiAI_Temperature_Desc)));
     }
@@ -173,11 +184,6 @@ public class GeminiPreferencesEntry extends BaseCGPreferencesEntry {
                     })
             );
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
     }
 
     private InputFilter[] getInputFilter() {

@@ -1,11 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
-        google()
         mavenCentral()
+        google()
         gradlePluginPortal()
         maven { url 'https://developer.huawei.com/repo/' }
-        maven { url "https://europe-west3-maven.pkg.dev/talsec-artifact-repository/freerasp" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.13.2'
@@ -24,20 +23,6 @@ allprojects {
         mavenCentral()
         maven { url 'https://developer.huawei.com/repo/' }
         maven { url "https://jitpack.io" }
-        maven { url "https://europe-west3-maven.pkg.dev/talsec-artifact-repository/freerasp" }
-    }
-}
-
-subprojects {
-    afterEvaluate {
-        if (plugins.hasPlugin("com.android.library") ||
-                plugins.hasPlugin("com.android.application")) {
-            android {
-                buildFeatures {
-                    viewBinding true
-                }
-            }
-        }
     }
 }
 
@@ -54,6 +39,25 @@ subprojects {
         android {
             androidResources {
                 ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~:!optional:!licences:!*stmary*:!*eufb*'
+            }
+        }
+    }
+
+    if (project.projectDir.absolutePath.contains('/TMessagesProj_Modules/media/')) {
+        project.plugins.withId('com.android.library') {
+            project.android {
+                if (namespace == null) {
+                    def manifestFile = file("${project.projectDir}/src/main/AndroidManifest.xml")
+
+                    if (manifestFile.exists()) {
+                        def manifest = new XmlSlurper().parse(manifestFile)
+                        def manifestPackage = manifest.@package.text()
+
+                        if (manifestPackage) {
+                            namespace manifestPackage
+                        }
+                    }
+                }
             }
         }
     }

@@ -13,9 +13,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.telegram.tgnet.ConnectionManagerDelegate
@@ -24,7 +22,7 @@ import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.misc.Constants
 import java.util.Locale
 
-object KotlinFragmentsManager: CoroutineScope by MainScope() {
+object KotlinFragmentsManager {
 
     suspend fun checkConnection() = withContext(Dispatchers.Default) {
 //        etrioaei43()

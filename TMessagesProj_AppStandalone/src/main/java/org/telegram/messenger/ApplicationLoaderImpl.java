@@ -33,6 +33,7 @@ import org.telegram.ui.SMSSubscribeSheet;
 
 import java.io.File;
 
+import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet;
 
 public class ApplicationLoaderImpl extends ApplicationLoader {
@@ -151,7 +152,7 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
                         new AlertDialog.Builder(LaunchActivity.instance)
                                 .setTitle(LocaleController.getString(R.string.SmsNoSimTitle))
                                 .setMessage(AndroidUtilities.replaceTags(LocaleController.getString(R.string.SmsNoSimMessage)))
-                                .setPositiveButton(LocaleController.getString(R.string.OK), null)
+                                .setPositiveButton(LocaleController.getString(org.telegram.messenger.R.string.OK), null)
                                 .show();
                         return;
                     }
@@ -163,7 +164,7 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
                             new AlertDialog.Builder(LaunchActivity.instance)
                                     .setTitle(LocaleController.getString(R.string.SmsNoSimTitle))
                                     .setMessage(AndroidUtilities.replaceTags(LocaleController.getString(R.string.SmsNoSimMessage)))
-                                    .setPositiveButton(LocaleController.getString(R.string.OK), null)
+                                    .setPositiveButton(LocaleController.getString(org.telegram.messenger.R.string.OK), null)
                                     .show();
                             return;
                         }
@@ -171,7 +172,7 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
                             if (err != null) {
                                 BulletinFactory.showError(err);
                             } else if (res instanceof TLRPC.TL_boolFalse) {
-                                BulletinFactory.global().createErrorBulletin(LocaleController.getString(R.string.UnknownError)).show();
+                                BulletinFactory.global().createErrorBulletin(LocaleController.getString(org.telegram.messenger.R.string.UnknownError)).show();
                             } else {
                                 controller.setState(SMSJobController.STATE_JOINED);
                                 controller.loadStatus(true);
@@ -286,14 +287,16 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
         return null;
     }
 
+    /** Cherrygram start */
     @Override
     public boolean showUpdaterBottomSheet(BaseFragment fragment, boolean available, TLRPC.TL_help_appUpdate update) {
         try {
             UpdaterBottomSheet.showAlert(fragment, available, update);
         } catch (Exception e) {
-            FileLog.e(e);
+            CherrygramLogger.e(e);
         }
         return true;
     }
+    /** Cherrygram finish */
 
 }

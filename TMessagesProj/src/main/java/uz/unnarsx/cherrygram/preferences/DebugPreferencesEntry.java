@@ -11,7 +11,6 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -37,6 +36,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
@@ -73,6 +73,11 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Debug;
+    }
+
+    @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader("Misc"));
         if (!CherrygramCoreConfig.isStandaloneStableBuild() && !CherrygramCoreConfig.isPlayStoreBuild()) {
@@ -82,6 +87,7 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
         }
         items.add(SettingsHelper.asSwitchCG(oldTimeStyleRow, "Default time style in chats *", "Unlike iOS and TDesktop")
                 .setChecked(CherrygramDebugConfig.INSTANCE.getOldTimeStyle())
+                .slug("oldTimeStyle")
         );
         if (CherrygramCoreConfig.isDevBuild()) {
             items.add(SettingsHelper.asSwitchCG(safeStarsRow, "Use SafeStars *")
@@ -93,7 +99,9 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
         }
         items.add(UItem.asButton(performanceClassRow, "Force performance class", SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass())));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            items.add(UItem.asButton(fixCallsNotifRow, "Fix calls notification *"));
+            items.add(UItem.asButton(fixCallsNotifRow, "Fix calls notification *")
+                    .slug("fixCalls")
+            );
         }
         items.add(UItem.asShadow(null));
 
@@ -115,8 +123,13 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(SettingsHelper.asSwitchCG(editTextFixRow, "EditTextSugestionsFix *", "Emojis/formatting disappear when Samsung puts suggestions in edit")
                 .setChecked(CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix())
         );
+        items.add(UItem.asShadow(null));
+
+        items.add(UItem.asHeader(getString(R.string.CP_Header_Record)));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            items.add(UItem.asButton(audioSourceRow, "Microphone Audio Source *", getAudioSourceValue()));
+            items.add(UItem.asButton(audioSourceRow, "Microphone Audio Source *", getAudioSourceValue())
+                    .slug("audioSource")
+            );
         }
         items.add(SettingsHelper.asSwitchCG(sendMaxQualityRow, "Send videos at max quality *", "Max quality will be automatically selected when you send a video")
                 .setChecked(CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality())
@@ -127,6 +140,8 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(SettingsHelper.asSwitchCG(hideTimestampRow, "Hide video timestamp *", "Saved progress for videos. Return exactly where you left off.")
                 .setChecked(CherrygramDebugConfig.INSTANCE.getHideVideoTimestamp())
         );
+
+        items.add(UItem.asShadow(null));
         items.add(UItem.asButton(resetDialogsRow, 0, getString(R.string.DebugMenuResetDialogs)));
         items.add(UItem.asButton(clearMediaCacheRow, 0, getString(R.string.DebugMenuClearMediaCache)));
         items.add(UItem.asButton(readAllDialogsRow, 0, getString(R.string.DebugMenuReadAllDialogs)));
@@ -137,7 +152,6 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(UItem.asButton(reloadContactsRow, 0, getString(R.string.DebugMenuReloadContacts)));
         items.add(UItem.asButton(resetContactsRow, 0, getString(R.string.DebugMenuResetContacts)));
         items.add(UItem.asShadow("* Cherrygram's feature."));
-        items.add(UItem.asShadow(null));
     }
 
     @Override
@@ -212,11 +226,6 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
 
             showSuccessBulletin();
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
     }
 
     private void showPerformanceClassDialog(View view) {

@@ -58,6 +58,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
+
 public class LinkManager {
 
     private final LaunchActivity activity;
@@ -136,6 +138,12 @@ public class LinkManager {
             return handleNewBot(second, segments.size() >= 3 ? segments.get(2) : null, uri.getQueryParameter("name"));
         }
 
+        if ("cgSettings".equals(first)) {
+            DeeplinkHelper.processDeepLink(uri, this::presentFragment,
+                    () -> getBulletinFactory().createErrorBulletin(LocaleController.getString(R.string.CG_UnknownCherrySettingsOption)).show(), progress);
+            return true;
+        }
+
         return false;
     }
 
@@ -181,6 +189,11 @@ public class LinkManager {
 
         if ("settings".equalsIgnoreCase(first))
             return handleSettings(segments.subList(1, segments.size()));
+
+        if (DeeplinkHelper.DeepLinksRepo.CG_Update.equals(first) || "cg_upgrade".equals(first) || "update".equals(first) || "upgrade".equals(first)) {
+            activity.checkAppUpdate(true, progress);
+            return true;
+        }
 
         if ("chats".equalsIgnoreCase(first)) {
             if ("search".equalsIgnoreCase(second)) {
@@ -1007,8 +1020,6 @@ public class LinkManager {
                     scrollTo("useProxyRow");
                 if ("add-proxy".equalsIgnoreCase(third))
                     scrollTo("proxyAddRow");
-                if ("use-for-calls".equalsIgnoreCase(third))
-                    scrollTo("callsRow");
 
                 return true;
             }

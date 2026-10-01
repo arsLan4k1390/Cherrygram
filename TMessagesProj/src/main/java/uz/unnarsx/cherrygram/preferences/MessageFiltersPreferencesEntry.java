@@ -29,7 +29,6 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Components.OutlineEditText;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.UsersSelectActivity;
 
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import uz.unnarsx.cherrygram.chats.filters.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
@@ -67,6 +67,11 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("filters_preferences_screen");
         return getString(R.string.CP_Message_Filtering);
+    }
+
+    @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Message_Filters;
     }
 
     @Override
@@ -100,6 +105,7 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(SettingsHelper.asSwitchCG(enableFilterRow, SettingsHelper.applyProSpan(getString(R.string.CP_Message_Filtering_Filter), getResourceProvider()), getString(R.string.CP_Message_Filtering_Filter_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
                 .setLocked(requireDonate)
+                .slug("enableMessageFilter")
         );
         outlineEditText = new OutlineEditText(getContext(), getResourceProvider());
         outlineEditText.setPadding(dp(16), dp(12), dp(16), dp(12));
@@ -128,13 +134,16 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(SettingsHelper.asSwitchCG(detectTranslitRow, getString(R.string.CP_Message_Filtering_Translit), getString(R.string.CP_Message_Filtering_Translit_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectTranslit())
                 .setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
+                .slug("translitDetection")
         );
         items.add(SettingsHelper.asSwitchCG(exactWordMatchRow, getString(R.string.CP_Message_Filtering_Exact_Words), getString(R.string.CP_Message_Filtering_Exact_Words_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersMatchExactWord())
                 .setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
+                .slug("exactWordMatch")
         );
         items.add(UItem.asButton(exclusionsRow, R.drawable._menu_stream_comments_off_24, getString(R.string.CP_Message_Filtering_Exclusions), String.valueOf(MessagesFilterHelper.INSTANCE.getExcludedChatsCount()))
                 .setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
+                .slug("exclusions")
         );
         items.add(UItem.asShadow(null));
 
@@ -142,26 +151,31 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(SettingsHelper.asSwitchCG(filterFromBlockedRow, getString(R.string.CP_Message_Filtering_FilterBlocked), getString(R.string.CP_Message_Filtering_FilterBlockedDesc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideFromBlocked())
                 .setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
+                .slug("filterFromBlocked")
         );
         items.add(SettingsHelper.asSwitchCG(detectEntitiesRow, getString(R.string.CP_Message_Filtering_Entities), getString(R.string.CP_Message_Filtering_EntitiesDesc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectEntities())
                 .setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
+                .slug("filterEntities")
         );
         items.add(UItem.asShadow(null));
 
         items.add(SettingsHelper.asSwitchCG(hideAllRow, getString(R.string.CP_Message_Filtering_HideAll), getString(R.string.CP_Message_Filtering_HideAllDesc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideAllUnderSpoiler())
                 .setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
+                .slug("spoilAll")
         );
         items.add(SettingsHelper.asSwitchCG(collapseAutomaticallyRow, getString(R.string.CP_Message_Filtering_Collapse), getString(R.string.CP_Message_Filtering_Collapse_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersCollapseAutomatically())
                 .setEnabled(
                         CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters() && (CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideFromBlocked() || CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideAllUnderSpoiler())
                 )
+                .slug("collapseMessages")
         );
         items.add(SettingsHelper.asSwitchCG(makeTransparentRow, getString(R.string.CP_Message_Filtering_Transparent), getString(R.string.CP_Message_Filtering_Transparent_Desc))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFilterTransparentMsg())
                 .setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters())
+                .slug("transparency")
         );
     }
 
@@ -234,11 +248,6 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
             CherrygramMessagesConfig.INSTANCE.setMsgFilterTransparentMsg(!CherrygramMessagesConfig.INSTANCE.getMsgFilterTransparentMsg());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgFilterTransparentMsg());
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
     }
 
     private boolean hasChanges() {

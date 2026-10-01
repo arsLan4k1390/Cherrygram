@@ -39,7 +39,6 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.CornerPathEffect;
 import android.graphics.LinearGradient;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
@@ -74,7 +73,6 @@ import android.text.style.DynamicDrawableSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.util.Pair;
 import android.util.Property;
 import android.util.SparseArray;
@@ -6388,11 +6386,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.startSpoilers);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.stopSpoilers);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.didUpdatePremiumGiftStickers);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.userInfoDidLoad);
+        if (observersGroup != null) {
+            observersGroup.removeAllObservers();
+            observersGroup = null;
+        }
 
         cancelShakeAnimation();
         if (checkBox != null) {
@@ -6408,10 +6405,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             pollCountDownTimer.stop();
             pollCountDownTimer = null;
         }
-        if (currentMessageObject.richLayout != null) {
+        if (currentMessageObject != null && currentMessageObject.richLayout != null) {
             currentMessageObject.richLayout.detach(this);
         }
-        if (transitionParams.animateOutRichLayout != null) {
+        if (transitionParams != null && transitionParams.animateOutRichLayout != null) {
             transitionParams.animateOutRichLayout.detach(this);
         }
         for (PollButton btn : pollButtons) {
@@ -6491,15 +6488,24 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         Choreographer60FpsContent.getInstance().removeFrameCallback(invalidateOutboundsRunnable);
     }
 
+    private NotificationCenter.ObserversGroup observersGroup;
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.startSpoilers);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.stopSpoilers);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.didUpdatePremiumGiftStickers);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.userInfoDidLoad);
+        if (observersGroup != null) {
+            observersGroup.removeAllObservers();
+            observersGroup = null;
+        }
+
+        observersGroup = NotificationCenter.getInstance(currentAccount)
+            .createObserversGroup(this)
+            .add(NotificationCenter.userInfoDidLoad)
+            .addGlobal(NotificationCenter.startSpoilers)
+            .addGlobal(NotificationCenter.stopSpoilers)
+            .addGlobal(NotificationCenter.emojiLoaded)
+            .addGlobal(NotificationCenter.didUpdatePremiumGiftStickers);
 
         if (currentMessageObject != null) {
             currentMessageObject.animateComments = false;
@@ -15471,7 +15477,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 final float s = (1f - scale) * .7f;
                 canvas.scale(s, s, radialProgress.progressRect.centerX(), AndroidUtilities.lerp(radialProgress.progressRect.top, radialProgress.progressRect.bottom, .5f));
                 if (onceFire == null) {
-                    onceFire = new RLottieDrawable(R.raw.fire_once, "fire_once", dp(32), dp(32), true, null);
+                    onceFire = new RLottieDrawable(R.raw.fire_once, dp(32), dp(32), true, null);
                     onceFire.setMasterParent(this);
                     onceFire.setAllowDecodeSingleFrame(true);
                     onceFire.setAutoRepeat(1);
@@ -18584,8 +18590,12 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         } else if (currentMessageObject.isRepostPreview) {
             timeString = LocaleController.formatSmallDateChat(messageObject.messageOwner.date) + ", " + LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000);
         } else if (edited) {
-            timeString = ChatsHelper.createEditedString(currentMessageObject);
-        } else if (CherrygramMessagesConfig.INSTANCE.getMsgForwardDate() && (currentMessageObject.isSaved && currentMessageObject.messageOwner.fwd_from != null && (currentMessageObject.messageOwner.fwd_from.date != 0 || currentMessageObject.messageOwner.fwd_from.saved_date != 0))) {
+            int editDate = currentMessagesGroup != null ? currentMessagesGroup.getMaxEditDate() : messageObject.messageOwner.edit_date;
+            if (editDate == 0 && currentMessageObject.isEditing()) {
+                editDate = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
+            }
+            timeString = ChatsHelper.createEditedString(currentMessageObject, editDate);
+        } else if (CherrygramMessagesConfig.INSTANCE.getMsgForwardDate() && currentMessageObject.isSaved && currentMessageObject.messageOwner.fwd_from != null && (currentMessageObject.messageOwner.fwd_from.date != 0 || currentMessageObject.messageOwner.fwd_from.saved_date != 0)) {
             int date = currentMessageObject.messageOwner.fwd_from.saved_date;
             if (date == 0) {
                 date = currentMessageObject.messageOwner.fwd_from.date;
@@ -19164,9 +19174,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
 
                 if (currentUser != null && currentNameStatus instanceof Long) {
-                    boolean isPremium = false; // cgPremium
+                    boolean isCGPremium = false; // cgPremium
                     boolean forceBra = currentUser.id == Constants.Cherrygram_Owner;
-                    boolean showParticles = isPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(currentUser.id);
+                    boolean showParticles = isCGPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(currentUser.id);
                     boolean isCherryEmojiApplied = currentNameStatus != null && ((long) currentNameStatus == Constants.CHERRY_EMOJI_ID_VERIFIED || (long) currentNameStatus == Constants.CHERRY_EMOJI_ID_VERIFIED_BRA);
 
                     if (isCherryEmojiApplied) currentNameStatusDrawable.setParticles(showParticles, showParticles);
@@ -19924,14 +19934,14 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         if (currentUser != null) {
             Long emojiStatusId = UserObject.getEmojiStatusDocumentId(currentUser);
 
-            boolean isPremium = false; // cgPremium
+            boolean isCGPremium = false; // cgPremium
             boolean isDonated = DonatesManager.INSTANCE.didUserDonate(currentUser.id);
             boolean forceBra = currentUser.id == Constants.Cherrygram_Owner;
 
-            if (emojiStatusId == null && isPremium && isDonated) {
+            if (emojiStatusId == null && isCGPremium && isDonated) {
                 emojiStatusId = Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
-            } else if (emojiStatusId == null && (isPremium || isDonated || forceBra)) {
-                emojiStatusId = isPremium || forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
+            } else if (emojiStatusId == null && (isCGPremium || isDonated || forceBra)) {
+                emojiStatusId = isCGPremium || forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
             }
 
             if (emojiStatusId != null) {
@@ -21498,7 +21508,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     (int) (Math.abs(nx) + (viaNameWidth > 0 ? viaNameWidth - dp(4 + 28) : nameLayoutWidth) + dp(22)),
                     (int) (ny + nameLayout.getHeight() / 2 + dp(10))
                 );
-                currentNameStatusDrawable.setColor(BadgeHelper.Companion.getEmojiStatusColor(currentMessageObject.getFromPeer().user_id, ColorUtils.setAlphaComponent(color, 115), false));
+                currentNameStatusDrawable.setColor(BadgeHelper.Companion.getEmojiStatusColor(currentMessageObject.getFromPeer().user_id, ColorUtils.setAlphaComponent(color, 115), false, true));
                 currentNameStatusDrawable.draw(canvas);
             }
 

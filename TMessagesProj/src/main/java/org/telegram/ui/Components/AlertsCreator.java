@@ -4526,7 +4526,7 @@ public class AlertsCreator {
         }
 
         final RLottieImageView notifyItem = new RLottieImageView(context);
-        final RLottieDrawable notifyIcon = new RLottieDrawable(R.raw.notify_toggle, "notify_toggle", dp(24), dp(24), true, null);
+        final RLottieDrawable notifyIcon = new RLottieDrawable(R.raw.notify_toggle, dp(24), dp(24), true, null);
         notifyIcon.setAllowDecodeSingleFrame(true);
         notifyIcon.setPlayInDirectionOfCustomEndFrame(true);
         notifyIcon.start();
@@ -5251,8 +5251,8 @@ public class AlertsCreator {
         buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         buttonTextView.setTypeface(AndroidUtilities.bold());
         buttonTextView.setText(button);
-        buttonTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(8), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), Theme.getColor(Theme.key_featuredStickers_addButtonPressed, resourcesProvider)));
-        ScaleStateListAnimator.apply(buttonTextView);
+        buttonTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(24), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), Theme.getColor(Theme.key_featuredStickers_addButtonPressed, resourcesProvider)));
+        ScaleStateListAnimator.apply(buttonTextView, .02f, 1.2f);
         container.addView(buttonTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.LEFT | Gravity.BOTTOM, 16, showRemoveYear ? 0 : 15, 16, showDelete ? 0 : 16));
         buttonTextView.setOnClickListener(v -> {
             TL_account.TL_birthday b = new TL_account.TL_birthday();
@@ -5269,6 +5269,7 @@ public class AlertsCreator {
         if (showDelete) {
             final ButtonWithCounterView button2 = new ButtonWithCounterView(context, false, resourcesProvider);
             button2.setText(getString(R.string.BirthdayRemove), false);
+            button2.setRound();
             button2.setOnClickListener(v -> {
                 builder.getDismissRunnable().run();
                 whenSelectedBirthday.run(null);

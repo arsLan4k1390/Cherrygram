@@ -189,7 +189,20 @@ public class PermissionRequest {
                 }
             };
             NotificationCenter.getGlobalInstance().addObserver(observer[0], NotificationCenter.activityPermissionsGranted);
-            activity.requestPermissions(permissions, code);
+            try {
+                activity.requestPermissions(permissions, code);
+            } catch (Exception e) {
+                FileLog.e(e);
+                NotificationCenter.getGlobalInstance().removeObserver(observer[0], NotificationCenter.activityPermissionsGranted);
+
+                if (whenDone != null) {
+                    int[] res = new int[permissions.length];
+                    for (int i = 0; i < permissions.length; ++i) {
+                        res[i] = hasPermission(permissions[i]) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+                    }
+                    whenDone.run(res);
+                }
+            }
         } else if (whenDone != null) {
             int[] res = new int[ permissions.length ];
             for (int i = 0; i < permissions.length; ++i) {

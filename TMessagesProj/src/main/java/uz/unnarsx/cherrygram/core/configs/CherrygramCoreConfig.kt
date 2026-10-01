@@ -63,8 +63,8 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     const val ANIMATION_CLASSIC = 1
     var springAnimation by sharedPreferences.int("CG_SpringAnimation", ANIMATION_SPRING)
 
-    var actionbarCrossfade by sharedPreferences.boolean("CG_ActionbarCrossfade", true)
-    var predictiveBack by sharedPreferences.boolean("CG_PredictiveBack", false)
+    var actionbarCrossfade by sharedPreferences.boolean("CG_ActionbarCrossfade", false)
+    var predictiveBack by sharedPreferences.boolean("CG_PredictiveBack", true)
     /** Animations finish */
 
     /** Notifications start */
@@ -109,21 +109,62 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** OTA start */
     var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isStandaloneBetaBuild())
-    var autoOTA by sharedPreferences.boolean("CG_Check_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
+    var autoOTA by sharedPreferences.boolean("CG_Check_Auto_OTA", true)
     var forceFound by sharedPreferences.boolean("CG_ForceFound", false)
     var minCherryVersion by sharedPreferences.string("CG_Min_Cherry_Version", "0")
+    var minCherryVersionGP by sharedPreferences.string("CG_Min_Cherry_Version_GP", "0")
     /** OTA finish */
 
     /** Misc start */
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
     var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
 
+    /** AppSec start */
     var showNotifications by sharedPreferences.boolean("CG_ShowNotifications", true)
-    var checkContent by sharedPreferences.boolean("CG_CheckContent2", false)
+
+    var checkContent by sharedPreferences.boolean("CG_CheckContent3", false)
     @JvmStatic
     fun setCheckContentEnabled() {
         if (!isPlayStoreBuild()) checkContent = true
     }
+
+    var has_jni_hook by sharedPreferences.boolean("CG_has_jni_hook", false)
+    @JvmStatic
+    fun setHasJniHook() {
+        has_jni_hook = true
+    }
+
+    var has_xHook by sharedPreferences.boolean("CG_has_XHook", false)
+    @JvmStatic
+    fun setHasXHook() {
+        has_xHook = true
+    }
+
+    var validate_signature by sharedPreferences.boolean("CG_validate_signature", false)
+    @JvmStatic
+    fun setValidateSignature() {
+        validate_signature = true
+    }
+
+    var check_signature by sharedPreferences.boolean("CG_check_signature", false)
+    @JvmStatic
+    fun setCheckSignature() {
+        check_signature = true
+    }
+
+    var certFoundApkFd by sharedPreferences.boolean("CG_cert_found_apk_fd", false)
+    var certEmpty by sharedPreferences.boolean("CG_cert_empty", false)
+    var certSize by sharedPreferences.long("CG_cert_size", 0L)
+    var certCrc by sharedPreferences.long("CG_cert_crc", 0L)
+    @JvmStatic
+    fun setCertDiagnostics(foundApkFd: Int, certEmpty: Int, certSize: Long, certCrc: Long) {
+        this.certFoundApkFd = foundApkFd != 0
+        this.certEmpty = certEmpty != 0
+        this.certSize = certSize
+        this.certCrc = certCrc
+    }
+    /** AppSec finish */
+
     /** Misc finish */
 
     /** Cherrygram build types start */

@@ -10,6 +10,9 @@
 package uz.unnarsx.cherrygram.donates
 
 import androidx.core.graphics.toColorInt
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.Theme
 import uz.unnarsx.cherrygram.core.CherrygramLogger
 
@@ -56,7 +59,6 @@ enum class BadgeHelper {
     )
 
     companion object {
-
         private val badgeColors = mutableMapOf<Long, UserColor>()
 
         fun updateBadgeColorsMap(map: Map<Long, UserColor>) {
@@ -79,12 +81,19 @@ enum class BadgeHelper {
             }
         }
 
-        fun getEmojiStatusColor(userId: Long, defaultColor: Int, forceDonates: Boolean): Int {
-
+        @JvmOverloads
+        fun getEmojiStatusColor(userId: Long, defaultColor: Int, forceDonates: Boolean, isMessageCell: Boolean = false): Int {
             if (userId == 0L) return defaultColor
             if (forceDonates) return DONATES.forTheme()
 
-            val isPremium = false; // cgPremium
+            if (isMessageCell) {
+                val user = MessagesController.getInstance(UserConfig.selectedAccount)?.getUser(userId)
+                if (user?.premium == true) {
+                    return defaultColor
+                }
+            }
+
+            val isCGPremium = false; // cgPremium
             val isDonated = DonatesManager.didUserDonateForMarketplace(userId)
 
             getUserColor(userId)?.let { uc ->
@@ -94,8 +103,8 @@ enum class BadgeHelper {
             }
 
             return when {
-                isPremium && isDonated -> DONATES.forTheme()
-                isPremium -> PREMIUM.forTheme() // convertColor("#C7637F", 255) //B45872
+                isCGPremium && isDonated -> DONATES.forTheme()
+                isCGPremium -> PREMIUM.forTheme() // convertColor("#C7637F", 255) //B45872
                 isDonated -> DONATES.forTheme()
                 else -> defaultColor
             }

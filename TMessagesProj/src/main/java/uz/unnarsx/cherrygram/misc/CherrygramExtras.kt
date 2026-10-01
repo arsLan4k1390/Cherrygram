@@ -241,15 +241,15 @@ object CherrygramExtras : CoroutineScope by CoroutineScope(
                         }
                     }
                 } else {
-                    reviewInGooglePlay(fragment)
+                    openGooglePlayPage(fragment)
                 }
             } else {
-                reviewInGooglePlay(fragment)
+                openGooglePlayPage(fragment)
             }
         }
     }
 
-    private fun reviewInGooglePlay(fragment: BaseFragment) {
+    fun openGooglePlayPage(fragment: BaseFragment) {
         val context = fragment.context ?: return
         Browser.openUrl(context, "market://details?id=${context.packageName}")
     }

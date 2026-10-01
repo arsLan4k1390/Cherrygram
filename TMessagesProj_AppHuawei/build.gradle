@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+
 import io.github.valacuz.proguard.dictionary.DictionaryGeneratorPluginExtension
 import io.github.valacuz.proguard.dictionary.tasks.generate.strategy.ObfuscationStrategy
 
@@ -9,6 +11,8 @@ import java.time.format.DateTimeFormatter
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
+apply plugin: 'org.telegram.build-app-plugin'
+
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.github.valacuz.proguard-dictionary-generator'
@@ -39,8 +43,6 @@ dependencies {
     implementation 'com.huawei.hms:push:6.11.0.300'
     implementation 'com.huawei.hms:maps:6.11.0.304'
     implementation 'com.huawei.hms:location:6.11.0.301'
-
-//    implementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:18.0.4'
 }
 
 proguardDictGenerator {
@@ -57,8 +59,8 @@ android {
         jvmTarget = '17'
     }
 
-    compileSdk 36
-    buildToolsVersion = '36.0.0'
+    compileSdkVersion 36
+    buildToolsVersion '36.0.0'
 
     defaultConfig.applicationId = APP_PACKAGE
 
@@ -78,7 +80,8 @@ android {
     }
 
     androidResources {
-        localeFilters += ["en", "ar", "de", "es", "it", "ko", "nl", "pt-rBR", "ru", "uk", "be", "ja", "zh-rCN", "zh-rTW"]
+        noCompress += "pack"
+//        localeFilters += ["zz"]
     }
 
     signingConfigs {
@@ -105,7 +108,7 @@ android {
             minifyEnabled false
             shrinkResources false
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro', '../TMessagesProj/proguard-rules-beta.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
         release {
@@ -227,7 +230,6 @@ static def loadEnv(filePath) {
 }
 
 def env = loadEnv("${project.rootDir}/secrets_for_ci.env")
-
 env.each { key, value ->
     ext."$key" = value
 }
@@ -292,23 +294,21 @@ def apkFilePath3 = "${projectDir}/afat/release/${fileName3}"
 
 tasks.register('sendApk') {
     doLast {
-        def file = new File(apkFilePath)
+        def file1 = new File(apkFilePath)
         def file2 = new File(apkFilePath2)
         def file3 = new File(apkFilePath3)
 
-        if (!file.exists() && !file2.exists() && !file3.exists()) {
-            println "APK file not found: $apkFilePath"
-            println "APK file not found: $apkFilePath2"
-            println "APK file not found: $apkFilePath3"
+        def files = [file1, file2, file3].findAll { it.exists() }
+
+        if (files.isEmpty()) {
+            println "APK files not found: $apkFilePath, $apkFilePath2, $apkFilePath3"
             return
         }
 
-        println "Sending APK to Cherrygram Support..."
+        println "Sending APKs to Cherrygram Support..."
 
         try {
-            sendApkToTelegram(file)
-            sendApkToTelegram(file2)
-            sendApkToTelegram(file3)
+            sendApkGroupToTelegram(files)
         } catch (Exception e) {
 //            println "Error sending APK: ${e.message}"
             e.printStackTrace()
@@ -320,11 +320,17 @@ static String escapeHtml(String s) {
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 }
 
-void sendApkToTelegram(File file) {
+static String archLabel(File file) {
+    if (file.name.contains("arm64-v8a")) return "arm64-v8a"
+    if (file.name.contains("armeabi-v7a")) return "armeabi-v7a"
+    return "universal"
+}
+
+void sendApkGroupToTelegram(List<File> files) {
     def appVersion = "App version: <b>${APP_VERSION_NAME_CHERRY} // ${APP_VERSION_NAME} (${APP_VERSION_CODE})</b>"
 
     def currentDateAndTime = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))
-    def buildDate = "\n \nBuild date (UTC): <b>${currentDateAndTime}</b>\n"
+    def buildDate = "\n \nBuild date (UTC): <b>${currentDateAndTime}</b>"
 
     def buildHost = "\nBuilt on: <b>${getOSName()}</b>"
 
@@ -335,30 +341,48 @@ void sendApkToTelegram(File file) {
     def lastCommitAuthor = 'git log -1 --pretty=%an'.execute().text.trim()
     def author = "\nTriggered by: <b>${escapeHtml(lastCommitAuthor)}</b>"
 
-    def fileSizeMb = String.format(Locale.US, "%.2f", file.length() / (1024.0 * 1024.0))
-    def fileSizeText = "\nFile size: <b>${fileSizeMb} MB</b>"
+    def fullInfoSuffix = buildDate + buildHost + projectName + author
 
-    def fileCaption
-    if (file.name.contains("arm64-v8a")) {
-        fileCaption = appVersion + buildDate + "Architecture: <b>arm64-v8a</b>" + buildHost + fileSizeText + projectName + author
-    } else if (file.name.contains("armeabi-v7a")) {
-        fileCaption = appVersion + buildDate + "Architecture: <b>armeabi-v7a</b>" + buildHost + fileSizeText + projectName + author
-    } else {
-        fileCaption = appVersion + buildDate + "Architecture: <b>universal</b>" + buildHost + fileSizeText + projectName + author
+    def isSingleFile = (files.size() == 1)
+
+    def items = []
+    files.eachWithIndex { file, idx ->
+        def arch = archLabel(file)
+        def isLast = (idx == files.size() - 1)
+
+        def caption
+        if (isSingleFile) {
+            def fileSizeMb = String.format(Locale.US, "%.2f", file.length() / (1024.0 * 1024.0))
+            def fileSizeText = "\nFile size: <b>${fileSizeMb} MB</b>"
+            caption = appVersion + buildDate + "\nArchitecture: <b>${arch}</b>" + buildHost + fileSizeText + projectName + author
+        } else if (isLast) {
+            caption = "<b>${arch}</b>\n\n" + appVersion + fullInfoSuffix
+        } else {
+            caption = "<b>${arch}</b>"
+        }
+
+        items << [path: file.absolutePath, caption: caption]
+
+        println "Uploading file: ${file.name}, size: ${file.length()} bytes"
     }
 
-    println "Uploading file: ${file.name}, size: ${file.length()} bytes"
+    def manifestFile = File.createTempFile("tg_manifest_", ".json")
+    manifestFile.setText(JsonOutput.toJson(items), "UTF-8")
 
-    def captionFile = File.createTempFile("tg_caption_", ".txt")
-    captionFile.setText(fileCaption, "UTF-8")
-
-    def pythonBin = TG_PYTHON_BIN ?: "python"
+    def getPythonBin = {
+        if (isWindows()) {
+            return TG_PYTHON_BIN_WINDOWS?.toString() ?: "python"
+        }
+        if (isMacOS()) {
+            return TG_PYTHON_BIN_MACOS?.toString() ?: "python3"
+        }
+        return TG_PYTHON_BIN_LINUX?.toString() ?: "python3"
+    }
 
     def cmd = [
-            pythonBin.toString(),
+            getPythonBin().toString(),
             "${projectDir}/scripts/send_telegram.py".toString(),
-            file.absolutePath.toString(),
-            captionFile.absolutePath.toString()
+            manifestFile.absolutePath.toString()
     ]
 
     def processBuilder = new ProcessBuilder(cmd)
@@ -372,15 +396,15 @@ void sendApkToTelegram(File file) {
     def output = new StringBuilder()
     process.inputStream.eachLine { line -> output.append(line).append("\n") }
     def exitCode = process.waitFor()
-    captionFile.delete()
+    manifestFile.delete()
 
     if (exitCode == 0) {
-        println "APK successfully sent to Cherrygram Support!"
+        println "APKs successfully sent to Cherrygram Support!"
         println output.toString()
     } else {
         throw new RuntimeException("""
             ==================================================
-            FAILED TO SEND APK TO TELEGRAM (kurigram)!
+            FAILED TO SEND APKs TO TELEGRAM (kurigram)!
             --------------------------------------------------
             Exit code: ${exitCode}
             Output:

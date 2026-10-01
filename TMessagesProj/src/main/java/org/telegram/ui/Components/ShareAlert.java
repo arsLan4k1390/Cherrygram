@@ -1193,6 +1193,59 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         gridView.setClipToPadding(false);
         gridView.setLayoutManager(layoutManager = new GridLayoutManager(getContext(), 4));
 
+        /** Cherrygram start */
+        gridView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            private float startX, startY;
+            private boolean tracking;
+            private final int touchSlop = AndroidUtilities.dp(10);
+            private final int swipeThreshold = AndroidUtilities.dp(60);
+
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                if (!hasFolders() || foldersView == null || foldersView.filterTabsView == null) {
+                    return false;
+                }
+                switch (e.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startX = e.getX();
+                        startY = e.getY();
+                        tracking = false;
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (!tracking) {
+                            float dx = e.getX() - startX;
+                            float dy = e.getY() - startY;
+                            if (Math.abs(dx) > touchSlop && Math.abs(dx) > Math.abs(dy) * 2f) {
+                                tracking = true;
+                                return true;
+                            }
+                        }
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                if (!tracking) {
+                    return;
+                }
+                if (e.getActionMasked() == MotionEvent.ACTION_UP || e.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+                    float dx = e.getX() - startX;
+                    if (Math.abs(dx) > swipeThreshold) {
+                        boolean forward = dx < 0; // свайп влево -> следующий таб
+                        foldersView.filterTabsView.selectNextTab(forward);
+                    }
+                    tracking = false;
+                }
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallow) {
+            }
+        });
+        /** Cherrygram finish */
+
         iBlur3Capture = new ViewGroupPartRenderer(gridView, containerView, gridView::drawChild);
 
 
@@ -1241,6 +1294,12 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                 if (dy != 0) {
                     updateLayout();
                     previousScrollOffsetY = scrollOffsetY;
+
+                    int lastVisible = layoutManager.findLastVisibleItemPosition();
+                    int totalCount = layoutManager.getItemCount();
+                    if (dy > 0 && lastVisible != RecyclerView.NO_POSITION && lastVisible >= totalCount - 20) {
+                        DialogsActivity.loadDialogs(AccountInstance.getInstance(currentAccount));
+                    }
                 }
                 if (Bulletin.getVisibleBulletin() != null && Bulletin.getVisibleBulletin().getLayout() != null && Bulletin.getVisibleBulletin().getLayout().getParent() instanceof View && ((View) Bulletin.getVisibleBulletin().getLayout().getParent()).getParent() == bulletinContainer2) {
                     Bulletin.hideVisible();
@@ -1855,9 +1914,9 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         updateSelectedCount(0);
 
         DialogsActivity.loadDialogs(AccountInstance.getInstance(currentAccount));
-        if (listAdapter.dialogs.isEmpty()) {
+//        if (listAdapter.dialogs.isEmpty()) {
             NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.dialogsNeedReload);
-        }
+//        }
 
         DialogsSearchAdapter.loadRecentSearch(currentAccount, 0, new DialogsSearchAdapter.OnRecentSearchLoaded() {
             @Override
@@ -2668,17 +2727,12 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.dialogsNeedReload) {
             if (listAdapter != null) {
-                if (foldersView != null && foldersView.filterTabsView != null) {
-                    if (foldersView.filterTabsView.currentTabIsDefault()) {
-                        listAdapter.fetchDialogs();
-                    } else {
-                        if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) foldersView.applyFilter(foldersView.filterTabsView.getFirstTabId());
-                    }
+                if (foldersView != null && foldersView.filterTabsView != null && hasFolders() && !foldersView.filterTabsView.currentTabIsDefault()) {
+                    foldersView.applyFilter(foldersView.filterTabsView.getCurrentTabId());
                 } else {
                     listAdapter.fetchDialogs();
                 }
             }
-            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.dialogsNeedReload);
         }
     }
 
@@ -4250,7 +4304,6 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
 
     @SuppressWarnings("FieldCanBeLocal")
     private class FoldersView extends FrameLayout {
-
         private final FilterTabsView filterTabsView;
 
         private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -4459,21 +4512,23 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             final AccountInstance account = AccountInstance.getInstance(currentAccount);
             final int defaultTabId = filterTabsView.getDefaultTabId();
 
+            MessagesController.DialogFilter filterForLoad = null;
+            if (tabId != defaultTabId && tabId >= 0 && tabId < getFolders().size()) {
+                filterForLoad = getFolders().get(tabId);
+            }
+            ensureFolderDialogsLoaded(filterForLoad);
+
+            final MessagesController.DialogFilter finalFilterForLoad = filterForLoad;
             Utilities.globalQueue.postRunnable(() -> {
                 ArrayList<TLRPC.Dialog> filtered = new ArrayList<>();
-                MessagesController.DialogFilter filter = null;
 
-                if (tabId != defaultTabId && tabId >= 0 && tabId < getFolders().size()) {
-                    filter = getFolders().get(tabId);
-                }
-
-                if (filter == null) {
+                if (finalFilterForLoad == null) {
                     for (TLRPC.Dialog d : source2) {
                         if (d != null) filtered.add(d);
                     }
                 } else {
                     for (TLRPC.Dialog d : source2) {
-                        if (d != null && filter.includesDialog(account, d.id)) {
+                        if (d != null && finalFilterForLoad.includesDialog(account, d.id)) {
                             filtered.add(d);
                         }
                     }
@@ -4481,13 +4536,31 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
 
                 AndroidUtilities.runOnUIThread(() -> {
                     if (listAdapter == null) return;
-
                     listAdapter.setDialogs(filtered);
-//                    gridView.setAdapter(listAdapter);
                 });
             });
         }
 
+        private void ensureFolderDialogsLoaded(MessagesController.DialogFilter filter) {
+            if (filter == null) {
+                return;
+            }
+            MessagesController messagesController = MessagesController.getInstance(currentAccount);
+            boolean excludeArchived = (filter.flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) != 0;
+
+            checkFolderDialogsLoad(messagesController, 0);
+            if (!excludeArchived) {
+                checkFolderDialogsLoad(messagesController, 1);
+            }
+        }
+
+        private void checkFolderDialogsLoad(MessagesController messagesController, int folderId) {
+            boolean loadFromCache = !messagesController.isDialogsEndReached(folderId);
+            boolean load = loadFromCache || !messagesController.isServerDialogsEndReached(folderId);
+            if (load) {
+                messagesController.loadDialogs(folderId, -1, 100, loadFromCache);
+            }
+        }
     }
 
     private boolean hasFolders() {

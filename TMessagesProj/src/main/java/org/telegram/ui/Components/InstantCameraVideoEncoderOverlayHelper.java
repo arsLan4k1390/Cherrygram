@@ -71,7 +71,7 @@ public class InstantCameraVideoEncoderOverlayHelper {
                 final int logoOffset = Math.round(width * 28 / 1536f);
                 final int trueSize = logoSize - logoOffset - logoOffset;
 
-                final RLottieNative rLottie = RLottieNative.createFromRawJson(AndroidUtilities.readRes(R.raw.round_overlay_animation_cherry), "logo_plane", null);
+                final RLottieNative rLottie = RLottieNative.createFromRawJson(AndroidUtilities.readRes(R.raw.round_overlay_animation_cherry));
                 final Bitmap logoBitmap = Bitmap.createBitmap(logoSize, logoSize, Bitmap.Config.ARGB_8888);
 
                 Bitmap bitmap = Bitmap.createBitmap(trueSize * 8, trueSize * 4, Bitmap.Config.ALPHA_8);

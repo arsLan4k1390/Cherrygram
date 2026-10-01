@@ -990,15 +990,15 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         if (user == null) return;
 
         long emojiDocumentId;
-        boolean isPremium = false; // cgPremium
+        boolean isCGPremium = false; // cgPremium
         boolean isDonated = DonatesManager.INSTANCE.didUserDonate(user.id);
         boolean forceBra = user.id == Constants.Cherrygram_Owner;
-        boolean showParticles = isPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(user.id);
+        boolean showParticles = isCGPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(user.id);
 
-        if (isPremium && isDonated) {
+        if (isCGPremium && isDonated) {
             emojiDocumentId = Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
-        } else if (isPremium || isDonated || forceBra) {
-            emojiDocumentId = isPremium || forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
+        } else if (isCGPremium || isDonated || forceBra) {
+            emojiDocumentId = isCGPremium || forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
         } else {
             emojiDocumentId = 0;
             nameTextView.setRightDrawable2(null);

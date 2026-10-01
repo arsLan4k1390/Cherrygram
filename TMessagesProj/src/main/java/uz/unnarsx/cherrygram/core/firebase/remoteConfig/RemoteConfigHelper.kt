@@ -351,6 +351,13 @@ object RemoteConfigHelper {
         { CherrygramCoreConfig.minCherryVersion = it }
     )
 
+    private fun checkMinCherryVersionGP() = checkAndUpdate(
+        RemoteConfigConstants.min_cherry_version_gp,
+        ::getString,
+        { CherrygramCoreConfig.minCherryVersionGP },
+        { CherrygramCoreConfig.minCherryVersionGP = it }
+    )
+
     private fun checkHumoCardNumber() = checkAndUpdate(
         RemoteConfigConstants.humo_card_number,
         ::getString,

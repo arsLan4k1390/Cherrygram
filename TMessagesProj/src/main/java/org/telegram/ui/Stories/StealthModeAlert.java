@@ -205,7 +205,7 @@ public class StealthModeAlert extends BottomSheet {
     public static void showStealthModeEnabledBulletin() {
         BaseFragment fragment = LaunchActivity.getLastFragment();
         BulletinFactory factory;
-        if (fragment.getLastStoryViewer() != null) {
+        if (fragment != null && fragment.getLastStoryViewer() != null) {
             factory = BulletinFactory.of(fragment.getLastStoryViewer().windowView, fragment.getLastStoryViewer().getResourceProvider());
         } else {
             factory = BulletinFactory.global();

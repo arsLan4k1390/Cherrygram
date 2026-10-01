@@ -656,6 +656,10 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         public long livePhotoVideoOffset;
         public long livePhotoTimestampUs;
         public int pollIndex;
+
+        /** Cherrygram start */
+        public boolean deleteAfterPrepare;
+        /** Cherrygram finish */
     }
 
     @SuppressLint("MissingPermission")
@@ -10813,6 +10817,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 worker.photo = accountInstance.getSendMessagesHelper().generatePhotoSizes(null, info.path, info.uri, info.highQuality);
                                 if (isEncrypted && info.canDeleteAfter) {
                                     new File(info.path).delete();
+                                } else if (info.deleteAfterPrepare && worker.photo != null && info.path != null) {
+                                    new File(info.path).delete();
                                 }
                                 worker.sync.countDown();
                             });
@@ -11454,6 +11460,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                                 if (photo == null) {
                                     photo = accountInstance.getSendMessagesHelper().generatePhotoSizes(info.path, info.uri);
                                     if (isEncrypted && info.canDeleteAfter) {
+                                        new File(info.path).delete();
+                                    } else if (info.deleteAfterPrepare && photo != null && info.path != null) {
                                         new File(info.path).delete();
                                     }
                                 }

@@ -260,7 +260,7 @@ public class CounterView extends View {
                 });
                 if (currentCount <= 0) {
                     animationType = ANIMATION_TYPE_IN;
-                    if (this.isIOSUnreadBadgeAvailable) {
+                    if (isIOSUnreadBadgeAvailable) {
                         countAnimator.setDuration(380);
                         countAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
                     } else {
@@ -561,7 +561,7 @@ public class CounterView extends View {
 
     /** Cherrygram start */
     public void setIOSUnreadBadgeAvailable(boolean available) {
-        counterDrawable.isIOSUnreadBadgeAvailable = available;
+        counterDrawable.setIOSUnreadBadgeAvailable(available);
     }
 
     public void setTextSize(float sizeSp) {

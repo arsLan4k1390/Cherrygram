@@ -2,82 +2,15 @@ cmake_minimum_required(VERSION 3.6.0)
 
 set(CMAKE_CXX_FLAGS "-std=c++17 -DANDROID -g")
 
-#tgvoip
-add_library(tgvoip STATIC
-        voip/libtgvoip/logging.cpp
-        voip/libtgvoip/VoIPController.cpp
-        voip/libtgvoip/VoIPGroupController.cpp
-        voip/libtgvoip/Buffers.cpp
-        voip/libtgvoip/BlockingQueue.cpp
-        voip/libtgvoip/audio/AudioInput.cpp
-        voip/libtgvoip/os/android/AudioInputOpenSLES.cpp
-        voip/libtgvoip/MediaStreamItf.cpp
-        voip/libtgvoip/audio/AudioOutput.cpp
-        voip/libtgvoip/OpusEncoder.cpp
-        voip/libtgvoip/os/android/AudioOutputOpenSLES.cpp
-        voip/libtgvoip/JitterBuffer.cpp
-        voip/libtgvoip/OpusDecoder.cpp
-        voip/libtgvoip/os/android/OpenSLEngineWrapper.cpp
-        voip/libtgvoip/os/android/AudioInputAndroid.cpp
-        voip/libtgvoip/os/android/AudioOutputAndroid.cpp
-        voip/libtgvoip/EchoCanceller.cpp
-        voip/libtgvoip/CongestionControl.cpp
-        voip/libtgvoip/VoIPServerConfig.cpp
-        voip/libtgvoip/audio/Resampler.cpp
-        voip/libtgvoip/NetworkSocket.cpp
-        voip/libtgvoip/os/posix/NetworkSocketPosix.cpp
-        voip/libtgvoip/PacketReassembler.cpp
-        voip/libtgvoip/MessageThread.cpp
-        voip/libtgvoip/json11.cpp
-        voip/libtgvoip/audio/AudioIO.cpp
-        voip/libtgvoip/video/VideoRenderer.cpp
-        voip/libtgvoip/video/VideoSource.cpp
-        voip/libtgvoip/video/ScreamCongestionController.cpp
-        voip/libtgvoip/os/android/VideoSourceAndroid.cpp
-        voip/libtgvoip/os/android/VideoRendererAndroid.cpp
-        voip/tg_voip_jni.cpp)
-target_compile_options(tgvoip PUBLIC
-        -Wall -finline-functions -ffast-math -fno-strict-aliasing -O3 -frtti -Wno-unknown-pragmas -funroll-loops -fexceptions -fno-math-errno)
-set_target_properties(tgvoip PROPERTIES
-        ANDROID_ARM_MODE arm)
-target_compile_definitions(tgvoip PUBLIC
-        HAVE_PTHREAD __STDC_LIMIT_MACROS BSD=1 USE_KISS_FFT TGVOIP_NO_VIDEO NULL=0 SOCKLEN_T=socklen_t LOCALE_NOT_USED _LARGEFILE_SOURCE=1 _FILE_OFFSET_BITS=64 restrict= __EMX__ OPUS_BUILD FIXED_POINT USE_ALLOCA HAVE_LRINT HAVE_LRINTF TGVOIP_NO_DSP)
-target_compile_definitions(tgvoip PUBLIC
-        WEBRTC_HAVE_DCSCTP RTC_DISABLE_TRACE_EVENTS WEBRTC_OPUS_SUPPORT_120MS_PTIME=1 BWE_TEST_LOGGING_COMPILE_TIME_ENABLE=0 ABSL_ALLOCATOR_NOTHROW=1 RTC_ENABLE_VP9 RTC_ENABLE_H265 WEBRTC_POSIX WEBRTC_LINUX WEBRTC_ANDROID WEBRTC_USE_H264 NDEBUG WEBRTC_HAVE_USRSCTP WEBRTC_HAVE_SCTP WEBRTC_APM_DEBUG_DUMP=0 WEBRTC_USE_BUILTIN_ISAC_FLOAT WEBRTC_OPUS_VARIABLE_COMPLEXITY=0 HAVE_NETINET_IN_H WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE __Userspace__ SCTP_SIMPLE_ALLOCATOR SCTP_PROCESS_LEVEL_LOCKS __Userspace_os_Linux)
-target_include_directories(tgvoip PUBLIC
-        ./
-        voip
-        third_party/xiph/opus/include
-        third_party/xiph/opus/silk
-        third_party/xiph/opus/silk/fixed
-        third_party/xiph/opus/celt
-        third_party/xiph/opus
-        boringssl/include
-        voip/webrtc
-        voip/tgcalls
-        voip/libtgvoip
-        voip/webrtc/third_party/crc32c/src/include
-        voip/webrtc/third_party/jni_zero
-)
-
-if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
-    target_compile_definitions(tgvoip PUBLIC
-            WEBRTC_ARCH_ARM WEBRTC_ARCH_ARM_V7 WEBRTC_HAS_NEON)
-elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
-    target_compile_definitions(tgvoip PUBLIC
-            WEBRTC_ARCH_ARM64 WEBRTC_HAS_NEON)
-elseif(${ANDROID_ABI} STREQUAL "x86")
-    target_compile_definitions(tgvoip PUBLIC
-            HAVE_SSE2)
-elseif(${ANDROID_ABI} STREQUAL "x86_64")
-    target_compile_definitions(tgvoip PUBLIC
-            HAVE_SSE2)
-endif()
-
 #openh264 (prebuilt static library)
 add_library(openh264 STATIC IMPORTED)
 set_target_properties(openh264 PROPERTIES
-        IMPORTED_LOCATION ${CMAKE_HOME_DIRECTORY}/prebuild/${ANDROID_ABI}/libopenh264.a)
+        IMPORTED_LOCATION ${CMAKE_HOME_DIRECTORY}/prebuild/lib/${ANDROID_ABI}/libopenh264.a)
+
+#wasm (prebuilt static library)
+add_library(wasm STATIC IMPORTED)
+set_target_properties(wasm PROPERTIES
+        IMPORTED_LOCATION ${CMAKE_HOME_DIRECTORY}/prebuild/lib/${ANDROID_ABI}/libiwasm.a)
 
 #rnnoise
 add_library(rnnoise STATIC
@@ -169,169 +102,6 @@ add_library(tgcalls_tp STATIC
         third_party/usrsctplib/user_mbuf.c
         third_party/usrsctplib/user_recv_thread.c
         third_party/usrsctplib/user_socket.c
-        voip/webrtc/absl/strings/cord_analysis.cc
-        voip/webrtc/absl/strings/match.cc
-        voip/webrtc/absl/strings/cord_buffer.cc
-        voip/webrtc/absl/strings/internal/cord_rep_crc.cc
-        voip/webrtc/absl/strings/internal/charconv_bigint.cc
-        voip/webrtc/absl/strings/internal/cord_rep_btree_reader.cc
-        voip/webrtc/absl/strings/internal/cordz_info.cc
-        voip/webrtc/absl/strings/internal/stringify_sink.cc
-        voip/webrtc/absl/strings/internal/cord_internal.cc
-        voip/webrtc/absl/strings/internal/cordz_sample_token.cc
-        voip/webrtc/absl/strings/internal/cord_rep_consume.cc
-        voip/webrtc/absl/strings/internal/charconv_parse.cc
-        voip/webrtc/absl/strings/internal/str_format/arg.cc
-        voip/webrtc/absl/strings/internal/str_format/float_conversion.cc
-        voip/webrtc/absl/strings/internal/str_format/output.cc
-        voip/webrtc/absl/strings/internal/str_format/bind.cc
-        voip/webrtc/absl/strings/internal/str_format/parser.cc
-        voip/webrtc/absl/strings/internal/str_format/extension.cc
-        voip/webrtc/absl/strings/internal/cordz_handle.cc
-        voip/webrtc/absl/strings/internal/memutil.cc
-        voip/webrtc/absl/strings/internal/ostringstream.cc
-        voip/webrtc/absl/strings/internal/pow10_helper.cc
-        voip/webrtc/absl/strings/internal/utf8.cc
-        voip/webrtc/absl/strings/internal/damerau_levenshtein_distance.cc
-        voip/webrtc/absl/strings/internal/cordz_functions.cc
-        voip/webrtc/absl/strings/internal/cord_rep_btree_navigator.cc
-        voip/webrtc/absl/strings/internal/escaping.cc
-        voip/webrtc/absl/strings/internal/cord_rep_btree.cc
-        voip/webrtc/absl/strings/string_view.cc
-        voip/webrtc/absl/strings/str_cat.cc
-        voip/webrtc/absl/strings/cord.cc
-        voip/webrtc/absl/strings/ascii.cc
-        voip/webrtc/absl/strings/numbers.cc
-        voip/webrtc/absl/strings/charconv.cc
-        voip/webrtc/absl/strings/str_split.cc
-        voip/webrtc/absl/strings/substitute.cc
-        voip/webrtc/absl/strings/escaping.cc
-        voip/webrtc/absl/strings/str_replace.cc
-        voip/webrtc/absl/types/bad_any_cast.cc
-        voip/webrtc/absl/types/bad_optional_access.cc
-        voip/webrtc/absl/types/bad_variant_access.cc
-        voip/webrtc/absl/flags/parse.cc
-        voip/webrtc/absl/flags/flag_test_defs.cc
-        voip/webrtc/absl/flags/usage.cc
-        voip/webrtc/absl/flags/internal/private_handle_accessor.cc
-        voip/webrtc/absl/flags/internal/usage.cc
-        voip/webrtc/absl/flags/internal/program_name.cc
-        voip/webrtc/absl/flags/internal/flag.cc
-        voip/webrtc/absl/flags/internal/commandlineflag.cc
-        voip/webrtc/absl/flags/reflection.cc
-        voip/webrtc/absl/flags/usage_config.cc
-        voip/webrtc/absl/flags/marshalling.cc
-        voip/webrtc/absl/flags/commandlineflag.cc
-        voip/webrtc/absl/synchronization/blocking_counter.cc
-        voip/webrtc/absl/synchronization/mutex.cc
-        voip/webrtc/absl/synchronization/internal/per_thread_sem.cc
-        voip/webrtc/absl/synchronization/internal/kernel_timeout.cc
-        voip/webrtc/absl/synchronization/internal/pthread_waiter.cc
-        voip/webrtc/absl/synchronization/internal/stdcpp_waiter.cc
-        voip/webrtc/absl/synchronization/internal/waiter_base.cc
-        voip/webrtc/absl/synchronization/internal/create_thread_identity.cc
-        voip/webrtc/absl/synchronization/internal/futex_waiter.cc
-        voip/webrtc/absl/synchronization/internal/win32_waiter.cc
-        voip/webrtc/absl/synchronization/internal/sem_waiter.cc
-        voip/webrtc/absl/synchronization/internal/graphcycles.cc
-        voip/webrtc/absl/synchronization/barrier.cc
-        voip/webrtc/absl/synchronization/notification.cc
-        voip/webrtc/absl/hash/internal/low_level_hash.cc
-        voip/webrtc/absl/hash/internal/hash.cc
-        voip/webrtc/absl/hash/internal/print_hash_of.cc
-        voip/webrtc/absl/hash/internal/city.cc
-        voip/webrtc/absl/debugging/symbolize.cc
-        voip/webrtc/absl/debugging/failure_signal_handler.cc
-        voip/webrtc/absl/debugging/internal/examine_stack.cc
-        voip/webrtc/absl/debugging/internal/vdso_support.cc
-        voip/webrtc/absl/debugging/internal/utf8_for_code_point.cc
-        voip/webrtc/absl/debugging/internal/stack_consumption.cc
-        voip/webrtc/absl/debugging/internal/decode_rust_punycode.cc
-        voip/webrtc/absl/debugging/internal/demangle_rust.cc
-        voip/webrtc/absl/debugging/internal/address_is_readable.cc
-        voip/webrtc/absl/debugging/internal/elf_mem_image.cc
-        voip/webrtc/absl/debugging/internal/demangle.cc
-        voip/webrtc/absl/debugging/leak_check.cc
-        voip/webrtc/absl/debugging/stacktrace.cc
-        voip/webrtc/absl/crc/internal/crc_x86_arm_combined.cc
-        voip/webrtc/absl/crc/internal/crc_cord_state.cc
-        voip/webrtc/absl/crc/internal/crc_memcpy_fallback.cc
-        voip/webrtc/absl/crc/internal/crc_memcpy_x86_arm_combined.cc
-        voip/webrtc/absl/crc/internal/cpu_detect.cc
-        voip/webrtc/absl/crc/internal/crc.cc
-        voip/webrtc/absl/crc/internal/crc_non_temporal_memcpy.cc
-        voip/webrtc/absl/crc/crc32c.cc
-        voip/webrtc/absl/status/status_payload_printer.cc
-        voip/webrtc/absl/status/status.cc
-        voip/webrtc/absl/status/statusor.cc
-        voip/webrtc/absl/time/internal/test_util.cc
-        voip/webrtc/absl/time/internal/cctz/src/time_zone_format.cc
-        voip/webrtc/absl/time/internal/cctz/src/time_zone_impl.cc
-        voip/webrtc/absl/time/internal/cctz/src/time_zone_lookup.cc
-        voip/webrtc/absl/time/internal/cctz/src/time_zone_info.cc
-        voip/webrtc/absl/time/internal/cctz/src/time_zone_if.cc
-        voip/webrtc/absl/time/internal/cctz/src/time_zone_fixed.cc
-        voip/webrtc/absl/time/internal/cctz/src/zone_info_source.cc
-        voip/webrtc/absl/time/internal/cctz/src/time_zone_libc.cc
-        voip/webrtc/absl/time/internal/cctz/src/civil_time_detail.cc
-        voip/webrtc/absl/time/internal/cctz/src/time_zone_posix.cc
-        voip/webrtc/absl/time/clock.cc
-        voip/webrtc/absl/time/duration.cc
-        voip/webrtc/absl/time/civil_time.cc
-        voip/webrtc/absl/time/format.cc
-        voip/webrtc/absl/time/time.cc
-        voip/webrtc/absl/container/internal/raw_hash_set.cc
-        voip/webrtc/absl/container/internal/hash_generator_testing.cc
-        voip/webrtc/absl/container/internal/hashtablez_sampler_force_weak_definition.cc
-        voip/webrtc/absl/container/internal/hashtablez_sampler.cc
-        voip/webrtc/absl/numeric/int128.cc
-        voip/webrtc/absl/profiling/internal/periodic_sampler.cc
-        voip/webrtc/absl/profiling/internal/exponential_biased.cc
-        voip/webrtc/absl/log/die_if_null.cc
-        voip/webrtc/absl/log/internal/nullguard.cc
-        voip/webrtc/absl/log/internal/proto.cc
-        voip/webrtc/absl/log/internal/log_message.cc
-        voip/webrtc/absl/log/internal/conditions.cc
-        voip/webrtc/absl/log/internal/globals.cc
-        voip/webrtc/absl/log/internal/fnmatch.cc
-        voip/webrtc/absl/log/internal/structured_proto.cc
-        voip/webrtc/absl/log/internal/check_op.cc
-        voip/webrtc/absl/log/internal/log_format.cc
-        voip/webrtc/absl/log/internal/log_sink_set.cc
-        voip/webrtc/absl/log/internal/vlog_config.cc
-        voip/webrtc/absl/log/globals.cc
-        voip/webrtc/absl/log/flags.cc
-        voip/webrtc/absl/log/log_entry.cc
-        voip/webrtc/absl/log/log_sink.cc
-        voip/webrtc/absl/log/initialize.cc
-        voip/webrtc/absl/random/gaussian_distribution.cc
-        voip/webrtc/absl/random/discrete_distribution.cc
-        voip/webrtc/absl/random/seed_gen_exception.cc
-        voip/webrtc/absl/random/internal/gaussian_distribution_gentables.cc
-        voip/webrtc/absl/random/internal/seed_material.cc
-        voip/webrtc/absl/random/internal/distribution_test_util.cc
-        voip/webrtc/absl/random/internal/randen_slow.cc
-        voip/webrtc/absl/random/internal/chi_square.cc
-        voip/webrtc/absl/random/internal/randen.cc
-        voip/webrtc/absl/random/internal/randen_detect.cc
-        voip/webrtc/absl/random/internal/randen_round_keys.cc
-        voip/webrtc/absl/random/internal/randen_hwaes.cc
-        voip/webrtc/absl/random/internal/pool_urbg.cc
-        voip/webrtc/absl/random/seed_sequences.cc
-        voip/webrtc/absl/base/internal/spinlock_wait.cc
-        voip/webrtc/absl/base/internal/cycleclock.cc
-        voip/webrtc/absl/base/internal/spinlock.cc
-        voip/webrtc/absl/base/internal/unscaledcycleclock.cc
-        voip/webrtc/absl/base/internal/scoped_set_env.cc
-        voip/webrtc/absl/base/internal/sysinfo.cc
-        voip/webrtc/absl/base/internal/raw_logging.cc
-        voip/webrtc/absl/base/internal/throw_delegate.cc
-        voip/webrtc/absl/base/internal/strerror.cc
-        voip/webrtc/absl/base/internal/poison.cc
-        voip/webrtc/absl/base/internal/thread_identity.cc
-        voip/webrtc/absl/base/internal/tracing.cc
-        voip/webrtc/absl/base/internal/low_level_alloc.cc
-        voip/webrtc/absl/base/log_severity.cc
 )
 target_compile_options(tgcalls_tp PUBLIC
         -finline-functions -ffast-math -Os )
@@ -342,9 +112,11 @@ target_compile_definitions(tgcalls_tp PUBLIC
 target_include_directories(tgcalls_tp PUBLIC
         ./
         voip
-        boringssl/include/
+        third_party/boringssl/include/
+        openssl/include
         voip/tgcalls/
         voip/webrtc/
+        third_party/absl
         third_party/xiph/opus/include
         third_party/xiph/opus/silk
         third_party/xiph/opus/silk/fixed
@@ -356,60 +128,86 @@ target_include_directories(tgcalls_tp PUBLIC
         third_party/libsrtp/config
         third_party/libsrtp/crypto/include
         third_party
-        voip/webrtc/third_party/crc32c/src/include
+        voip/third_party/crc32c/src/include
 )
 
 #tgcalls+webrtc
 add_library(tgcalls STATIC
-        voip/tgcalls/CryptoHelper.cpp
-        voip/tgcalls/LogSinkImpl.cpp
-        voip/tgcalls/SctpDataChannelProviderInterfaceImpl.cpp
+        voip/tgcalls/AudioDeviceHelper.cpp
+        voip/tgcalls/ChannelManager.cpp
         voip/tgcalls/CodecSelectHelper.cpp
-        voip/tgcalls/Message.cpp
-        voip/tgcalls/InstanceImpl.cpp
-        voip/tgcalls/group/GroupNetworkManager.cpp
-        voip/tgcalls/group/GroupJoinPayloadInternal.cpp
-        voip/tgcalls/group/GroupInstanceCustomImpl.cpp
+        voip/tgcalls/CryptoHelper.cpp
+        voip/tgcalls/desktop_capturer/DesktopCaptureSource.cpp
+        voip/tgcalls/desktop_capturer/DesktopCaptureSourceHelper.cpp
+        voip/tgcalls/desktop_capturer/DesktopCaptureSourceManager.cpp
+        voip/tgcalls/EncryptedConnection.cpp
+        voip/tgcalls/FakeAudioDeviceModule.cpp
+        voip/tgcalls/FakeVideoTrackSource.cpp
+        voip/tgcalls/FieldTrialsConfig.cpp
         voip/tgcalls/group/AudioStreamingPart.cpp
         voip/tgcalls/group/AudioStreamingPartInternal.cpp
-        voip/tgcalls/group/AVIOContextImpl.cpp
-        voip/tgcalls/group/StreamingMediaContext.cpp
         voip/tgcalls/group/AudioStreamingPartPersistentDecoder.cpp
+        voip/tgcalls/group/AVIOContextImpl.cpp
+        voip/tgcalls/group/GroupAudioCapturePostProcessor.cpp
+        voip/tgcalls/group/GroupFrameTransformer.cpp
+        voip/tgcalls/group/GroupFrameTransformerTest.cpp
+        voip/tgcalls/group/GroupInstanceCustomImpl.cpp
+        voip/tgcalls/group/GroupInstanceReferenceImpl.cpp
+        voip/tgcalls/group/GroupJoinPayloadInternal.cpp
+        voip/tgcalls/group/GroupNetworkManager.cpp
+        voip/tgcalls/group/StreamingAudioRenderer.cpp
+        voip/tgcalls/group/StreamingAudioRendererTest.cpp
+        voip/tgcalls/group/StreamingMediaContext.cpp
         voip/tgcalls/group/VideoStreamingPart.cpp
-        voip/tgcalls/ChannelManager.cpp
-        voip/tgcalls/StaticThreads.cpp
-        voip/tgcalls/VideoCaptureInterfaceImpl.cpp
-        voip/tgcalls/legacy/InstanceImplLegacy.cpp
-        voip/tgcalls/utils/gzip.cpp
+        voip/tgcalls/Instance.cpp
+        voip/tgcalls/InstanceImpl.cpp
+        voip/tgcalls/LogSinkImpl.cpp
         voip/tgcalls/Manager.cpp
+        voip/tgcalls/MediaManager.cpp
+        voip/tgcalls/Message.cpp
+        voip/tgcalls/NetworkManager.cpp
+        voip/tgcalls/SctpDataChannelProviderInterfaceImpl.cpp
+        voip/tgcalls/StaticThreads.cpp
+        voip/tgcalls/third-party/json11.cpp
+        voip/tgcalls/ThreadLocalObject.cpp
         voip/tgcalls/TurnCustomizerImpl.cpp
-        voip/tgcalls/v2/ExternalSignalingConnection.cpp
-        voip/tgcalls/v2/DirectNetworkingImpl.cpp
-        voip/tgcalls/v2/SignalingKcpConnection.cpp
-        voip/tgcalls/v2/ReflectorRelayPortFactory.cpp
-        voip/tgcalls/v2/SignalingConnection.cpp
+        voip/tgcalls/utils/gzip.cpp
+        voip/tgcalls/v2_4_0_0/Signaling_4_0_0.cpp
         voip/tgcalls/v2/ContentNegotiation.cpp
-        voip/tgcalls/v2/SignalingEncryption.cpp
-        voip/tgcalls/v2/SignalingSctpConnection.cpp
-        voip/tgcalls/v2/ReflectorPort.cpp
+        voip/tgcalls/v2/CustomDcSctpSocket.cpp
+        voip/tgcalls/v2/DirectNetworkingImpl.cpp
+        voip/tgcalls/v2/ExternalSignalingConnection.cpp
+        voip/tgcalls/v2/InstanceV2CompatImpl.cpp
+        voip/tgcalls/v2/InstanceV2Impl.cpp
+        voip/tgcalls/v2/InstanceV2ReferenceImpl.cpp
+        voip/tgcalls/v2/MtProtoIceTransport.cpp
+        voip/tgcalls/v2/MtProtoIceTransportTest.cpp
         voip/tgcalls/v2/NativeNetworkingImpl.cpp
         voip/tgcalls/v2/RawTcpSocket.cpp
-        voip/tgcalls/v2/InstanceV2ReferenceImpl.cpp
-        voip/tgcalls/v2/ikcp.cpp
-        voip/tgcalls/v2/InstanceV2Impl.cpp
+        voip/tgcalls/v2/ReflectorPort.cpp
+        voip/tgcalls/v2/ReflectorRelayPortFactory.cpp
+        voip/tgcalls/v2/SignalingConnection.cpp
         voip/tgcalls/v2/Signaling.cpp
-        voip/tgcalls/ThreadLocalObject.cpp
-        voip/tgcalls/NetworkManager.cpp
-        voip/tgcalls/FakeVideoTrackSource.cpp
-        voip/tgcalls/AudioDeviceHelper.cpp
-        voip/tgcalls/EncryptedConnection.cpp
-        voip/tgcalls/FieldTrialsConfig.cpp
-        voip/tgcalls/MediaManager.cpp
-        voip/tgcalls/FakeAudioDeviceModule.cpp
-        voip/tgcalls/third-party/json11.cpp
-        voip/tgcalls/v2_4_0_0/Signaling_4_0_0.cpp
+        voip/tgcalls/v2/SignalingEncryption.cpp
+        voip/tgcalls/v2/SignalingSctpConnection.cpp
+        voip/tgcalls/v2/SignalingTranslator.cpp
+
+        voip/ReferenceCoreEmbedded.cpp
+        voip/tgcalls/v2wasm/CallCoreHost.cpp
+        voip/tgcalls/v2wasm/CoreGzip.cpp
+        voip/tgcalls/v2wasm/HostCompressionService.cpp
+        voip/tgcalls/v2wasm/InstanceV2PumpImpl.cpp
+        voip/tgcalls/v2wasm/NativeCoreBackend.cpp
+        voip/tgcalls/v2wasm/ReferenceCallCore.cpp
+        voip/tgcalls/v2wasm/reference_core_factory.cpp
+        voip/tgcalls/v2wasm/SignalingFraming.cpp
+        voip/tgcalls/v2wasm/VariantCallCore.cpp
+        voip/tgcalls/v2wasm/variant_core_factory.cpp
+        voip/tgcalls/v2wasm/WamrCoreBackend.cpp
+        voip/tgcalls/v2wasm/wasm_module_entry.cpp
         voip/tgcalls/VideoCaptureInterface.cpp
-        voip/tgcalls/Instance.cpp
+        voip/tgcalls/VideoCaptureInterfaceImpl.cpp
+
         voip/webrtc/rtc_base/bit_buffer.cc
         voip/webrtc/rtc_base/ssl_identity.cc
         voip/webrtc/rtc_base/nat_socket_factory.cc
@@ -1608,20 +1406,20 @@ add_library(tgcalls STATIC
         voip/webrtc/stats/rtc_stats_report.cc
         voip/webrtc/stats/rtc_stats.cc
         voip/webrtc/stats/rtcstats_objects.cc
-        voip/webrtc/third_party/libevent/buffer.c
-        voip/webrtc/third_party/libevent/epoll.c
-        voip/webrtc/third_party/libevent/evbuffer.c
-        voip/webrtc/third_party/libevent/evdns.c
-        voip/webrtc/third_party/libevent/event.c
-        voip/webrtc/third_party/libevent/event_tagging.c
-        voip/webrtc/third_party/libevent/evrpc.c
-        voip/webrtc/third_party/libevent/evutil.c
-        voip/webrtc/third_party/libevent/http.c
-        voip/webrtc/third_party/libevent/log.c
-        voip/webrtc/third_party/libevent/poll.c
-        voip/webrtc/third_party/libevent/select.c
-        voip/webrtc/third_party/libevent/signal.c
-        voip/webrtc/third_party/libevent/strlcpy.c
+        voip/third_party/libevent/buffer.c
+        voip/third_party/libevent/epoll.c
+        voip/third_party/libevent/evbuffer.c
+        voip/third_party/libevent/evdns.c
+        voip/third_party/libevent/event.c
+        voip/third_party/libevent/event_tagging.c
+        voip/third_party/libevent/evrpc.c
+        voip/third_party/libevent/evutil.c
+        voip/third_party/libevent/http.c
+        voip/third_party/libevent/log.c
+        voip/third_party/libevent/poll.c
+        voip/third_party/libevent/select.c
+        voip/third_party/libevent/signal.c
+        voip/third_party/libevent/strlcpy.c
         voip/webrtc/net/dcsctp/public/dcsctp_socket_factory.cc
         voip/webrtc/net/dcsctp/public/dcsctp_handover_state.cc
         voip/webrtc/net/dcsctp/public/text_pcap_packet_observer.cc
@@ -1692,9 +1490,9 @@ add_library(tgcalls STATIC
         voip/webrtc/net/dcsctp/tx/stream_scheduler.cc
         voip/webrtc/net/dcsctp/timer/task_queue_timeout.cc
         voip/webrtc/net/dcsctp/timer/timer.cc
-        voip/webrtc/third_party/crc32c/src/crc32c_portable.cc
-        voip/webrtc/third_party/crc32c/src/crc32c.cc
-#        voip/webrtc/third_party/jni_zero/jni_zero.cc
+        voip/third_party/crc32c/src/crc32c_portable.cc
+        voip/third_party/crc32c/src/crc32c.cc
+#        voip/third_party/jni_zero/jni_zero.cc
 )
 target_compile_options(tgcalls PUBLIC
         -Wall -finline-functions -ffast-math)
@@ -1705,10 +1503,13 @@ target_compile_definitions(tgcalls PUBLIC
 target_include_directories(tgcalls PUBLIC
         ./
         voip
-        boringssl/include
+        third_party/boringssl/include
+        openssl/include
         voip/tgcalls
         voip/rnnoise/include
         voip/webrtc
+        third_party/absl
+        third_party/wamr/core/iwasm/include
         third_party/xiph/opus/include
         third_party/xiph/opus/silk
         third_party/xiph/opus/silk/fixed
@@ -1720,10 +1521,12 @@ target_include_directories(tgcalls PUBLIC
         third_party/libsrtp/crypto/include
         third_party/usrsctplib
         third_party
-        voip/libtgvoip
-        ffmpeg/include
-        voip/webrtc/third_party/crc32c/src/include
-        voip/webrtc/third_party/jni_zero)
+        prebuild/include/${ANDROID_ABI}
+        third_party/ffmpeg
+        third_party/libvpx
+        third_party/dav1d/include
+        voip/third_party/crc32c/src/include
+        voip/third_party/jni_zero)
 
 if (${ANDROID_ABI} STREQUAL "armeabi-v7a")
     target_sources(tgcalls PRIVATE
@@ -1889,7 +1692,8 @@ target_include_directories(voipandroid PUBLIC
         ./
         voip
         rlottie/src/lottie
-        boringssl/include
+        third_party/boringssl/include
+        openssl/include
         voip/tgcalls
         voip/webrtc
         third_party/xiph/opus/include
@@ -1902,9 +1706,10 @@ target_include_directories(voipandroid PUBLIC
         third_party/libsrtp/config
         third_party/libsrtp/crypto/include
         third_party/usrsctplib
+        third_party/absl
         third_party
-        voip/libtgvoip
-        tde2e/include
+        td/tde2e
+        td/tde2e/td/e2e
 )
 
 if (${ANDROID_ABI} STREQUAL "armeabi-v7a")

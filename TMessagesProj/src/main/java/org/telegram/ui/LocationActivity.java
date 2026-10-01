@@ -2235,7 +2235,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     }
 
     private void createCircle(int meters) {
-        if (map == null) {
+        if (map == null || myLocation == null) {
             return;
         }
         List<IMapsProvider.PatternItem> PATTERN_POLYGON_ALPHA = Arrays.asList(new IMapsProvider.PatternItem.Gap(20), new IMapsProvider.PatternItem.Dash(20));

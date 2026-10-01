@@ -2,6 +2,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 apply plugin: 'com.android.application'
+apply plugin: 'org.telegram.build-app-plugin'
+
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
 
@@ -23,10 +25,11 @@ dependencies {
     implementation project(':TMessagesProj')
     implementation 'androidx.fragment:fragment-ktx:1.9.0'
     implementation 'androidx.core:core-ktx:1.18.0'
+
+    implementation 'com.google.android.play:app-update:2.1.0'
+
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
-
-//    implementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:18.0.4'
 }
 
 android {
@@ -34,8 +37,8 @@ android {
         jvmTarget = '17'
     }
 
-    compileSdk 36
-    buildToolsVersion = '36.0.0'
+    compileSdkVersion 36
+    buildToolsVersion '36.0.0'
 
     defaultConfig.applicationId = APP_PACKAGE
 
@@ -52,6 +55,11 @@ android {
         targetCompatibility JavaVersion.VERSION_17
 
         coreLibraryDesugaringEnabled true
+    }
+
+    androidResources {
+        noCompress += "pack"
+//        localeFilters += ["zz"]
     }
 
     signingConfigs {
@@ -79,7 +87,7 @@ android {
             minifyEnabled false
             shrinkResources false
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro', '../TMessagesProj/proguard-rules-beta.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
 

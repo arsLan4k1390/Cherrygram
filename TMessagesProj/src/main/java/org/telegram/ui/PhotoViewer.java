@@ -125,6 +125,7 @@ import android.window.OnBackInvokedDispatcher;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
 import androidx.collection.LongSparseArray;
 import androidx.core.content.ContextCompat;
@@ -138,18 +139,18 @@ import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.FloatValueHolder;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import org.telegram.ui.recyclerview.LinearSmoothScrollerEnd;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.analytics.AnalyticsListener;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
-import com.google.android.exoplayer2.video.VideoFrameMetadataListener;
-import com.google.android.exoplayer2.video.VideoSize;
+import androidx.media3.common.C;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.common.Format;
+import androidx.media3.exoplayer.analytics.AnalyticsListener;
+import androidx.media3.exoplayer.video.VideoFrameMetadataListener;
+import androidx.media3.common.VideoSize;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
@@ -4757,6 +4758,11 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         rightImage.setCurrentAccount(currentAccount);
         if (captionEdit != null) {
             captionEdit.setAccount(currentAccount);
+            captionEdit.editText.hidePopup(false);
+        }
+        if (topCaptionEdit != null) {
+            topCaptionEdit.setAccount(currentAccount);
+            topCaptionEdit.editText.hidePopup(false);
         }
         if (stickerMakerView != null) {
             stickerMakerView.setCurrentAccount(currentAccount);
@@ -9579,14 +9585,14 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private void onShowView() {
         if (parentActivity instanceof LaunchActivity) {
             LaunchActivity launchActivity = (LaunchActivity) parentActivity;
-            launchActivity.addOnUserLeaveHintListener(onUserLeaveHintListener);
+            launchActivity.addCustomOnUserLeaveHintListener(onUserLeaveHintListener);
         }
     }
 
     private void onHideView() {
         if (parentActivity instanceof LaunchActivity) {
             LaunchActivity launchActivity = (LaunchActivity) parentActivity;
-            launchActivity.removeOnUserLeaveHintListener(onUserLeaveHintListener);
+            launchActivity.removeCustomOnUserLeaveHintListener(onUserLeaveHintListener);
         }
         if (parentFragment != null && parentFragment.getFragmentView() != null) {
             clippingImageProgress = 1f;
@@ -16943,7 +16949,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 if (size[0] == 0) {
                     imageReceiver.setImageBitmap((Bitmap) null);
                 } else {
-                    imageReceiver.setImageBitmap(parentActivity.getResources().getDrawable(R.drawable.photoview_placeholder));
+                    imageReceiver.setImageBitmap(parentActivity.getResources().getDrawable(R.drawable.transparent));
                 }
             }
         } else {
@@ -17560,6 +17566,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         padImageForHorizontalInsets = true;
     }
 
+    private NotificationCenter.ObserversGroup observersGroup;
+
     public boolean openPhoto(final MessageObject messageObject, final TLRPC.FileLocation fileLocation, final ImageLocation imageLocation, final ImageLocation videoLocation, final ArrayList<MessageObject> messages, final ArrayList<SecureDocument> documents, final ArrayList<Object> photos, final int index, final PhotoViewerProvider provider, ChatActivity chatActivity, long dialogId, long mDialogId, long topicId, boolean fullScreenVideo, PageBlocksAdapter pageBlocksAdapter, Integer embedSeekTime) {
         if (parentActivity == null || isVisible || provider == null && checkAnimation() || messageObject == null && fileLocation == null && messages == null && photos == null && documents == null && imageLocation == null && pageBlocksAdapter == null) {
             return false;
@@ -17643,19 +17651,26 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         }
         actionBar.setTitleScrollNonFitText(false);
 
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileLoadFailed);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.customStickerCreated);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileLoadProgressChanged);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.mediaCountDidLoad);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.mediaDidLoad);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.dialogPhotosUpdate);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.messagesDeleted);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.filePreparingFailed);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileNewChunkAvailable);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.replaceMessagesObjects);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.dialogDeleted);
+        if (observersGroup != null) {
+            observersGroup.removeAllObservers();
+            observersGroup = null;
+        }
+
+        observersGroup = NotificationCenter.getInstance(currentAccount)
+            .createWeakObserversGroup(this)
+            .addGlobal(NotificationCenter.emojiLoaded)
+            .add(NotificationCenter.fileLoadFailed)
+            .add(NotificationCenter.fileLoaded)
+            .add(NotificationCenter.customStickerCreated)
+            .add(NotificationCenter.fileLoadProgressChanged)
+            .add(NotificationCenter.mediaCountDidLoad)
+            .add(NotificationCenter.mediaDidLoad)
+            .add(NotificationCenter.dialogPhotosUpdate)
+            .add(NotificationCenter.messagesDeleted)
+            .add(NotificationCenter.filePreparingFailed)
+            .add(NotificationCenter.fileNewChunkAvailable)
+            .add(NotificationCenter.replaceMessagesObjects)
+            .add(NotificationCenter.dialogDeleted);
 
         placeProvider = provider;
         mergeDialogId = mDialogId;
@@ -18741,19 +18756,11 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     }
 
     private void removeObservers() {
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileLoadFailed);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileLoaded);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.customStickerCreated);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileLoadProgressChanged);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.mediaCountDidLoad);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.mediaDidLoad);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.dialogPhotosUpdate);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.messagesDeleted);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.filePreparingFailed);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileNewChunkAvailable);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.replaceMessagesObjects);
-        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.dialogDeleted);
+        if (observersGroup != null) {
+            observersGroup.removeAllObservers();
+            observersGroup = null;
+        }
+
         ConnectionsManager.getInstance(currentAccount).cancelRequestsForGuid(classGuid);
     }
 
@@ -23817,12 +23824,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             animatingImageView.measure(MeasureSpec.makeMeasureSpec(layoutParams.width, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(layoutParams.height, MeasureSpec.AT_MOST));
             containerView.measure(MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY));
             navigationBar.measure(MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(navigationBarHeight, MeasureSpec.EXACTLY));
-        }
-
-        @Override
-        public void requestLayout() {
-            super.requestLayout();
-            AndroidUtilities.printStackTrace("requestLayout");
         }
 
         @Override

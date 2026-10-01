@@ -34,11 +34,9 @@ import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Property;
 import android.util.SparseIntArray;
 import android.view.HapticFeedbackConstants;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -70,7 +68,6 @@ import org.telegram.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
 import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.preferences.folders.helpers.FolderIconHelper;
@@ -2195,6 +2192,34 @@ public class FilterTabsView extends FrameLayout {
             }
         }
         return "";
+    }
+
+    /*public String getSelectedTabTitle() {
+        List<Tab> visibleTabs = new ArrayList<>();
+
+        for (Tab tab : tabs) {
+            if (CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() && tab.isDefault) {
+                continue;
+            }
+            visibleTabs.add(tab);
+        }
+
+        return visibleTabs.get(selectedTabId).realTitle.toString();
+    }*/
+
+    public void selectNextTab(boolean forward) {
+        if (tabs.isEmpty()) {
+            return;
+        }
+        int nextPosition = currentPosition + (forward ? 1 : -1);
+        if (nextPosition < 0 || nextPosition >= tabs.size()) {
+            return;
+        }
+        Tab tab = tabs.get(nextPosition);
+        if (tab == null) {
+            return;
+        }
+        scrollToTab(tab, nextPosition);
     }
     /** Cherrygram finish */
 

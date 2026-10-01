@@ -12,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 
-import com.google.android.exoplayer2.util.Consumer;
-
 import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLitePreparedStatement;
@@ -1578,16 +1576,16 @@ public class StoriesController {
 
     LongSparseArray<TL_stories.StoryItem> resolvedStories = new LongSparseArray<>();
 
-    public void resolveStoryAlbumLink(long peerId, int storyAlbumId, Consumer<TL_stories.TL_storyAlbum> consumer) {
+    public void resolveStoryAlbumLink(long peerId, int storyAlbumId, Utilities.Callback<TL_stories.TL_storyAlbum> consumer) {
         StoriesCollections collections = getStoryAlbumsList(peerId, false);
         if (collections != null) {
             StoryAlbum album = collections.findById(storyAlbumId);
             if (album != null) {
-                consumer.accept(album.toTl());
+                consumer.run(album.toTl());
                 return;
             }
             if (collections.loaded) {
-                consumer.accept(null);
+                consumer.run(null);
                 return;
             }
         }
@@ -1599,22 +1597,22 @@ public class StoriesController {
                 TL_stories.TL_albums albums = ((TL_stories.TL_albums) res);
                 for (TL_stories.TL_storyAlbum album : albums.albums) {
                     if (album.album_id == storyAlbumId) {
-                        consumer.accept(album);
+                        consumer.run(album);
                         return;
                     }
                 }
             }
 
-            consumer.accept(null);
+            consumer.run(null);
         }));
     }
 
-    public void resolveLiveStoryLink(long peerId, Consumer<TL_stories.StoryItem> consumer) {
+    public void resolveLiveStoryLink(long peerId, Utilities.Callback<TL_stories.StoryItem> consumer) {
         TL_stories.PeerStories userStoriesLocal = getStories(peerId);
         if (userStoriesLocal != null) {
             for (int i = 0; i < userStoriesLocal.stories.size(); i++) {
                 if (userStoriesLocal.stories.get(i).media instanceof TLRPC.TL_messageMediaVideoStream && !(userStoriesLocal.stories.get(i) instanceof TL_stories.TL_storyItemSkipped)) {
-                    consumer.accept(userStoriesLocal.stories.get(i));
+                    consumer.run(userStoriesLocal.stories.get(i));
                     return;
                 }
             }
@@ -1622,7 +1620,7 @@ public class StoriesController {
         long hash = peerId + -93321425 << 12;
         TL_stories.StoryItem storyItem = resolvedStories.get(hash);
         if (storyItem != null) {
-            consumer.accept(storyItem);
+            consumer.run(storyItem);
             return;
         }
         final TL_stories.TL_stories_getPeerStories req = new TL_stories.TL_stories_getPeerStories();
@@ -1646,18 +1644,18 @@ public class StoriesController {
                             }
                         }
                     }
-                    consumer.accept(storyItem);
+                    consumer.run(storyItem);
                 });
             }
         });
     }
 
-    public void resolveStoryLink(long peerId, int storyId, Consumer<TL_stories.StoryItem> consumer) {
+    public void resolveStoryLink(long peerId, int storyId, Utilities.Callback<TL_stories.StoryItem> consumer) {
         TL_stories.PeerStories userStoriesLocal = getStories(peerId);
         if (userStoriesLocal != null) {
             for (int i = 0; i < userStoriesLocal.stories.size(); i++) {
                 if (userStoriesLocal.stories.get(i).id == storyId && !(userStoriesLocal.stories.get(i) instanceof TL_stories.TL_storyItemSkipped)) {
-                    consumer.accept(userStoriesLocal.stories.get(i));
+                    consumer.run(userStoriesLocal.stories.get(i));
                     return;
                 }
             }
@@ -1665,7 +1663,7 @@ public class StoriesController {
         long hash = peerId + storyId << 12;
         TL_stories.StoryItem storyItem = resolvedStories.get(hash);
         if (storyItem != null) {
-            consumer.accept(storyItem);
+            consumer.run(storyItem);
             return;
         }
         TL_stories.TL_stories_getStoriesByID stories = new TL_stories.TL_stories_getStoriesByID();
@@ -1684,7 +1682,7 @@ public class StoriesController {
                             resolvedStories.put(hash, storyItem = response.stories.get(0));
                         }
                     }
-                    consumer.accept(storyItem);
+                    consumer.run(storyItem);
                 });
             }
         });
@@ -4522,7 +4520,7 @@ public class StoriesController {
         return null;
     }
 
-    public void canSendStoryFor(long dialogId, Consumer<Boolean> consumer, boolean showLimitsBottomSheet, Theme.ResourcesProvider resourcesProvider) {
+    public void canSendStoryFor(long dialogId, Utilities.Callback<Boolean> consumer, boolean showLimitsBottomSheet, Theme.ResourcesProvider resourcesProvider) {
         final TL_stories.TL_stories_canSendStory tl_stories_canSendStory = new TL_stories.TL_stories_canSendStory();
         tl_stories_canSendStory.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
         ConnectionsManager.getInstance(currentAccount).sendRequest(tl_stories_canSendStory, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
@@ -4532,12 +4530,12 @@ public class StoriesController {
                         MessagesController messagesController = MessagesController.getInstance(currentAccount);
                         messagesController.getBoostsController().getBoostsStats(dialogId, boostsStatus -> {
                             if (boostsStatus == null) {
-                                consumer.accept(false);
+                                consumer.run(false);
                                 return;
                             }
                             messagesController.getBoostsController().userCanBoostChannel(dialogId, boostsStatus, canApplyBoost -> {
                                 if (canApplyBoost == null) {
-                                    consumer.accept(false);
+                                    consumer.run(false);
                                     return;
                                 }
                                 BaseFragment lastFragment = LaunchActivity.getLastFragment();
@@ -4559,12 +4557,12 @@ public class StoriesController {
                                     };
                                 }
                                 LimitReachedBottomSheet.openBoostsForPostingStories(lastFragment, dialogId, canApplyBoost, boostsStatus, runnable);
-                                consumer.accept(false);
+                                consumer.run(false);
                             });
-                            consumer.accept(false);
+                            consumer.run(false);
                         });
                     } else {
-                        consumer.accept(false);
+                        consumer.run(false);
                     }
                 } else if (err.text.startsWith("STORY_LIVE_ALREADY_")) {
                     BaseFragment lastFragment = LaunchActivity.getLastFragment();
@@ -4575,22 +4573,22 @@ public class StoriesController {
                             .setPositiveButton(getString(R.string.OK), null)
                             .show();
                     }
-                    consumer.accept(false);
+                    consumer.run(false);
                 } else if (err.text.equalsIgnoreCase("PREMIUM_ACCOUNT_REQUIRED")) {
                     BaseFragment lastFragment = LaunchActivity.getLastFragment();
                     if (showLimitsBottomSheet && lastFragment != null) {
                         lastFragment.showDialog(new PremiumFeatureBottomSheet(lastFragment, PremiumPreviewFragment.PREMIUM_FEATURE_STORIES, true));
                     }
-                    consumer.accept(false);
+                    consumer.run(false);
                 } else {
                     BulletinFactory bulletinFactory = BulletinFactory.global();
                     if (bulletinFactory != null) {
                         bulletinFactory.showForError(err);
                     }
-                    consumer.accept(false);
+                    consumer.run(false);
                 }
             } else {
-                consumer.accept(true);
+                consumer.run(true);
             }
         }), ConnectionsManager.RequestFlagDoNotWaitFloodWait);
     }

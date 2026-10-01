@@ -25,7 +25,6 @@ import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 
 import java.io.IOException;
 import java.util.ArrayList;

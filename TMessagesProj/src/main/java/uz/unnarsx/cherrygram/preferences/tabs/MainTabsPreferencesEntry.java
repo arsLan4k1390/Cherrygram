@@ -12,8 +12,6 @@ package uz.unnarsx.cherrygram.preferences.tabs;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
-import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -32,12 +30,12 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager;
 import uz.unnarsx.cherrygram.preferences.BaseCGPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
@@ -58,6 +56,11 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
     protected CharSequence getTitle() {
         FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("tabs_preferences_screen");
         return getString(R.string.CP_MainTabs_Header);
+    }
+
+    @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Tabs;
     }
 
     @Override
@@ -95,6 +98,7 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
             );
             items.add(SettingsHelper.asSwitchCG(openSettingsBySwipeRow, getString(R.string.CP_MainTabs_OpenSettings), getString(R.string.CP_MainTabs_OpenSettings_Desc))
                     .setChecked(CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe())
+                    .slug("openSettings")
             );
         }
 
@@ -116,12 +120,14 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
             items.add(SettingsHelper.asCustomWithBackground(tabsPreviewRow, previewContainer, 58));
             items.add(SettingsHelper.asSwitchCG(showTabTitleRow, getString(R.string.CP_MainTabs_ShowTabsTitle))
                     .setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle())
+                    .slug("showTitles")
             );
             items.add(UItem.asShadow(getString(R.string.CP_MainTabs_Layout_Desc)));
 
             items.add(UItem.asHeader(getString(R.string.ActionsChartTitle)));
-            items.add(SettingsHelper.asSwitchCG(forceOpenChats, applyNewSpan(getString(R.string.CP_MainTabs_ForceOpenChats)), getString(R.string.CP_MainTabs_ForceOpenChats_Desc))
+            items.add(SettingsHelper.asSwitchCG(forceOpenChats, getString(R.string.CP_MainTabs_ForceOpenChats), getString(R.string.CP_MainTabs_ForceOpenChats_Desc))
                     .setChecked(CherrygramAppearanceConfig.INSTANCE.getMainTabsForceOpenChats())
+                    .slug("search")
             );
         }
     }
@@ -193,12 +199,6 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getMainTabsForceOpenChats());
         }
     }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        return false;
-    }
-
 
     @Override
     public boolean onBackPressed(boolean invoked) {

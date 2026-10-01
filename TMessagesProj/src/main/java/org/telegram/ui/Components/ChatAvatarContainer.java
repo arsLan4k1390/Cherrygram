@@ -68,6 +68,7 @@ import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.Stories.StoriesUtilities;
 import org.telegram.ui.TopicsFragment;
 import org.telegram.ui.community.CommunityArrowDrawable;
+import org.telegram.ui.community.CommunitySheet;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
@@ -423,7 +424,19 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             communityItem.setScaleType(ImageView.ScaleType.CENTER);
             communityItem.setVisibility(GONE);
             communityItem.setImageDrawable(new CommunityArrowDrawable());
-            if (!isCentered()) addView(communityItem);
+            if (isCentered() && getChatActivity() != null) {
+                long communityId = getLinkedCommunityId(getChatActivity());
+
+                if (communityId != 0) {
+                    ScaleStateListAnimator.apply(communityItem, 0.2f, 1.2f);
+                    addView(communityItem);
+                    communityItem.setOnClickListener(v ->
+                            getChatActivity().showDialog(new CommunitySheet(getChatActivity(), communityId))
+                    );
+                }
+            } else {
+                addView(communityItem);
+            }
 
             timeItem = new ImageView(context);
             timeItem.setScaleType(ImageView.ScaleType.CENTER);
@@ -1013,7 +1026,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
 
     public void setCommunityItemVisible(boolean visible) {
         if (communityItem != null) {
-            communityItem.setVisibility(visible && !avatarImageIsHidden && !isCentered() ? VISIBLE : GONE);
+            communityItem.setVisibility(visible && !avatarImageIsHidden ? VISIBLE : GONE);
         }
     }
 
@@ -1948,6 +1961,16 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
 
     public ChatActivity getChatActivity() {
         return parentFragment;
+    }
+
+    private long getLinkedCommunityId(ChatActivity chatActivity) {
+        if (chatActivity.getCurrentUser() != null && chatActivity.getCurrentUser().linked_community_id != 0) {
+            return chatActivity.getCurrentUser().linked_community_id;
+        }
+        if (chatActivity.getCurrentChat() != null && chatActivity.getCurrentChat().linked_community_id != 0) {
+            return chatActivity.getCurrentChat().linked_community_id;
+        }
+        return 0;
     }
     /** Cherrygram finish */
 

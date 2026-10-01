@@ -800,7 +800,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
             setPadding(dp(12), 0, dp(12), 0);
 
-            speakerDrawable = new RLottieDrawable(R.raw.speaker, "" + R.raw.speaker, dp(24), dp(24), true, null);
+            speakerDrawable = new RLottieDrawable(R.raw.speaker, dp(24), dp(24), true, null);
 
             imageView = new RLottieImageView(context);
             imageView.setScaleType(ImageView.ScaleType.CENTER);
@@ -1165,7 +1165,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
     @Override
     public void dismiss() {
-        parentActivity.removeOnUserLeaveHintListener(onUserLeaveHintListener);
+        parentActivity.removeCustomOnUserLeaveHintListener(onUserLeaveHintListener);
         parentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         groupCallUiVisible = false;
         if (groupVoipInviteAlert != null) {
@@ -2458,8 +2458,8 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
         shadowDrawable = context.getResources().getDrawable(R.drawable.sheet_shadow_round).mutate();
 
-        bigMicDrawable = new RLottieDrawable(R.raw.voip_filled, "" + R.raw.voip_filled, dp(46), dp(46), true, null);
-        handDrawables = new RLottieDrawable(R.raw.hand_2, "" + R.raw.hand_2, dp(46), dp(46), true, null);
+        bigMicDrawable = new RLottieDrawable(R.raw.voip_filled, dp(46), dp(46), true, null);
+        handDrawables = new RLottieDrawable(R.raw.hand_2, dp(46), dp(46), true, null);
 
         containerView = sizeNotifierFrameLayout = new SizeNotifierFrameLayout(context) {
             private boolean ignoreLayout = false;
@@ -4368,7 +4368,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
         flipButton.showText(false, false);
         RLottieImageView flipIconView = new RLottieImageView(context);
         flipButton.addView(flipIconView, LayoutHelper.createFrame(32, 32, Gravity.CENTER_HORIZONTAL, 0, 10, 0, 0));
-        flipIcon = new RLottieDrawable(R.raw.camera_flip, "" + R.raw.camera_flip, dp(24), dp(24), true, null);
+        flipIcon = new RLottieDrawable(R.raw.camera_flip, dp(24), dp(24), true, null);
         flipIconView.setAnimation(flipIcon);
         flipButton.setOnClickListener(view -> {
             renderersContainer.delayHideUi();
@@ -6379,14 +6379,16 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                 break;
             }
         }
-        boolean drawStatus;
+        boolean drawStatus = false;
         if (speakingIndex > 0) {
             String s = LocaleController.getPluralString("MembersAreSpeakingToast", speakingIndex);
             int replaceIndex = s.indexOf("un1");
-            SpannableStringBuilder spannableStringBuilder1 = new SpannableStringBuilder(s);
-            spannableStringBuilder1.replace(replaceIndex, replaceIndex + 3, spannableStringBuilder);
-            actionBar.getAdditionalSubtitleTextView().setText(spannableStringBuilder1);
-            drawStatus = true;
+            if (replaceIndex != -1) {
+                SpannableStringBuilder spannableStringBuilder1 = new SpannableStringBuilder(s);
+                spannableStringBuilder1.replace(replaceIndex, replaceIndex + 3, spannableStringBuilder);
+                actionBar.getAdditionalSubtitleTextView().setText(spannableStringBuilder1);
+                drawStatus = true;
+            }
         } else {
             drawStatus = false;
         }
@@ -9573,7 +9575,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        parentActivity.addOnUserLeaveHintListener(onUserLeaveHintListener);
+        parentActivity.addCustomOnUserLeaveHintListener(onUserLeaveHintListener);
     }
 
     public void onResume() {

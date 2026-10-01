@@ -71,7 +71,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.exoplayer2.C;
+import androidx.media3.common.C;
 import com.google.android.gms.cast.framework.CastContext;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -1807,7 +1807,9 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                                 savedMusicList.add(r.document);
                             }
                             playlist.clear();
-                            playlist.addAll(savedMusicList.list);
+                            if (savedMusicList != null) {
+                                playlist.addAll(savedMusicList.list);
+                            }
                             listAdapter.notifyDataSetChanged();
                             ConnectionsManager.getInstance(currentAccount).sendRequest(req2, null);
                         }
@@ -2937,7 +2939,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             castItem.setTextAndIcon(getString(R.string.VideoPlayerChromecast), R.drawable.menu_video_chromecast);
             castItem.setOnClickListener(v2 -> {
                 o.dismiss();
-                onSubItemClick(7);
+                onSubItemClick(6);
             });
             AndroidUtilities.removeFromParent(castItemButton);
             castItem.addView(castItemButton, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));

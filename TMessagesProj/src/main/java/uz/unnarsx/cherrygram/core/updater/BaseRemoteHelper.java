@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.misc.Constants;
 
 public abstract class BaseRemoteHelper {
 
@@ -146,23 +147,23 @@ public abstract class BaseRemoteHelper {
     }
 
     public static String getUpdateChannelUsername() {
-        if (CherrygramCoreConfig.INSTANCE.getInstallBetas()) {
-            return "CherrygramBetaAPKs"; // Cherrygram Beta
+        if (CherrygramCoreConfig.INSTANCE.getInstallBetas() && !CherrygramCoreConfig.isPlayStoreBuild()) {
+            return Constants.CG_BETA_APKS_CHANNEL_USERNAME;
         } else {
-            return "CherrygramAPKs"; // Cherrygram APKs
+            return Constants.CG_APKS_CHANNEL_USERNAME;
         }
     }
 
     public static long getUpdateChannelID() {
-        if (CherrygramCoreConfig.INSTANCE.getInstallBetas()) {
-            return 1544768810L; // Cherrygram Beta
+        if (CherrygramCoreConfig.INSTANCE.getInstallBetas() && !CherrygramCoreConfig.isPlayStoreBuild()) {
+            return Constants.Cherrygram_Beta;
         } else {
-            return 1557718915L; // Cherrygram APKs
+            return Constants.Cherrygram_APKs;
         }
     }
 
     public static String getMetadataChannel() {
-        if (CherrygramCoreConfig.INSTANCE.getInstallBetas()) {
+        if (CherrygramCoreConfig.INSTANCE.getInstallBetas() && !CherrygramCoreConfig.isPlayStoreBuild()) {
             return "cherrygram_beta_metadata";
         } else {
             return "cherrygram_metadata";
@@ -170,7 +171,7 @@ public abstract class BaseRemoteHelper {
     }
 
     public static long getMetadataChannelID() {
-        if (CherrygramCoreConfig.INSTANCE.getInstallBetas()) {
+        if (CherrygramCoreConfig.INSTANCE.getInstallBetas() && !CherrygramCoreConfig.isPlayStoreBuild()) {
             return 3710486866L;
         } else {
             return 3898928816L;

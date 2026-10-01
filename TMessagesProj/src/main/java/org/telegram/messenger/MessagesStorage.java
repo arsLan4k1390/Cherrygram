@@ -74,6 +74,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 import me.vkryl.core.BitwiseUtils;
 
 public class MessagesStorage extends BaseController {
@@ -118,7 +120,7 @@ public class MessagesStorage extends BaseController {
         }
     }
 
-    public final static int LAST_DB_VERSION = 177;
+    public final static int LAST_DB_VERSION = 179;
     private boolean databaseMigrationInProgress;
     public boolean showClearDatabaseAlert;
 
@@ -607,6 +609,7 @@ public class MessagesStorage extends BaseController {
         database.executeFast("CREATE TABLE media_v4(mid INTEGER, uid INTEGER, date INTEGER, type INTEGER, data BLOB, PRIMARY KEY(mid, uid, type))").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS uid_mid_type_date_idx_media_v4 ON media_v4(uid, mid, type, date);").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS uid_type_date_mid_idx_media_v4 ON media_v4(uid, type, date DESC, mid DESC);").stepThis().dispose();
+        database.executeFast("CREATE INDEX IF NOT EXISTS media_v4_music_browse_idx ON media_v4(uid, date DESC, mid DESC) WHERE type = 4 AND mid > 0 AND uid != 0;").stepThis().dispose();
 
         database.executeFast("CREATE TABLE bot_keyboard(uid INTEGER PRIMARY KEY, mid INTEGER, info BLOB)").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS bot_keyboard_idx_mid_v2 ON bot_keyboard(mid, uid);").stepThis().dispose();
@@ -2958,17 +2961,21 @@ public class MessagesStorage extends BaseController {
                     }
                 }
                 int unreadCount = 0;
+                int mutedUnreadCount = 0;
+
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_CONTACTS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount += contacts[0][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += contacts[0][1];
+                            mutedUnreadCount += contacts[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += contacts[1][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += contacts[1][1];
+                            mutedUnreadCount += contacts[1][1];
                         }
                     }
                 }
@@ -2977,12 +2984,14 @@ public class MessagesStorage extends BaseController {
                         unreadCount += nonContacts[0][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += nonContacts[0][1];
+                            mutedUnreadCount += nonContacts[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += nonContacts[1][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += nonContacts[1][1];
+                            mutedUnreadCount += nonContacts[1][1];
                         }
                     }
                 }
@@ -2991,12 +3000,14 @@ public class MessagesStorage extends BaseController {
                         unreadCount += groups[0][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += groups[0][1];
+                            mutedUnreadCount += groups[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += groups[1][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += groups[1][1];
+                            mutedUnreadCount += groups[1][1];
                         }
                     }
                 }
@@ -3005,12 +3016,14 @@ public class MessagesStorage extends BaseController {
                         unreadCount += channels[0][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += channels[0][1];
+                            mutedUnreadCount += channels[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += channels[1][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += channels[1][1];
+                            mutedUnreadCount += channels[1][1];
                         }
                     }
                 }
@@ -3019,12 +3032,14 @@ public class MessagesStorage extends BaseController {
                         unreadCount += bots[0][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += bots[0][1];
+                            mutedUnreadCount += bots[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += bots[1][0];
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                             unreadCount += bots[1][1];
+                            mutedUnreadCount += bots[1][1];
                         }
                     }
                 }
@@ -3035,6 +3050,7 @@ public class MessagesStorage extends BaseController {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
                         unreadCount += communities[0][1];
                         unreadCount += communities[1][1];
+                        mutedUnreadCount += communities[0][1] + communities[1][1];
                     }
                 }
 
@@ -3063,12 +3079,19 @@ public class MessagesStorage extends BaseController {
                                     } else {
                                         flag = MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS;
                                     }
+                                    boolean added = false;
                                     if ((flags & flag) == 0) {
                                         unreadCount += count;
+                                        added = true;
                                     } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 && mutedDialogs.indexOfKey(user.id) >= 0) {
                                         unreadCount += count;
+                                        added = true;
                                     } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) != 0 && archivedDialogs.indexOfKey(user.id) >= 0) {
                                         unreadCount += count;
+                                        added = true;
+                                    }
+                                    if (added && mutedDialogs.indexOfKey(user.id) >= 0) {
+                                        mutedUnreadCount += count;
                                     }
                                 }
                             }
@@ -3081,12 +3104,19 @@ public class MessagesStorage extends BaseController {
                                 } else {
                                     flag = MessagesController.DIALOG_FILTER_FLAG_GROUPS;
                                 }
+                                boolean added = false;
                                 if ((flags & flag) == 0) {
                                     unreadCount++;
+                                    added = true;
                                 } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 && mutedDialogs.indexOfKey(-chat.id) >= 0 && dialogsWithMentions.indexOfKey(-chat.id) < 0) {
                                     unreadCount++;
+                                    added = true;
                                 } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) != 0 && archivedDialogs.indexOfKey(-chat.id) >= 0) {
                                     unreadCount++;
+                                    added = true;
+                                }
+                                if (added && mutedDialogs.indexOfKey(-chat.id) >= 0) {
+                                    mutedUnreadCount++;
                                 }
                             }
                         }
@@ -3119,6 +3149,9 @@ public class MessagesStorage extends BaseController {
                                         if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0 || archivedDialogs.indexOfKey(user.id) < 0) &&
                                                 ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 || mutedDialogs.indexOfKey(user.id) < 0)) {
                                             unreadCount -= count;
+                                            if (mutedDialogs.indexOfKey(user.id) >= 0) {
+                                                mutedUnreadCount -= count;
+                                            }
                                         }
                                     }
                                 }
@@ -3136,11 +3169,22 @@ public class MessagesStorage extends BaseController {
                                     if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0 || archivedDialogs.indexOfKey(-chat.id) < 0) &&
                                             ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 || mutedDialogs.indexOfKey(-chat.id) < 0 || dialogsWithMentions.indexOfKey(-chat.id) >= 0)) {
                                         unreadCount--;
+                                        if (mutedDialogs.indexOfKey(-chat.id) >= 0) {
+                                            mutedUnreadCount--;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+
+                    if (!CherrygramAppearanceConfig.INSTANCE.getTabsIncludeMutedInCounter()) {
+                        unreadCount -= mutedUnreadCount;
+                        if (unreadCount < 0) {
+                            unreadCount = 0;
+                        }
+                    }
+
                     filter.pendingUnreadCount = unreadCount;
                     /*if (BuildVars.DEBUG_VERSION) {
                         FileLog.d("filter " + filter.name + " flags = " + filter.flags + " unread count = " + filter.pendingUnreadCount);
@@ -6296,17 +6340,22 @@ public class MessagesStorage extends BaseController {
                     flags |= MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED;
                 }
             }
+
+            // CHERRYGRAM: свитч действует только на пользовательские папки (filter != null).
+            // Для "All Chats"/"Archive" мьют по-прежнему регулируется showBadgeMuted, не трогаем.
+            final boolean includeMutedHere = (filter == null) || CherrygramAppearanceConfig.INSTANCE.getTabsIncludeMutedInCounter();
+
             if (read) {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_CONTACTS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount -= contacts[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= contacts[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount -= contacts[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= contacts[1][1];
                         }
                     }
@@ -6314,13 +6363,13 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount -= nonContacts[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= nonContacts[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount -= nonContacts[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= nonContacts[1][1];
                         }
                     }
@@ -6328,7 +6377,9 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_GROUPS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount -= groups[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        // CHERRYGRAM: если фильтр сам не исключает муту, но НАШ свитч выключен —
+                        // ведём себя как будто EXCLUDE_MUTED включён: вычитаем только mention-исключение.
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= groups[0][1];
                         } else {
                             unreadCount -= mentionGroups[0];
@@ -6336,7 +6387,7 @@ public class MessagesStorage extends BaseController {
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount -= groups[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= groups[1][1];
                         } else {
                             unreadCount -= mentionGroups[1];
@@ -6346,7 +6397,7 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_CHANNELS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount -= channels[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= channels[0][1];
                         } else {
                             unreadCount -= mentionChannels[0];
@@ -6354,7 +6405,7 @@ public class MessagesStorage extends BaseController {
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount -= channels[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= channels[1][1];
                         } else {
                             unreadCount -= mentionChannels[1];
@@ -6364,13 +6415,13 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_BOTS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount -= bots[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= bots[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount -= bots[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= bots[1][1];
                         }
                     }
@@ -6379,7 +6430,7 @@ public class MessagesStorage extends BaseController {
                 if (!isArchive && (flags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) == MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) {
                     unreadCount -= communities[0][0];
                     unreadCount -= communities[1][0];
-                    if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                    if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                         unreadCount -= communities[0][1];
                         unreadCount -= communities[1][1];
                     }
@@ -6412,7 +6463,7 @@ public class MessagesStorage extends BaseController {
                                     }
                                     if ((flags & flag) == 0) {
                                         unreadCount -= count;
-                                    } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 && mutedDialogs.indexOfKey(user.id) >= 0) {
+                                    } else if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 || !includeMutedHere) && mutedDialogs.indexOfKey(user.id) >= 0) {
                                         unreadCount -= count;
                                     } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) != 0 && archivedDialogs.indexOfKey(user.id) >= 0) {
                                         unreadCount -= count;
@@ -6430,7 +6481,7 @@ public class MessagesStorage extends BaseController {
                                 }
                                 if ((flags & flag) == 0) {
                                     unreadCount--;
-                                } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 && mutedDialogs.indexOfKey(-chat.id) >= 0 && dialogsWithMentions.indexOfKey(-chat.id) < 0) {
+                                } else if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 || !includeMutedHere) && mutedDialogs.indexOfKey(-chat.id) >= 0 && dialogsWithMentions.indexOfKey(-chat.id) < 0) {
                                     unreadCount--;
                                 } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) != 0 && archivedDialogs.indexOfKey(-chat.id) >= 0) {
                                     unreadCount--;
@@ -6467,7 +6518,7 @@ public class MessagesStorage extends BaseController {
                                     }
                                     if ((flags & flag) != 0) {
                                         if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0 || archivedDialogs.indexOfKey(user.id) < 0) &&
-                                                ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 || mutedDialogs.indexOfKey(user.id) < 0)) {
+                                                ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere || mutedDialogs.indexOfKey(user.id) < 0)) {
                                             unreadCount += count;
                                         }
                                     }
@@ -6484,7 +6535,7 @@ public class MessagesStorage extends BaseController {
                                 }
                                 if ((flags & flag) != 0) {
                                     if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0 || archivedDialogs.indexOfKey(-chat.id) < 0) &&
-                                            ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 || mutedDialogs.indexOfKey(-chat.id) < 0 || dialogsWithMentions.indexOfKey(-chat.id) >= 0)) {
+                                            ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere || mutedDialogs.indexOfKey(-chat.id) < 0 || dialogsWithMentions.indexOfKey(-chat.id) >= 0)) {
                                         unreadCount++;
                                     }
                                 }
@@ -6499,13 +6550,13 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_CONTACTS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount += contacts[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += contacts[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += contacts[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += contacts[1][1];
                         }
                     }
@@ -6513,13 +6564,13 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount += nonContacts[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += nonContacts[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += nonContacts[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += nonContacts[1][1];
                         }
                     }
@@ -6527,7 +6578,7 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_GROUPS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount += groups[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += groups[0][1];
                         } else {
                             unreadCount += mentionGroups[0];
@@ -6535,7 +6586,7 @@ public class MessagesStorage extends BaseController {
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += groups[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += groups[1][1];
                         } else {
                             unreadCount += mentionGroups[1];
@@ -6545,7 +6596,7 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_CHANNELS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount += channels[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += channels[0][1];
                         } else {
                             unreadCount += mentionChannels[0];
@@ -6553,7 +6604,7 @@ public class MessagesStorage extends BaseController {
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += channels[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += channels[1][1];
                         } else {
                             unreadCount += mentionChannels[1];
@@ -6563,13 +6614,13 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_BOTS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount += bots[0][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += bots[0][1];
                         }
                     }
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) == 0) {
                         unreadCount += bots[1][0];
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount += bots[1][1];
                         }
                     }
@@ -6578,7 +6629,7 @@ public class MessagesStorage extends BaseController {
                 if (!isArchive && (flags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) == MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) {
                     unreadCount += communities[0][0];
                     unreadCount += communities[1][0];
-                    if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0) {
+                    if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                         unreadCount += communities[0][1];
                         unreadCount += communities[1][1];
                     }
@@ -6586,10 +6637,13 @@ public class MessagesStorage extends BaseController {
 
                 if (filter != null) {
                     if (!filter.alwaysShow.isEmpty()) {
-                        if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 && dialogsToUpdateMentions != null) {
+                        if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 || !includeMutedHere) && dialogsToUpdateMentions != null) {
                             for (int b = 0, N2 = dialogsToUpdateMentions.size(); b < N2; b++) {
                                 long did = dialogsToUpdateMentions.keyAt(b);
                                 TLRPC.Chat chat = chatsDict.get(-did);
+                                if (chat == null) {
+                                    continue;
+                                }
                                 if (ChatObject.isChannel(chat) && !chat.megagroup) {
                                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_CHANNELS) == 0) {
                                         continue;
@@ -6612,7 +6666,7 @@ public class MessagesStorage extends BaseController {
                             if (DialogObject.isUserDialog(did)) {
                                 TLRPC.User user = usersDict.get(did);
                                 if (user != null) {
-                                    if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 && mutedDialogs.indexOfKey(user.id) >= 0) {
+                                    if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 || !includeMutedHere) && mutedDialogs.indexOfKey(user.id) >= 0) {
                                         unreadCount++;
                                     } else {
                                         if (user.bot) {
@@ -6633,7 +6687,7 @@ public class MessagesStorage extends BaseController {
                                 user = encUsersDict.get(did);
                                 if (user != null) {
                                     int count = encryptedChatsByUsersCount.get(did, 0);
-                                    if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 && mutedDialogs.indexOfKey(user.id) >= 0) {
+                                    if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 || !includeMutedHere) && mutedDialogs.indexOfKey(user.id) >= 0) {
                                         unreadCount += count;
                                     } else {
                                         if (user.bot) {
@@ -6654,7 +6708,7 @@ public class MessagesStorage extends BaseController {
                             } else {
                                 TLRPC.Chat chat = chatsDict.get(-did);
                                 if (chat != null) {
-                                    if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 && mutedDialogs.indexOfKey(-chat.id) >= 0) {
+                                    if (((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0 || !includeMutedHere) && mutedDialogs.indexOfKey(-chat.id) >= 0) {
                                         unreadCount++;
                                     } else {
                                         if (ChatObject.isChannel(chat) && !chat.megagroup) {

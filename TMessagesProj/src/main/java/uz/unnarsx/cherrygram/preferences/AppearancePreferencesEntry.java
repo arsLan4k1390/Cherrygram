@@ -11,7 +11,6 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.content.Context;
 import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -22,7 +21,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.SettingsActivity;
 
@@ -57,16 +55,24 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Appearance;
+    }
+
+    @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.AP_Header)));
         items.add(SettingsHelper.asSwitchCG(centerTitleRow, getString(R.string.AP_CenterTitle))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getCenterTitle())
+                .slug("centerTitle")
         );
         items.add(SettingsHelper.asSwitchCG(hideSearchBar, getString(R.string.AP_HideSearchBar))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getHideSearchFiled())
+                .slug("hideSearchBar")
         );
         items.add(SettingsHelper.asSwitchCG(snowflakesRow, getString(R.string.CP_Snowflakes_Header))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawSnowInActionBar())
+                .slug("snowflakes")
         );
         items.add(UItem.asShadow(null));
 
@@ -74,9 +80,11 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
         items.add(UItem.asButton(iconPackRow, getString(R.string.AP_IconReplacements), getIconPackValueText()));
         items.add(SettingsHelper.asSwitchCG(oneUISwitchesRow, getString(R.string.AP_OneUI_Switch_Style))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle())
+                .slug("oneUI_Switches")
         );
         items.add(SettingsHelper.asSwitchCG(disableDividersRow, getString(R.string.AP_DisableDividers))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getDisableDividers())
+                .slug("dividers")
         );
         items.add(UItem.asShadow(null));
 
@@ -90,6 +98,7 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_Folders_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Folders)
         );
         items.add(
                 SettingsActivity.SettingCell.Factory.of(
@@ -100,6 +109,7 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_BottomTabs_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Tabs)
         );
         Pair<Integer, Integer> colors = TelegramSettingsHelper.Helper.INSTANCE.getProfileButtonColor(getUserConfig().getCurrentUser(), true);
         items.add(
@@ -112,6 +122,7 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
                         getString(R.string.CGP_MessagesProfiles_Desc),
                         true
                 )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Messages_And_Profiles)
         );
         items.add(UItem.asShadow(null));
     }
@@ -172,21 +183,6 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == messagesAndProfilesRow) {
             CherrygramPreferencesNavigator.INSTANCE.createMessagesAndProfiles(this);
         }
-    }
-
-    @Override
-    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == foldersRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Folders);
-            return true;
-        } else if (item.id == bottomTabsRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Tabs);
-            return true;
-        } else if (item.id == messagesAndProfilesRow) {
-            AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Messages_And_Profiles);
-            return true;
-        }
-        return false;
     }
 
     private String getIconPackValueText()  {

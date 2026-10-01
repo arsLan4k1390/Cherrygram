@@ -64,9 +64,15 @@ public class AdsGramApi {
         HttpUrl parsedUrl = HttpUrl.parse(BASE_URL);
         if (parsedUrl == null) return;
 
-        String language = !TextUtils.isEmpty(forceLanguage)
-                ? forceLanguage
-                : LocaleController.getInstance().getCurrentLocaleInfo().shortName;
+        String language = "en";
+        if (forceLanguage != null && !TextUtils.isEmpty(forceLanguage)) {
+            language = forceLanguage;
+        } else {
+            LocaleController.LocaleInfo localeInfo = LocaleController.getInstance().getCurrentLocaleInfo();
+            if (localeInfo != null && !TextUtils.isEmpty(localeInfo.shortName)) {
+                language = localeInfo.shortName;
+            }
+        }
 
         HttpUrl url = parsedUrl.newBuilder()
                 .addQueryParameter("blockId", blockId)
