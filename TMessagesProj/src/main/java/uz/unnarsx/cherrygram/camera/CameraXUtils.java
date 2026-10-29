@@ -9,6 +9,8 @@
 
 package uz.unnarsx.cherrygram.camera;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
+
 public class CameraXUtils {
 
     public static boolean isCameraXSupported() {
@@ -19,8 +21,17 @@ public class CameraXUtils {
         return false;
     }
 
+    public static boolean isCurrentCameraCamera2() {
+        return isCameraXSupported() && CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2;
+    }
+
     public static boolean isCurrentCameraNotCameraX() {
         return true;
     }
+
+    public static void loadCameraXSizes() {
+
+    }
+
 
 }

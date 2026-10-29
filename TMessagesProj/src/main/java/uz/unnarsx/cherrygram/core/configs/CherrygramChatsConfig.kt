@@ -14,7 +14,6 @@ import android.content.SharedPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.preferences.boolean
@@ -122,14 +121,5 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var unarchiveOnSwipe by sharedPreferences.boolean("CG_UnarchiveOnSwipe", false)
     var sortByUnread by sharedPreferences.boolean("CG_SortByUnread", false)
     /** Misc finish */
-
-    fun init() {
-        val account = UserConfig.selectedAccount
-        if (!UserConfig.getInstance(account).isClientActivated) return
-
-        launch(Dispatchers.IO) {
-
-        }
-    }
     
 }

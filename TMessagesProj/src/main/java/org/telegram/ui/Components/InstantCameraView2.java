@@ -1561,21 +1561,6 @@ public final class InstantCameraView2 extends InstantCameraViewBase {
                 28, 0, 28, 56 + 8
         ));
         zoomControlView.hideImmediately();
-        zoomControlView.setOnPresetSelectedListener(zoom -> {
-            CherrygramCameraConfig.INSTANCE.checkVideoMessagesHint();
-            int count = CherrygramCameraConfig.INSTANCE.getZoomHintCount();
-            if (count <= 5 && Random.Default.nextBoolean()) {
-                boolean shouldShow = !isFrontCameraActive() /*&& CameraXUtils.isCurrentCameraCameraX()*/;
-
-                if (!shouldShow) return;
-
-                CharSequence text = getString(R.string.CP_Zoom_Hint);
-                zoomHint.setMaxWidthPx(HintView2.cutInFancyHalf(text, zoomHint.getTextPaint()));
-                zoomHint.setText(text);
-                if (!zoomHint.shown()) zoomHint.show();
-                CherrygramCameraConfig.INSTANCE.setZoomHintCount(count + 1);
-            }
-        });
     }
 
     private boolean isZoomSliderActive() {

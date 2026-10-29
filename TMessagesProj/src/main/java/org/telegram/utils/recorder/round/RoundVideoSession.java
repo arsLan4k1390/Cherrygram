@@ -1603,24 +1603,17 @@ public final class RoundVideoSession {
     /** Cherrygram start */
     @MainThread
     public @Nullable CherryZoomSliderView.ZoomController getCameraXZoomController() {
-        return cameraController instanceof RoundVideoCameraXController
-                ? ((RoundVideoCameraXController) cameraController).getZoomController()
-                : null;
+        return null;
     }
 
     @MainThread
     public @Nullable CameraXController getCameraXController() {
-        return cameraController instanceof RoundVideoCameraXController
-                ? ((RoundVideoCameraXController) cameraController).getCameraXController()
-                : null;
+        return null;
     }
 
     @MainThread
     public void focusCameraX(float x, float y) {
-        requireMainThread();
-        if (state == State.RECORDING && !cameraSwitching && cameraController instanceof RoundVideoCameraXController) {
-            ((RoundVideoCameraXController) cameraController).focusToPoint(x, y);
-        }
+
     }
     /** Cherrygram finish */
 

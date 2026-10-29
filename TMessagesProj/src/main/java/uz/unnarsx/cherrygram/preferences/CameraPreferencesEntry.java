@@ -187,7 +187,6 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         if (CameraXUtils.isCurrentCameraCameraX() || CameraXUtils.isCurrentCameraCamera2()) {
             items.add(UItem.asShadow(null));
             if (CameraXUtils.isCurrentCameraCameraX()) {
-                items.add(UItem.asButton(cameraXQualityRow, getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p"));
                 if (CherrygramCameraConfig.INSTANCE.getUseNewEncoder()) {
                     items.add(UItem.asButton(newEncoderBitrateRow, getString(R.string.RoundVideoBitrate), formatBitrate(SharedSettings.roundVideoVideoBitrate.get())));
                 }
@@ -293,26 +292,6 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == startFromUltraWideRow) {
             CherrygramCameraConfig.INSTANCE.setStartFromUltraWideCam(!CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
-        } else if (item.id == cameraXQualityRow) {
-            Map<Quality, Size> availableSizes;
-            try {
-                availableSizes = CameraXUtils.getAvailableVideoSizes();
-            } catch (Exception e) {
-                availableSizes = new HashMap<>();
-            }
-            Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight).distinct();
-            ArrayList<Integer> types = tmp.collect(Collectors.toCollection(ArrayList::new));
-            if (types.isEmpty()) {
-                // Sizes are loaded asynchronously at startup; never show an empty list.
-                CameraXUtils.loadCameraXSizes();
-                types.addAll(Arrays.asList(2160, 1080, 720));
-            }
-            ArrayList<String> arrayList = types.stream().map(p -> p + "p").collect(Collectors.toCollection(ArrayList::new));
-
-            PopupHelper.show(arrayList, getString(R.string.CP_CameraQuality), types.indexOf(CherrygramCameraConfig.INSTANCE.getCameraResolution()), getContext(), i -> {
-                CherrygramCameraConfig.INSTANCE.setCameraResolution(types.get(i));
-                SettingsHelper.updateButtonValue(view, CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p");
-            });
         } else if (item.id == cameraXFpsRangeRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();

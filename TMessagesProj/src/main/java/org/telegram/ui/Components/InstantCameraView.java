@@ -353,21 +353,6 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
 //            zoomControlView.setScaleX(0.9f);
 //            zoomControlView.setScaleY(0.9f);
             zoomControlView.hideImmediately();
-            zoomControlView.setOnPresetSelectedListener(zoom -> {
-                CherrygramCameraConfig.INSTANCE.checkVideoMessagesHint();
-                int count = CherrygramCameraConfig.INSTANCE.getZoomHintCount();
-                if (count <= 5 && Random.Default.nextBoolean()) {
-                    boolean shouldShow = !isFrontface /*&& CameraXUtils.isCurrentCameraCameraX()*/;
-
-                    if (!shouldShow) return;
-
-                    CharSequence text = getString(R.string.CP_Zoom_Hint);
-                    zoomHint.setMaxWidthPx(HintView2.cutInFancyHalf(text, zoomHint.getTextPaint()));
-                    zoomHint.setText(text);
-                    if (!zoomHint.shown()) zoomHint.show();
-                    CherrygramCameraConfig.INSTANCE.setZoomHintCount(count + 1);
-                }
-            });
         }
 
         evControlView = new SliderView(getContext(), SliderView.TYPE_EXPOSURE_CG);

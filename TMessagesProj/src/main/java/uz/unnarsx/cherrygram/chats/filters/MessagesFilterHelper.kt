@@ -10,6 +10,7 @@
 package uz.unnarsx.cherrygram.chats.filters
 
 import org.telegram.messenger.MessageObject
+import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
 
 // Dear Nagram / Nagram X / Octogram and related fork developers:
@@ -24,18 +25,19 @@ object MessagesFilterHelper {
     }
 
     fun addSpoilerEntities(messageObject: MessageObject): ArrayList<TLRPC.MessageEntity>? {
-        return addSpoilerEntities(messageObject, messageObject.messageOwner.entities)
+        return addSpoilerEntities(messageObject, messageObject.messageOwner?.entities, messageObject.messageOwner?.message)
     }
 
     fun addSpoilerEntities(
         messageObject: MessageObject,
-        original: ArrayList<TLRPC.MessageEntity>?
+        original: ArrayList<TLRPC.MessageEntity>?,
+        displayedText: CharSequence?
     ): ArrayList<TLRPC.MessageEntity>? {
         return original
     }
 
-    fun addSpoilerEntities(originalText: String?): String? {
-        return originalText
+    fun spoilerText(messageObject: MessageObject, text: String): String {
+        return text
     }
 
     fun shouldBlockMessage(messageObject: MessageObject): Boolean {
@@ -51,11 +53,13 @@ object MessagesFilterHelper {
         return 0
     }
 
-    fun saveArrayList(list: ArrayList<String>, key: String) {
+    @JvmOverloads
+    fun saveArrayList(list: ArrayList<String>, key: String, account: Int = UserConfig.selectedAccount) {
 
     }
 
-    fun getArrayList(key: String): ArrayList<String> {
+    @JvmOverloads
+    fun getArrayList(key: String, account: Int = UserConfig.selectedAccount): ArrayList<String> {
         return arrayListOf()
     }
     /** Exclusions finish */

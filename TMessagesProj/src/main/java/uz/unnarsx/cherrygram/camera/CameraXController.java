@@ -11,39 +11,30 @@ package uz.unnarsx.cherrygram.camera;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
-import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
 
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.camera.Size;
 
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class CameraXController {
+public class CameraXController implements CherryZoomSliderView.ZoomController {
 
-    private boolean isFrontface;
-    private final CameraLifecycle lifecycle;
-    private ProcessCameraProvider provider;
-    private final MeteringPointFactory meteringPointFactory;
-    private final Preview.SurfaceProvider surfaceProvider;
     public static final int CAMERA_NONE = 0;
     public static final int CAMERA_NIGHT = 1;
     public static final int CAMERA_HDR = 2;
     public static final int CAMERA_AUTO = 3;
     public static final int CAMERA_WIDE = 4;
     public static final int CAMERA_ASPECT_RATIO_SELECTOR = 5;
-    private int selectedEffect = CAMERA_NONE;
 
     public static class CameraLifecycle implements LifecycleOwner {
 
@@ -68,6 +59,14 @@ public class CameraXController {
             }
         }
 
+        public void pause() {
+
+        }
+
+        public boolean isDestroyed() {
+            return false;
+        }
+
         @NonNull
         public Lifecycle getLifecycle() {
             return lifecycleRegistry;
@@ -76,9 +75,7 @@ public class CameraXController {
     }
 
     public CameraXController(CameraLifecycle lifecycle, MeteringPointFactory factory, Preview.SurfaceProvider surfaceProvider) {
-        this.lifecycle = lifecycle;
-        this.meteringPointFactory = factory;
-        this.surfaceProvider = surfaceProvider;
+
     }
 
     public boolean isInitiated() {
@@ -93,27 +90,28 @@ public class CameraXController {
         return false;
     }
 
+    public void setUltraWideStartAllowed(boolean allowed) {
+
+    }
+
     public void initCamera(Context context, boolean isInitialFrontface, Runnable onPreInit) {
 
     }
 
     public void setCameraEffect(@EffectFacing int effect) {
-        selectedEffect = effect;
-        bindUseCases();
+
     }
 
     public int getCameraEffect() {
-        return selectedEffect;
+        return 0;
     }
 
     public void switchCamera() {
-        isFrontface = !isFrontface;
-        bindUseCases();
+
     }
 
     public void closeCamera() {
-        if (provider != null) provider.unbindAll();
-        if (lifecycle != null) lifecycle.stop();
+
     }
 
     @SuppressLint("RestrictedApi")
@@ -134,8 +132,12 @@ public class CameraXController {
         return 0;
     }
 
-    public static boolean isFlashAvailable() {
+    public boolean isFlashAvailable() {
         return false;
+    }
+
+    public void setTorchEnabled(boolean enabled) {
+
     }
 
     public boolean isAvailableHdrMode() {
@@ -154,8 +156,7 @@ public class CameraXController {
         return false;
     }
 
-    @SuppressLint({"RestrictedApi", "UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
-    public void bindUseCases() {
+    public void bindUseCasesKeepingZoom() {
 
     }
 
@@ -165,6 +166,26 @@ public class CameraXController {
 
     public float resetZoom() {
         return 0f;
+    }
+
+    public boolean isCameraReady() {
+        return false;
+    }
+
+    public float getZoomRatio() {
+        return 0;
+    }
+
+    public float getMinZoomRatio() {
+        return 0;
+    }
+
+    public float getMaxZoomRatio() {
+        return 0;
+    }
+
+    public void setZoomRatio(float ratio) {
+
     }
 
     @SuppressLint("UnsafeExperimentalUsageError")
@@ -190,6 +211,11 @@ public class CameraXController {
 
     }
 
+    @SuppressLint({"UnsafeExperimentalUsageError", "RestrictedApi"})
+    public void focusToPoint(float x, float y, boolean disableAutoCancel) {
+
+    }
+
 
     @SuppressLint({"RestrictedApi", "MissingPermission"})
     public void recordVideo(final File path, boolean mirror, CameraXView.VideoSavedCallback onStop) {
@@ -211,8 +237,7 @@ public class CameraXController {
     }
 
     public int getDisplayOrientation() {
-        WindowManager mgr = (WindowManager) ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE);
-        return mgr.getDefaultDisplay().getRotation();
+        return 0;
     }
 
     @IntDef({CAMERA_NONE, CAMERA_AUTO, CAMERA_HDR, CAMERA_NIGHT})

@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram.chats.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Build;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -20,6 +21,7 @@ import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Cells.ChatMessageCell;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.ChatScrimPopupContainerLayout;
 import org.telegram.ui.Components.ReactionsContainerLayout;
@@ -50,17 +52,19 @@ public class MessageMenuHelper extends BaseController {
         return localInstance;
     }
 
-    public View hiddenMessageView;
     public void createMenu(
             ChatActivity chatActivity,
             View view,
-            ChatActivity.ChatActivityFragmentView contentView,
             ChatScrimPopupContainerLayout scrimPopupContainerLayout,
             ReactionsContainerLayout reactionsLayout,
             MessageObject messageObject,
             ActionBarPopupWindow.ActionBarPopupWindowLayout popupWindowLayout
     ) {
 
+    }
+
+    public static boolean isMenuOnRight(View messageView, MessageObject messageObject) {
+        return messageView instanceof ChatMessageCell && messageObject != null && messageObject.isOutOwner();
     }
 
     public void checkBlur(Activity activity, boolean enable, boolean hideStatusBar, float windowBlurRadius) {
@@ -82,7 +86,31 @@ public class MessageMenuHelper extends BaseController {
             Activity parentActivity,
             boolean hide
     ) {
+        hideMessageView(originalCell, chatActivity, chatAdapter, messageObjectToReset, parentActivity, hide, true);
+    }
 
+    public void hideMessageView(
+            View originalCell,
+            ChatActivity chatActivity,
+            ChatActivity.ChatActivityAdapter chatAdapter,
+            MessageObject messageObjectToReset,
+            Activity parentActivity,
+            boolean hide,
+            boolean animated
+    ) {
+
+    }
+
+    public void drawCopyInChat(Canvas canvas, View relativeTo) {
+
+    }
+
+    public void runAfterMenuClosed(Runnable action) {
+
+    }
+
+    public long getCloseAnimationDuration() {
+        return 0;
     }
 
     public static class MaxHeightLinearLayout extends LinearLayout {
@@ -118,14 +146,6 @@ public class MessageMenuHelper extends BaseController {
     }
 
     public boolean showCustomDivider(boolean verifyDonates) {
-        return false;
-    }
-
-    public boolean allowUnifiedScroll(boolean verifyDonates) {
-        return false;
-    }
-
-    public boolean allowToOccupyStatusBar() {
         return false;
     }
 

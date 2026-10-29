@@ -47,21 +47,26 @@ public class MainTabsPreviewCell extends ViewGroup implements FactorAnimator.Tar
 
     }
 
-    private boolean editMode;
+    /** Cherrygram start */
 
     public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
+
+    }
+
+    public void setOnTabsChangedListener(Runnable onTabsChanged) {
+
     }
 
     public void setTabs(
             List<MainTabsManager.Tab> tabs,
             Context context,
-            Theme.ResourcesProvider resourceProvider,
+            Theme.ResourcesProvider resourcesProvider,
             int currentAccount,
             boolean fromSettings,
             boolean showSearch
     ) {
         removeAllViews();
     }
+    /** Cherrygram finish */
 
 }

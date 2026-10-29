@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram
 
 import android.app.Activity
 import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.ChatObject
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.LocaleController.getString
@@ -19,8 +20,8 @@ import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.Components.Bulletin
-import org.telegram.ui.Components.BulletinFactory
+import org.telegram.ui.CountrySelectActivity
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.helpers.UserHelper
 
@@ -61,8 +62,8 @@ object Extra {
     )
     /** Donates links finish */
 
-    fun getRegistrationDate(fragment: BaseFragment?, userID: Long, chatId: Long) {
-        if (fragment == null) return
+    fun getRegistrationDate(fragment: BaseFragment?, userID: Long, chatId: Long): CharSequence? {
+        if (fragment == null) return ""
 
         if (chatId != 0L) {
             val chat = fragment.messagesController?.getChat(chatId)
@@ -82,31 +83,21 @@ object Extra {
                         )
                     )
                 }
-
-                BulletinFactory.of(fragment.getLayoutContainer(), fragment.resourceProvider)
-                    .createSimpleBulletin(R.raw.chats_infotip, date)
-                    .setDuration(Bulletin.DURATION_PROLONG)
-                    .show()
-
-                return
+                return date
             }
         }
 
         val regDateFromTelegram = fragment.messagesController?.getPeerSettings(userID)?.registration_month
         val finalRegDate = UserHelper.getUserTime(userID, regDateFromTelegram)
 
-        BulletinFactory.of(fragment.layoutContainer, fragment.resourceProvider)
-            .createSimpleBulletin(R.raw.chats_infotip, finalRegDate)
-            .setDuration(Bulletin.DURATION_PROLONG)
-            .show()
-
+        return finalRegDate
     }
 
     fun addBirthdayToCalendar(parentActivity: Activity, userId: Long) {
         UserHelper.addBirthdayEvent(parentActivity, userId)
     }
 
-    fun getProfileDC(user: TLRPC.User?, chat: TLRPC.Chat?): StringBuilder {
+    fun getProfileDC(fragment: BaseFragment, user: TLRPC.User?, chat: TLRPC.Chat?): StringBuilder {
         val sb = StringBuilder()
 
         val dcId: Int = if (chat?.photo != null && chat.photo.dc_id > 0) {
@@ -135,7 +126,76 @@ object Extra {
             sb.append("DC: ").append(getString(R.string.NumberUnknown))
         }
 
+        if (user != null && user.phone == null) {
+            sb.append(getCountryByPhone(fragment, user))
+        }
+
         return sb
+    }
+
+    @JvmOverloads
+    fun getCountryByPhone(fragment: BaseFragment, user: TLRPC.User, numberUnknown: Boolean = false) : StringBuilder {
+        val sb = StringBuilder()
+
+        if (!numberUnknown) {
+            val regCountry = fragment.messagesController?.getPeerSettings(user.id)?.phone_country
+            if (!regCountry.isNullOrEmpty()) {
+                sb.append(" • ")
+                sb.append(LocaleController.getCountryWithFlag(regCountry, 12, R.string.ContactInfoPhoneFragment))
+            } else {
+                getCountryByPhoneInternal(user.phone)?.let {
+                    sb.append(" • ")
+                    sb.append(LocaleController.getCountryWithFlag(it.shortname, 12, R.string.ContactInfoPhoneFragment))
+                }
+            }
+        }
+
+        return sb
+    }
+
+    private val countryLines: List<List<String>> by lazy {
+        try {
+            ApplicationLoader.applicationContext.assets
+                .open("countries.txt")
+                .bufferedReader()
+                .useLines { lines ->
+                    lines.map { it.split(";") }
+                        .filter { it.size >= 3 }
+                        .toList()
+                }
+        } catch (e: Exception) {
+            CherrygramLogger.e(e)
+            emptyList()
+        }
+    }
+
+    private fun getCountryByPhoneInternal(phone: String?): CountrySelectActivity.Country? {
+        if (phone.isNullOrBlank()) return null
+
+        val digits = phone.filter { it.isDigit() }
+        if (digits.isEmpty()) return null
+
+        val matches = countryLines.filter { digits.startsWith(it[0]) }
+        if (matches.isEmpty()) return null
+
+        val code = matches.maxBy { it[0].length }[0]
+        val sameCode = matches.filter { it[0] == code }
+        val national = digits.substring(code.length)
+
+        val preferred = when (code) {
+            "7" -> if (national.firstOrNull() in '6'..'7') "KZ" else "RU"
+            "1" -> "US"
+            "599" -> if (national.startsWith('9')) "CW" else "BQ"
+            else -> null
+        }
+        val args = sameCode.firstOrNull { it[1] == preferred } ?: sameCode.first()
+
+        return CountrySelectActivity.Country().apply {
+            this.code = args[0]
+            shortname = args[1]
+            defaultName = args[2]
+            name = LocaleController.getCountryName(args[1]).takeIf { it.isNotEmpty() } ?: args[2]
+        }
     }
 
 }
