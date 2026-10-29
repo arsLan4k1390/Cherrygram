@@ -6,10 +6,16 @@ build/
 obj/
 TMessagesProj/jni/colorado
 TMessagesProj/jni/security
+/TMessagesProj/src/main/java/org/telegram/utils/recorder/round/RoundVideoCameraXController.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/CameraXController.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/VideoMessagesHelper.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/CameraXDualSource.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/CherryZoomSliderView.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/roundvideo/VideoMessagesHelper.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/roundvideo/InstantCameraSwitchTransition.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/filters/MessagesFilterHelper.kt
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/AnimUtils.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuAlbumView.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuCompactView.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuHelper.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuMessageCells.java

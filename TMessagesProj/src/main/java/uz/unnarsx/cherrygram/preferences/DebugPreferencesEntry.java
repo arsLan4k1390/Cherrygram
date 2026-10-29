@@ -54,17 +54,18 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
     private final int forceForumTabsRow = 8;
     private final int replacePunctuationRow = 9;
     private final int editTextFixRow = 10;
-    private final int audioSourceRow = 11;
-    private final int sendMaxQualityRow = 12;
-    private final int playGifAsVideoRow = 13;
-    private final int hideTimestampRow = 14;
-    private final int resetDialogsRow = 15;
-    private final int clearMediaCacheRow = 16;
-    private final int readAllDialogsRow = 17;
+    private final int fixChineseKeyboardsRow = 11;
+    private final int audioSourceRow = 12;
+    private final int sendMaxQualityRow = 13;
+    private final int playGifAsVideoRow = 14;
+    private final int hideTimestampRow = 15;
+    private final int resetDialogsRow = 16;
+    private final int clearMediaCacheRow = 17;
+    private final int readAllDialogsRow = 18;
 
-    private final int importContactsRow = 18;
-    private final int reloadContactsRow = 19;
-    private final int resetContactsRow = 20;
+    private final int importContactsRow = 19;
+    private final int reloadContactsRow = 20;
+    private final int resetContactsRow = 21;
 
     @Override
     protected CharSequence getTitle() {
@@ -122,6 +123,10 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
         );
         items.add(SettingsHelper.asSwitchCG(editTextFixRow, "EditTextSugestionsFix *", "Emojis/formatting disappear when Samsung puts suggestions in edit")
                 .setChecked(CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix())
+        );
+        items.add(SettingsHelper.asSwitchCG(fixChineseKeyboardsRow, "Fix Chinese keyboards *", "Fix empty keyboard input")
+                .setChecked(CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix())
+                .slug("fixChineseKeyboards")
         );
         items.add(UItem.asShadow(null));
 
@@ -188,6 +193,11 @@ public class DebugPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == editTextFixRow) {
             CherrygramDebugConfig.INSTANCE.setEditTextSuggestionsFix(!CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix());
             SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix());
+
+            showRestartBulletin();
+        } else if (item.id == fixChineseKeyboardsRow) {
+            CherrygramDebugConfig.INSTANCE.setFixChineseKeyboards(!CherrygramDebugConfig.INSTANCE.getFixChineseKeyboards());
+            SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getFixChineseKeyboards());
 
             showRestartBulletin();
         } else if (item.id == audioSourceRow) {

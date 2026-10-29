@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 
@@ -116,6 +117,8 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
 
             getChatWithFallback(Constants.Cherrygram_Support, Constants.CG_CHAT_USERNAME,
                     cgCommunity -> {
+                        if (getParentActivity() == null) return;
+
                         cherrygramSupportChatLoaded = true;
                         cherrygramSupportChat = cgCommunity;
                         updateRows(true);
@@ -123,9 +126,10 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
             );
         } else if (cherrygramSupportChat != null && cherrygramSupportChat.linked_community_id != 0) {
             TLRPC.Chat linkedCommunity = getMessagesController().getChat(cherrygramSupportChat.linked_community_id);
+            Activity parentActivity = getParentActivity();
 
-            if (linkedCommunity != null) {
-                CommunityLinkView communityLinkView = new CommunityLinkView(getParentActivity(), getResourceProvider());
+            if (linkedCommunity != null && parentActivity != null) {
+                CommunityLinkView communityLinkView = new CommunityLinkView(parentActivity, getResourceProvider());
                 communityLinkView.setChat(currentAccount, linkedCommunity);
 
                 items.add(UItem.asShadow(null));

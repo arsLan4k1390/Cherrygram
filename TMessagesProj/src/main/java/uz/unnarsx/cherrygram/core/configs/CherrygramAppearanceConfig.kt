@@ -36,6 +36,8 @@ object CherrygramAppearanceConfig {
     /** Header finish */
 
     /** Appearance start */
+    var iconBasedSplash by sharedPreferences.boolean("AP_IconBasedSplash", false)
+
     const val ICON_REPLACE_NONE = 0
     const val ICON_REPLACE_SOLAR = 1
 
@@ -49,6 +51,11 @@ object CherrygramAppearanceConfig {
 
     var oneUI_SwitchStyle by sharedPreferences.boolean("AP_OneUI_SwitchStyle", true)
     var disableDividers by sharedPreferences.boolean("AP_DisableDividers", true)
+
+    const val GLARE_EFFECTS_DISABLE = 0
+    const val GLARE_EFFECTS_DEFAULT = 1
+    const val GLARE_EFFECTS_STROKE = 2
+    var glareEffectsType by sharedPreferences.int("AP_GlareEffect", GLARE_EFFECTS_DEFAULT)
     /** Appearance finish */
 
     /** Folders start */

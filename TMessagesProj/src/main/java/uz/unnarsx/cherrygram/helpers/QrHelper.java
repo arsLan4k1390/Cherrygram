@@ -11,11 +11,16 @@ package uz.unnarsx.cherrygram.helpers;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+
+import androidx.core.content.ContextCompat;
 
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.R;
 import org.telegram.messenger.TelegramQRCodeWriter;
 import org.telegram.ui.ActionBar.Theme;
 
@@ -32,7 +37,11 @@ public class QrHelper {
             hints.put(EncodeHintType.MARGIN, 0);
             hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
             TelegramQRCodeWriter writer = new TelegramQRCodeWriter();
-            return writer.encode(text, 768, 768, hints, null, 1.0f, Color.WHITE, Color.BLACK/*Theme.getColor(Theme.key_featuredStickers_addButton)*/);
+            Drawable logo = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.cg_logo_notch);
+            if (logo != null) {
+                writer.setCenterDrawable(logo.mutate());
+            }
+            return writer.encode(text, 768, 768, hints, null, 1.0f, Color.WHITE, Color.BLACK);
         } catch (Exception e) {
             CherrygramLogger.e(e);
         }

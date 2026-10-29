@@ -118,6 +118,7 @@
     <!--Chats screen-->
 
     <!--Misc-->
+    <string name="CG_Edify_Desc">Automated video editing for Reels</string>
     <string name="CG_SafeStars_buy">Buy via SafeStars</string>
     <string name="CG_SafeStars_Desc">Multi-chain &amp; No KYC</string>
     <string name="CG_SafeStars_BuyPremiumButton">Check on the website</string>
@@ -150,6 +151,8 @@
     <string name="CG_ExportSettings">Export settings</string>
     <string name="CG_ImportSettings">Import settings</string>
     <string name="CG_ImportSettingsAlert">Overwrite the settings\? Importing settings from unknown sources may result in the app not working.</string>
+    <string name="CG_ResetSettings">Reset settings</string>
+    <string name="CG_ResetSettingsAlert">All Cherrygram settings will be reset to their default values. This action cannot be undone.</string>
     <string name="CG_OpenStickerPack">Tap to get the sticker</string>
     <string name="CG_OpenEmojiPack">Tap to get the emoji</string>
 
@@ -226,6 +229,8 @@
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Appearance</string>
     <string name="AP_Header">Header</string>
+    <string name="AP_IconBasedSplash">Splash screen matching the icon</string>
+    <string name="AP_IconBasedSplash_Desc">The splash screen will match the selected app icon. Changes apply on the next app launch. Available on Android 13 and above.</string>
     <string name="AP_IconReplacements">Icon pack</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
     <string name="AP_Tablet_Mode">Tablet mode</string>
@@ -244,6 +249,8 @@
     <string name="AP_SystemEmoji">System emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="CP_StrokeOnViews">Glare effects</string>
+    <string name="AP_StrokeOnViews_Type">Type</string>
+    <string name="AP_StrokeOnViews_Stroke">Solid stroke</string>
     <string name="AP_CenterTitle">Center title</string>
     <string name="AP_CenterTitle_AdaptiveWidth">Adaptive bubble width</string>
     <string name="AP_HideSearchBar">Hide search bar in chats</string>
@@ -320,16 +327,11 @@
     <string name="CP_MessageMenuItems">Message menu items</string>
     <string name="CP_BlurMessageMenu">iOS-styled message menu</string>
     <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS. Not supported on tablets.</string>
-    <string name="CP_MessageMenuUnifiedScroll">Unified Scroll</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
-    <string name="CP_MessageMenuAutoscroll">Message Autoscroll</string>
-    <string name="CP_MessageMenuAutoscroll_Desc">Automatically scrolls the message menu content to the bottom on opening, similar to Telegram on iOS.</string>
-    <string name="CP_MessageMenuFixedHeight">Comfortable message menu height</string>
-    <string name="CP_MessageMenuFixedHeight_Desc">The message menu will occupy half of the screen area for easier interaction.</string>
-    <string name="CP_BlurMessageMenuItems">Blur menu items</string>
-    <string name="CP_BlurMessageMenuItems_Desc">Blurs the menu items for a more authentic iOS look.</string>
     <string name="CP_MessageMenuNativeBlur">Native Blur</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Android\'s built-in blur system will be used for the message menu background: smooth, live, and with minimal impact on performance.</string>
+    <string name="CG_MsgMenuShowWholeAlbum">Show the whole album</string>
+    <string name="CG_MsgMenuShowWholeAlbum_Desc">Pressing a photo, video or file from an album opens the whole album in the menu instead of a single message.</string>
+    <string name="CP_RememberKeyboardState">Remember keyboard state</string>
     <string name="CP_MessageMenuCompactLayout">Compact menu layout</string>
     <string name="CP_MessageMenuCompactLayout_Desc">Displays primary message actions in a compact layout at the bottom of the menu.</string>
     <string name="CP_MessageMenuCompactLayout_Dot">A dot next to the button indicates it has a long-press action.</string>
@@ -386,25 +388,21 @@
     <string name="CP_Message_Filtering_Filter">Enable filter</string>
     <string name="CP_Message_Filtering_Filter_Desc">When the filter is enabled, selected words in incoming messages will automatically be hidden under a spoiler effect, making them unreadable until revealed.</string>
     <string name="CP_Message_Filtering_Field">Enter words to filter</string>
-    <string name="CP_Message_Filtering_Field_Desc">Separate words with a comma, space, or line break. Use parentheses to group multiple words into a phrase. Case insensitive.
-        \nExample: word, another, (multiple words here).
-    </string>
+    <string name="CP_Message_Filtering_Field_Desc">Separate words with a comma, space, or line break. Use parentheses to group multiple words into a phrase. Case insensitive.\nExample: word, another, (multiple words here).</string>
     <string name="CP_Message_Filtering_Translit">Translit detection</string>
-    <string name="CP_Message_Filtering_Translit_Desc">When enabled, the filter will also detect words written in transliteration (for example, \"test\" will be recognized as \"тест\").
-        This helps to catch and hide messages under a spoiler even if Cyrillic letters are replaced with Latin ones. May slightly increase device CPU load.
-    </string>
+    <string name="CP_Message_Filtering_Translit_Desc">When enabled, the filter will also detect words written in transliteration (for example, \"test\" will be recognized as \"тест\"). This helps to catch and hide messages under a spoiler even if Cyrillic letters are replaced with Latin ones. May slightly increase device CPU load.</string>
     <string name="CP_Message_Filtering_Exact_Words">Exact word match</string>
-    <string name="CP_Message_Filtering_Exact_Words_Desc">When enabled, only words that fully match those in the filter list will be hidden.
-        If a word appears in a different form (with prefixes, endings, or inside other words), it will not be hidden.
-    </string>
+    <string name="CP_Message_Filtering_Exact_Words_Desc">When enabled, only words that fully match those in the filter list will be hidden. If a word appears in a different form (with prefixes, endings, or inside other words), it will not be hidden.</string>
     <string name="CP_Message_Filtering_Exclusions">Exclusions</string>
     <string name="CP_Message_Filtering_Exclude_Destination">to update exclusions</string>
     <string name="CP_Message_Filtering_Exclude_Sure">will be excluded</string>
+    <string name="CP_Message_Filtering_Exclusions_Users">Exclude users</string>
+    <string name="CP_Message_Filtering_Exclusions_Bots">Exclude bots</string>
+    <string name="CP_Message_Filtering_Exclusions_Groups">Exclude groups</string>
+    <string name="CP_Message_Filtering_Exclusions_Channels">Exclude channels</string>
+    <string name="CP_Message_Filtering_Exclusions_Desc">Cherrygram **will not filter** messages in selected chats.</string>
     <string name="CP_Message_Filtering_Entities">Link Entity Filter</string>
-    <string name="CP_Message_Filtering_EntitiesDesc">When enabled, this option extends filtering to links (entities) contained in messages. The system will scan the URLs for any of your configured filter keywords.
-        If a match is found inside the link, the entire message will be automatically hidden under a spoiler, regardless of whether the keyword appears in the visible text or not.
-        \n\nThis helps protect against disguised spam, hidden advertising, or phishing domains that could otherwise bypass regular text-based filtering.
-    </string>
+    <string name="CP_Message_Filtering_EntitiesDesc">When enabled, this option extends filtering to links (entities) contained in messages. The system will scan the URLs for any of your configured filter keywords. If a match is found inside the link, the entire message will be automatically hidden under a spoiler, regardless of whether the keyword appears in the visible text or not.\n\nThis helps protect against disguised spam, hidden advertising, or phishing domains that could otherwise bypass regular text-based filtering.</string>
     <string name="CP_Message_Filtering_FilterBlocked">Filter messages from blocked users</string>
     <string name="CP_Message_Filtering_FilterBlockedDesc">When enabled, all messages and forwarded messages from blocked users will automatically be filtered.</string>
     <string name="CP_Message_Filtering_FullyHide">Hide messages</string>
@@ -424,6 +422,8 @@
     <string name="CP_RecordMultiMic">Multi-microphone recording</string>
     <string name="CP_RecordMultiMic_Desc">Records audio simultaneously from all device microphones for a more spatial and detailed voice capture</string>
     <string name="CP_RecordInStereo">Stereo recording</string>
+    <string name="CP_MuteSystemSounds">Mute system sounds</string>
+    <string name="CP_MuteSystemSounds_Desc">Muting notification sounds and call ringtones while recording</string>
     <string name="CP_RecordInStereo_Desc">Transmits your voice in stereo format. \n\n**Note:** if the listener is using a single earphone or speakerphone, they might hear you quietly or experience audio dropouts</string>
     <string name="CP_VoiceMessagesAutoPlay">Auto-play of voice messages</string>
     <string name="CP_PlayVideo">Play video with volume button press</string>
@@ -443,6 +443,7 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Camera</string>
     <string name="CP_CameraType">Camera Type</string>
+    <string name="CP_NewEncoder">New camera engine</string>
     <string name="CP_CameraUW">Start from UW</string>
     <string name="CP_CameraUW_Desc">Recording of video messages will start from Ultra Wide camera (if your device\'s API supports it)</string>
     <string name="CP_CameraDualCamera">Dual camera</string>
@@ -454,6 +455,7 @@
     <string name="CP_ContinuousAutofocus">Continuous autofocus</string>
     <string name="CP_NoiseReduction">Noise reduction</string>
     <string name="CP_FaceDetection">Face detection</string>
+    <string name="CP_BokehEffect">Bokeh effect</string>
     <string name="CP_CameraQuality">Camera Quality</string>
     <string name="CP_CameraTypeSystem">System</string>
 
@@ -481,7 +483,7 @@
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="EP_NavigationAnimation">Navigation animation</string>
     <string name="EP_NavigationAnimationSpring" translatable="false">Spring</string>
-    <string name="EP_NavigationAnimationBezier">Classic</string>
+    <string name="EP_NavigationAnimationPE" translatable="false">Google (PE)</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
     <string name="CG_PredictiveBackAnimation">Predictive-Back navigation</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>

@@ -45,14 +45,12 @@ import android.widget.TextView;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BuildVars;
-import org.telegram.messenger.CodeHighlighting;
+import org.telegram.utils.code.highlight.CodeHighlighting;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.utils.CopyUtilities;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.AlertDialog;
@@ -328,10 +326,21 @@ public class EditTextCaption extends EditTextBoldCursor implements FloatingToolb
             start = getSelectionStart();
             end = getSelectionEnd();
         }
+        var initial = "http://";
+        var urlSpans = getText().getSpans(start, end, URLSpanReplacement.class);
+        if (urlSpans != null) {
+            for (var span : urlSpans) {
+                var url = span.getURL();
+                if (!TextUtils.isEmpty(url)) {
+                    initial = url;
+                    break;
+                }
+            }
+        }
         showInputDialog(
             LocaleController.getString(R.string.CreateLink),
             LocaleController.getString(R.string.URL),
-            "http://",
+            initial,
             true,
             url -> {
                 Editable editable = getText();

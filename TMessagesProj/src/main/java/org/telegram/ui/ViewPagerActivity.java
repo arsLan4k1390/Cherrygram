@@ -30,7 +30,7 @@ public abstract class ViewPagerActivity extends BaseFragment {
 
     protected FrameLayout contentView;
     protected ViewPagerActivityPagerLayout viewPager;
-    private int initialFragmentPosition = -1;
+    int initialFragmentPosition = -1;
 
     abstract protected int getStartPosition();
 

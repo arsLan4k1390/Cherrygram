@@ -29,7 +29,7 @@ public class ChatMessageUnsupportedCell extends View implements Theme.Colorable 
         unsupportedBlockDrawable = new UnsupportedBlockDrawable(resourcesProvider);
         unsupportedBlockDrawable.setCallback(this);
         unsupportedBlockDrawable.setTitle(LocaleController.getString(R.string.UnsupportedMessageTitle));
-        unsupportedBlockDrawable.setSubtitle(LocaleController.getString(R.string.UnsupportedMessageMessage));
+        unsupportedBlockDrawable.setSubtitle(LocaleController.getString(R.string.UnsupportedMessageMessage).replace("Telegram", LocaleController.getString(R.string.CG_AppName)));
         unsupportedBlockDrawable.setButtonText(LocaleController.getString(R.string.UnsupportedUpdate));
         unsupportedBlockDrawable.setOnClickListener(() -> {
             if (delegate != null) {

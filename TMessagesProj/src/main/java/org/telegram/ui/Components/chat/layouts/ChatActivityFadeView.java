@@ -116,5 +116,13 @@ public class ChatActivityFadeView extends View implements Theme.Colorable {
             invalidate();
         }
     }
+
+    /** Cherrygram start */
+    public void copyFadeZones(ChatActivityFadeView from) {
+        setFadeZoneTop(from.fadeZoneTop);
+        setFadeZoneBottom(from.fadeZoneBottom);
+    }
+    /** Cherrygram finish */
+
 }
 

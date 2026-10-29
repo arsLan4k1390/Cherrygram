@@ -487,4 +487,19 @@ public class ReactedUsersListView extends FrameLayout {
         this.onCustomEmojiSelectedListener = onCustomEmojiSelectedListener;
         return this;
     }
+
+    /** Cherrygram start */
+    public int getContentHeight(int maxRows) {
+        int count = userReactions.size();
+        if (count == 0) {
+            count = predictiveCount;
+        }
+        int height = AndroidUtilities.dp(ITEM_HEIGHT_DP * Math.min(count, maxRows));
+        if (messageContainsEmojiButton != null && !customReactionsEmoji.isEmpty() && !MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
+            height += messageContainsEmojiButton.getMeasuredHeight() + AndroidUtilities.dp(8);
+        }
+        return height + listView.getPaddingTop() + listView.getPaddingBottom();
+    }
+    /** Cherrygram finish */
+
 }

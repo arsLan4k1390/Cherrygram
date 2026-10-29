@@ -11,7 +11,6 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
 import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applySpan;
 
 import android.content.Context;
@@ -27,9 +26,13 @@ import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.RoundVideoSettingsActivity;
 import org.telegram.ui.SettingsActivity;
+import org.telegram.utils.settings.SharedSettings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,11 +40,11 @@ import java.util.stream.Stream;
 
 import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
+import uz.unnarsx.cherrygram.camera.roundvideo.VideoMessagesHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
-import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
@@ -70,8 +73,15 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
     private final int exposureSliderRow = 15;
     private final int cameraControlButtonsRow = 16;
 
-    private final int newCamera2DesignRow = 17;
-    private final int newCamera2DesignSettingsRow = 18;
+    private final int newEncoderRow = 17;
+    private final int newEncoderBitrateRow = 19;
+    private final int newEncoderSettingsRow = 20;
+
+    private static final int[] NEW_ENCODER_BITRATES = {
+            750_000,
+            1_000_000,
+            1_200_000
+    };
 
     private boolean expandedCameraEnhancementsSection = false;
 
@@ -112,11 +122,9 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2 || CherrygramCoreConfig.isDevBuild()) {
             items.add(UItem.asHeader(getString(R.string.CP_Category_Camera)));
         }
-        if (CherrygramCoreConfig.isDevBuild()) {
-            items.add(SettingsHelper.asSwitchCG(disableAttachCameraRow, getString(R.string.CP_DisableCam), getString(R.string.CP_DisableCam_Desc))
-                    .setChecked(CherrygramCameraConfig.INSTANCE.getDisableAttachCamera())
-            );
-        }
+        items.add(SettingsHelper.asSwitchCG(disableAttachCameraRow, getString(R.string.CP_DisableCam), getString(R.string.CP_DisableCam_Desc))
+                .setChecked(CherrygramCameraConfig.INSTANCE.getDisableAttachCamera())
+        );
         if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2) {
             items.add(UItem.asButton(cameraAspectRatioRow, getString(R.string.CP_CameraAspectRatio), getCameraAspectRatio())
                     .slug("aspectRatio")
@@ -127,13 +135,43 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         }
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Videomessages)));
-        if (CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 /*&& !CherrygramCameraConfig.INSTANCE.getNewCamera2Design()*/ || CameraXUtils.isCurrentCameraCameraX()) {
+        if (CameraXUtils.isCurrentCameraCameraX() || CameraXUtils.isCurrentCameraCamera2()) {
+            items.add(
+                    SettingsHelper.asSwitchCG(
+                            newEncoderRow,
+                            applySpan(
+                                    getString(R.string.CP_NewEncoder),
+                                    "BETA",
+                                    Theme.key_cgGradient2,
+                                    resourcesProvider
+                            )
+                    )
+                    .setChecked(CherrygramCameraConfig.INSTANCE.getUseNewEncoder())
+                    .slug("newCameraEncoder")
+            );
+
+            if (CherrygramCameraConfig.INSTANCE.getUseNewEncoder() && CameraXUtils.isCurrentCameraCamera2()) {
+                items.add(
+                        SettingsActivity.SettingCell.Factory.of(
+                                newEncoderSettingsRow,
+                                0xFFF45255, 0xFFDF3955,
+                                R.drawable.settings_camera_filled_solar,
+                                getString(R.string.RoundVideoSettings),
+                                getString(R.string.Settings),
+                                true
+                        )
+                );
+                items.add(UItem.asShadow(null));
+            }
+        }
+
+        if (CameraXUtils.isCurrentCameraCameraX() || CameraXUtils.isCurrentCameraCamera2()) {
             items.add(SettingsHelper.asSwitchCG(cameraUseDualCameraRow, getString(R.string.CP_CameraDualCamera), getString(R.string.CP_CameraDualCamera_Desc))
                     .setChecked(CherrygramCameraConfig.INSTANCE.getUseDualCamera())
                     .slug("dualCamera")
             );
         }
-        if (!(CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 && CherrygramCameraConfig.INSTANCE.getUseDualCamera())) {
+        if (!(CameraXUtils.isCurrentCameraCamera2() && CherrygramCameraConfig.INSTANCE.getUseDualCamera())) {
             items.add(SettingsHelper.asSwitchCG(rearCamRow, getString(R.string.CP_RearCam), getString(R.string.CP_RearCam_Desc))
                     .setChecked(CherrygramCameraConfig.INSTANCE.getRearCam())
                     .slug("rearCamera")
@@ -146,14 +184,20 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
             );
         }
 
-        if (CameraXUtils.isCurrentCameraCameraX() || CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 /*&& !CherrygramCameraConfig.INSTANCE.getNewCamera2Design()*/) {
+        if (CameraXUtils.isCurrentCameraCameraX() || CameraXUtils.isCurrentCameraCamera2()) {
             items.add(UItem.asShadow(null));
             if (CameraXUtils.isCurrentCameraCameraX()) {
                 items.add(UItem.asButton(cameraXQualityRow, getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p"));
+                if (CherrygramCameraConfig.INSTANCE.getUseNewEncoder()) {
+                    items.add(UItem.asButton(newEncoderBitrateRow, getString(R.string.RoundVideoBitrate), formatBitrate(SharedSettings.roundVideoVideoBitrate.get())));
+                }
             }
-            items.add(UItem.asButton(cameraXFpsRangeRow, "FPS", getCameraXFpsRange())
-                    .slug("fps")
-            );
+            if (CherrygramCameraConfig.INSTANCE.getUseNewEncoder()) {
+                items.add(UItem.asButton(cameraXFpsRangeRow, "FPS", getCameraXFpsRange())
+                        .slug("fps")
+                );
+                items.add(UItem.asShadow(getString(R.string.RoundVideoGeneralInfo)));
+            }
             items.add(
                     SettingsHelper.asExpandableSwitch(
                             cameraEnhancementsRow,
@@ -204,8 +248,9 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
                 );
 
                 if (isBokehAvailable()) {
-                    items.add(SettingsHelper.asRoundGroupCheckbox(bokehEffectRow, "Bokeh Effect", "Laggy // W.I.P")
+                    items.add(UItem.asRoundCheckbox(bokehEffectRow, applySpan(getString(R.string.CP_BokehEffect), "BETA", Theme.key_cgGradient2, resourcesProvider))
                             .setChecked(CherrygramCameraConfig.INSTANCE.getBokehEffect())
+                            .setPad(1)
                     );
                 }
             }
@@ -215,7 +260,7 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         }
 
         if (CameraXUtils.isCurrentCameraCameraX()) {
-            items.add(UItem.asButton(exposureSliderRow, applyNewSpan(getString(R.string.CP_ExposureSliderPosition)), getExposureSliderPosition())
+            items.add(UItem.asButton(exposureSliderRow, getString(R.string.CP_ExposureSliderPosition), getExposureSliderPosition())
                     .slug("exposureSlider")
             );
         }
@@ -224,38 +269,6 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
                 .slug("centerControlButtons")
         );
         items.add(UItem.asShadow(null));
-
-        /*if (CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2) {
-            items.add(
-                    SettingsHelper.asSwitchCG(
-                            newCamera2DesignRow,
-                            applySpan(
-                                    getString(R.string.EP_Category_Experimental),
-                                    getString(R.string.AppName),
-                                    Theme.key_color_blue,
-                                    resourcesProvider
-                            )
-                    )
-                    .setChecked(CherrygramCameraConfig.INSTANCE.getNewCamera2Design())
-                    .slug("newCamera2Design")
-            );
-
-            if (CherrygramCameraConfig.INSTANCE.getNewCamera2Design()) {
-                items.add(
-                        SettingsActivity.SettingCell.Factory.of(
-                                newCamera2DesignSettingsRow,
-                                0xFFF45255, 0xFFDF3955,
-                                R.drawable.settings_camera_filled_solar,
-                                getString(R.string.RoundVideoSettings),
-                                getString(R.string.AppName),
-                                true
-                        )
-                );
-                items.add(UItem.asShadow(null));
-            } else {
-                items.add(UItem.asShadow(null));
-            }
-        }*/
     }
 
     @Override
@@ -263,19 +276,14 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         if (item.id == disableAttachCameraRow) {
             CherrygramCameraConfig.INSTANCE.setDisableAttachCamera(!CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
-
-            showRestartBulletin();
         } else if (item.id == cameraAspectRatioRow) {
             showAspectRatioSelector(getContext(), () -> SettingsHelper.updateButtonValue(view, getCameraAspectRatio()));
         } else if (item.id == cameraUseDualCameraRow) {
             CherrygramCameraConfig.INSTANCE.setUseDualCamera(!CherrygramCameraConfig.INSTANCE.getUseDualCamera());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getUseDualCamera());
 
-            if (CherrygramCameraConfig.INSTANCE.getUseDualCamera()) {
-                CherrygramCameraConfig.INSTANCE.setBokehEffect(false);
-                if (CameraXUtils.isCurrentCameraCameraX()) {
-                    CherrygramCameraConfig.INSTANCE.setCameraAspectRatio(CherrygramCameraConfig.Camera4to3);
-                }
+            if (CameraXUtils.isCurrentCameraCameraX()) {
+                CherrygramCameraConfig.INSTANCE.setCameraAspectRatio(CherrygramCameraConfig.Camera4to3);
             }
 
             updateRows(true);
@@ -286,9 +294,19 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
             CherrygramCameraConfig.INSTANCE.setStartFromUltraWideCam(!CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
         } else if (item.id == cameraXQualityRow) {
-            Map<Quality, Size> availableSizes = CameraXUtils.getAvailableVideoSizes();
-            Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
+            Map<Quality, Size> availableSizes;
+            try {
+                availableSizes = CameraXUtils.getAvailableVideoSizes();
+            } catch (Exception e) {
+                availableSizes = new HashMap<>();
+            }
+            Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight).distinct();
             ArrayList<Integer> types = tmp.collect(Collectors.toCollection(ArrayList::new));
+            if (types.isEmpty()) {
+                // Sizes are loaded asynchronously at startup; never show an empty list.
+                CameraXUtils.loadCameraXSizes();
+                types.addAll(Arrays.asList(2160, 1080, 720));
+            }
             ArrayList<String> arrayList = types.stream().map(p -> p + "p").collect(Collectors.toCollection(ArrayList::new));
 
             PopupHelper.show(arrayList, getString(R.string.CP_CameraQuality), types.indexOf(CherrygramCameraConfig.INSTANCE.getCameraResolution()), getContext(), i -> {
@@ -299,22 +317,11 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();
 
-            configStringKeys.add("25-30");
-            configValues.add(CherrygramCameraConfig.CameraXFpsRange25to30);
+            configStringKeys.add("30");
+            configValues.add(CherrygramCameraConfig.CameraXFpsRange30);
 
-            configStringKeys.add("30-30");
-            configValues.add(CherrygramCameraConfig.CameraXFpsRange30to30);
-
-            if (isExtendedFpsAvailable()) {
-                configStringKeys.add("30-60");
-                configValues.add(CherrygramCameraConfig.CameraXFpsRange30to60);
-
-                configStringKeys.add("60-60");
-                configValues.add(CherrygramCameraConfig.CameraXFpsRange60to60);
-            }
-
-            configStringKeys.add(getString(R.string.Default));
-            configValues.add(CherrygramCameraConfig.CameraXFpsRangeDefault);
+            configStringKeys.add("60");
+            configValues.add(CherrygramCameraConfig.CameraXFpsRange60);
 
             PopupHelper.show(configStringKeys, "FPS", configValues.indexOf(CherrygramCameraConfig.INSTANCE.getCameraXFpsRange()), getContext(), i -> {
                 CherrygramCameraConfig.INSTANCE.setCameraXFpsRange(configValues.get(i));
@@ -366,13 +373,25 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == cameraControlButtonsRow) {
             CherrygramCameraConfig.INSTANCE.setCenterCameraControlButtons(!CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons());
             SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons());
-        } else if (item.id == newCamera2DesignRow) {
-            CherrygramCameraConfig.INSTANCE.setNewCamera2Design(!CherrygramCameraConfig.INSTANCE.getNewCamera2Design());
-            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getNewCamera2Design());
+        } else if (item.id == newEncoderRow) {
+            CherrygramCameraConfig.INSTANCE.setUseNewEncoder(!CherrygramCameraConfig.INSTANCE.getUseNewEncoder());
+            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getUseNewEncoder());
 
             updateRows(true);
-        } else if (item.id == newCamera2DesignSettingsRow) {
+        } else if (item.id == newEncoderSettingsRow) {
             presentFragment(new RoundVideoSettingsActivity());
+        } else if (item.id == newEncoderBitrateRow) {
+            ArrayList<String> configStringKeys = new ArrayList<>();
+            ArrayList<Integer> configValues = new ArrayList<>();
+            for (int bitrate : NEW_ENCODER_BITRATES) {
+                configStringKeys.add(formatBitrate(bitrate));
+                configValues.add(bitrate);
+            }
+
+            PopupHelper.show(configStringKeys, getString(R.string.RoundVideoBitrate), configValues.indexOf(SharedSettings.roundVideoVideoBitrate.get()), getContext(), i -> {
+                SharedSettings.roundVideoVideoBitrate.set(configValues.get(i));
+                SettingsHelper.updateButtonValue(view, formatBitrate(SharedSettings.roundVideoVideoBitrate.get()));
+            });
         }
     }
 
@@ -434,15 +453,10 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         });
     }
 
-    private boolean isExtendedFpsAvailable() {
-        return CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()
-                || DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
-    }
-
     private boolean isBokehAvailable() {
         return CameraXUtils.isCurrentCameraCameraX()
-                && !CherrygramCameraConfig.INSTANCE.getUseDualCamera()
-                && (isExtendedFpsAvailable() || SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH);
+//                && !CherrygramCameraConfig.INSTANCE.getUseDualCamera()
+                && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE; // PERFORMANCE_CLASS_HIGH
     }
 
     public static String getCameraName() {
@@ -464,13 +478,7 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     private String getCameraXFpsRange() {
-        return switch (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange()) {
-            case CherrygramCameraConfig.CameraXFpsRange25to30 -> "25-30";
-            case CherrygramCameraConfig.CameraXFpsRange30to30 -> "30-30";
-            case CherrygramCameraConfig.CameraXFpsRange30to60 -> "30-60";
-            case CherrygramCameraConfig.CameraXFpsRange60to60 -> "60-60";
-            default -> getString(R.string.Default);
-        };
+        return VideoMessagesHelper.isCamera60Fps() ? "60" : "30";
     }
 
     private String getExposureSliderPosition() {
@@ -480,6 +488,16 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
             case CherrygramCameraConfig.EXPOSURE_SLIDER_LEFT -> getString(R.string.CP_ZoomSliderPosition_Left);
             default -> getString(R.string.Disable);
         };
+    }
+
+    private String formatBitrate(int bitrate) {
+        if (bitrate % 1_000_000 == 0) {
+            return (bitrate / 1_000_000) + " Mbps";
+        }
+        if (bitrate > 1_000_000) {
+            return String.format(Locale.US, "%.1f Mbps", bitrate / 1_000_000f);
+        }
+        return (bitrate / 1_000) + " kbps";
     }
 
 }

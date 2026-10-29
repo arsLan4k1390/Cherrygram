@@ -254,14 +254,6 @@
     <string name="CP_MessageMenuItems">Voci di menu dei messaggi</string>
     <string name="CP_BlurMessageMenu">Menu dei messaggi in stile iOS</string>
     <string name="CP_BlurMessageMenu_Desc">Applica una sfocatura allo sfondo e mostra il menu in sovrapposizione, come su Telegram per iOS.</string>
-    <string name="CP_MessageMenuUnifiedScroll">Scorrimento unificato</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">Il menu e il contenuto del messaggio saranno visualizzati su un unico foglio continuo, utilizzando uno scorrimento globale invece di due aree di scorrimento separate.</string>
-    <string name="CP_MessageMenuAutoscroll">Scorrimento del menu</string>
-    <string name="CP_MessageMenuAutoscroll_Desc">Scorre fino in fondo il menu messaggi (come su Telegram per iOS).</string>
-    <string name="CP_MessageMenuFixedHeight">Interlinea più ampia tra le voci del menu</string>
-    <string name="CP_MessageMenuFixedHeight_Desc">Il menu occuperà più spazio verticale e le voci saranno più distanziate.</string>
-    <string name="CP_BlurMessageMenuItems">Sfoca le voci del menu</string>
-    <string name="CP_BlurMessageMenuItems_Desc">Imita più fedelmente lo stile della versione iOS di Telegram.</string>
     <string name="CP_MessageMenuNativeBlur">Sfocatura nativa</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Lo sfondo del menu userà la sfocatura nativa di Android, con un impatto minimo sulle prestazioni.</string>
     <string name="CP_MessageMenuCompactLayout">Layout compatto del menu</string>
@@ -389,7 +381,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Sperimentale</string>
     <string name="EP_NavigationAnimation">Animazione navigazione</string>
-    <string name="EP_NavigationAnimationBezier">Classico</string>
     <string name="EP_NavigationAnimationCrossfading">Effetto crossfading</string>
     <string name="CG_PredictiveBackAnimation">Gesto \'Indietro\' predittivo</string>
     <string name="EP_CustomChat">Chat personalizzata per i Messaggi Salvati</string>

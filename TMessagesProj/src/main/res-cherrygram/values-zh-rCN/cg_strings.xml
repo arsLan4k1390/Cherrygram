@@ -237,14 +237,6 @@
     <string name="CP_MessageMenuItems">消息菜单项</string>
     <string name="CP_BlurMessageMenu">iOS 风格的消息菜单</string>
     <string name="CP_BlurMessageMenu_Desc">为消息菜单添加模糊背景，并将表态面板显示在消息上方，类似于 iOS 版 Telegram 的样式。</string>
-    <string name="CP_MessageMenuUnifiedScroll">消息菜单随页面滚动</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">消息菜单将直接显示在消息内容的最下方，并随页面滚动，而不再使用两个独立的滚动区域。</string>
-    <string name="CP_MessageMenuAutoscroll">消息自动滚动</string>
-    <string name="CP_MessageMenuAutoscroll_Desc">开启时，自动将消息菜单内容滚动至底部，类似于 iOS 版 Telegram 的操作方式。</string>
-    <string name="CP_MessageMenuFixedHeight">更大的消息菜单高度</string>
-    <string name="CP_MessageMenuFixedHeight_Desc">消息菜单将占据屏幕一半的区域，以便更容易使用。</string>
-    <string name="CP_BlurMessageMenuItems">模糊菜单项</string>
-    <string name="CP_BlurMessageMenuItems_Desc">模糊菜单项以呈现更真实的 iOS 外观。</string>
     <string name="CP_MessageMenuNativeBlur">原生模糊</string>
     <string name="CP_MessageMenuNativeBlur_Desc">消息菜单背景使用 Android 内置高斯模糊，更流畅、动态效果更佳，且对性能影响极小。</string>
     <string name="CP_MessageMenuCompactLayout">紧凑型消息菜单</string>
@@ -371,7 +363,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">实验</string>
     <string name="EP_NavigationAnimation">应用动画</string>
-    <string name="EP_NavigationAnimationBezier">经典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="CG_PredictiveBackAnimation">预测返回导航</string>
     <string name="EP_CustomChat">自定义已保存消息的聊天</string>

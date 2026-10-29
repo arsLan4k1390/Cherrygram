@@ -17,6 +17,8 @@ import android.os.SystemClock;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ForegroundDetector implements Application.ActivityLifecycleCallbacks {
@@ -32,9 +34,32 @@ public class ForegroundDetector implements Application.ActivityLifecycleCallback
     private long enterBackgroundTime = 0;
     private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<>();
     private static ForegroundDetector Instance = null;
+    private final ArrayList<WeakReference<Activity>> resumedActivities = new ArrayList<>();
 
     public static ForegroundDetector getInstance() {
         return Instance;
+    }
+
+    /** Call on the UI thread. Includes bubbles and activities outside LaunchActivity. */
+    public Activity getForegroundActivity() {
+        Activity lastResumed = null;
+        for (int i = resumedActivities.size() - 1; i >= 0; --i) {
+            Activity activity = resumedActivities.get(i).get();
+            if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+                resumedActivities.remove(i);
+            } else {
+                if (activity.hasWindowFocus()) return activity;
+                if (lastResumed == null) lastResumed = activity;
+            }
+        }
+        return lastResumed;
+    }
+
+    private void removeActivity(Activity activity) {
+        for (int i = resumedActivities.size() - 1; i >= 0; --i) {
+            Activity existing = resumedActivities.get(i).get();
+            if (existing == null || existing == activity) resumedActivities.remove(i);
+        }
     }
 
     public ForegroundDetector(Application application) {
@@ -112,16 +137,13 @@ public class ForegroundDetector implements Application.ActivityLifecycleCallback
 
     @Override
     public void onActivityResumed(Activity activity) {
-        this.isPaused = false;
+        removeActivity(activity);
+        resumedActivities.add(new WeakReference<>(activity));
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        this.isPaused = true;
-    }
-
-    public boolean isPaused(){
-        return this.isPaused;
+        removeActivity(activity);
     }
 
     @Override
@@ -130,5 +152,6 @@ public class ForegroundDetector implements Application.ActivityLifecycleCallback
 
     @Override
     public void onActivityDestroyed(Activity activity) {
+        removeActivity(activity);
     }
 }

@@ -10,7 +10,6 @@ package org.telegram.messenger;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
 
 public class Bitmaps {
 
@@ -116,35 +115,11 @@ public class Bitmaps {
             return null;
         }
 
-        Bitmap bitmap;
-        bitmap = Bitmap.createBitmap(width, height, config);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, config);
         if (config == Bitmap.Config.ARGB_8888 || config == Bitmap.Config.ARGB_4444) {
             bitmap.eraseColor(Color.TRANSPARENT);
         }
         return bitmap;
     }
 
-    public static Bitmap createBitmap(Bitmap source, int x, int y, int width, int height, Matrix m, boolean filter) {
-        if (source == null || width <= 0 || height <= 0) {
-            return null;
-        }
-        /*if (x + width > source.getWidth() || y + height > source.getHeight() || x < 0 || y < 0) {
-            return null;
-        }*/
-        return Bitmap.createBitmap(source, x, y, width, height, m, filter);
-    }
-
-    public static Bitmap createBitmap(Bitmap source, int x, int y, int width, int height) {
-        if (source == null || width <= 0 || height <= 0) {
-            return null;
-        }
-        return createBitmap(source, x, y, width, height, null, false);
-    }
-
-    public static Bitmap createScaledBitmap(Bitmap src, int dstWidth, int dstHeight, boolean filter) {
-        if (src == null || dstWidth <= 0 || dstHeight <= 0) {
-            return null;
-        }
-        return Bitmap.createScaledBitmap(src, dstWidth, dstHeight, filter);
-    }
 }

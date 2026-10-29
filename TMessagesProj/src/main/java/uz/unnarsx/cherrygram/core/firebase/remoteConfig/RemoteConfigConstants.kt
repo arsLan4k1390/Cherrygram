@@ -32,6 +32,11 @@ object RemoteConfigConstants {
     const val safe_pay_URL = "safe_pay_URL"
     /** SafePay finish */
 
+    /** SafePay start */
+    const val allow_use_edify = "allow_use_edify"
+    const val edify_url = "edify_url"
+    /** SafePay finish */
+
     /** AdsGram start */
     const val show_ads_randomly = "show_ads_randomly"
     const val show_ads_screen_in_settings = "show_ads_screen_in_settings"

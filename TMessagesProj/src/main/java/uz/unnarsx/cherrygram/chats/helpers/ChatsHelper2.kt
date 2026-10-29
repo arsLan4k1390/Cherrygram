@@ -52,16 +52,71 @@ object ChatsHelper2 {
     ) {
         if (chatActivity.context == null) return
 
-        val participants = arrayListOf<TLRPC.ChatParticipant>().apply {
-            val chatInfo = chatActivity.currentChatInfo
-            val chatParticipants = chatInfo?.participants?.participants
-            if (chatParticipants != null) {
-                addAll(chatParticipants)
+        val chat = chatActivity.currentChat
+        val localParticipant = chatActivity.currentChatInfo?.participants?.participants?.find { it.user_id == user.id }
+        val canManage = chat != null && (ChatObject.canBlockUsers(chat) || ChatObject.hasAdminRights(chat) || ChatObject.canAddAdmins(chat))
+
+        if (localParticipant == null && canManage && ChatObject.isChannel(chat) && chat.megagroup
+            && user.id != UserConfig.getInstance(chatActivity.currentAccount).clientUserId
+        ) {
+            val req = TLRPC.TL_channels_getParticipant().apply {
+                channel = chatActivity.messagesController.getInputChannel(chat.id)
+                participant = chatActivity.messagesController.getInputPeer(user.id)
             }
+            chatActivity.connectionsManager.sendRequest(req) { response, _ ->
+                AndroidUtilities.runOnUIThread {
+                    if (chatActivity.parentActivity == null || chatActivity.fragmentView == null) return@runOnUIThread
+                    var channelParticipant: TLRPC.ChannelParticipant? = null
+                    if (response is TLRPC.TL_channels_channelParticipant) {
+                        chatActivity.messagesController.putUsers(response.users, false)
+                        chatActivity.messagesController.putChats(response.chats, false)
+                        channelParticipant = response.participant
+                    }
+                    showAvatarMenu(chatActivity, chatMessageCellDelegate, cell, user, enableMention, enableSearchMessages, null, channelParticipant)
+                }
+            }
+            return
         }
 
-        val participant = participants.find { it.user_id == user.id }
-        val isChatParticipant = participant != null
+        val channelParticipant = (localParticipant as? TLRPC.TL_chatChannelParticipant)?.channelParticipant
+        showAvatarMenu(chatActivity, chatMessageCellDelegate, cell, user, enableMention, enableSearchMessages, localParticipant, channelParticipant)
+    }
+
+    private fun showAvatarMenu(
+        chatActivity: ChatActivity, chatMessageCellDelegate: ChatActivity.ChatMessageCellDelegate, cell: ChatMessageCell, user: TLRPC.User,
+        enableMention: Boolean, enableSearchMessages: Boolean,
+        chatParticipant: TLRPC.ChatParticipant?, channelParticipant: TLRPC.ChannelParticipant?
+    ) {
+        val chat = chatActivity.currentChat
+        val isSelf = user.id == UserConfig.getInstance(chatActivity.currentAccount).clientUserId
+
+        val isMember = when {
+            channelParticipant != null -> channelParticipant !is TLRPC.TL_channelParticipantLeft
+                    && !(channelParticipant is TLRPC.TL_channelParticipantBanned
+                    && (channelParticipant.left || channelParticipant.banned_rights?.view_messages == true))
+            else -> chatParticipant != null
+        }
+        val isCreator = channelParticipant is TLRPC.TL_channelParticipantCreator || chatParticipant is TLRPC.TL_chatParticipantCreator
+        val canEditTarget = chat != null && isMember && !isSelf && !isCreator
+
+        val joinDate = channelParticipant?.date?.takeIf { it != 0 } ?: chatParticipant?.date?.takeIf { it != 0 }
+
+        val openRights = { action: Int ->
+            chatActivity.presentFragment(
+                ChatRightsEditActivity(
+                    user.id,
+                    chat.id,
+                    channelParticipant?.admin_rights,
+                    chat.default_banned_rights,
+                    channelParticipant?.banned_rights,
+                    channelParticipant?.rank,
+                    action,
+                    true,
+                    false,
+                    null
+                )
+            )
+        }
 
         ItemOptions.makeOptions(chatActivity, cell)
             .add(R.drawable.msg_discussion, getString(R.string.SendMessage)) {
@@ -73,75 +128,23 @@ object ChatsHelper2 {
             .addIf(enableSearchMessages, R.drawable.msg_search, getString(R.string.AvatarPreviewSearchMessages)) {
                 chatActivity.openSearchWithUser(user)
             }
-            .addIf(ChatObject.canBlockUsers(chatActivity.currentChat) && isChatParticipant, R.drawable.msg_remove, getString(R.string.KickFromGroup)) {
+            .addIf(canEditTarget && ChatObject.canBlockUsers(chat), R.drawable.msg_remove, getString(R.string.KickFromGroup)) {
                 chatActivity.messagesController.deleteParticipantFromChat(
-                    chatActivity.currentChat.id,
+                    chat.id,
                     chatActivity.messagesController.getUser(user.id),
                     chatActivity.currentChatInfo
                 )
             }
-            .addIf(ChatObject.hasAdminRights(chatActivity.currentChat) && isChatParticipant, R.drawable.msg_permissions, getString(R.string.ChangePermissions)) {
-                val action = 1 // Change permissions
-
-                val chatParticipant = chatActivity.currentChatInfo.participants.participants.filter {
-                    it.user_id == user.id
-                }[0]
-
-                var channelParticipant: TLRPC.ChannelParticipant? = null
-
-                if (ChatObject.isChannel(chatActivity.currentChat)) {
-                    channelParticipant = (chatParticipant as TLRPC.TL_chatChannelParticipant).channelParticipant
-                } else {
-                    chatParticipant is TLRPC.TL_chatParticipantAdmin
-                }
-
-                val frag = ChatRightsEditActivity(
-                    user.id,
-                    chatActivity.currentChatInfo.id,
-                    channelParticipant?.admin_rights,
-                    chatActivity.currentChat.default_banned_rights,
-                    channelParticipant?.banned_rights,
-                    channelParticipant?.rank,
-                    action,
-                    true,
-                    false,
-                    null
-                )
-                chatActivity.presentFragment(frag)
+            .addIf(canEditTarget && ChatObject.hasAdminRights(chat), R.drawable.msg_permissions, getString(R.string.ChangePermissions)) {
+                openRights(1) // Change permissions
             }
-            .addIf(ChatObject.canAddAdmins(chatActivity.currentChat) && isChatParticipant, R.drawable.msg_admins, getString(R.string.EditAdminRights)) {
-                val action = 0 // Change admin rights
-
-                val chatParticipant = chatActivity.currentChatInfo.participants.participants.filter {
-                    it.user_id == user.id
-                }[0]
-
-                var channelParticipant: TLRPC.ChannelParticipant? = null
-
-                if (ChatObject.isChannel(chatActivity.currentChat)) {
-                    channelParticipant = (chatParticipant as TLRPC.TL_chatChannelParticipant).channelParticipant
-                } else {
-                    chatParticipant is TLRPC.TL_chatParticipantAdmin
-                }
-
-                val frag = ChatRightsEditActivity(
-                    user.id,
-                    chatActivity.currentChatInfo.id,
-                    channelParticipant?.admin_rights,
-                    chatActivity.currentChat.default_banned_rights,
-                    channelParticipant?.banned_rights,
-                    channelParticipant?.rank,
-                    action,
-                    true,
-                    false,
-                    null
-                )
-                chatActivity.presentFragment(frag)
+            .addIf(canEditTarget && ChatObject.canAddAdmins(chat), R.drawable.msg_admins, getString(R.string.EditAdminRights)) {
+                openRights(0) // Change admin rights
             }
-            .addGapIf(participant?.date != null && participant.date != 0)
+            .addGapIf(joinDate != null)
             .addTextIf(
-                participant?.date != null && participant.date != 0,
-                CGResourcesHelper.capitalize(formatJoined(participant?.date?.toLong() ?: 0)),
+                joinDate != null,
+                CGResourcesHelper.capitalize(formatJoined(joinDate?.toLong() ?: 0)),
                 13
             )
             .addGap()

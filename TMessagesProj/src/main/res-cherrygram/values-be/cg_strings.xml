@@ -221,7 +221,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Эксперыментальны</string>
     <string name="EP_NavigationAnimation">Навігацыйная анімацыя</string>
-    <string name="EP_NavigationAnimationBezier">Класічны</string>
     <string name="EP_NavigationAnimationCrossfading">Эфект плаўнага згасання</string>
     <string name="EP_CustomChat">Карыстацкі чат для Захаванага</string>
     <string name="EP_CustomChat_Desc">Усталюйце ID іншага чату/групы/канала, каб перасылаць туды паведамленні (праз кнопку ў панэлі дзеянняў, у меню паведамлення ці пры падвойным націску)</string>

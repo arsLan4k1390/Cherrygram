@@ -34,7 +34,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
     /** Appearance start */
-    var glareEffects by sharedPreferences.boolean("CP_GlareEffects", true)
     var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle_v2", true)
     var centerChatTitle_AdaptiveWidth by sharedPreferences.boolean("AP_CenterChatTitle_AdaptiveWidth_v2", true)
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", centerChatTitle)
@@ -79,6 +78,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Media start */
     var recordMultiMic by sharedPreferences.boolean("CP_RecordMultiMic", true)
     var recordInStereo by sharedPreferences.boolean("CP_RecordInStereo", false)
+    var muteSystemSounds by sharedPreferences.boolean("CP_MuteSystemSounds", false)
     var voiceMessagesAutoPlay by sharedPreferences.boolean("CP_VoiceMessagesAutoPlay", true)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
@@ -131,9 +131,13 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Misc finish */
 
     fun init() {
+        val account = UserConfig.selectedAccount
+        if (!UserConfig.getInstance(account).isClientActivated) return
+
         launch(Dispatchers.IO) {
-            MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+            MessageLoader.loadMessageByLink(account, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
                 override fun onLoaded(message: MessageObject?) {
+                    if (message == null) return
                     launch(Dispatchers.IO) {
                         KotlinFragmentsManager.iooewwfueuewu121(message)
                     }

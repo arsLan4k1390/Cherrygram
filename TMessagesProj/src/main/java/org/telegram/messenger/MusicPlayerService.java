@@ -66,7 +66,7 @@ public class MusicPlayerService extends Service implements NotificationCenter.No
     private AudioManager audioManager;
 
     private static boolean supportBigNotifications = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-    private static boolean supportLockScreenControls = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || !TextUtils.isEmpty(AndroidUtilities.getSystemProperty("ro.miui.ui.version.code"));
+    private static boolean supportLockScreenControls = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
 
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat.Builder playbackState;
@@ -113,6 +113,7 @@ public class MusicPlayerService extends Service implements NotificationCenter.No
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mediaSession = new MediaSessionCompat(this, "telegramAudioPlayer");
+            mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
             playbackState = new PlaybackStateCompat.Builder();
             albumArtPlaceholder = Bitmap.createBitmap(AndroidUtilities.dp(102), AndroidUtilities.dp(102), Bitmap.Config.ARGB_8888);
             Drawable placeholder = getResources().getDrawable(R.drawable.nocover_big);

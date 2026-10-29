@@ -13,7 +13,6 @@ import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 
 import androidx.annotation.Keep;
@@ -28,10 +27,12 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.RichQuote;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.SvgHelper;
 import org.telegram.messenger.TranslateController;
 import org.telegram.messenger.Utilities;
+import org.telegram.messenger.utils.tlutils.TlUtils;
 import org.telegram.tgnet.json.TLJsonBuilder;
 import org.telegram.tgnet.json.TLJsonParser;
 import org.telegram.tgnet.tl.TL_account;
@@ -41,6 +42,7 @@ import org.telegram.tgnet.tl.TL_keyboard;
 import org.telegram.tgnet.tl.TL_communities;
 import org.telegram.tgnet.tl.TL_iv;
 import org.telegram.tgnet.tl.TL_update;
+import org.telegram.tgnet.tl.TL_wallet;
 import org.telegram.tgnet.tl.legacy.TL_legacy_message;
 import org.telegram.tgnet.tl.TL_payments;
 import org.telegram.tgnet.tl.TL_stars;
@@ -53,6 +55,7 @@ import org.telegram.ui.community.CommunityUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import me.vkryl.core.BitwiseUtils;
 
@@ -72,7 +75,7 @@ public class TLRPC {
     public static final int MESSAGE_FLAG_HAS_BOT_ID         = 0x00000800;
     public static final int MESSAGE_FLAG_EDITED             = 0x00008000;
 
-    public static final int LAYER = 229;
+    public static final int LAYER = 232;
 
     public static abstract class EmailVerifyPurpose extends TLObject {
 
@@ -1339,6 +1342,15 @@ public class TLRPC {
         public int code;
         public String text;
 
+        public TL_error() {}
+        public TL_error(String text) {
+            this.text = text;
+        }
+        public TL_error(int code, String text) {
+            this.code = code;
+            this.text = text;
+        }
+
         public static TL_error TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
             final TL_error result = TL_error.constructor != constructor ? null : new TL_error();
             return TLdeserialize(TL_error.class, result, stream, constructor, exception);
@@ -1403,13 +1415,14 @@ public class TLRPC {
     }
 
     public static class TL_urlAuthResultRequest extends UrlAuthResult {
-        public static final int constructor = 0x3cd623ec;
+        public static final int constructor = 0xbdca6167;
 
         public int flags;
         public boolean request_write_access;
         public boolean request_phone_number;
         public boolean match_codes_first;
         public boolean is_app;
+        public boolean request_wallet;
         public User bot;
         public String domain;
         public String browser;
@@ -1419,6 +1432,8 @@ public class TLRPC {
         public ArrayList<String> match_codes = new ArrayList<>();
         public long user_id_hint;
         public String verified_app_name;
+        public long tc_session_id;
+        public String tc_client_id;
 
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
@@ -1426,6 +1441,7 @@ public class TLRPC {
             request_phone_number = hasFlag(flags, FLAG_1);
             match_codes_first = hasFlag(flags, FLAG_5);
             is_app = hasFlag(flags, FLAG_6);
+            request_wallet = hasFlag(flags, FLAG_8);
             bot = User.TLdeserialize(stream, stream.readInt32(exception), exception);
             domain = stream.readString(exception);
             if (hasFlag(flags, FLAG_2)) {
@@ -1443,6 +1459,12 @@ public class TLRPC {
             if (hasFlag(flags, FLAG_7)) {
                 verified_app_name = stream.readString(exception);
             }
+            if (hasFlag(flags, FLAG_9)) {
+                tc_session_id = stream.readInt64(exception);
+            }
+            if (hasFlag(flags, FLAG_10)) {
+                tc_client_id = stream.readString(exception);
+            }
         }
 
         public void serializeToStream(OutputSerializedData stream) {
@@ -1451,6 +1473,7 @@ public class TLRPC {
             flags = setFlag(flags, FLAG_1, request_phone_number);
             flags = setFlag(flags, FLAG_5, match_codes_first);
             flags = setFlag(flags, FLAG_6, is_app);
+            flags = setFlag(flags, FLAG_8, request_wallet);
             stream.writeInt32(flags);
             bot.serializeToStream(stream);
             stream.writeString(domain);
@@ -1468,6 +1491,12 @@ public class TLRPC {
             }
             if (hasFlag(flags, FLAG_7)) {
                 stream.writeString(verified_app_name);
+            }
+            if (hasFlag(flags, FLAG_9)) {
+                stream.writeInt64(tc_session_id);
+            }
+            if (hasFlag(flags, FLAG_10)) {
+                stream.writeString(tc_client_id);
             }
         }
     }
@@ -5054,7 +5083,7 @@ public class TLRPC {
         public int color;
         public TL_stars.TL_starsSubscriptionPricing subscription_pricing;
         public long subscription_form_id;
-        public TL_bots.botVerification bot_verification;
+        public TL_bots.BotVerification bot_verification;
 
         public static ChatInvite TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
             ChatInvite result = null;
@@ -5114,7 +5143,7 @@ public class TLRPC {
                 subscription_form_id = stream.readInt64(exception);
             }
             if (hasFlag(flags, FLAG_13)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
         }
 
@@ -10983,11 +11012,12 @@ public class TLRPC {
         public boolean paid_reactions_available;
         public boolean stargifts_available;
         public boolean paid_messages_available;
-        public TL_bots.botVerification bot_verification;
+        public TL_bots.BotVerification bot_verification;
         public int stargifts_count;
         public long send_paid_messages_stars;
         public ProfileTab main_tab;
         public long guard_bot_id;
+        public ShareTheme share_theme;
         public boolean has_welcome_messages;
         public ArrayList<TL_communities.CommunityPeer> linked_peers = new ArrayList<>();
         public long inviterId; //custom
@@ -11001,6 +11031,8 @@ public class TLRPC {
                     return new TL_communityFull();
                 case TL_channelFull.constructor:
                     return new TL_channelFull();
+                case TL_channelFull_layer231.constructor:
+                    return new TL_channelFull_layer231();
                 case TL_channelFull_layer225.constructor:
                     return new TL_channelFull_layer225();
                 case TL_channelFull_layer212.constructor:
@@ -13117,6 +13149,314 @@ public class TLRPC {
     }
 
     public static class TL_channelFull extends ChatFull {
+        public static final int constructor = 0xc4c4dd40;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            can_view_participants = hasFlag(flags, FLAG_3);
+            can_set_username = hasFlag(flags, FLAG_6);
+            can_set_stickers = hasFlag(flags, FLAG_7);
+            hidden_prehistory = hasFlag(flags, FLAG_10);
+            can_set_location = hasFlag(flags, FLAG_16);
+            has_scheduled = hasFlag(flags, FLAG_19);
+            can_view_stats = hasFlag(flags, FLAG_20);
+            blocked = hasFlag(flags, FLAG_22);
+            flags2 = stream.readInt32(exception);
+            can_delete_channel = hasFlag(flags2, FLAG_0);
+            antispam = hasFlag(flags2, FLAG_1);
+            participants_hidden = hasFlag(flags2, FLAG_2);
+            translations_disabled = hasFlag(flags2, FLAG_3);
+            stories_pinned_available = hasFlag(flags2, FLAG_5);
+            view_forum_as_messages = hasFlag(flags2, FLAG_6);
+            restricted_sponsored = hasFlag(flags2, FLAG_11);
+            can_view_revenue = hasFlag(flags2, FLAG_12);
+            can_view_stars_revenue = hasFlag(flags2, FLAG_15);
+            paid_media_allowed = hasFlag(flags2, FLAG_14);
+            paid_reactions_available = hasFlag(flags2, FLAG_16);
+            stargifts_available = hasFlag(flags2, FLAG_19);
+            paid_messages_available = hasFlag(flags2, FLAG_20);
+            has_welcome_messages = hasFlag(flags2, FLAG_24);
+            id = stream.readInt64(exception);
+            about = stream.readString(exception);
+            if (hasFlag(flags, FLAG_0)) {
+                participants_count = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                admins_count = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                kicked_count = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                banned_count = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_13)) {
+                online_count = stream.readInt32(exception);
+            }
+            read_inbox_max_id = stream.readInt32(exception);
+            read_outbox_max_id = stream.readInt32(exception);
+            unread_count = stream.readInt32(exception);
+            chat_photo = Photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            notify_settings = PeerNotifySettings.TLdeserialize(stream, stream.readInt32(exception), exception);
+            if (hasFlag(flags, FLAG_23)) {
+                exported_invite = ExportedChatInvite.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            bot_info = Vector.deserialize(stream, TL_bots.BotInfo::TLdeserialize, exception);
+            if (hasFlag(flags, FLAG_4)) {
+                migrated_from_chat_id = stream.readInt64(exception);
+            }
+            if (hasFlag(flags, FLAG_4)) {
+                migrated_from_max_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_5)) {
+                pinned_msg_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_8)) {
+                stickerset = StickerSet.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_9)) {
+                available_min_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_11)) {
+                folder_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                linked_chat_id = stream.readInt64(exception);
+            }
+            if (hasFlag(flags, FLAG_15)) {
+                location = ChannelLocation.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_17)) {
+                slowmode_seconds = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_18)) {
+                slowmode_next_send_date = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_12)) {
+                stats_dc = stream.readInt32(exception);
+            }
+            pts = stream.readInt32(exception);
+            if (hasFlag(flags, FLAG_21)) {
+                call = InputGroupCall.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_24)) {
+                ttl_period = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_25)) {
+                pending_suggestions = Vector.deserializeString(stream, exception);
+            }
+            if (hasFlag(flags, FLAG_26)) {
+                groupcall_default_join_as = Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_27)) {
+                theme_emoticon = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_28)) {
+                requests_pending = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_28)) {
+                recent_requesters = Vector.deserializeLong(stream, exception);
+            }
+            if (hasFlag(flags, FLAG_29)) {
+                default_send_as = Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_30)) {
+                available_reactions = ChatReactions.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_13)) {
+                reactions_limit = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_4)) {
+                stories = TL_stories.PeerStories.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_7)) {
+                wallpaper = WallPaper.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_8)) {
+                boosts_applied = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_9)) {
+                boosts_unrestrict = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_10)) {
+                emojiset = StickerSet.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_17)) {
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_18)) {
+                stargifts_count = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_21)) {
+                send_paid_messages_stars = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_22)) {
+                main_tab = ProfileTab.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_23)) {
+                guard_bot_id = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_25)) {
+                share_theme = ShareTheme.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_3, can_view_participants);
+            flags = setFlag(flags, FLAG_6, can_set_username);
+            flags = setFlag(flags, FLAG_7, can_set_stickers);
+            flags = setFlag(flags, FLAG_10, hidden_prehistory);
+            flags = setFlag(flags, FLAG_16, can_set_location);
+            flags = setFlag(flags, FLAG_19, has_scheduled);
+            flags = setFlag(flags, FLAG_20, can_view_stats);
+            flags = setFlag(flags, FLAG_22, blocked);
+            stream.writeInt32(flags);
+            flags2 = setFlag(flags2, FLAG_0, can_delete_channel);
+            flags2 = setFlag(flags2, FLAG_1, antispam);
+            flags2 = setFlag(flags2, FLAG_2, participants_hidden);
+            flags2 = setFlag(flags2, FLAG_3, translations_disabled);
+            flags2 = setFlag(flags2, FLAG_5, stories_pinned_available);
+            flags2 = setFlag(flags2, FLAG_6, view_forum_as_messages);
+            flags2 = setFlag(flags2, FLAG_11, restricted_sponsored);
+            flags2 = setFlag(flags2, FLAG_12, can_view_revenue);
+            flags2 = setFlag(flags2, FLAG_14, paid_media_allowed);
+            flags2 = setFlag(flags2, FLAG_15, can_view_stars_revenue);
+            flags2 = setFlag(flags2, FLAG_16, paid_reactions_available);
+            flags2 = setFlag(flags2, FLAG_19, stargifts_available);
+            flags2 = setFlag(flags2, FLAG_20, paid_messages_available);
+            flags2 = setFlag(flags2, FLAG_22, main_tab != null);
+            flags2 = setFlag(flags2, FLAG_24, has_welcome_messages);
+            flags2 = setFlag(flags2, FLAG_25, share_theme != null);
+            stream.writeInt32(flags2);
+            stream.writeInt64(id);
+            stream.writeString(about);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeInt32(participants_count);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                stream.writeInt32(admins_count);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                stream.writeInt32(kicked_count);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                stream.writeInt32(banned_count);
+            }
+            if (hasFlag(flags, FLAG_13)) {
+                stream.writeInt32(online_count);
+            }
+            stream.writeInt32(read_inbox_max_id);
+            stream.writeInt32(read_outbox_max_id);
+            stream.writeInt32(unread_count);
+            chat_photo.serializeToStream(stream);
+            notify_settings.serializeToStream(stream);
+            if (hasFlag(flags, FLAG_23)) {
+                exported_invite.serializeToStream(stream);
+            }
+            Vector.serialize(stream, bot_info);
+            if (hasFlag(flags, FLAG_4)) {
+                stream.writeInt64(migrated_from_chat_id);
+            }
+            if (hasFlag(flags, FLAG_4)) {
+                stream.writeInt32(migrated_from_max_id);
+            }
+            if (hasFlag(flags, FLAG_5)) {
+                stream.writeInt32(pinned_msg_id);
+            }
+            if (hasFlag(flags, FLAG_8)) {
+                stickerset.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_9)) {
+                stream.writeInt32(available_min_id);
+            }
+            if (hasFlag(flags, FLAG_11)) {
+                stream.writeInt32(folder_id);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                stream.writeInt64(linked_chat_id);
+            }
+            if (hasFlag(flags, FLAG_15)) {
+                location.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_17)) {
+                stream.writeInt32(slowmode_seconds);
+            }
+            if (hasFlag(flags, FLAG_18)) {
+                stream.writeInt32(slowmode_next_send_date);
+            }
+            if (hasFlag(flags, FLAG_12)) {
+                stream.writeInt32(stats_dc);
+            }
+            stream.writeInt32(pts);
+            if (hasFlag(flags, FLAG_21)) {
+                call.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_24)) {
+                stream.writeInt32(ttl_period);
+            }
+            if (hasFlag(flags, FLAG_25)) {
+                Vector.serializeString(stream, pending_suggestions);
+            }
+            if (hasFlag(flags, FLAG_26)) {
+                groupcall_default_join_as.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_27)) {
+                stream.writeString(theme_emoticon);
+            }
+            if (hasFlag(flags, FLAG_28)) {
+                stream.writeInt32(requests_pending);
+            }
+            if (hasFlag(flags, FLAG_28)) {
+                Vector.serializeLong(stream, recent_requesters);
+            }
+            if (hasFlag(flags, FLAG_29)) {
+                default_send_as.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_30)) {
+                available_reactions.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_13)) {
+                stream.writeInt32(reactions_limit);
+            }
+            if (hasFlag(flags2, FLAG_4)) {
+                stories.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_7)) {
+                wallpaper.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_8)) {
+                stream.writeInt32(boosts_applied);
+            }
+            if (hasFlag(flags2, FLAG_9)) {
+                stream.writeInt32(boosts_unrestrict);
+            }
+            if (hasFlag(flags2, FLAG_10)) {
+                emojiset.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_17)) {
+                bot_verification.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_18)) {
+                stream.writeInt32(stargifts_count);
+            }
+            if (hasFlag(flags2, FLAG_21)) {
+                stream.writeInt64(send_paid_messages_stars);
+            }
+            if (hasFlag(flags2, FLAG_22)) {
+                // Vector.serialize(stream, tabs_order);
+                main_tab.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_23)) {
+                stream.writeInt64(guard_bot_id);
+            }
+            if (hasFlag(flags2, FLAG_25)) {
+                share_theme.serializeToStream(stream);
+            }
+        }
+    }
+
+    public static class TL_channelFull_layer231 extends TL_channelFull {
         public static final int constructor = 0xa04e8d3a;
 
         public void readParams(InputSerializedData stream, boolean exception) {
@@ -13250,7 +13590,7 @@ public class TLRPC {
                 emojiset = StickerSet.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_17)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_18)) {
                 stargifts_count = stream.readInt32(exception);
@@ -13550,7 +13890,7 @@ public class TLRPC {
                 emojiset = StickerSet.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_17)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_18)) {
                 stargifts_count = stream.readInt32(exception);
@@ -13843,7 +14183,7 @@ public class TLRPC {
                 emojiset = StickerSet.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_17)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_18)) {
                 stargifts_count = stream.readInt32(exception);
@@ -14128,7 +14468,7 @@ public class TLRPC {
                 emojiset = StickerSet.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_17)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_18)) {
                 stargifts_count = stream.readInt32(exception);
@@ -14405,7 +14745,7 @@ public class TLRPC {
                 emojiset = StickerSet.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_17)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
         }
 
@@ -24708,6 +25048,8 @@ public class TLRPC {
                     return new TL_messageActionGameScore();
                 case TL_messageActionGroupCallScheduled.constructor:
                     return new TL_messageActionGroupCallScheduled();
+                case TL_messageActionWalletTonConnectRequest.constructor:
+                    return new TL_messageActionWalletTonConnectRequest();
                 case TL_messageActionBoostApply.constructor:
                     return new TL_messageActionBoostApply();
                 case TL_messageActionPaymentSentMe.constructor:
@@ -24796,6 +25138,10 @@ public class TLRPC {
                     return new TL_messageActionChangeCommunity();
                 case TL_messageActionChatJoinedViaCommunity.constructor:
                     return new TL_messageActionChatJoinedViaCommunity();
+                case TL_messageActionGramTransfer.constructor:
+                    return new TL_messageActionGramTransfer();
+                case TL_messageActionNoPaidMessagesTokenUsed.constructor:
+                    return new TL_messageActionNoPaidMessagesTokenUsed();
                 default:
                     return null;
             }
@@ -26006,6 +26352,58 @@ public class TLRPC {
         }
     }
 
+    public static class TL_messageActionWalletTonConnectRequest extends MessageAction {
+        public static final int constructor = 0x69b8c4bf;
+
+        public boolean accepted;
+        public boolean declined;
+        public long session_id;
+        public int expires;
+        public String topic;
+        public String trace_id;
+        public String dapp_name;
+
+        @Override
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            accepted = hasFlag(flags, FLAG_2);
+            declined = hasFlag(flags, FLAG_3);
+            session_id = stream.readInt64(exception);
+            expires = stream.readInt32(exception);
+            if (hasFlag(flags, FLAG_0)) {
+                topic = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                trace_id = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_4)) {
+                dapp_name = stream.readString(exception);
+            }
+        }
+
+        @Override
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, topic != null);
+            flags = setFlag(flags, FLAG_1, trace_id != null);
+            flags = setFlag(flags, FLAG_2, accepted);
+            flags = setFlag(flags, FLAG_3, declined);
+            flags = setFlag(flags, FLAG_4, dapp_name != null);
+            stream.writeInt32(flags);
+            stream.writeInt64(session_id);
+            stream.writeInt32(expires);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeString(topic);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                stream.writeString(trace_id);
+            }
+            if (hasFlag(flags, FLAG_4)) {
+                stream.writeString(dapp_name);
+            }
+        }
+    }
+
     public static class TL_messageActionBoostApply extends MessageAction {
         public static final int constructor = 0xcc02aa6d;
 
@@ -26401,6 +26799,7 @@ public class TLRPC {
             if (hasFlag(flags, FLAG_17)) {
                 grouped_id = stream.readInt64(exception);
             }
+            TlUtils.validateEntities(entities, message);
         }
 
         public void serializeToStream(OutputSerializedData stream) {
@@ -26448,6 +26847,7 @@ public class TLRPC {
             if (hasFlag(flags, FLAG_3)) {
                 reply_to_random_id = stream.readInt64(exception);
             }
+            TlUtils.validateEntities(entities, message);
         }
 
         public void serializeToStream(OutputSerializedData stream) {
@@ -27577,6 +27977,7 @@ public class TLRPC {
         public int quote_offset;
         public int todo_item_id;
         public byte[] poll_option;
+        public ArrayList<TL_iv.RichText> quote_rich;
 
         public Peer peer;
         public int story_id;
@@ -27592,6 +27993,9 @@ public class TLRPC {
                     break;
                 case TL_messageReplyHeader.constructor:
                     result = new TL_messageReplyHeader();
+                    break;
+                case TL_messageReplyHeader_layer231.constructor:
+                    result = new TL_messageReplyHeader_layer231();
                     break;
                 case TL_messageReplyHeader_layer223.constructor:
                     result = new TL_messageReplyHeader_layer223();
@@ -27645,6 +28049,95 @@ public class TLRPC {
     }
 
     public static class TL_messageReplyHeader extends MessageReplyHeader {
+        public static final int constructor = 0xddb5ab75;
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            reply_to_scheduled = hasFlag(flags, FLAG_2);
+            forum_topic = hasFlag(flags, FLAG_3);
+            quote = hasFlag(flags, FLAG_9);
+            reply_to_ephemeral = hasFlag(flags, FLAG_13);
+            if (hasFlag(flags, FLAG_4)) {
+                reply_to_msg_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_0)) {
+                reply_to_peer_id = Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_5)) {
+                reply_from = MessageFwdHeader.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_8)) {
+                reply_media = MessageMedia.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                reply_to_top_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_6)) {
+                quote_text = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_7)) {
+                quote_entities = Vector.deserialize(stream, MessageEntity::TLdeserialize, exception);
+            }
+            if (hasFlag(flags, FLAG_10)) {
+                quote_offset = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_11)) {
+                todo_item_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_12)) {
+                poll_option = stream.readByteArray(exception);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                quote_rich = Vector.deserialize(stream, TL_iv.RichText::TLdeserialize, exception);
+                RichQuote.fillFlat(this);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_2, reply_to_scheduled);
+            flags = setFlag(flags, FLAG_3, forum_topic);
+            flags = setFlag(flags, FLAG_9, quote);
+            flags = setFlag(flags, FLAG_12, poll_option != null);
+            flags = setFlag(flags, FLAG_13, reply_to_ephemeral);
+            flags = setFlag(flags, FLAG_14, quote_rich != null);
+            stream.writeInt32(flags);
+            if (hasFlag(flags, FLAG_4)) {
+                stream.writeInt32(reply_to_msg_id);
+            }
+            if (hasFlag(flags, FLAG_0)) {
+                reply_to_peer_id.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_5)) {
+                reply_from.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_8)) {
+                reply_media.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                stream.writeInt32(reply_to_top_id);
+            }
+            if (hasFlag(flags, FLAG_6)) {
+                stream.writeString(quote_text);
+            }
+            if (hasFlag(flags, FLAG_7)) {
+                Vector.serialize(stream, quote_entities);
+            }
+            if (hasFlag(flags, FLAG_10)) {
+                stream.writeInt32(quote_offset);
+            }
+            if (hasFlag(flags, FLAG_11)) {
+                stream.writeInt32(todo_item_id);
+            }
+            if (hasFlag(flags, FLAG_12)) {
+                stream.writeByteArray(poll_option);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                Vector.serialize(stream, quote_rich);
+            }
+        }
+    }
+
+    public static class TL_messageReplyHeader_layer231 extends TL_messageReplyHeader {
         public static final int constructor = 0x1B97DD66;
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
@@ -30892,6 +31385,16 @@ public class TLRPC {
                     return new TL_update.TL_updateEditEphemeralMessage();
                 case TL_update.TL_updateEphemeralBotCallbackQuery.constructor:
                     return new TL_update.TL_updateEphemeralBotCallbackQuery();
+                case TL_update.TL_updateSentWalletTransaction.constructor:
+                    return new TL_update.TL_updateSentWalletTransaction();
+                case TL_update.TL_updateWalletGaslessInfo.constructor:
+                    return new TL_update.TL_updateWalletGaslessInfo();
+                case TL_update.TL_updateWalletState.constructor:
+                    return new TL_update.TL_updateWalletState();
+                case TL_update.TL_updateWalletTonConnectSession.constructor:
+                    return new TL_update.TL_updateWalletTonConnectSession();
+                case TL_update.TL_updateWalletTonConnectPendingDisconnect.constructor:
+                    return new TL_update.TL_updateWalletTonConnectPendingDisconnect();
                 default:
                     return null;
             }
@@ -31678,6 +32181,8 @@ public class TLRPC {
                     return new TL_messageEntityDiffReplace();
                 case TL_messageEntityDiffDelete.constructor:
                     return new TL_messageEntityDiffDelete();
+                case TL_messageEntityTonAddress.constructor:
+                    return new TL_messageEntityTonAddress();
             }
             return null;
         }
@@ -31705,6 +32210,7 @@ public class TLRPC {
                 case TL_messageEntityCode.constructorName:             return new TL_messageEntityCode();
                 case TL_messageEntityBlockquote.constructorName:       return new TL_messageEntityBlockquote();
                 case TL_messageEntityBankCard.constructorName:         return new TL_messageEntityBankCard();
+                case TL_messageEntityTonAddress.constructorName:       return new TL_messageEntityTonAddress();
                 case TL_inputMessageEntityMentionName.constructorName: return new TL_inputMessageEntityMentionName();
                 case TL_messageEntityFormattedDate.constructorName:    return new TL_messageEntityFormattedDate();
                 case TL_messageEntityDiffInsert.constructorName:       return new TL_messageEntityDiffInsert();
@@ -32242,6 +32748,33 @@ public class TLRPC {
     public static class TL_messageEntityBankCard extends MessageEntity {
         public static final int constructor = 0x761e6af4;
         public static final String constructorName = "messageEntityBankCard";
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            offset = stream.readInt32(exception);
+            length = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(offset);
+            stream.writeInt32(length);
+        }
+
+        @Override public void serializeToJson(TLJsonBuilder builder) {
+            builder.writeString("_", constructorName);
+            builder.writeInt32("offset", offset);
+            builder.writeInt32("length", length);
+        }
+
+        @Override public void deserializeFromJson(TLJsonParser parser) {
+            offset = parser.readInt32("offset", 0);
+            length = parser.readInt32("length", 0);
+        }
+    }
+
+    public static class TL_messageEntityTonAddress extends MessageEntity {
+        public static final int constructor = 0xfdabbfcd;
+        public static final String constructorName = "messageEntityTonAddress";
 
         public void readParams(InputSerializedData stream, boolean exception) {
             offset = stream.readInt32(exception);
@@ -38865,6 +39398,7 @@ public class TLRPC {
         public boolean broadcast_messages_allowed;
         public boolean monoforum;
         public boolean forum_tabs;
+        public boolean in_news;
         public TL_recentStory stories_max_id;
         public PeerColor color;
         public PeerColor profile_color;
@@ -38875,6 +39409,7 @@ public class TLRPC {
         public long send_paid_messages_stars;
         public long linked_monoforum_id;
         public long linked_community_id;
+        public int pinned_msg_id;
 
         public long fromMessageDialogId; //custom
         public int fromMessageId; //custom
@@ -38901,6 +39436,8 @@ public class TLRPC {
                     return new TL_channel_layer104();
                 case TL_channel.constructor:
                     return new TL_channel();
+                case TL_channel_layer232.constructor:
+                    return new TL_channel_layer232();
                 case TL_channel_layer227.constructor:
                     return new TL_channel_layer227();
                 case TL_community.constructor:
@@ -39328,6 +39865,201 @@ public class TLRPC {
     }
 
     public static class TL_channel extends Chat {
+        public static final int constructor = 0x7ad15240;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            creator = hasFlag(flags, FLAG_0);
+            left = hasFlag(flags, FLAG_2);
+            broadcast = hasFlag(flags, FLAG_5);
+            verified = hasFlag(flags, FLAG_7);
+            megagroup = hasFlag(flags, FLAG_8);
+            restricted = hasFlag(flags, FLAG_9);
+            signatures = hasFlag(flags, FLAG_11);
+            min = hasFlag(flags, FLAG_12);
+            scam = hasFlag(flags, FLAG_19);
+            has_link = hasFlag(flags, FLAG_20);
+            has_geo = hasFlag(flags, FLAG_21);
+            slowmode_enabled = hasFlag(flags, FLAG_22);
+            call_active = hasFlag(flags, FLAG_23);
+            call_not_empty = hasFlag(flags, FLAG_24);
+            fake = hasFlag(flags, FLAG_25);
+            gigagroup = hasFlag(flags, FLAG_26);
+            noforwards = hasFlag(flags, FLAG_27);
+            join_to_send = hasFlag(flags, FLAG_28);
+            join_request = hasFlag(flags, FLAG_29);
+            forum = hasFlag(flags, FLAG_30);
+            flags2 = stream.readInt32(exception);
+            stories_hidden = hasFlag(flags2, FLAG_1);
+            stories_hidden_min = hasFlag(flags2, FLAG_2);
+            stories_unavailable = hasFlag(flags2, FLAG_3);
+            signature_profiles = hasFlag(flags2, FLAG_12);
+            autotranslation = hasFlag(flags2, FLAG_15);
+            broadcast_messages_allowed = hasFlag(flags2, FLAG_16);
+            monoforum = hasFlag(flags2, FLAG_17);
+            forum_tabs = hasFlag(flags2, FLAG_19);
+            in_news = hasFlag(flags2, FLAG_21);
+            id = stream.readInt64(exception);
+            if (hasFlag(flags, FLAG_13)) {
+                access_hash = stream.readInt64(exception);
+            }
+            title = stream.readString(exception);
+            if (hasFlag(flags, FLAG_6)) {
+                username = stream.readString(exception);
+            }
+            photo = ChatPhoto.TLdeserialize(stream, stream.readInt32(exception), exception);
+            date = stream.readInt32(exception);
+            if (hasFlag(flags, FLAG_9)) {
+                restriction_reason = Vector.deserialize(stream, RestrictionReason::TLdeserialize, exception);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                admin_rights = TL_chatAdminRights.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_15)) {
+                banned_rights = TL_chatBannedRights.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_18)) {
+                default_banned_rights = TL_chatBannedRights.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_17)) {
+                participants_count = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_0)) {
+                usernames = Vector.deserialize(stream, TL_username::TLdeserialize, exception);
+            }
+            if (hasFlag(flags2, FLAG_4)) {
+                stories_max_id = TL_recentStory.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_7)) {
+                color = PeerColor.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_8)) {
+                profile_color = PeerColor.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_9)) {
+                emoji_status = EmojiStatus.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_10)) {
+                level = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_11)) {
+                subscription_until_date = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_13)) {
+                bot_verification_icon = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_14)) {
+                send_paid_messages_stars = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_18)) {
+                linked_monoforum_id = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_20)) {
+                linked_community_id = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_22)) {
+                pinned_msg_id = stream.readInt32(exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, creator);
+            flags = setFlag(flags, FLAG_2, left);
+            flags = setFlag(flags, FLAG_5, broadcast);
+            flags = setFlag(flags, FLAG_7, verified);
+            flags = setFlag(flags, FLAG_8, megagroup);
+            flags = setFlag(flags, FLAG_9, restricted);
+            flags = setFlag(flags, FLAG_11, signatures);
+            flags = setFlag(flags, FLAG_12, min);
+            flags = setFlag(flags, FLAG_19, scam);
+            flags = setFlag(flags, FLAG_20, has_link);
+            flags = setFlag(flags, FLAG_21, has_geo);
+            flags = setFlag(flags, FLAG_22, slowmode_enabled);
+            flags = setFlag(flags, FLAG_23, call_active);
+            flags = setFlag(flags, FLAG_24, call_not_empty);
+            flags = setFlag(flags, FLAG_25, fake);
+            flags = setFlag(flags, FLAG_26, gigagroup);
+            flags = setFlag(flags, FLAG_27, noforwards);
+            flags = setFlag(flags, FLAG_28, join_to_send);
+            flags = setFlag(flags, FLAG_29, join_request);
+            flags = setFlag(flags, FLAG_30, forum);
+            stream.writeInt32(flags);
+            flags2 = setFlag(flags2, FLAG_1, stories_hidden);
+            flags2 = setFlag(flags2, FLAG_2, stories_hidden_min);
+            flags2 = setFlag(flags2, FLAG_3, stories_unavailable);
+            flags2 = setFlag(flags2, FLAG_12, signature_profiles);
+            flags2 = setFlag(flags2, FLAG_15, autotranslation);
+            flags2 = setFlag(flags2, FLAG_16, broadcast_messages_allowed);
+            flags2 = setFlag(flags2, FLAG_17, monoforum);
+            flags2 = setFlag(flags2, FLAG_19, forum_tabs);
+            flags2 = setFlag(flags2, FLAG_21, in_news);
+            stream.writeInt32(flags2);
+            stream.writeInt64(id);
+            if (hasFlag(flags, FLAG_13)) {
+                stream.writeInt64(access_hash);
+            }
+            stream.writeString(title);
+            if (hasFlag(flags, FLAG_6)) {
+                stream.writeString(username);
+            }
+            photo.serializeToStream(stream);
+            stream.writeInt32(date);
+            if (hasFlag(flags, FLAG_9)) {
+                Vector.serialize(stream, restriction_reason);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                admin_rights.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_15)) {
+                banned_rights.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_18)) {
+                default_banned_rights.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_17)) {
+                stream.writeInt32(participants_count);
+            }
+            if (hasFlag(flags2, FLAG_0)) {
+                Vector.serialize(stream, usernames);
+            }
+            if (hasFlag(flags2, FLAG_4)) {
+                stories_max_id.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_7)) {
+                color.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_8)) {
+                profile_color.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_9)) {
+                emoji_status.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_10)) {
+                stream.writeInt32(level);
+            }
+            if (hasFlag(flags2, FLAG_11)) {
+                stream.writeInt32(subscription_until_date);
+            }
+            if (hasFlag(flags2, FLAG_13)) {
+                stream.writeInt64(bot_verification_icon);
+            }
+            if (hasFlag(flags2, FLAG_14)) {
+                stream.writeInt64(send_paid_messages_stars);
+            }
+            if (hasFlag(flags2, FLAG_18)) {
+                stream.writeInt64(linked_monoforum_id);
+            }
+            if (hasFlag(flags2, FLAG_20)) {
+                stream.writeInt64(linked_community_id);
+            }
+            if (hasFlag(flags2, FLAG_22)) {
+                stream.writeInt32(pinned_msg_id);
+            }
+        }
+    }
+
+    public static class TL_channel_layer232 extends TL_channel {
         public static final int constructor = 0xD49F34C6;
 
         public void readParams(InputSerializedData stream, boolean exception) {
@@ -39361,6 +40093,7 @@ public class TLRPC {
             broadcast_messages_allowed = hasFlag(flags2, FLAG_16);
             monoforum = hasFlag(flags2, FLAG_17);
             forum_tabs = hasFlag(flags2, FLAG_19);
+            in_news = hasFlag(flags2, FLAG_21);
             id = stream.readInt64(exception);
             if (hasFlag(flags, FLAG_13)) {
                 access_hash = stream.readInt64(exception);
@@ -39452,6 +40185,7 @@ public class TLRPC {
             flags2 = setFlag(flags2, FLAG_16, broadcast_messages_allowed);
             flags2 = setFlag(flags2, FLAG_17, monoforum);
             flags2 = setFlag(flags2, FLAG_19, forum_tabs);
+            flags2 = setFlag(flags2, FLAG_21, in_news);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if (hasFlag(flags, FLAG_13)) {
@@ -44031,6 +44765,7 @@ public class TLRPC {
         @Override public void deserializeFromJson(TLJsonParser parser) {
             random_id = parser.readInt64("random_id", 0);
             message = parser.readObject("message", TL_textWithEntities::TLJsonDeserialize);
+            Objects.requireNonNull(message);
         }
     }
 
@@ -44049,6 +44784,7 @@ public class TLRPC {
         public void readParams(InputSerializedData stream, boolean exception) {
             text = stream.readString(exception);
             entities = Vector.deserialize(stream, MessageEntity::TLdeserialize, exception);
+            TlUtils.validateEntities(entities, text);
         }
 
         public void serializeToStream(OutputSerializedData stream) {
@@ -44081,6 +44817,7 @@ public class TLRPC {
         @Override public void deserializeFromJson(TLJsonParser parser) {
             text = parser.readString("text");
             entities = parser.readVector("entities", MessageEntity::TLJsonDeserialize);
+            TlUtils.validateEntities(entities, text);
         }
 
         @Override
@@ -44289,7 +45026,7 @@ public class TLRPC {
         public int personal_channel_message;
         public int stargifts_count;
         public TL_payments.starRefProgram starref_program;
-        public TL_bots.botVerification bot_verification;
+        public TL_bots.BotVerification bot_verification;
         public long send_paid_messages_stars;
         public DisallowedGiftsSettings disallowed_stargifts;
         public TL_stars.Tl_starsRating stars_rating;
@@ -44299,11 +45036,17 @@ public class TLRPC {
         public TLRPC.Document saved_music;
         public TL_textWithEntities note;
         public long bot_manager_id;
+        public TL_wallet.card wallet_card;
+        public ShareTheme share_theme;
 
         private static UserFull fromConstructor(int constructor) {
             switch (constructor) {
                 case TL_userFull.constructor:
                     return new TL_userFull();
+                case TL_userFull_layer232.constructor:
+                    return new TL_userFull_layer232();
+                case TL_userFull_layer231.constructor:
+                    return new TL_userFull_layer231();
                 case TL_userFull_layer223.constructor:
                     return new TL_userFull_layer223();
                 case TL_userFull_layer215.constructor:
@@ -44370,7 +45113,7 @@ public class TLRPC {
     }
 
     public static class TL_userFull extends UserFull {
-        public static final int constructor = 0x06cbe645;
+        public static final int constructor = 0xb90c2afd;
 
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
@@ -44470,7 +45213,554 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_14)) {
+                send_paid_messages_stars = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_15)) {
+                disallowed_stargifts = DisallowedGiftsSettings.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_17)) {
+                stars_rating = TL_stars.Tl_starsRating.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_18)) {
+                stars_my_pending_rating = TL_stars.Tl_starsRating.TLdeserialize(stream, stream.readInt32(exception), exception);
+                stars_my_pending_rating_date = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_20)) {
+                main_tab = ProfileTab.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_21)) {
+                saved_music = Document.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_22)) {
+                note = TL_textWithEntities.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_25)) {
+                bot_manager_id = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_19)) {
+                wallet_card = TL_wallet.card.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_27)) {
+                share_theme = ShareTheme.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, blocked);
+            flags = setFlag(flags, FLAG_4, phone_calls_available);
+            flags = setFlag(flags, FLAG_5, phone_calls_private);
+            flags = setFlag(flags, FLAG_7, can_pin_message);
+            flags = setFlag(flags, FLAG_12, has_scheduled);
+            flags = setFlag(flags, FLAG_13, video_calls_available);
+            flags = setFlag(flags, FLAG_15, theme != null);
+            flags = setFlag(flags, FLAG_20, voice_messages_forbidden);
+            flags = setFlag(flags, FLAG_23, translations_disabled);
+            flags = setFlag(flags, FLAG_26, stories_pinned_available);
+            flags = setFlag(flags, FLAG_27, blocked_my_stories_from);
+            flags = setFlag(flags, FLAG_28, wallpaper_overridden);
+            flags = setFlag(flags, FLAG_29, contact_require_premium);
+            flags = setFlag(flags, FLAG_30, read_dates_private);
+            stream.writeInt32(flags);
+            flags2 = setFlag(flags2, FLAG_7, sponsored_enabled);
+            flags2 = setFlag(flags2, FLAG_9, can_view_revenue);
+            flags2 = setFlag(flags2, FLAG_10, bot_can_manage_emoji_status);
+            flags2 = setFlag(flags2, FLAG_16, display_gifts_button);
+            flags2 = setFlag(flags2, FLAG_17, stars_rating != null);
+            flags2 = setFlag(flags2, FLAG_18, stars_my_pending_rating != null);
+            flags2 = setFlag(flags2, FLAG_19, wallet_card != null);
+            flags2 = setFlag(flags2, FLAG_20,  main_tab != null);
+            flags2 = setFlag(flags2, FLAG_23, noforwards_my_enabled);
+            flags2 = setFlag(flags2, FLAG_24, noforwards_peer_enabled);
+            flags2 = setFlag(flags2, FLAG_26, unofficial_security_risk);
+            flags2 = setFlag(flags2, FLAG_27, share_theme != null);
+            stream.writeInt32(flags2);
+            stream.writeInt64(id);
+            if (hasFlag(flags, FLAG_1)) {
+                stream.writeString(about);
+            }
+            settings.serializeToStream(stream);
+            if (hasFlag(flags, FLAG_21)) {
+                personal_photo.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                profile_photo.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_22)) {
+                fallback_photo.serializeToStream(stream);
+            }
+            notify_settings.serializeToStream(stream);
+            if (hasFlag(flags, FLAG_3)) {
+                bot_info.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_6)) {
+                stream.writeInt32(pinned_msg_id);
+            }
+            stream.writeInt32(common_chats_count);
+            if (hasFlag(flags, FLAG_11)) {
+                stream.writeInt32(folder_id);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                stream.writeInt32(ttl_period);
+            }
+            if (hasFlag(flags, FLAG_15)) {
+                theme.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_16)) {
+                stream.writeString(private_forward_name);
+            }
+            if (hasFlag(flags, FLAG_17)) {
+                bot_group_admin_rights.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_18)) {
+                bot_broadcast_admin_rights.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_24)) {
+                wallpaper.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_25)) {
+                stories.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_0)) {
+                business_work_hours.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_1)) {
+                business_location.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_2)) {
+                business_greeting_message.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_3)) {
+                business_away_message.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_4)) {
+                business_intro.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_5)) {
+                birthday.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_6)) {
+                stream.writeInt64(personal_channel_id);
+                stream.writeInt32(personal_channel_message);
+            }
+            if (hasFlag(flags2, FLAG_8)) {
+                stream.writeInt32(stargifts_count);
+            }
+            if (hasFlag(flags2, FLAG_11)) {
+                starref_program.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_12)) {
+                bot_verification.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_14)) {
+                stream.writeInt64(send_paid_messages_stars);
+            }
+            if (hasFlag(flags2, FLAG_15)) {
+                disallowed_stargifts.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_17)) {
+                stars_rating.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_18)) {
+                stars_my_pending_rating.serializeToStream(stream);
+                stream.writeInt32(stars_my_pending_rating_date);
+            }
+            if (hasFlag(flags2, FLAG_20)) {
+                main_tab.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_21)) {
+                saved_music.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_22)) {
+                note.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_25)) {
+                stream.writeInt64(bot_manager_id);
+            }
+            if (hasFlag(flags2, FLAG_19)) {
+                wallet_card.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_27)) {
+                share_theme.serializeToStream(stream);
+            }
+        }
+    }
+
+    public static class TL_userFull_layer232 extends TL_userFull {
+        public static final int constructor = 0x5b550ec6;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            blocked = hasFlag(flags, FLAG_0);
+            phone_calls_available = hasFlag(flags, FLAG_4);
+            phone_calls_private = hasFlag(flags, FLAG_5);
+            can_pin_message = hasFlag(flags, FLAG_7);
+            has_scheduled = hasFlag(flags, FLAG_12);
+            video_calls_available = hasFlag(flags, FLAG_13);
+            voice_messages_forbidden = hasFlag(flags, FLAG_20);
+            translations_disabled = hasFlag(flags, FLAG_23);
+            stories_pinned_available = hasFlag(flags, FLAG_26);
+            blocked_my_stories_from = hasFlag(flags, FLAG_27);
+            wallpaper_overridden = hasFlag(flags, FLAG_28);
+            contact_require_premium = hasFlag(flags, FLAG_29);
+            read_dates_private = hasFlag(flags, FLAG_30);
+            flags2 = stream.readInt32(exception);
+            sponsored_enabled = hasFlag(flags2, FLAG_7);
+            can_view_revenue = hasFlag(flags2, FLAG_9);
+            bot_can_manage_emoji_status = hasFlag(flags2, FLAG_10);
+            display_gifts_button = hasFlag(flags2, FLAG_16);
+            noforwards_my_enabled = hasFlag(flags2, FLAG_23);
+            noforwards_peer_enabled = hasFlag(flags2, FLAG_24);
+            unofficial_security_risk = hasFlag(flags2, FLAG_26);
+            id = stream.readInt64(exception);
+            if (hasFlag(flags, FLAG_1)) {
+                about = stream.readString(exception);
+            }
+            settings = PeerSettings.TLdeserialize(stream, stream.readInt32(exception), exception);
+            if (hasFlag(flags, FLAG_21)) {
+                personal_photo = Photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                profile_photo = Photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_22)) {
+                fallback_photo = Photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            notify_settings = PeerNotifySettings.TLdeserialize(stream, stream.readInt32(exception), exception);
+            if (hasFlag(flags, FLAG_3)) {
+                bot_info = TL_bots.BotInfo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_6)) {
+                pinned_msg_id = stream.readInt32(exception);
+            }
+            common_chats_count = stream.readInt32(exception);
+            if (hasFlag(flags, FLAG_11)) {
+                folder_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                ttl_period = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_15)) {
+                theme = ChatTheme.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_16)) {
+                private_forward_name = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_17)) {
+                bot_group_admin_rights = TL_chatAdminRights.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_18)) {
+                bot_broadcast_admin_rights = TL_chatAdminRights.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_24)) {
+                wallpaper = WallPaper.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_25)) {
+                stories = TL_stories.PeerStories.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_0)) {
+                business_work_hours = TL_account.TL_businessWorkHours.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_1)) {
+                business_location = TL_businessLocation.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_2)) {
+                business_greeting_message = TL_account.TL_businessGreetingMessage.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_3)) {
+                business_away_message = TL_account.TL_businessAwayMessage.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_4)) {
+                business_intro = TL_account.TL_businessIntro.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_5)) {
+                birthday = TL_account.TL_birthday.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_6)) {
+                personal_channel_id = stream.readInt64(exception);
+                personal_channel_message = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_8)) {
+                stargifts_count = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_11)) {
+                starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_12)) {
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_14)) {
+                send_paid_messages_stars = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_15)) {
+                disallowed_stargifts = DisallowedGiftsSettings.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_17)) {
+                stars_rating = TL_stars.Tl_starsRating.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_18)) {
+                stars_my_pending_rating = TL_stars.Tl_starsRating.TLdeserialize(stream, stream.readInt32(exception), exception);
+                stars_my_pending_rating_date = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_20)) {
+                main_tab = ProfileTab.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_21)) {
+                saved_music = Document.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_22)) {
+                note = TL_textWithEntities.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_25)) {
+                bot_manager_id = stream.readInt64(exception);
+            }
+            if (hasFlag(flags2, FLAG_19)) {
+                wallet_card = TL_wallet.card.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, blocked);
+            flags = setFlag(flags, FLAG_4, phone_calls_available);
+            flags = setFlag(flags, FLAG_5, phone_calls_private);
+            flags = setFlag(flags, FLAG_7, can_pin_message);
+            flags = setFlag(flags, FLAG_12, has_scheduled);
+            flags = setFlag(flags, FLAG_13, video_calls_available);
+            flags = setFlag(flags, FLAG_15, theme != null);
+            flags = setFlag(flags, FLAG_20, voice_messages_forbidden);
+            flags = setFlag(flags, FLAG_23, translations_disabled);
+            flags = setFlag(flags, FLAG_26, stories_pinned_available);
+            flags = setFlag(flags, FLAG_27, blocked_my_stories_from);
+            flags = setFlag(flags, FLAG_28, wallpaper_overridden);
+            flags = setFlag(flags, FLAG_29, contact_require_premium);
+            flags = setFlag(flags, FLAG_30, read_dates_private);
+            stream.writeInt32(flags);
+            flags2 = setFlag(flags2, FLAG_7, sponsored_enabled);
+            flags2 = setFlag(flags2, FLAG_9, can_view_revenue);
+            flags2 = setFlag(flags2, FLAG_10, bot_can_manage_emoji_status);
+            flags2 = setFlag(flags2, FLAG_16, display_gifts_button);
+            flags2 = setFlag(flags2, FLAG_17, stars_rating != null);
+            flags2 = setFlag(flags2, FLAG_18, stars_my_pending_rating != null);
+            flags2 = setFlag(flags2, FLAG_19, wallet_card != null);
+            flags2 = setFlag(flags2, FLAG_20,  main_tab != null);
+            flags2 = setFlag(flags2, FLAG_23, noforwards_my_enabled);
+            flags2 = setFlag(flags2, FLAG_24, noforwards_peer_enabled);
+            flags2 = setFlag(flags2, FLAG_26, unofficial_security_risk);
+            stream.writeInt32(flags2);
+            stream.writeInt64(id);
+            if (hasFlag(flags, FLAG_1)) {
+                stream.writeString(about);
+            }
+            settings.serializeToStream(stream);
+            if (hasFlag(flags, FLAG_21)) {
+                personal_photo.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                profile_photo.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_22)) {
+                fallback_photo.serializeToStream(stream);
+            }
+            notify_settings.serializeToStream(stream);
+            if (hasFlag(flags, FLAG_3)) {
+                bot_info.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_6)) {
+                stream.writeInt32(pinned_msg_id);
+            }
+            stream.writeInt32(common_chats_count);
+            if (hasFlag(flags, FLAG_11)) {
+                stream.writeInt32(folder_id);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                stream.writeInt32(ttl_period);
+            }
+            if (hasFlag(flags, FLAG_15)) {
+                theme.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_16)) {
+                stream.writeString(private_forward_name);
+            }
+            if (hasFlag(flags, FLAG_17)) {
+                bot_group_admin_rights.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_18)) {
+                bot_broadcast_admin_rights.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_24)) {
+                wallpaper.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_25)) {
+                stories.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_0)) {
+                business_work_hours.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_1)) {
+                business_location.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_2)) {
+                business_greeting_message.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_3)) {
+                business_away_message.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_4)) {
+                business_intro.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_5)) {
+                birthday.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_6)) {
+                stream.writeInt64(personal_channel_id);
+                stream.writeInt32(personal_channel_message);
+            }
+            if (hasFlag(flags2, FLAG_8)) {
+                stream.writeInt32(stargifts_count);
+            }
+            if (hasFlag(flags2, FLAG_11)) {
+                starref_program.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_12)) {
+                bot_verification.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_14)) {
+                stream.writeInt64(send_paid_messages_stars);
+            }
+            if (hasFlag(flags2, FLAG_15)) {
+                disallowed_stargifts.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_17)) {
+                stars_rating.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_18)) {
+                stars_my_pending_rating.serializeToStream(stream);
+                stream.writeInt32(stars_my_pending_rating_date);
+            }
+            if (hasFlag(flags2, FLAG_20)) {
+                main_tab.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_21)) {
+                saved_music.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_22)) {
+                note.serializeToStream(stream);
+            }
+            if (hasFlag(flags2, FLAG_25)) {
+                stream.writeInt64(bot_manager_id);
+            }
+            if (hasFlag(flags2, FLAG_19)) {
+                wallet_card.serializeToStream(stream);
+            }
+        }
+    }
+
+    public static class TL_userFull_layer231 extends UserFull {
+        public static final int constructor = 0x6cbe645;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            blocked = hasFlag(flags, FLAG_0);
+            phone_calls_available = hasFlag(flags, FLAG_4);
+            phone_calls_private = hasFlag(flags, FLAG_5);
+            can_pin_message = hasFlag(flags, FLAG_7);
+            has_scheduled = hasFlag(flags, FLAG_12);
+            video_calls_available = hasFlag(flags, FLAG_13);
+            voice_messages_forbidden = hasFlag(flags, FLAG_20);
+            translations_disabled = hasFlag(flags, FLAG_23);
+            stories_pinned_available = hasFlag(flags, FLAG_26);
+            blocked_my_stories_from = hasFlag(flags, FLAG_27);
+            wallpaper_overridden = hasFlag(flags, FLAG_28);
+            contact_require_premium = hasFlag(flags, FLAG_29);
+            read_dates_private = hasFlag(flags, FLAG_30);
+            flags2 = stream.readInt32(exception);
+            sponsored_enabled = hasFlag(flags2, FLAG_7);
+            can_view_revenue = hasFlag(flags2, FLAG_9);
+            bot_can_manage_emoji_status = hasFlag(flags2, FLAG_10);
+            display_gifts_button = hasFlag(flags2, FLAG_16);
+            noforwards_my_enabled = hasFlag(flags2, FLAG_23);
+            noforwards_peer_enabled = hasFlag(flags2, FLAG_24);
+            unofficial_security_risk = hasFlag(flags2, FLAG_26);
+            id = stream.readInt64(exception);
+            if (hasFlag(flags, FLAG_1)) {
+                about = stream.readString(exception);
+            }
+            settings = PeerSettings.TLdeserialize(stream, stream.readInt32(exception), exception);
+            if (hasFlag(flags, FLAG_21)) {
+                personal_photo = Photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                profile_photo = Photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_22)) {
+                fallback_photo = Photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            notify_settings = PeerNotifySettings.TLdeserialize(stream, stream.readInt32(exception), exception);
+            if (hasFlag(flags, FLAG_3)) {
+                bot_info = TL_bots.BotInfo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_6)) {
+                pinned_msg_id = stream.readInt32(exception);
+            }
+            common_chats_count = stream.readInt32(exception);
+            if (hasFlag(flags, FLAG_11)) {
+                folder_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_14)) {
+                ttl_period = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_15)) {
+                theme = ChatTheme.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_16)) {
+                private_forward_name = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_17)) {
+                bot_group_admin_rights = TL_chatAdminRights.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_18)) {
+                bot_broadcast_admin_rights = TL_chatAdminRights.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_24)) {
+                wallpaper = WallPaper.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_25)) {
+                stories = TL_stories.PeerStories.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_0)) {
+                business_work_hours = TL_account.TL_businessWorkHours.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_1)) {
+                business_location = TL_businessLocation.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_2)) {
+                business_greeting_message = TL_account.TL_businessGreetingMessage.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_3)) {
+                business_away_message = TL_account.TL_businessAwayMessage.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_4)) {
+                business_intro = TL_account.TL_businessIntro.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_5)) {
+                birthday = TL_account.TL_birthday.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_6)) {
+                personal_channel_id = stream.readInt64(exception);
+                personal_channel_message = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_8)) {
+                stargifts_count = stream.readInt32(exception);
+            }
+            if (hasFlag(flags2, FLAG_11)) {
+                starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags2, FLAG_12)) {
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_14)) {
                 send_paid_messages_stars = stream.readInt64(exception);
@@ -44732,7 +46022,7 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_14)) {
                 send_paid_messages_stars = stream.readInt64(exception);
@@ -44985,7 +46275,7 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_14)) {
                 send_paid_messages_stars = stream.readInt64(exception);
@@ -45230,7 +46520,7 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_14)) {
                 send_paid_messages_stars = stream.readInt64(exception);
@@ -45476,7 +46766,7 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_14)) {
                 send_paid_messages_stars = stream.readInt64(exception);
@@ -45709,7 +46999,7 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_14)) {
                 send_paid_messages_stars = stream.readInt64(exception);
@@ -45933,7 +47223,7 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_14)) {
                 send_paid_messages_stars = stream.readInt64(exception);
@@ -46149,7 +47439,7 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_14)) {
                 send_paid_messages_stars = stream.readInt64(exception);
@@ -46361,7 +47651,7 @@ public class TLRPC {
                 starref_program = TL_payments.starRefProgram.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
             if (hasFlag(flags2, FLAG_12)) {
-                bot_verification = TL_bots.botVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
+                bot_verification = TL_bots.BotVerification.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
         }
 
@@ -48362,31 +49652,28 @@ public class TLRPC {
         public int ttl_period;
 
         public static Updates TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
-            Updates result = null;
+            return TLdeserialize(Updates.class, fromConstructor(constructor), stream, constructor, exception);
+        }
+
+        private static Updates fromConstructor(int constructor) {
             switch (constructor) {
-                case 0x74ae4240:
-                    result = new TL_updates();
-                    break;
-                case 0x313bc7f8:
-                    result = new TL_updateShortMessage();
-                    break;
-                case 0x9015e101:
-                    result = new TL_updateShortSentMessage();
-                    break;
-                case 0x78d4dec1:
-                    result = new TL_updateShort();
-                    break;
-                case 0x4d6deea5:
-                    result = new TL_updateShortChatMessage();
-                    break;
-                case 0x725b04c3:
-                    result = new TL_updatesCombined();
-                    break;
-                case 0xe317af7e:
-                    result = new TL_updatesTooLong();
-                    break;
+                case TL_updates.constructor:
+                    return new TL_updates();
+                case TL_updateShortMessage.constructor:
+                    return new TL_updateShortMessage();
+                case TL_updateShortSentMessage.constructor:
+                    return new TL_updateShortSentMessage();
+                case TL_updateShort.constructor:
+                    return new TL_updateShort();
+                case TL_updateShortChatMessage.constructor:
+                    return new TL_updateShortChatMessage();
+                case TL_updatesCombined.constructor:
+                    return new TL_updatesCombined();
+                case TL_updatesTooLong.constructor:
+                    return new TL_updatesTooLong();
+                default:
+                    return null;
             }
-            return TLdeserialize(Updates.class, result, stream, constructor, exception);
         }
     }
 
@@ -54133,7 +55420,7 @@ public class TLRPC {
     }
 
     public static class TL_messages_acceptUrlAuth extends TLMethod<UrlAuthResult> {
-        public static final int constructor = 0x67a3f0de;
+        public static final int constructor = 0x18dd4e92;
 
         public int flags;
         public boolean write_allowed;
@@ -54143,6 +55430,7 @@ public class TLRPC {
         public int button_id;
         public String url;
         public String match_code;
+        public TL_wallet.inputTonConnectOauthSession tonconnect_session;
 
         @Override
         public UrlAuthResult deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
@@ -54154,6 +55442,7 @@ public class TLRPC {
             flags = setFlag(flags, FLAG_0, write_allowed);
             flags = setFlag(flags, FLAG_3, share_phone_number);
             flags = setFlag(flags, FLAG_4, match_code != null);
+            flags = setFlag(flags, FLAG_5, tonconnect_session != null);
             stream.writeInt32(flags);
             if (hasFlag(flags, FLAG_1)) {
                 peer.serializeToStream(stream);
@@ -54165,6 +55454,9 @@ public class TLRPC {
             }
             if (hasFlag(flags, FLAG_4)) {
                 stream.writeString(match_code);
+            }
+            if (hasFlag(flags, FLAG_5)) {
+                tonconnect_session.serializeToStream(stream);
             }
         }
     }
@@ -55933,7 +57225,7 @@ public class TLRPC {
     }
 
     public static class TL_channels_joinChannel extends TLMethod<ChatInviteJoinResult> {
-        public static final int constructor = 0x24b524c5;
+        public static final int constructor = 0x7f6a1e22;
 
         public InputChannel channel;
 
@@ -59209,6 +60501,7 @@ public class TLRPC {
             if (hasFlag(flags, FLAG_17)) {
                 grouped_id = stream.readInt64(exception);
             }
+            TlUtils.validateEntities(entities, message);
         }
 
         public void serializeToStream(OutputSerializedData stream) {
@@ -59267,6 +60560,7 @@ public class TLRPC {
                 reply_to = new TL_messageReplyHeader();
                 reply_to.reply_to_random_id = stream.readInt64(exception);
             }
+            TlUtils.validateEntities(entities, message);
         }
 
         public void serializeToStream(OutputSerializedData stream) {
@@ -59314,6 +60608,7 @@ public class TLRPC {
             if (media != null && !TextUtils.isEmpty(media.captionLegacy)) {
                 message = media.captionLegacy;
             }
+            TlUtils.validateEntities(entities, message);
         }
 
         public void serializeToStream(OutputSerializedData stream) {
@@ -62621,6 +63916,8 @@ public class TLRPC {
         public int flags;
         public boolean editable;
         public boolean active;
+        public boolean deletable;
+        public boolean expired;
         public String username;
 
         public static TL_username TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
@@ -62632,6 +63929,8 @@ public class TLRPC {
             flags = stream.readInt32(exception);
             editable = hasFlag(flags, FLAG_0);
             active = hasFlag(flags, FLAG_1);
+            deletable = hasFlag(flags, FLAG_2);
+            expired = hasFlag(flags, FLAG_3);
             username = stream.readString(exception);
         }
 
@@ -62639,6 +63938,8 @@ public class TLRPC {
             stream.writeInt32(constructor);
             flags = setFlag(flags, FLAG_0, editable);
             flags = setFlag(flags, FLAG_1, active);
+            flags = setFlag(flags, FLAG_2, deletable);
+            flags = setFlag(flags, FLAG_3, expired);
             stream.writeInt32(flags);
             stream.writeString(username);
         }
@@ -63085,6 +64386,43 @@ public class TLRPC {
         }
     }
 
+    public static class TL_messageActionGramTransfer extends MessageAction {
+        public static final int constructor = 0x9329ea33;
+
+        public boolean comment_encrypted_preparing; // custom
+        public boolean comment_encrypted;
+        public String peer_address;
+        public String transaction_id;
+        public String comment;
+
+        @Override
+        public void readParams(InputSerializedData stream, boolean exception) {
+            int flags = stream.readInt32(exception);
+            comment_encrypted = hasFlag(flags, FLAG_1);
+            amount = stream.readInt64(exception);
+            peer_address = stream.readString(exception);
+            transaction_id = stream.readString(exception);
+            if (hasFlag(flags, FLAG_0)) {
+                comment = stream.readString(exception);
+            }
+        }
+
+        @Override
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            int flags = 0;
+            flags = setFlag(flags, FLAG_0, comment != null);
+            flags = setFlag(flags, FLAG_1, comment_encrypted);
+            stream.writeInt32(flags);
+            stream.writeInt64(amount);
+            stream.writeString(peer_address);
+            stream.writeString(transaction_id);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeString(comment);
+            }
+        }
+    }
+
     public static class TL_photos_uploadContactProfilePhoto extends TLObject {
         public static final int constructor = 0xe14c4a71;
 
@@ -63322,6 +64660,7 @@ public class TLRPC {
         public int story_id;
         public int todo_item_id;
         public byte[] poll_option;
+        public ArrayList<TL_iv.RichText> quote_rich;
 
         public static InputReplyTo TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
             return TLdeserialize(InputReplyTo.class, fromConstructor(constructor), stream, constructor, exception);
@@ -63333,6 +64672,8 @@ public class TLRPC {
                     return new TL_inputReplyToMonoForum();
                 case TL_inputReplyToMessage.constructor:
                     return new TL_inputReplyToMessage();
+                case TL_inputReplyToMessage_layer231.constructor:
+                    return new TL_inputReplyToMessage_layer231();
                 case TL_inputReplyToMessage_layer223.constructor:
                     return new TL_inputReplyToMessage_layer223();
                 case TL_inputReplyToMessage_layer207.constructor:
@@ -63369,6 +64710,80 @@ public class TLRPC {
     }
 
     public static class TL_inputReplyToMessage extends InputReplyTo {
+        public static final int constructor = 0x75c1ad70;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            reply_to_msg_id = stream.readInt32(exception);
+            if (hasFlag(flags, FLAG_0)) {
+                top_msg_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                reply_to_peer_id = InputPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                quote_text = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_3)) {
+                quote_entities = Vector.deserialize(stream, MessageEntity::TLdeserialize, exception);
+            }
+            if (hasFlag(flags, FLAG_4)) {
+                quote_offset = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_5)) {
+                monoforum_peer_id = InputPeer.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+            if (hasFlag(flags, FLAG_6)) {
+                todo_item_id = stream.readInt32(exception);
+            }
+            if (hasFlag(flags, FLAG_7)) {
+                poll_option = stream.readByteArray(exception);
+            }
+            if (hasFlag(flags, FLAG_8)) {
+                quote_rich = Vector.deserialize(stream, TL_iv.RichText::TLdeserialize, exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+
+            flags = setFlag(flags, FLAG_5, monoforum_peer_id != null);
+            flags = setFlag(flags, FLAG_7, poll_option != null);
+            flags = setFlag(flags, FLAG_8, quote_rich != null);
+
+            stream.writeInt32(flags);
+            stream.writeInt32(reply_to_msg_id);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeInt32(top_msg_id);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                reply_to_peer_id.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_2)) {
+                stream.writeString(quote_text);
+            }
+            if (hasFlag(flags, FLAG_3)) {
+                Vector.serialize(stream, quote_entities);
+            }
+            if (hasFlag(flags, FLAG_4)) {
+                stream.writeInt32(quote_offset);
+            }
+            if (hasFlag(flags, FLAG_5)) {
+                monoforum_peer_id.serializeToStream(stream);
+            }
+            if (hasFlag(flags, FLAG_6)) {
+                stream.writeInt32(todo_item_id);
+            }
+            if (hasFlag(flags, FLAG_7)) {
+                stream.writeByteArray(poll_option);
+            }
+            if (hasFlag(flags, FLAG_8)) {
+                Vector.serialize(stream, quote_rich);
+            }
+        }
+    }
+
+    public static class TL_inputReplyToMessage_layer231 extends TL_inputReplyToMessage {
         public static final int constructor = 0x3BD4B7C2;
 
         public void readParams(InputSerializedData stream, boolean exception) {
@@ -66180,6 +67595,17 @@ public class TLRPC {
             if (hasFlag(flags, FLAG_0)) {
                 stream.writeInt64(community_id);
             }
+        }
+    }
+
+    public static class TL_messageActionNoPaidMessagesTokenUsed extends MessageAction {
+        public static final int constructor = 0xC1D2F1C6;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
         }
     }
 
@@ -69799,6 +71225,340 @@ public class TLRPC {
             stream.writeInt64(bot_id);
             stream.writeInt64(query_id);
             Vector.serialize(stream, users);
+        }
+    }
+
+    public static class TL_exportedNoPaidMessagesToken extends TLObject {
+        public static final int constructor = 0x695DD042;
+
+        public int flags;
+        public String token;
+        public String url;
+        public int expires; // only for temporary codes
+
+        public static TL_exportedNoPaidMessagesToken TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+            return TLdeserialize(TL_exportedNoPaidMessagesToken.class, fromConstructor(constructor), stream, constructor, exception);
+        }
+
+        private static TL_exportedNoPaidMessagesToken fromConstructor(int constructor) {
+            switch (constructor) {
+                case TL_exportedNoPaidMessagesToken.constructor: return new TL_exportedNoPaidMessagesToken();
+                case TL_exportedNoPaidMessagesToken_layer232.constructor: return new TL_exportedNoPaidMessagesToken_layer232();
+                case TL_exportedNoPaidMessagesToken_legacy.constructor: return new TL_exportedNoPaidMessagesToken_legacy();
+                default: return null;
+            }
+        }
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            token = stream.readString(exception);
+            url = stream.readString(exception);
+            if (hasFlag(flags, FLAG_0)) {
+                expires = stream.readInt32(exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(flags);
+            stream.writeString(token);
+            stream.writeString(url);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeInt32(expires);
+            }
+        }
+    }
+
+    /** The first constructor with temporary codes: the url optional, the expiry at flags.1. */
+    public static class TL_exportedNoPaidMessagesToken_layer232 extends TL_exportedNoPaidMessagesToken {
+        public static final int constructor = 0xCF5105BE;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            token = stream.readString(exception);
+            if (hasFlag(flags, FLAG_0)) {
+                url = stream.readString(exception);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                expires = stream.readInt32(exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, url != null);
+            stream.writeInt32(flags);
+            stream.writeString(token);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeString(url);
+            }
+            if (hasFlag(flags, FLAG_1)) {
+                stream.writeInt32(expires);
+            }
+        }
+    }
+
+    /** Before temporary codes, still sent by servers that answer with the old constructor. */
+    public static class TL_exportedNoPaidMessagesToken_legacy extends TL_exportedNoPaidMessagesToken {
+        public static final int constructor = 0x9E8178A2;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            token = stream.readString(exception);
+            if (hasFlag(flags, FLAG_0)) {
+                url = stream.readString(exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, url != null);
+            stream.writeInt32(flags);
+            stream.writeString(token);
+            if (hasFlag(flags, FLAG_0)) {
+                stream.writeString(url);
+            }
+        }
+    }
+
+    public static class TL_contacts_exportNoPaidMessagesToken extends TLMethod<TL_exportedNoPaidMessagesToken> {
+        public static final int constructor = 0x83C586AE;
+
+        public int flags;
+        public boolean revoke;
+        public boolean temporary;
+
+        public TL_exportedNoPaidMessagesToken deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return TL_exportedNoPaidMessagesToken.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = setFlag(flags, FLAG_0, revoke);
+            flags = setFlag(flags, FLAG_1, temporary);
+            stream.writeInt32(flags);
+        }
+    }
+
+    public static class TL_contacts_importNoPaidMessagesToken extends TLMethod<User> {
+        public static final int constructor = 0x35A7C6CA;
+
+        public InputUser user_id;
+        public String token;
+
+        public User deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return User.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            user_id.serializeToStream(stream);
+            stream.writeString(token);
+        }
+    }
+
+    public static abstract class ShareTheme extends TLObject {
+        public static ShareTheme TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+            return TLdeserialize(ShareTheme.class, fromConstructor(constructor), stream, constructor, exception);
+        }
+
+        private static ShareTheme fromConstructor(int constructor) {
+            switch (constructor) {
+                case TL_shareThemeDefault.constructor: return new TL_shareThemeDefault();
+                case TL_shareThemeEmojiBackdrop.constructor: return new TL_shareThemeEmojiBackdrop();
+                case TL_shareThemeGift.constructor: return new TL_shareThemeGift();
+                case TL_inputShareThemeGift.constructor: return new TL_inputShareThemeGift();
+                default: return null;
+            }
+        }
+    }
+
+    public static class TL_shareThemeDefault extends ShareTheme {
+        public static final int constructor = 0x95ACE84F;
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+        }
+    }
+
+    public static class TL_shareThemeEmojiBackdrop extends ShareTheme {
+        public static final int constructor = 0x64B334E1;
+
+        public int flags;
+        public int backdrop_id;
+        public ArrayList<Reaction> emojis = new ArrayList<>();
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            if ((flags & 1) != 0) {
+                backdrop_id = stream.readInt32(exception);
+            }
+            if ((flags & 2) != 0) {
+                emojis = Vector.deserialize(stream, Reaction::TLdeserialize, exception);
+            }
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(flags);
+            if ((flags & 1) != 0) {
+                stream.writeInt32(backdrop_id);
+            }
+            if ((flags & 2) != 0) {
+                Vector.serialize(stream, emojis);
+            }
+        }
+    }
+
+    public static class TL_shareThemeGift extends ShareTheme {
+        public static final int constructor = 0xEBECE66D;
+
+        public TL_stars.StarGift stargift;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            stargift = TL_stars.StarGift.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stargift.serializeToStream(stream);
+        }
+    }
+
+    public static class TL_inputShareThemeGift extends ShareTheme {
+        public static final int constructor = 0x3FB92B5B;
+
+        public TL_stars.InputSavedStarGift stargift;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            stargift = TL_stars.InputSavedStarGift.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stargift.serializeToStream(stream);
+        }
+    }
+
+    public static class TL_shareThemeBackdropOption extends TLObject {
+        public static final int constructor = 0x45C1D652;
+
+        public int backdrop_id;
+        public String name;
+        public int center_color;
+        public int edge_color;
+        public int pattern_color;
+        public int text_color;
+
+        public static TL_shareThemeBackdropOption TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+            final TL_shareThemeBackdropOption result = constructor != TL_shareThemeBackdropOption.constructor ? null : new TL_shareThemeBackdropOption();
+            return TLdeserialize(TL_shareThemeBackdropOption.class, result, stream, constructor, exception);
+        }
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            backdrop_id = stream.readInt32(exception);
+            name = stream.readString(exception);
+            center_color = stream.readInt32(exception);
+            edge_color = stream.readInt32(exception);
+            pattern_color = stream.readInt32(exception);
+            text_color = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(backdrop_id);
+            stream.writeString(name);
+            stream.writeInt32(center_color);
+            stream.writeInt32(edge_color);
+            stream.writeInt32(pattern_color);
+            stream.writeInt32(text_color);
+        }
+    }
+
+    public static abstract class ShareThemeBackdrops extends TLObject {
+        public static ShareThemeBackdrops TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+            return TLdeserialize(ShareThemeBackdrops.class, fromConstructor(constructor), stream, constructor, exception);
+        }
+
+        private static ShareThemeBackdrops fromConstructor(int constructor) {
+            switch (constructor) {
+                case TL_shareThemeBackdropsNotModified.constructor: return new TL_shareThemeBackdropsNotModified();
+                case TL_shareThemeBackdrops.constructor: return new TL_shareThemeBackdrops();
+                default: return null;
+            }
+        }
+    }
+
+    public static class TL_shareThemeBackdropsNotModified extends ShareThemeBackdrops {
+        public static final int constructor = 0x7A3F6DFF;
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+        }
+    }
+
+    public static class TL_shareThemeBackdrops extends ShareThemeBackdrops {
+        public static final int constructor = 0xAAEADCE0;
+
+        public int hash;
+        public ArrayList<TL_shareThemeBackdropOption> backdrops = new ArrayList<>();
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            hash = stream.readInt32(exception);
+            backdrops = Vector.deserialize(stream, TL_shareThemeBackdropOption::TLdeserialize, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(hash);
+            Vector.serialize(stream, backdrops);
+        }
+    }
+
+    public static class TL_messages_getShareTheme extends TLMethod<ShareTheme> {
+        public static final int constructor = 0x761B1C73;
+
+        public InputPeer peer;
+
+        public ShareTheme deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return ShareTheme.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            peer.serializeToStream(stream);
+        }
+    }
+
+    public static class TL_messages_setShareTheme extends TLMethod<Bool> {
+        public static final int constructor = 0x698A9B1A;
+
+        public InputPeer peer;
+        public ShareTheme theme;
+
+        public Bool deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            peer.serializeToStream(stream);
+            theme.serializeToStream(stream);
+        }
+    }
+
+    public static class TL_messages_getShareThemeBackdrops extends TLMethod<ShareThemeBackdrops> {
+        public static final int constructor = 0xF4599EF2;
+
+        public int hash;
+
+        public ShareThemeBackdrops deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
+            return ShareThemeBackdrops.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(hash);
         }
     }
 

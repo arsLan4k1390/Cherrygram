@@ -11,6 +11,8 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
+
 import android.content.Intent;
 import android.os.Build;
 import android.view.View;
@@ -38,7 +40,7 @@ import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
 
-    private final int springAnimationRow = 1;
+    private final int animationsRow = 1;
     private final int actionbarCrossfadeRow = 2;
     private final int predictiveBackRow = 3;
 
@@ -84,10 +86,10 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.LiteMode)));
-        items.add(UItem.asButton(springAnimationRow, getString(R.string.EP_NavigationAnimation), getSpringValue())
+        items.add(UItem.asButton(animationsRow, applyNewSpan(getString(R.string.EP_NavigationAnimation)), getAnimationValue())
                 .slug("navigation")
         );
-        if (CherrygramCoreConfig.INSTANCE.getSpringAnimation() == CherrygramCoreConfig.ANIMATION_SPRING) {
+        if (CherrygramCoreConfig.INSTANCE.getNavigationAnimation() == CherrygramCoreConfig.ANIMATION_SPRING) {
             items.add(SettingsHelper.asSwitchCG(actionbarCrossfadeRow, getString(R.string.EP_NavigationAnimationCrossfading))
                     .setChecked(CherrygramCoreConfig.INSTANCE.getActionbarCrossfade())
                     .slug("actionbarCrossfade")
@@ -121,7 +123,7 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(
                 SettingsHelper.asSwitchCG(
                         ignoreMentionsRow,
-                        SettingsHelper.applyNewSpan(getString(R.string.CG_IgnoreMentions)),
+                        getString(R.string.CG_IgnoreMentions),
                         getString(R.string.CG_IgnoreMentionsDesc)
                 )
                 .setChecked(CherrygramCoreConfig.INSTANCE.getIgnoreMentions())
@@ -214,19 +216,22 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
 
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == springAnimationRow) {
-            ArrayList<String> configStringKeys = new ArrayList<>();
+        if (item.id == animationsRow) {
+            ArrayList<CharSequence> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();
+
+            configStringKeys.add(getString(R.string.AppName));
+            configValues.add(CherrygramCoreConfig.ANIMATION_CLASSIC);
 
             configStringKeys.add(getString(R.string.EP_NavigationAnimationSpring));
             configValues.add(CherrygramCoreConfig.ANIMATION_SPRING);
 
-            configStringKeys.add(getString(R.string.EP_NavigationAnimationBezier));
-            configValues.add(CherrygramCoreConfig.ANIMATION_CLASSIC);
+            configStringKeys.add(applyNewSpan(getString(R.string.EP_NavigationAnimationPE)));
+            configValues.add(CherrygramCoreConfig.ANIMATION_PIXEL);
 
-            PopupHelper.show(configStringKeys, getString(R.string.EP_NavigationAnimation), configValues.indexOf(CherrygramCoreConfig.INSTANCE.getSpringAnimation()), getContext(), i -> {
-                CherrygramCoreConfig.INSTANCE.setSpringAnimation(configValues.get(i));
-                SettingsHelper.updateButtonValue(view, getSpringValue());
+            PopupHelper.show(configStringKeys, getString(R.string.EP_NavigationAnimation), configValues.indexOf(CherrygramCoreConfig.INSTANCE.getNavigationAnimation()), getContext(), i -> {
+                CherrygramCoreConfig.INSTANCE.setNavigationAnimation(configValues.get(i));
+                SettingsHelper.updateButtonValue(view, getAnimationValue());
 
                 updateRows(true);
 
@@ -355,10 +360,11 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
         super.scrollToRow(slug, unknown);
     }
 
-    private String getSpringValue()  {
-        return switch (CherrygramCoreConfig.INSTANCE.getSpringAnimation()) {
-            case CherrygramCoreConfig.ANIMATION_CLASSIC -> getString(R.string.EP_NavigationAnimationBezier);
-            default -> getString(R.string.EP_NavigationAnimationSpring);
+    private String getAnimationValue()  {
+        return switch (CherrygramCoreConfig.INSTANCE.getNavigationAnimation()) {
+            case CherrygramCoreConfig.ANIMATION_SPRING -> getString(R.string.EP_NavigationAnimationSpring);
+            case CherrygramCoreConfig.ANIMATION_PIXEL -> getString(R.string.EP_NavigationAnimationPE);
+            default -> getString(R.string.AppName);
         };
     }
 

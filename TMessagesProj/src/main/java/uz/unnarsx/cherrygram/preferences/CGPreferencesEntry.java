@@ -42,7 +42,7 @@ import uz.unnarsx.cherrygram.core.firebase.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
-import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
+import uz.unnarsx.cherrygram.core.configs.backup.BackupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.TelegramSettingsHelper;
 
 public class CGPreferencesEntry extends BaseCGPreferencesEntry {
@@ -228,18 +228,19 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
     private void showItemOptions(View button) {
         ItemOptions o = ItemOptions.makeOptions(this, button);
 
-        o.add(R.drawable.msg_instant_link_solar, getString(R.string.CG_ExportSettings), () -> BackupHelper.INSTANCE.backupSettings(this));
+        o.add(R.drawable.msg_shareout_solar, getString(R.string.CG_ExportSettings), () -> BackupHelper.INSTANCE.backupSettings(this));
         o.add(R.drawable.msg_photo_settings_solar, getString(R.string.CG_ImportSettings), () -> BackupHelper.INSTANCE.importSettings(this));
         o.addGap();
+        o.add(R.drawable.msg_reset_solar, getString(R.string.CG_ResetSettings), true, () -> BackupHelper.INSTANCE.resetSettings(this));
+        o.addSpaceGap();
+
         o.add(R.drawable.bug_solar, getString(R.string.CG_CopyReportDetails), () -> {
             AndroidUtilities.addToClipboard(Crashlytics.getReportMessage() + "\n\n#bug");
             BulletinFactory.of(this).createErrorBulletin(getString(R.string.CG_ReportDetailsCopied))
                     .setDuration(Bulletin.DURATION_SHORT)
                     .show();
         });
-
-        o.addSpaceGap();
-
+        o.addGap();
         o.add(R.drawable.msg_retry_solar, getString(R.string.CG_Restart), () -> AppRestartHelper.restartApp(getContext()));
 
         o.setBlur(false);

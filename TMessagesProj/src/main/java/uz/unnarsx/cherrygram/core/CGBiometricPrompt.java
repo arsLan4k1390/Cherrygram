@@ -28,6 +28,8 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.support.fingerprint.FingerprintManagerCompat;
 
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
@@ -48,9 +50,9 @@ public class CGBiometricPrompt {
     }
 
     private static BiometricPrompt.AuthenticationCallback createCallback(
-            java.util.function.Consumer<BiometricPrompt.AuthenticationResult> onSuccess,
+            Consumer<BiometricPrompt.AuthenticationResult> onSuccess,
             Runnable onFailed,
-            java.util.function.BiConsumer<Integer, CharSequence> onError
+            BiConsumer<Integer, CharSequence> onError
     ) {
         return new BiometricPrompt.AuthenticationCallback() {
             @Override

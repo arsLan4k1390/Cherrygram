@@ -204,14 +204,6 @@
     <string name="CP_MessageMenuItems">メッセージメニュー項目</string>
     <string name="CP_BlurMessageMenu">iOSスタイルのメッセージメニュー</string>
     <string name="CP_BlurMessageMenu_Desc">iOSのTelegramと同様に、メッセージ メニューにぼかしの背景を適用してメッセージの上にリアクションパネルを表示します。</string>
-    <string name="CP_MessageMenuUnifiedScroll">スクロールを統合</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
-    <string name="CP_MessageMenuAutoscroll">メッセージの自動スクロール</string>
-    <string name="CP_MessageMenuAutoscroll_Desc">Automatically scrolls the message menu content to the bottom on opening, similar to Telegram on iOS.</string>
-    <string name="CP_MessageMenuFixedHeight">Comfortable message menu height</string>
-    <string name="CP_MessageMenuFixedHeight_Desc">The message menu will occupy half of the screen area for easier interaction.</string>
-    <string name="CP_BlurMessageMenuItems">ぼかしメニュー項目</string>
-    <string name="CP_BlurMessageMenuItems_Desc">Blurs the menu items for a more authentic iOS look.</string>
     <string name="CP_MessageMenuNativeBlur">ネイティブなぼかし</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Android\'s built-in blur system will be used for the message menu background: smooth, live, and with minimal impact on performance..</string>
     <string name="CP_UnreadBadgeOnBackButton">チャットの未読カウンターを表示</string>
@@ -323,7 +315,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">試験的</string>
     <string name="EP_NavigationAnimation">ナビゲーションのアニメーション</string>
-    <string name="EP_NavigationAnimationBezier">クラシック</string>
     <string name="EP_NavigationAnimationCrossfading">クロスフェード効果</string>
     <string name="EP_CustomChat">保存されたメッセージのチャット</string>
     <string name="EP_CustomChat_Desc">他のチャット、グループ、チャンネルでIDを設定してメッセージを転送します (アクションバーのボタン、メッセージメニューまたはダブルタップ)。</string>

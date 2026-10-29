@@ -83,6 +83,7 @@ import org.telegram.ui.Components.spoilers.SpoilerEffect;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PopupNotificationActivity;
 import org.telegram.ui.Stories.recorder.StoryEntry;
+import org.telegram.ui.Wallet.GramWallet;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -378,11 +379,64 @@ public class NotificationsController extends BaseController implements Notificat
         }
     }
 
+    // Wallet requests are local notifications, never synthetic chat messages or stored FCM messages.
+    public void showTonConnectNotification(String dapp, long time) {
+        notificationsQueue.postRunnable(() -> {
+            if (!getUserConfig().isClientActivated()
+                    || !SharedConfig.showNotificationsForAllAccounts && currentAccount != UserConfig.selectedAccount) {
+                return;
+            }
+            try {
+                String channelId = "wallet_tonconnect_" + currentAccount;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    systemNotificationManager.createNotificationChannel(new NotificationChannel(
+                            channelId, "TON Connect", NotificationManager.IMPORTANCE_DEFAULT));
+                }
+                boolean hidePreview = AndroidUtilities.needShowPasscode() || SharedConfig.isWaitingForPasscodeEnter
+                        || !getAccountInstance().getNotificationsSettings().getBoolean("EnablePreviewAll", true);
+                String message = TextUtils.isEmpty(dapp) || hidePreview
+                        ? LocaleController.getString(R.string.NotificationWalletTonConnectRequest)
+                        : LocaleController.formatString(R.string.NotificationWalletTonConnectRequestDapp, dapp);
+                Intent intent = new Intent(ApplicationLoader.applicationContext, LaunchActivity.class);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("tg://resolve?domain=sendgrams"));
+                intent.putExtra("currentAccount", currentAccount);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent contentIntent = PendingIntent.getActivity(ApplicationLoader.applicationContext,
+                        currentAccount, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(ApplicationLoader.applicationContext, channelId)
+                        .setSmallIcon(R.drawable.notification)
+                        .setContentTitle(LocaleController.getString(R.string.AppName))
+                        .setContentText(message)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                        .setCategory(NotificationCompat.CATEGORY_EVENT)
+                        .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                        .setWhen(time)
+                        .setAutoCancel(true)
+                        .setContentIntent(contentIntent);
+                notificationManager.notify("wallet_tonconnect", currentAccount, builder.build());
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        });
+    }
+
+    private String getGramTransferNotification(MessageObject messageObject, String name) {
+        TLRPC.TL_messageActionGramTransfer action = (TLRPC.TL_messageActionGramTransfer) messageObject.messageOwner.action;
+        boolean unknown = UserObject.isService(messageObject.getDialogId());
+        boolean comment = !action.comment_encrypted && !TextUtils.isEmpty(action.comment);
+        int stringId = unknown
+                ? (comment ? R.string.NotificationGramTransferUnknownComment : R.string.NotificationGramTransferUnknown)
+                : (comment ? R.string.NotificationGramTransferComment : R.string.NotificationGramTransfer);
+        return LocaleController.formatString(stringId, name, GramWallet.formatGramsWithUnit(action.amount), action.comment);
+    }
+
     public void cleanup() {
         popupMessages.clear();
         popupReplyMessages.clear();
         channelGroupsCreated = false;
         notificationsQueue.postRunnable(() -> {
+            notificationManager.cancel("wallet_tonconnect", currentAccount);
             openedDialogId = 0;
             openedTopicId = 0;
             total_unread_count = 0;
@@ -1960,7 +2014,9 @@ public class NotificationsController extends BaseController implements Notificat
 //                }
                 if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                     userName[0] = null;
-                    if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
+                    if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGramTransfer) {
+                        return getGramTransferNotification(messageObject, name);
+                    } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
                         return LocaleController.getString(R.string.WallpaperSameNotification);
                     } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatWallPaper) {
                         return LocaleController.getString(R.string.WallpaperNotification);
@@ -2631,7 +2687,9 @@ public class NotificationsController extends BaseController implements Notificat
 //                        return replaceSpoilers(messageObject);
 //                    }
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
-                        if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionChangeCreator ||
+                        if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGramTransfer) {
+                            msg = getGramTransferNotification(messageObject, name);
+                        } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionChangeCreator ||
                             messageObject.messageOwner.action instanceof TLRPC.TL_messageActionNewCreatorPending) {
                             msg = messageObject.messageText.toString();
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
@@ -5530,8 +5588,8 @@ public class NotificationsController extends BaseController implements Notificat
                                         String finalText = messageObject.caption.toString();
                                         if (ChatsPasswordHelper.getInstance(currentAccount).isChatLocked(lastMessageObject) || ChatsPasswordHelper.getInstance(currentAccount).isEncryptedChat(lastMessageObject)) {
                                             finalText = ChatsPasswordHelper.getInstance(currentAccount).replaceStringToSpoilers(messageObject.caption.toString(), true);
-                                        } else if (lastMessageObject.shouldBlockMessage()) {
-                                            finalText = MessagesFilterHelper.INSTANCE.addSpoilerEntities(messageObject.caption.toString());
+                                        } else if (messageObject.shouldBlockMessage()) {
+                                            finalText = MessagesFilterHelper.INSTANCE.spoilerText(messageObject, finalText);
                                         }
                                         messagingStyle.addMessage(finalText, ((long) messageObject.messageOwner.date) * 1000, person);
                                     }
@@ -6382,7 +6440,7 @@ public class NotificationsController extends BaseController implements Notificat
             Map<String, ?> values = preferences.getAll();
             for (Map.Entry<String, ?> entry : values.entrySet()) {
                 String key = entry.getKey();
-                if (key.startsWith("notify2_" + dialogId)) {
+                if (key != null && key.startsWith("notify2_" + dialogId)) {
                     key = key.replace("notify2_" + dialogId, "");
 
                     int topicId = Utilities.parseInt(key);

@@ -2174,11 +2174,31 @@ public class FilterTabsView extends FrameLayout {
     /** Cherrygram start */
     int tabMode = CherrygramAppearanceConfig.INSTANCE.getTabMode();
 
+    public int getCurrentPosition() {
+        return currentPosition;
+    }
+
+    public void scrollToTabWithStableId(int stableId) {
+        for (int i = 0; i < tabs.size(); i++) {
+            if (positionToStableId.get(i, -1) == stableId) {
+                if (i != currentPosition) {
+                    scrollToTab(tabs.get(i), i);
+                }
+                return;
+            }
+        }
+    }
+
     public void selectDefaultTab() {
-        Tab defaultTab = findDefaultTab();
-        if (defaultTab == null) return;
-        if (defaultTab.id == getCurrentTabId()) return;
-        scrollToTab(defaultTab, defaultTab.id);
+        for (int i = 0; i < tabs.size(); i++) {
+            Tab tab = tabs.get(i);
+            if (tab.isDefault) {
+                if (i != currentPosition) {
+                    scrollToTab(tab, i);
+                }
+                return;
+            }
+        }
     }
 
     public String getSelectedTabTitle() {

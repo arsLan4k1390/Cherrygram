@@ -14,12 +14,14 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.hardware.camera2.CameraCharacteristics;
 import android.os.Build;
+import android.util.Range;
 import android.util.Size;
 
 import androidx.camera.camera2.interop.Camera2CameraInfo;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ZoomState;
+import androidx.camera.core.resolutionselector.ResolutionSelector;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.video.Quality;
 import androidx.camera.video.QualitySelector;
@@ -31,6 +33,7 @@ import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.SharedConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +59,10 @@ public class CameraXUtils {
         return isCameraXSupported() && CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_X;
     }
 
+    public static boolean isCurrentCameraCamera2() {
+        return isCameraXSupported() && CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2;
+    }
+
     public static boolean isCurrentCameraNotCameraX() {
         return !isCurrentCameraCameraX();
     }
@@ -63,6 +70,115 @@ public class CameraXUtils {
     /*public static int getDefaultCamera() { // Used for Config
         return isCameraXSupported() ? CherrygramCameraConfig.CAMERA_X : CherrygramCameraConfig.TELEGRAM_CAMERA;
     }*/
+
+    private static final int ROUND_VIDEO_DEFAULT_QUALITY = 1080;
+    private static final float ASPECT_TOLERANCE = 0.02f;
+
+    public static int getRoundVideoQualityShortSide() {
+        int quality = CherrygramCameraConfig.INSTANCE.getCameraResolution();
+        return quality > 0 ? quality : ROUND_VIDEO_DEFAULT_QUALITY;
+    }
+
+    public static ResolutionSelector createRoundVideoResolutionSelector(int maxShortSide, int minShortSide, int targetShortSide) {
+        return new ResolutionSelector.Builder()
+                .setResolutionFilter((sizes, rotationDegrees) ->
+                        orderRoundVideoSizes(sizes, maxShortSide, minShortSide, targetShortSide))
+                .build();
+    }
+
+    private static List<Size> orderRoundVideoSizes(List<Size> sizes, int maxShortSide, int minShortSide, int targetShortSide) {
+        float aspect = getPreferredAspect();
+        ArrayList<Size> fitting = new ArrayList<>();
+        ArrayList<Size> larger = new ArrayList<>();
+        ArrayList<Size> otherFitting = new ArrayList<>();
+        ArrayList<Size> otherLarger = new ArrayList<>();
+        ArrayList<Size> tooSmall = new ArrayList<>();
+        for (Size size : sizes) {
+            int shortSide = shortSide(size);
+            boolean matches = matchesAspect(size, aspect);
+            if (shortSide < minShortSide) {
+                tooSmall.add(size);
+            } else if (shortSide <= maxShortSide) {
+                (matches ? fitting : otherFitting).add(size);
+            } else {
+                (matches ? larger : otherLarger).add(size);
+            }
+        }
+        Comparator<Size> largestFirst = (left, right) -> {
+            int bySide = Integer.compare(shortSide(right), shortSide(left));
+            return bySide != 0 ? bySide : Long.compare(area(left), area(right));
+        };
+        Comparator<Size> smallestFirst = Comparator.comparingInt(CameraXUtils::shortSide).thenComparingLong(CameraXUtils::area);
+        Comparator<Size> nearestToTarget = (left, right) -> {
+            int leftSide = shortSide(left);
+            int rightSide = shortSide(right);
+            boolean leftEnough = leftSide >= targetShortSide;
+            boolean rightEnough = rightSide >= targetShortSide;
+            if (leftEnough != rightEnough) return leftEnough ? -1 : 1;
+            int bySide = leftEnough ? Integer.compare(leftSide, rightSide) : Integer.compare(rightSide, leftSide);
+            return bySide != 0 ? bySide : Long.compare(area(left), area(right));
+        };
+        Comparator<Size> fittingOrder = targetShortSide > 0 ? nearestToTarget : largestFirst;
+        fitting.sort(fittingOrder);
+        larger.sort(smallestFirst);
+        otherFitting.sort(fittingOrder);
+        otherLarger.sort(smallestFirst);
+        tooSmall.sort(largestFirst);
+        ArrayList<Size> result = new ArrayList<>(sizes.size());
+        result.addAll(fitting);
+        result.addAll(larger);
+        result.addAll(otherFitting);
+        result.addAll(otherLarger);
+        result.addAll(tooSmall);
+        return result.isEmpty() ? sizes : result;
+    }
+
+    private static float getPreferredAspect() {
+        int aspect = CherrygramCameraConfig.INSTANCE.getCameraAspectRatio();
+        if (aspect == CherrygramCameraConfig.Camera1to1) return 1f;
+        if (aspect == CherrygramCameraConfig.Camera16to9) return 16f / 9f;
+        return 4f / 3f;
+    }
+
+    private static boolean matchesAspect(Size size, float aspect) {
+        float sizeAspect = Math.max(size.getWidth(), size.getHeight()) / (float) shortSide(size);
+        return Math.abs(sizeAspect - aspect) <= aspect * ASPECT_TOLERANCE;
+    }
+
+    private static int shortSide(Size size) {
+        return Math.min(size.getWidth(), size.getHeight());
+    }
+
+    private static long area(Size size) {
+        return (long) size.getWidth() * size.getHeight();
+    }
+
+    @SuppressLint("UnsafeOptInUsageError")
+    public static CameraSelector getRoundVideoCameraSelector(ProcessCameraProvider provider, boolean front) {
+        if (front || provider == null) {
+            return front ? CameraSelector.DEFAULT_FRONT_CAMERA : CameraSelector.DEFAULT_BACK_CAMERA;
+        }
+        CameraInfo best = null;
+        float bestMinZoom = Float.MAX_VALUE;
+        int bestLenses = 0;
+        try {
+            for (CameraInfo info : provider.getAvailableCameraInfos()) {
+                if (info.getLensFacing() != CameraSelector.LENS_FACING_BACK) continue;
+                float minZoom = 1f;
+                Range<Float> range = CameraXController.getZoomRatioRange(info);
+                if (range != null) minZoom = range.getLower();
+                int lenses = info.isLogicalMultiCameraSupported() ? Math.max(1, info.getPhysicalCameraInfos().size()) : 1;
+                if (best == null || minZoom < bestMinZoom - 0.01f || Math.abs(minZoom - bestMinZoom) <= 0.01f && lenses > bestLenses) {
+                    best = info;
+                    bestMinZoom = minZoom;
+                    bestLenses = lenses;
+                }
+            }
+        } catch (Exception e) {
+            CherrygramLogger.e(e);
+        }
+        return best == null ? CameraSelector.DEFAULT_BACK_CAMERA : best.getCameraSelector();
+    }
 
     public static boolean isWideAngleAvailable(ProcessCameraProvider provider) {
         return getWideCameraId(provider) != null;
@@ -99,7 +215,8 @@ public class CameraXUtils {
     private static Map<Quality, Size> fetchAvailableVideoSizes(CameraSelector selector, ProcessCameraProvider provider) {
         Map<Quality, Size> map = new HashMap<>();
         try {
-            List<CameraInfo> infos = selector.filter(provider.getAvailableCameraInfos());
+            List<CameraInfo> infos = CameraSelector.DEFAULT_BACK_CAMERA.filter(provider.getAvailableCameraInfos());
+            if (infos.isEmpty()) infos = selector.filter(provider.getAvailableCameraInfos());
 
             if (!infos.isEmpty()) {
                 CameraInfo camInfo = infos.get(0);
@@ -150,7 +267,14 @@ public class CameraXUtils {
                         return;
                     }
 
-                    qualityToSize = fetchAvailableVideoSizes(new CameraSelector.Builder().build(), provider);
+                    Map<Quality, Size> sizes = fetchAvailableVideoSizes(new CameraSelector.Builder().build(), provider);
+                    if (sizes.isEmpty() && qualityException == null) {
+                        if (retryCount < 3) {
+                            AndroidUtilities.runOnUIThread(() -> loadCameraXSizesInternal(retryCount + 1), 500);
+                        }
+                        return;
+                    }
+                    qualityToSize = sizes;
                     loadSuggestedResolution();
                     AndroidUtilities.runOnUIThread(() -> {
                         try {

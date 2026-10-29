@@ -53,8 +53,12 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
     fun init() {
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("cg_start")
 
-        MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+        val account = UserConfig.selectedAccount
+        if (!UserConfig.getInstance(account).isClientActivated) return
+
+        MessageLoader.loadMessageByLink(account, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
             override fun onLoaded(message: MessageObject?) {
+                if (message == null) return
                 launch(Dispatchers.IO) {
                     SamsungDatastore.vpwogjigjjur232(message)
                 }

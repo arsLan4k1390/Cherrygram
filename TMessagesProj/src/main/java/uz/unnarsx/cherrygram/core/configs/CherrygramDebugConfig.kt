@@ -30,6 +30,7 @@ object CherrygramDebugConfig {
     /** Chats start */
     var replacePunctuationMarks by sharedPreferences.boolean("replacePunctuationMarks", true)
     var editTextSuggestionsFix by sharedPreferences.boolean("editTextSuggestionsFix", false)
+    var fixChineseKeyboards by sharedPreferences.boolean("fixChineseKeyboards", false)
     /** Microphone Audio Source start */
     const val AUDIO_SOURCE_DEFAULT = 0
     const val AUDIO_SOURCE_CAMCORDER = 1

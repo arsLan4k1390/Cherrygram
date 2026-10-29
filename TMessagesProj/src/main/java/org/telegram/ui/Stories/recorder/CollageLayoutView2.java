@@ -56,6 +56,9 @@ import org.telegram.ui.Components.LayoutHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import uz.unnarsx.cherrygram.camera.BaseCameraView;
+import uz.unnarsx.cherrygram.camera.CameraXView;
+
 public class CollageLayoutView2 extends FrameLayout implements ItemOptions.ScrimView {
 
     private final FrameLayout containerView;
@@ -63,7 +66,7 @@ public class CollageLayoutView2 extends FrameLayout implements ItemOptions.Scrim
 
     public final QRScanner.QrRegionDrawer qrDrawer = new QRScanner.QrRegionDrawer(this::invalidate);
 
-    public CameraView cameraView;
+    public BaseCameraView cameraView;
     private Object cameraViewBlurRenderNode;
 
     @NonNull
@@ -573,8 +576,8 @@ public class CollageLayoutView2 extends FrameLayout implements ItemOptions.Scrim
             } else {
                 drawView(canvas, cameraView, rect, 0.75f);
             }
-            if (cameraView != null && cameraView.blurredStubView != null && cameraView.blurredStubView.getVisibility() == View.VISIBLE && cameraView.blurredStubView.getAlpha() > 0) {
-                drawView(canvas, cameraView.blurredStubView, rect, 0.4f);
+            if (cameraView instanceof CameraView camera && camera.blurredStubView != null && camera.blurredStubView.getVisibility() == View.VISIBLE && camera.blurredStubView.getAlpha() > 0) {
+                drawView(canvas, camera.blurredStubView, rect, 0.4f);
             }
         }
         if (restore) {
@@ -599,12 +602,10 @@ public class CollageLayoutView2 extends FrameLayout implements ItemOptions.Scrim
             } else {
                 textureView = null;
             }
-            if (textureView != null) {
-                Bitmap bitmap = textureView.getBitmap();
-                if (bitmap != null) {
-                    canvas.scale((float) view.getWidth() / bitmap.getWidth(), (float) view.getHeight() / bitmap.getHeight());
-                    canvas.drawBitmap(bitmap, 0, 0, null);
-                }
+            final Bitmap bitmap = view instanceof CameraXView cameraXView ? cameraXView.getBitmap() : textureView != null ? textureView.getBitmap() : null;
+            if (bitmap != null) {
+                canvas.scale((float) view.getWidth() / bitmap.getWidth(), (float) view.getHeight() / bitmap.getHeight());
+                canvas.drawBitmap(bitmap, 0, 0, null);
             }
         } else {
             view.draw(canvas);
@@ -720,7 +721,7 @@ public class CollageLayoutView2 extends FrameLayout implements ItemOptions.Scrim
         return false;
     }
 
-    public void setCameraView(CameraView cameraView) {
+    public void setCameraView(BaseCameraView cameraView) {
         if (this.cameraView != cameraView && this.cameraView != null) {
             this.cameraView.unlistenDraw(this::invalidate);
             AndroidUtilities.removeFromParent(this.cameraView);

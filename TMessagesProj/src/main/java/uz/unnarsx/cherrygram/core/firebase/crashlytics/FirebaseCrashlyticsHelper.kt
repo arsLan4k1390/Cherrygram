@@ -10,7 +10,6 @@
 package uz.unnarsx.cherrygram.core.firebase.crashlytics
 
 import android.content.Context
-import android.os.Build
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import androidx.core.content.edit
 import org.telegram.messenger.ApplicationLoader
@@ -82,7 +81,11 @@ object FirebaseCrashlyticsHelper {
             crashlytics.setCustomKey("sv_validate_signature", CherrygramCoreConfig.validate_signature)
             crashlytics.setCustomKey("sv_check_signature", CherrygramCoreConfig.check_signature)
 
+            crashlytics.setCustomKey("cert_dir_opened", CherrygramCoreConfig.certDirOpened)
+            crashlytics.setCustomKey("cert_total_fd_scanned", CherrygramCoreConfig.certTotalFdScanned)
+            crashlytics.setCustomKey("cert_apk_like_fd_seen", CherrygramCoreConfig.certApkLikeFdSeen)
             crashlytics.setCustomKey("cert_found_apk_fd", CherrygramCoreConfig.certFoundApkFd)
+            crashlytics.setCustomKey("cert_last_apk_like_path", CherrygramCoreConfig.certLastApkLikePath)
             crashlytics.setCustomKey("cert_empty", CherrygramCoreConfig.certEmpty)
             crashlytics.setCustomKey("cert_size", CherrygramCoreConfig.certSize)
             crashlytics.setCustomKey("cert_crc", CherrygramCoreConfig.certCrc)
@@ -117,10 +120,14 @@ object FirebaseCrashlyticsHelper {
         crashlytics.setCustomKey("sv_validate_signature", false)
         crashlytics.setCustomKey("sv_check_signature", false)
 
+        crashlytics.setCustomKey("cert_dir_opened", false)
+        crashlytics.setCustomKey("cert_total_fd_scanned", 0)
+        crashlytics.setCustomKey("cert_apk_like_fd_seen", 0)
         crashlytics.setCustomKey("cert_found_apk_fd", false)
+        crashlytics.setCustomKey("cert_last_apk_like_path", "")
         crashlytics.setCustomKey("cert_empty", false)
-        crashlytics.setCustomKey("cert_size", false)
-        crashlytics.setCustomKey("cert_crc", false)
+        crashlytics.setCustomKey("cert_size", 0L)
+        crashlytics.setCustomKey("cert_crc", 0L)
 
         crashlytics.setCustomKey("ios_msg_menu_enabled", false)
         crashlytics.setCustomKey("compact_msg_menu_enabled", false)

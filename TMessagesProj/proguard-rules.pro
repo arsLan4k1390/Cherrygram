@@ -30,6 +30,10 @@
     @android.webkit.JavascriptInterface <methods>;
 }
 
+-keep class org.telegram.utils.code.highlight.PrismaHighlighter {
+    private static native <methods>;
+}
+
 # https://developers.google.com/ml-kit/known-issues#android_issues
 -keep class com.google.mlkit.nl.languageid.internal.LanguageIdentificationJni { *; }
 
@@ -88,6 +92,8 @@
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$ErrorDetail {*;}
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$ErrorDetails{*;}
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$Metadata {*;}
+-keep class uz.unnarsx.cherrygram.donates.adsgram.** { *; }
+-keep class uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper { *; }
 
 # Keep all class member names of CameraX
 -keep class androidx.camera.extensions.** { *; }
@@ -97,7 +103,11 @@
 -keep class androidx.camera.core.impl.** { *; }
 -keep class androidx.camera.video.** { *; }
 
--keep class uz.unnarsx.cherrygram.donates.adsgram.** { *; }
+-keepnames class androidx.recyclerview.widget.**
+-keepnames class * extends androidx.recyclerview.widget.RecyclerView
+-keepnames class * extends android.widget.AbsListView
+-keepnames class * extends android.widget.ScrollView
+-keepnames class * extends androidx.core.widget.NestedScrollView
 
 -keepclassmembernames class androidx.core.widget.NestedScrollView {
     private android.widget.OverScroller mScroller;

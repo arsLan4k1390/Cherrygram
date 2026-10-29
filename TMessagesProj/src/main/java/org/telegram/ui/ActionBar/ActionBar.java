@@ -21,6 +21,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -30,6 +31,8 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.VectorDrawable;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -258,6 +261,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         if (backButtonImageView != null) {
             backButtonImageView.setTranslationX(dp(2));
         }
+        refreshBackButtonSelector();
     }
 
     public INavigationLayout.BackButtonState getBackButtonState() {
@@ -1435,7 +1439,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
         int textLeft;
         if (backButtonImageView != null && backButtonImageView.getVisibility() != GONE) {
-            backButtonImageView.measure(MeasureSpec.makeMeasureSpec(dp(54), MeasureSpec.EXACTLY), actionBarHeightSpec);
+            measureBackButton(actionBarHeightSpec);
             textLeft = dp(AndroidUtilities.isTablet() ? 80 : 72);
 
             if (countLayout != null) {
@@ -1475,7 +1479,9 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
         for (int i = 0; i < 2; i++) {
             if (titleTextView[0] != null && titleTextView[0].getVisibility() != GONE || subtitleTextView != null && subtitleTextView.getVisibility() != GONE) {
-                int availableWidth = isTitleCentered() ? (width - dp(120)) : width - (menu != null ? menu.getMeasuredWidth() : 0) - dp(16) - textLeft - titleRightMargin;
+                // A closing search field keeps filling the menu during its fade-out; don't squeeze the title for it.
+                int titleMenuWidth = menu != null ? menu.getMeasuredWidth() - (isSearchFieldVisible ? 0 : menu.getClosingSearchFieldWidth()) : 0;
+                int availableWidth = isTitleCentered() ? (width - dp(120)) : width - titleMenuWidth - dp(16) - textLeft - titleRightMargin;
                 availableWidth = Math.max(availableWidth, 0);
 
                 if (((fromBottom && i == 0) || (!fromBottom && i == 1)) && overlayTitleAnimation && titleAnimationRunning) {
@@ -2236,6 +2242,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
     public void setSkipDrawChild(boolean skip) {
         if (doNotDrawChild != skip) {
             doNotDrawChild = skip;
+            skipDrawChildProgress = 0f;
             invalidate();
         }
     }
@@ -2250,12 +2257,12 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
     }
 
     public void checkAvatarContainerWidth(boolean animated) {
+        if (getWidth() == 0) {
+            return;
+        }
         if (chatAvatarContainer != null) {
             final boolean hasAvatar = chatAvatarContainer.hasVisibleAvatar();
-            int visualWidth = chatAvatarContainer.getVisualWidth();
-            if (hasAvatar) {
-                //visualWidth = Math.max(visualWidth, dp(168));
-            }
+            final int visualWidth = chatAvatarContainer.getVisualWidth();
 
             final int width = Math.min(getMeasuredWidth() - dp(6 + 46 + 6 + 6 + 46 + 6), visualWidth);
             if (animated) {
@@ -2266,36 +2273,15 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
                 animatorAvatarContainerWidth.forceFactor(width);
             }
             animatorAvatarContainerHasAvatar.setValue(hasAvatar, animated);
-//            return;
         }
 
         if (isAdaptiveWidthSupported()) {
-            int titleWidth = (int) chatAvatarContainer2.getTitleTextView().getExactWidthIncludeDrawables();
+            final int titleWidth = (int) chatAvatarContainer2.getTitleTextView().getExactWidthIncludeDrawables();
             int subtitleWidth = 0;
             if (chatAvatarContainer2.getSubtitleTextView() instanceof SimpleTextView simpleTextView) {
                 subtitleWidth = (int) simpleTextView.getExactWidthIncludeDrawables();
             }
-            int textWidth = Math.max(titleWidth, subtitleWidth);
-
-            int targetWidth = Math.max(dp(100), textWidth + dp(40));
-            targetWidth += dp(15);
-
-            final int p = dp(6);
-            final int s = dp(46);
-            final boolean hasBackButton = backButtonImageView != null && backButtonImageView.getVisibility() == View.VISIBLE;
-            int defaultMenuWidth = Math.max(0, menu != null ? menu.getItemsWidth() - dp(1) - dp(1) : 0);
-            if (menu != null && menu.isCenteredTitle()) {
-                defaultMenuWidth = lerp(Math.max(defaultMenuWidth, s), defaultMenuWidth, searchFactor);
-            }
-            final int actionMenuWidth = Math.max(0, actionMode != null ? actionMode.getItemsWidth() - dp(1) - dp(1) : 0);
-            final int menuWidth = hasForcedMenuWidth ? forcedMenuWidth : lerp(defaultMenuWidth, actionMenuWidth, getActionModeFactor());
-            final int menuWidthWithPadding = menuWidth > 0 ? (menuWidth + p) : 0;
-            final int rightOffset = lerp(menuWidthWithPadding, Math.max(menuWidthWithPadding, p + s), 0f);
-            final int leftDefault = lerp(hasBackButton ? getBackPillWidth() - p : 0, s + p, 0f);
-            final int rightDefault = getWidth() - rightOffset;
-            final int widthDefault = rightDefault - leftDefault;
-
-            targetWidth = Math.min(widthDefault, targetWidth);
+            final int targetWidth = Math.max(dp(100), Math.max(titleWidth, subtitleWidth) + dp(40)) + dp(15);
 
             if (animated) {
                 if (animatorAdaptiveWidth.getToFactor() != targetWidth) {
@@ -2315,6 +2301,9 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
     @Override
     public void onFactorChanged(int id, float factor, float fraction, FactorAnimator callee) {
+        if (callee == animatorBackPillWidth) {
+            relayoutBackButtonForPill();
+        }
         invalidate();
     }
 
@@ -2358,6 +2347,14 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
     }
 
     public boolean doNotDrawGlassMenu;
+    private boolean drawGlassTitle = true;
+
+    public void setDrawGlassTitle(boolean draw) {
+        if (drawGlassTitle != draw) {
+            drawGlassTitle = draw;
+            invalidate();
+        }
+    }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
@@ -2378,14 +2375,14 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         final int t = getHeight() - (getCurrentActionBarHeight() + s) / 2 - p;
         final int b = t + s + p * 2;
 
-        if (glassDrawable != null && !glassOnlyBack) {
+        if (glassDrawable != null && !glassOnlyBack && drawGlassTitle) {
             int menuWidthWithPadding = menuWidth + ((hasForcedMenuWidth || hasForcedMenuMinWidth) ? (menuWidth > 0 ? p : 0) : (int) (p * animatorHasMenuItems.getFloatValue()));
             if (isTitleCentered()) {
                 menuWidthWithPadding = menuWidth > 0 ? (menuWidth + p) : 0;
             }
             final int rightOffset = lerp(menuWidthWithPadding, Math.max(menuWidthWithPadding, p + s), chatAvatarContainer == null ? 0f : 1f - animatorAvatarContainerHasAvatar.getFloatValue());
 
-            final int leftDefault = lerp(hasBackButton ? getBackPillWidth() - p : 0, s + p, chatAvatarContainer == null? 0f : 1f - animatorAvatarContainerHasAvatar.getFloatValue());
+            final int leftDefault = lerp(hasBackButton ? getBackPillWidth() - p : 0, s + p, chatAvatarContainer == null ? 0f : 1f - animatorAvatarContainerHasAvatar.getFloatValue());
             final int rightDefault = getWidth() - rightOffset;
             final int widthDefault = rightDefault - leftDefault;
             final int left, right;
@@ -2395,70 +2392,48 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
                 right = left + width;
 
                 final float translationX = left
-                    - ((MarginLayoutParams)(chatAvatarContainer.getLayoutParams())).leftMargin
-                    - chatAvatarContainer.getLeftPadding()
-                    + p + dp(3);
+                        - ((MarginLayoutParams) (chatAvatarContainer.getLayoutParams())).leftMargin
+                        - chatAvatarContainer.getLeftPadding()
+                        + p + dp(3);
                 chatAvatarContainer.setTranslationX(translationX);
-                chatAvatarContainer.setPivotX((chatAvatarContainer.getMeasuredWidth()) / 2f - translationX );
+                chatAvatarContainer.setPivotX((chatAvatarContainer.getMeasuredWidth()) / 2f - translationX);
             } else {
-                final int baseLeftDefault = hasBackButton ? (s + p * 2) - p : 0;
-                final int baseLeft;
+                final int baseLeftDefault = hasBackButton ? s + p : 0;
+                int textShift = 0;
 
                 if (isAdaptiveWidthSupported()) {
                     int width = (int) animatorAdaptiveWidth.getFactor();
-
                     if (width <= 0) {
-                        int titleWidth = (int) chatAvatarContainer2.getTitleTextView().getExactWidthIncludeDrawables();
-                        int subtitleWidth = 0;
-                        if (chatAvatarContainer2.getSubtitleTextView() instanceof SimpleTextView simpleTextView) {
-                            subtitleWidth = (int) simpleTextView.getExactWidthIncludeDrawables();
-                        }
-                        width = Math.max(dp(100), Math.max(titleWidth, subtitleWidth) + dp(40));
-                        width += dp(15);
-                        width = Math.min(widthDefault, width);
-                        animatorAdaptiveWidth.forceFactor(width);
+                        checkAvatarContainerWidth(false);
+                        width = (int) animatorAdaptiveWidth.getFactor();
                     }
-
                     width = Math.min(width, widthDefault);
 
-                    final int baseCenter = (baseLeftDefault + rightDefault) / 2;
-                    baseLeft = baseCenter - width / 2;
+                    final SimpleTextView title = chatAvatarContainer2.getTitleTextView();
+                    final float center = chatAvatarContainer2.getWidth() > 0 && title.getWidth() > 0
+                            ? chatAvatarContainer2.getX() + title.getLeft() + title.getWidth() / 2f
+                            : (baseLeftDefault + rightDefault) / 2f;
+                    final int naturalLeft = Math.round(center - width / 2f);
 
-                    left = Math.max(baseLeft, leftDefault);
+                    left = Math.max(leftDefault, Math.min(naturalLeft, rightDefault - width));
                     right = left + width;
 
-                    final int space = baseLeft - leftDefault;
-                    if (space < 5 && iOSUnreadBadgeAvailable() && !isActionModeShowed()) {
-                        int shift = Math.max(0, left - baseLeft);
-
-                        chatAvatarContainer2.setMoveText(true);
-
-                        chatAvatarContainer2.getTitleTextView().setTranslationX(shift);
-                        if (chatAvatarContainer2.getSubtitleTextView() instanceof SimpleTextView simpleTextView) {
-                            simpleTextView.setTranslationX(shift);
-                        } else if (chatAvatarContainer2.getSubtitleTextView() instanceof AnimatedTextView animatedTextView) {
-                            animatedTextView.setTranslationX(shift);
-                        }
-                    }
+                    textShift = left - naturalLeft;
                 } else {
-                    final int width = widthDefault;
-                    final int baseCenter = (baseLeftDefault + rightDefault) / 2;
-                    baseLeft = baseCenter - width / 2;
-
                     left = leftDefault;
                     right = rightDefault;
 
-                    if (chatAvatarContainer2 != null && iOSUnreadBadgeAvailable() && !isActionModeShowed() && backButtonImageView != null && backButtonImageView.unreadCount > 0) {
-                        int shift = Math.max(0, left - baseLeft);
+                    if (iOSUnreadBadgeAvailable() && !isActionModeShowed() && hasBackButton && backButtonImageView.unreadCount > 0) {
+                        textShift = Math.max(0, (leftDefault - baseLeftDefault) / 2);
+                    }
+                }
 
-                        chatAvatarContainer2.setMoveText(true);
-
-                        chatAvatarContainer2.getTitleTextView().setTranslationX(shift);
-                        if (chatAvatarContainer2.getSubtitleTextView() instanceof SimpleTextView simpleTextView) {
-                            simpleTextView.setTranslationX(shift);
-                        } else if (chatAvatarContainer2.getSubtitleTextView() instanceof AnimatedTextView animatedTextView) {
-                            animatedTextView.setTranslationX(shift);
-                        }
+                if (chatAvatarContainer2 != null) {
+                    chatAvatarContainer2.setMoveText(iOSUnreadBadgeAvailable() && !isActionModeShowed());
+                    chatAvatarContainer2.getTitleTextView().setTranslationX(textShift);
+                    final View subtitle = chatAvatarContainer2.getSubtitleTextView();
+                    if (subtitle != null) {
+                        subtitle.setTranslationX(textShift);
                     }
                 }
             }
@@ -2466,19 +2441,31 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             glassDrawable.setBounds(left, t, right, b);
             glassDrawable.draw(canvas);
         }
+        final boolean fadeBackCounter = doNotDrawChild && hasBackButton && getBackPillCounterExtraWidth() > 0;
+        final int backPillWidth = fadeBackCounter ? lerp(getBackPillWidth(), s + p * 2, skipDrawChildProgress) : getBackPillWidth();
         if (glassDrawableBack != null && hasBackButton) {
             if (iOSUnreadBadgeAvailable() && countLayout != null) {
                 int extra = getBackPillCounterExtraWidth();
                 int fullWidth = Math.max(1, getBackPillCounterTargetWidth());
                 countLayout.setAlpha(Math.min(1f, extra / (float) fullWidth));
             }
-            glassDrawableBack.setBounds(0, t, getBackPillWidth(), b);
+            glassDrawableBack.setBounds(0, t, backPillWidth, b);
             glassDrawableBack.draw(canvas);
         }
         if (glassDrawableMenu != null && menuWidth > 0 && !glassOnlyBack && !doNotDrawGlassMenu) {
             glassDrawableMenu.setBounds(getWidth() - Math.max(s, menuWidth) - p * 2, t, getWidth(), b);
             glassDrawableMenu.setAlpha(hasForcedMenuWidth || isTitleCentered() ? 255 : (int) (255 * animatorHasMenuItems.getFloatValue()));
             glassDrawableMenu.draw(canvas);
+        }
+
+        if (chatAvatarContainer2 != null && chatAvatarContainer2.isCentered() && isAvatarAlignAllowed()) {
+            if (glassDrawableMenu != null && menuWidth > 0 && !glassOnlyBack && !doNotDrawGlassMenu) {
+                chatAvatarContainer2.alignAvatarCenter(this,
+                        glassDrawableMenu.getBounds().exactCenterX(),
+                        glassDrawableMenu.getBounds().exactCenterY());
+            } else {
+                chatAvatarContainer2.resetAvatarAlignment();
+            }
         }
 
         if (blurredBackground && actionBarColor != Color.TRANSPARENT) {
@@ -2493,6 +2480,18 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
         isAnimationsAllowed = true;
         if (doNotDrawChild) {
+            if (fadeBackCounter && skipDrawChildProgress < 1f) {
+                final long drawingTime = getDrawingTime();
+                canvas.save();
+                canvas.clipRect(0, t, backPillWidth, b);
+                canvas.saveLayerAlpha(0, t, backPillWidth, b, (int) (255 * (1f - skipDrawChildProgress)), Canvas.ALL_SAVE_FLAG);
+                drawChild(canvas, backButtonImageView, drawingTime);
+                if (countLayout != null && countLayout.getVisibility() == View.VISIBLE) {
+                    drawChild(canvas, countLayout, drawingTime);
+                }
+                canvas.restore();
+                canvas.restore();
+            }
             return;
         }
 
@@ -2740,7 +2739,14 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         return CherrygramAppearanceConfig.INSTANCE.getCenterTitle() || chatAvatarContainer2 != null && chatAvatarContainer2.isCentered();
     }
 
+    private boolean isAvatarAlignAllowed() {
+        return !isActionModeShowed() && getActionModeFactor() == 0f
+                && !isSearchFieldVisible && searchFactor == 0f;
+    }
+
     /** Unread Badge start */
+    private float skipDrawChildProgress;
+
     private int getBackPillCounterTargetWidth() {
         if (countLayout == null) {
             return 0;
@@ -2873,8 +2879,51 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         return Math.max(0, getBackPillWidth() - (dp(46) + dp(6) * 2));
     }
 
+    private boolean isBackPillMode() {
+        return glassDrawableBack != null && iOSUnreadBadgeAvailable();
+    }
+
+    private int getBackButtonWidth() {
+        if (!isBackPillMode()) {
+            return dp(54);
+        }
+        return Math.max(dp(54), (int) (getBackPillWidth() - dp(6) - backButtonImageView.getTranslationX()));
+    }
+
+    private void measureBackButton(int heightSpec) {
+        final int width = getBackButtonWidth();
+        final int paddingRight = width - dp(54);
+        if (backButtonImageView.getPaddingRight() != paddingRight) {
+            final boolean wasIgnoring = ignoreLayoutRequest;
+            ignoreLayoutRequest = true;
+            backButtonImageView.setPadding(backButtonImageView.getPaddingLeft(), 0, paddingRight, 0);
+            ignoreLayoutRequest = wasIgnoring;
+        }
+        backButtonImageView.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), heightSpec);
+    }
+
+    private void relayoutBackButtonForPill() {
+        if (backButtonImageView == null || backButtonImageView.getVisibility() == GONE || backButtonImageView.getMeasuredHeight() == 0) {
+            return;
+        }
+        if (backButtonImageView.getMeasuredWidth() == getBackButtonWidth()) {
+            return;
+        }
+        measureBackButton(MeasureSpec.makeMeasureSpec(backButtonImageView.getMeasuredHeight(), MeasureSpec.EXACTLY));
+        final int left = backButtonImageView.getLeft();
+        final int top = backButtonImageView.getTop();
+        backButtonImageView.layout(left, top, left + backButtonImageView.getMeasuredWidth(), top + backButtonImageView.getMeasuredHeight());
+    }
+
+    private void refreshBackButtonSelector() {
+        if (backButtonImageView != null) {
+            backButtonImageView.setBackgroundDrawable(Theme.createSelectorDrawable(actionModeVisible ? itemsActionModeBackgroundColor : itemsBackgroundColor));
+        }
+    }
+
     public void setIOSUnreadBadgeAvailable(boolean available) {
         this.isIOSUnreadBadgeAvailable = available;
+        refreshBackButtonSelector();
         if (countLayout != null) countLayout.setIOSUnreadBadgeAvailable(available);
 
         /*if (isIOSUnreadBadgeAvailable) {
@@ -2894,6 +2943,73 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
 
         public UnreadImageView(Context context) {
             super(context);
+        }
+
+        private RippleDrawable pillRipple;
+
+        @Override
+        public void setBackgroundDrawable(Drawable background) {
+            if (isBackPillMode()) {
+                final int color = actionModeVisible ? itemsActionModeBackgroundColor : itemsBackgroundColor;
+                if (pillRipple == null) {
+                    GradientDrawable mask = new GradientDrawable();
+                    mask.setColor(Color.WHITE);
+                    mask.setCornerRadius(dp(23));
+                    pillRipple = new RippleDrawable(ColorStateList.valueOf(color), null, mask);
+                    pillRipple.setCallback(this);
+                    pillRipple.setState(getDrawableState());
+                } else {
+                    pillRipple.setColor(ColorStateList.valueOf(color));
+                }
+                super.setBackgroundDrawable(null);
+            } else {
+                if (pillRipple != null) {
+                    pillRipple.setCallback(null);
+                    pillRipple = null;
+                }
+                super.setBackgroundDrawable(background);
+            }
+        }
+
+        @Override
+        protected boolean verifyDrawable(@NonNull Drawable who) {
+            return who == pillRipple || super.verifyDrawable(who);
+        }
+
+        @Override
+        protected void drawableStateChanged() {
+            super.drawableStateChanged();
+            if (pillRipple != null) {
+                pillRipple.setState(getDrawableState());
+            }
+        }
+
+        @Override
+        public void drawableHotspotChanged(float x, float y) {
+            super.drawableHotspotChanged(x, y);
+            if (pillRipple != null) {
+                pillRipple.setHotspot(x, y);
+            }
+        }
+
+        @Override
+        public void jumpDrawablesToCurrentState() {
+            super.jumpDrawablesToCurrentState();
+            if (pillRipple != null) {
+                pillRipple.jumpToCurrentState();
+            }
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            if (pillRipple != null) {
+                final int p = dp(6);
+                final int offsetX = getLeft() + (int) getTranslationX();
+                final int pillTop = ActionBar.this.getHeight() - (getCurrentActionBarHeight() + dp(46)) / 2 - getTop();
+                pillRipple.setBounds(p - offsetX, pillTop, getBackPillWidth() - p - offsetX, pillTop + dp(46));
+                pillRipple.draw(canvas);
+            }
+            super.onDraw(canvas);
         }
 
         public void createUnreadView(int count) {
@@ -2977,6 +3093,19 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
                 updateBackPillWidth(true);
             }
         }
+    }
+
+    public void setSkipDrawChildProgress(float progress) {
+        if (skipDrawChildProgress != progress) {
+            skipDrawChildProgress = progress;
+            if (doNotDrawChild) {
+                invalidate();
+            }
+        }
+    }
+
+    public boolean hasBackPillCounter() {
+        return backButtonImageView != null && backButtonImageView.getVisibility() == View.VISIBLE && getBackPillCounterExtraWidth() > 0;
     }
     /** Unread Badge finish */
     /** Cherrygram finish */

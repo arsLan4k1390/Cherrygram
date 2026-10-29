@@ -204,14 +204,6 @@
     <string name="CP_MessageMenuItems">Elementos del menú de mensajes</string>
     <string name="CP_BlurMessageMenu">menú de mensajes con estilo iOS</string>
     <string name="CP_BlurMessageMenu_Desc">Se aplica un fondo desenfocado al menú de mensajes y muestra el panel de reacción sobre el mensaje, similar a Telegram en iOS.</string>
-    <string name="CP_MessageMenuUnifiedScroll">Unified Scroll</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
-    <string name="CP_MessageMenuAutoscroll">Desplazamiento automático del mensaje</string>
-    <string name="CP_MessageMenuAutoscroll_Desc">Desliza automáticamente el contenido del menú del mensaje en la parte inferior de la apertura, similar a Telegram en iOS.</string>
-    <string name="CP_MessageMenuFixedHeight">Altura del menú de mensajes cómoda</string>
-    <string name="CP_MessageMenuFixedHeight_Desc">El menú de mensajes ocupará la mitad del área de la pantalla para facilitar la interacción.</string>
-    <string name="CP_BlurMessageMenuItems">Elementos de menú desenfocados</string>
-    <string name="CP_BlurMessageMenuItems_Desc">Desenfoca los elementos del menú para una mirada más auténtica de iOS.</string>
     <string name="CP_MessageMenuNativeBlur">Desenfoque nativo</string>
     <string name="CP_MessageMenuNativeBlur_Desc">El sistema de desenfoque integrado de Android se utilizará para el fondo del menú de mensajes: suave, en vivo y con un impacto mínimo en el rendimiento..</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de chats no leídos</string>
@@ -319,7 +311,6 @@ Si se encuentra una coincidencia dentro del enlace, el mensaje completo se ocult
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="EP_NavigationAnimation">Animación de navegación</string>
-    <string name="EP_NavigationAnimationBezier">Clásico</string>
     <string name="EP_NavigationAnimationCrossfading">Efecto de desplazamiento</string>
     <string name="EP_CustomChat">Chat personalizado para mensajes guardados</string>
     <string name="EP_CustomChat_Desc">Configure un ID de otro chat/grupo/canal para reenviar mensajes allí (botón en la barra de acciones, menú de mensajes o toque doble)</string>

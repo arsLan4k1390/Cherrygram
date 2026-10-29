@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -26,12 +27,14 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
-import org.telegram.messenger.camera.CameraView;
 import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import uz.unnarsx.cherrygram.camera.BaseCameraView;
+import uz.unnarsx.cherrygram.camera.CameraXView;
 
 public class QRScanner {
 
@@ -55,14 +58,14 @@ public class QRScanner {
         return lastDetected;
     }
 
-    private CameraView cameraView;
+    private BaseCameraView cameraView;
 
     public void destroy() {
         this.cameraView = null;
         Utilities.globalQueue.cancelRunnable(this.process);
     }
 
-    public void attach(CameraView cameraView) {
+    public void attach(BaseCameraView cameraView) {
         this.cameraView = cameraView;
         if (detector.get() == null) return;
 
@@ -92,39 +95,78 @@ public class QRScanner {
     }
 
     private Bitmap cacheBitmap;
+    private final Paint framePaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+    private final Rect frameRect = new Rect();
+
     private final Runnable process = () -> {
         if (detector.get() == null || cameraView == null || paused.get()) {
             return;
         }
 
-        TextureView textureView = cameraView.getTextureView();
-        if (textureView != null) {
-            final int maxSide = 720;
-            int w = textureView.getWidth();
-            int h = textureView.getHeight();
-            if (w > maxSide || h > maxSide) {
-                final float scale = Math.min((float) maxSide / w, (float) maxSide / h);
-                w = (int) (w * scale);
-                h = (int) (h * scale);
-            }
-            w = Math.max(1, w);
-            h = Math.max(1, h);
-            if (cacheBitmap == null || w != cacheBitmap.getWidth() || h != cacheBitmap.getHeight()) {
-                cacheBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            }
-            textureView.getBitmap(cacheBitmap);
-            final Detected detected = detect(cacheBitmap);
-            if ((lastDetected != null) != (detected != null) || detected != null && lastDetected != null && !detected.equals(lastDetected)) {
-                lastDetected = detected;
-                AndroidUtilities.runOnUIThread(() -> QRScanner.this.listener.run(detected));
-            }
+        if (cameraView instanceof CameraXView cameraXView) {
+            AndroidUtilities.runOnUIThread(() -> {
+                if (cameraView != cameraXView || paused.get()) {
+                    return;
+                }
+                final Bitmap frame = cameraXView.getBitmap();
+                final Bitmap bitmap;
+                if (frame != null) {
+                    bitmap = prepareCacheBitmap(frame.getWidth(), frame.getHeight());
+                    frameRect.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
+                    new Canvas(bitmap).drawBitmap(frame, null, frameRect, framePaint);
+                    frame.recycle();
+                } else {
+                    bitmap = null;
+                }
+                Utilities.globalQueue.postRunnable(() -> {
+                    if (bitmap != null) {
+                        onFrame(bitmap);
+                    }
+                    scheduleNext();
+                });
+            });
+            return;
         }
 
+        TextureView textureView = cameraView.getTextureView();
+        if (textureView != null) {
+            final Bitmap bitmap = prepareCacheBitmap(textureView.getWidth(), textureView.getHeight());
+            textureView.getBitmap(bitmap);
+            onFrame(bitmap);
+        }
+
+        scheduleNext();
+    };
+
+    private Bitmap prepareCacheBitmap(int w, int h) {
+        final int maxSide = 720;
+        if (w > maxSide || h > maxSide) {
+            final float scale = Math.min((float) maxSide / w, (float) maxSide / h);
+            w = (int) (w * scale);
+            h = (int) (h * scale);
+        }
+        w = Math.max(1, w);
+        h = Math.max(1, h);
+        if (cacheBitmap == null || w != cacheBitmap.getWidth() || h != cacheBitmap.getHeight()) {
+            cacheBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        }
+        return cacheBitmap;
+    }
+
+    private void onFrame(Bitmap bitmap) {
+        final Detected detected = detect(bitmap);
+        if ((lastDetected != null) != (detected != null) || detected != null && lastDetected != null && !detected.equals(lastDetected)) {
+            lastDetected = detected;
+            AndroidUtilities.runOnUIThread(() -> QRScanner.this.listener.run(detected));
+        }
+    }
+
+    private void scheduleNext() {
         if (!paused.get()) {
             Utilities.globalQueue.cancelRunnable(this.process);
             Utilities.globalQueue.postRunnable(this.process, getTimeout());
         }
-    };
+    }
 
     private Detected detect(Bitmap bitmap) {
         if (bitmap == null) {

@@ -45,7 +45,6 @@ import android.text.style.ClickableSpan;
 import android.text.style.MetricAffectingSpan;
 import android.text.style.ReplacementSpan;
 import android.text.style.URLSpan;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
@@ -128,6 +127,7 @@ import org.telegram.ui.iv.RichTextStyle;
 import org.telegram.ui.iv.Latex;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.web.WebInstantView;
+import org.telegram.utils.code.highlight.CodeHighlighting;
 
 import java.io.File;
 import java.net.URLDecoder;
@@ -135,6 +135,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
@@ -636,6 +637,25 @@ public class RichMessageLayout {
         }
     }
 
+    /** Opens collapsed details blocks (e.g. to show a highlighted quote inside them) */
+    public void openDetails(List<RichDetailsBlock> details) {
+        if (details == null || details.isEmpty()) return;
+        snapshotForDetailsAnimation();
+        for (RichDetailsBlock d : details) {
+            if (d.block.open) continue;
+            d.block.open = true;
+            d.arrow.setAnimationProgressAnimated(0f);
+        }
+        detailsAnimating = true;
+        reposition();
+        if (view != null) {
+            view.invalidate();
+        }
+        if (cell != null && delegate != null) {
+            delegate.forceUpdate(cell, true, true);
+        }
+    }
+
     public void snapshotForBlockquoteAnimation() {
         snapshotForDetailsAnimation();
     }
@@ -1055,7 +1075,12 @@ public class RichMessageLayout {
             blocks.add(block);
             return block;
         } else if (pageBlock instanceof TL_iv.pageBlockTable) {
-            final RichBlock block = new RichTableBlock(this, padding, maxWidth, (TL_iv.pageBlockTable) pageBlock);
+            final RichBlock block;
+            try {
+                block = new RichTableBlock(this, padding, maxWidth, (TL_iv.pageBlockTable) pageBlock);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
             block.accessibilityLabelResId = R.string.AccDescrIVTable;
             blocks.add(block);
             return block;
@@ -1955,13 +1980,41 @@ public class RichMessageLayout {
     }
 
     public CharSequence formatText(TL_iv.RichText text) {
-        return formatText(text, new SpannableStringBuilder(), 0);
+        return formatText(text, 0);
     }
     public CharSequence formatText(TL_iv.RichText text, int flags) {
+        final SpannableStringBuilder out = new SpannableStringBuilder();
         if (flags == 0)
-            return formatText(text, new SpannableStringBuilder(), 0);
+            formatText(text, out, 0);
         else
-            return formatTextAndSetSpan(text, new SpannableStringBuilder(), flags, new StyleSpan(this, flags));
+            formatTextAndSetSpan(text, out, flags, new StyleSpan(this, flags));
+        if (text != null && out.length() > 0) {
+            out.setSpan(new QuoteRootSpan(text, flags), 0, out.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return out;
+    }
+
+    /** Marks the text produced from a root RichText node, so a selection can be mapped back to it for quoting. */
+    public static class QuoteRootSpan {
+        public final TL_iv.RichText text;
+        public final int flags;
+        public QuoteRootSpan(TL_iv.RichText text, int flags) {
+            this.text = text;
+            this.flags = flags;
+        }
+    }
+
+    private IdentityHashMap<TL_iv.RichText, int[]> quoteRecorder;
+
+    /** Formats text the same way formatText(text, flags) does, recording the [start, end) range produced by every node. */
+    public CharSequence formatTextRecording(TL_iv.RichText text, int flags, IdentityHashMap<TL_iv.RichText, int[]> recorder) {
+        final IdentityHashMap<TL_iv.RichText, int[]> prev = quoteRecorder;
+        quoteRecorder = recorder;
+        try {
+            return formatText(text, new SpannableStringBuilder(), flags);
+        } finally {
+            quoteRecorder = prev;
+        }
     }
     private void setSpansWithoutClash(Object span, SpannableStringBuilder out, int start, int end) {
         if (span instanceof StyleSpan) {
@@ -2020,6 +2073,14 @@ public class RichMessageLayout {
         return run;
     }
     public CharSequence formatText(TL_iv.RichText text, SpannableStringBuilder out, int flags) {
+        final int start = out.length();
+        formatTextNode(text, out, flags);
+        if (quoteRecorder != null && text != null) {
+            quoteRecorder.put(text, new int[] { start, out.length() });
+        }
+        return out;
+    }
+    private CharSequence formatTextNode(TL_iv.RichText text, SpannableStringBuilder out, int flags) {
         if (text instanceof TL_iv.textEmpty) {
 
         } else if (text instanceof TL_iv.textPlain) {
@@ -2163,6 +2224,9 @@ public class RichMessageLayout {
                 tel = "+" + tel;
             }
             formatTextAndSetSpan(text.text, out, flags, new URLSpanReplacement("tel:" + tel, getTextStyleRun(TextStyleSpan.FLAG_STYLE_TEXT_URL)));
+        } else if (text instanceof TL_iv.textTonAddress) {
+            final String address = getString(text);
+            formatTextAndSetSpan(text.text, out, flags, new URLSpanNoUnderline("tonaddress:" + address));
         } else if (text instanceof TL_iv.textBankCard) {
             final String bankCard = getString(text);
             formatTextAndSetSpan(text.text, out, flags, new URLSpanNoUnderline("card:" + bankCard));
@@ -4762,7 +4826,7 @@ public class RichMessageLayout {
             unsupportedBlockDrawable = new UnsupportedBlockDrawable(root.resourcesProvider);
             unsupportedBlockDrawable.setCallback(this);
             unsupportedBlockDrawable.setTitle(LocaleController.getString(R.string.UnsupportedBlockTitle));
-            unsupportedBlockDrawable.setSubtitle(LocaleController.getString(R.string.UnsupportedBlockMessage));
+            unsupportedBlockDrawable.setSubtitle(LocaleController.getString(R.string.UnsupportedBlockMessage).replace("Telegram", LocaleController.getString(R.string.CG_AppName)));
             unsupportedBlockDrawable.setButtonText(LocaleController.getString(R.string.UnsupportedUpdate));
             unsupportedBlockDrawable.setOnClickListener(() -> {
                 if (root.delegate != null) {
@@ -5875,6 +5939,7 @@ public class RichMessageLayout {
             content = new SpannableString(plain);
             if (content.length() > 0) {
                 content.setSpan(new StyleSpan(root, TEXT_FLAG_BLOCK_CODE), 0, content.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                content.setSpan(new QuoteRootSpan(block.text, 0), 0, content.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 if (prevBlock != null) {
                     final SpannableString oldContent = prevBlock.content;
                     final boolean prevIsLocked = oldContent instanceof CodeHighlighting.LockedWithFallbackSpannableString;

@@ -82,6 +82,8 @@ public class TextCheckCell2 extends FrameLayout {
             checkBoxClickArea.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 2));
             addView(checkBoxClickArea, LayoutHelper.createFrame(76, LayoutHelper.MATCH_PARENT, LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT));
         }
+        collapseViewContainer.setVisibility(View.VISIBLE);
+        checkBoxClickArea.setVisibility(checkBoxHidden ? View.GONE : View.VISIBLE);
         animatedTextView.setText(text);
         collapsedArrow.animate().cancel();
         collapsedArrow.animate().rotation(collapsed ? 0 : 180).setDuration(340).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT).start();
@@ -92,6 +94,9 @@ public class TextCheckCell2 extends FrameLayout {
     public void hideCollapseArrow() {
         if (collapseViewContainer != null) {
             collapseViewContainer.setVisibility(View.GONE);
+        }
+        if (checkBoxClickArea != null) {
+            checkBoxClickArea.setVisibility(View.GONE);
         }
     }
 
@@ -315,6 +320,7 @@ public class TextCheckCell2 extends FrameLayout {
 
     /** Cherrygram start */
     private final ImageView imageView;
+    private boolean checkBoxHidden;
 
     public void setTextAndIconAndCheck(CharSequence text, int iconResId, boolean checked, boolean divider, boolean animated) {
         textView.setText(text);
@@ -333,9 +339,25 @@ public class TextCheckCell2 extends FrameLayout {
     }
 
     public void setCheckBoxHidden(boolean hidden) {
-        if (checkBox != null) {
-            checkBox.setVisibility(hidden ? View.GONE : View.VISIBLE);
+        checkBoxHidden = hidden;
+        checkBox.setVisibility(hidden ? View.GONE : View.VISIBLE);
+        if (checkBoxClickArea != null) {
+            checkBoxClickArea.setVisibility(hidden ? View.GONE : View.VISIBLE);
         }
+        updateTextEndMargin();
+    }
+
+    private void updateTextEndMargin() {
+        LayoutParams lp = (LayoutParams) textView.getLayoutParams();
+        int end = dp(checkBoxHidden ? 21 : 64);
+        if (LocaleController.isRTL) {
+            if (lp.leftMargin == end) return;
+            lp.leftMargin = end;
+        } else {
+            if (lp.rightMargin == end) return;
+            lp.rightMargin = end;
+        }
+        textView.setLayoutParams(lp);
     }
     /** Cherrygram finish */
 

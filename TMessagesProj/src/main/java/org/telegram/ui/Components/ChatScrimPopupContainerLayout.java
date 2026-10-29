@@ -199,4 +199,11 @@ public class ChatScrimPopupContainerLayout extends LinearLayout {
             bottomView.setScaleY(scale);
         }
     }
+
+    /** Cherrygram start */
+    public View getBottomView() {
+        return bottomView;
+    }
+    /** Cherrygram finish */
+
 }

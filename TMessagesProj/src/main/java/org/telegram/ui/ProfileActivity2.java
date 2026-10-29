@@ -229,7 +229,8 @@ public class ProfileActivity2 extends BaseFragment implements
         actionBar.setAddToContainer(false);
         actionBar.setClipContent(true);
         actionBar.setBackgroundColor(Color.TRANSPARENT);
-        actionBar.setOccupyStatusBar(isMain || !AndroidUtilities.isTablet() && !inBubbleMode);
+        // a sheet's window is over the status bar (on tablets too)
+        actionBar.setOccupyStatusBar(isMain || parentLayout != null && parentLayout.isSheet() || !AndroidUtilities.isTablet() && !inBubbleMode);
 
         BackDrawable backDrawable = new BackDrawable(false);
         backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());

@@ -33,6 +33,7 @@ import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 public class EffectSelectorView extends LinearLayout {
 
     private ButtonEffect oldSelection;
+    private BaseCameraView cameraView;
     private boolean isEnabledButtons = true;
 
     public EffectSelectorView(Context context) {
@@ -63,6 +64,7 @@ public class EffectSelectorView extends LinearLayout {
 //    private static final String[] GOOGLE_FUCKUPS = {"raven", "bluejay", "panther", "cheetah", "lynx"};
 
     public void loadEffects(BaseCameraView baseCameraView) {
+        cameraView = baseCameraView;
         if (getChildCount() == 0) {
             boolean fuckup = false /*Arrays.asList(GOOGLE_FUCKUPS).contains(Build.DEVICE)*/;
             ArrayList<Integer> list_effect = new ArrayList<>();
@@ -99,10 +101,10 @@ public class EffectSelectorView extends LinearLayout {
                     protected void onItemClick(ButtonEffect buttonEffect, int camera_type) {
                         if (effect == CameraXController.CAMERA_ASPECT_RATIO_SELECTOR) {
                             CameraPreferencesEntry.showAspectRatioSelector(getContext(), () -> {
-                                if (baseCameraView instanceof CameraXView cameraXView) {
+                                if (EffectSelectorView.this.cameraView instanceof CameraXView cameraXView) {
                                     cameraXView.rebind();
-                                } else if (baseCameraView instanceof CameraView cameraView) {
-                                    cameraView.resetCamera();
+                                } else if (EffectSelectorView.this.cameraView instanceof CameraView camera) {
+                                    camera.resetCamera();
                                 }
                             });
                         } else {
@@ -184,4 +186,5 @@ public class EffectSelectorView extends LinearLayout {
         }
         return notchSize;
     }
+
 }

@@ -1116,7 +1116,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                 }
             }
         };
-        castAvailable = true;
+        castAvailable = !hideBottomButtons; // true
         try {
             castItemButton.setRouteSelector(CastContext.getSharedInstance(context).getMergedSelector());
         } catch (Exception e) {
@@ -2945,7 +2945,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             castItem.addView(castItemButton, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
             updateColors();
         }
-        o.addIf(isMyList(), R.drawable.msg_delete, getString(R.string.ProfilePlaylistRemoveFromProfile), true, () -> {
+        o.addIf(isMyList() && !hideBottomButtons, R.drawable.msg_delete, getString(R.string.ProfilePlaylistRemoveFromProfile), true, () -> {
             o.dismiss();
             onSubItemClick(7);
         });
@@ -3157,6 +3157,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
     @Override
     public void show() {
         super.show();
+        updateBottomButtonsVisibility();
         instance = this;
     }
 
@@ -3655,6 +3656,8 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
     }
 
     /** Cherrygram start */
+    public boolean hideBottomButtons;
+
     private final ButtonWithCounterView sleepTimerButton;
 
     private void setSleepTimer() {
@@ -3774,6 +3777,24 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             }
             CherrygramCoreConfig.INSTANCE.setSleepTimer(false);
         }
+    }
+
+    private void updateBottomButtonsVisibility() {
+        if (!hideBottomButtons || playerLayout == null) {
+            return;
+        }
+
+        playerLayout.removeView(saveToProfileButton);
+        playerLayout.removeView(unsaveFromProfileButton);
+        playerLayout.removeView(sleepTimerButton);
+
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) playerLayout.getLayoutParams();
+        layoutParams.height = dp(179);
+        playerLayout.setLayoutParams(layoutParams);
+
+        FrameLayout.LayoutParams shadowLayoutParams = (FrameLayout.LayoutParams) playerShadow.getLayoutParams();
+        shadowLayoutParams.bottomMargin = dp(179);
+        playerShadow.setLayoutParams(shadowLayoutParams);
     }
     /** Cherrygram finish */
 

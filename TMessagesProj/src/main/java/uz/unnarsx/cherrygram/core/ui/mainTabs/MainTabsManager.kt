@@ -54,33 +54,35 @@ object MainTabsManager {
         return loadTabs()
     }
 
+    fun getEnabledTabTypes(): List<TabType> {
+        return getEnabledTabs().map { it.type }
+    }
+
+    private const val DEFAULT_ORDER = "SETTINGS,CHATS,PROFILE,!CONTACTS,!CALLS,SEARCH"
+
     private fun loadTabs(): MutableList<Tab> {
         val allPossibleTypes = TabType.entries.toMutableList()
-        val value = CherrygramAppearanceConfig.mainTabsOrder
+        val value = CherrygramAppearanceConfig.mainTabsOrder ?: DEFAULT_ORDER
 
         val result = mutableListOf<Tab>()
 
-        if (value == null) {
-            result.add(Tab(TabType.SETTINGS, true))
-            result.add(Tab(TabType.CHATS, true))
-            result.add(Tab(TabType.PROFILE, true))
-        } else {
-            val parts = value.split(",")
-
-            for (p in parts) {
-                val enabled = !p.startsWith("!")
-                val typeName = if (enabled) p else p.substring(1)
-
-                try {
-                    val type = TabType.valueOf(typeName)
-                    result.add(Tab(type, enabled))
-                    allPossibleTypes.remove(type)
-                } catch (_: Exception) {
-                }
+        for (p in value.split(",")) {
+            val disabled = p.startsWith("!")
+            val type = try {
+                TabType.valueOf(if (disabled) p.substring(1) else p)
+            } catch (_: Exception) {
+                continue
             }
+            if (!allPossibleTypes.remove(type)) continue
+            result.add(Tab(type, !disabled || type == TabType.CHATS))
+        }
 
-            for (newType in allPossibleTypes) {
+        for (newType in allPossibleTypes) {
+            if (newType == TabType.SEARCH) {
                 result.add(Tab(newType, true))
+            } else {
+                val searchIndex = result.indexOfFirst { it.type == TabType.SEARCH }
+                result.add(if (searchIndex == -1) result.size else searchIndex, Tab(newType, false))
             }
         }
 

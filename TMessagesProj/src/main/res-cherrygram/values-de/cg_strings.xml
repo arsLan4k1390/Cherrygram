@@ -216,7 +216,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimentell</string>
     <string name="EP_NavigationAnimation">Navigations-Animation</string>
-    <string name="EP_NavigationAnimationBezier">Klassisch</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading Effekt</string>
     <string name="EP_CustomChat">Benutzerdefinierter Chat für gespeicherte Nachrichten</string>
     <string name="EP_CustomChat_Desc">Setze eine ID aus einem anderen Chat/Gruppe/Kanal um Nachrichten weiterzuleiten (Schaltfläche in Aktionsleiste, Nachrichtenmenü oder Doppeltipp)</string>

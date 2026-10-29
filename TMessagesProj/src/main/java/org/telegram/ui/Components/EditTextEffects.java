@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+
 public class EditTextEffects extends EditText {
     private final static int SPOILER_TIMEOUT = 10000;
 
@@ -286,9 +288,15 @@ public class EditTextEffects extends EditText {
 
     private static Boolean allowHackingTextCanvasCache;
     public static boolean allowHackingTextCanvas() {
+        if (CherrygramDebugConfig.INSTANCE.getFixChineseKeyboards()) {
+            allowHackingTextCanvasCache = false;
+            return false;
+        }
         if (allowHackingTextCanvasCache == null) {
             allowHackingTextCanvasCache = Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH && (
                 Build.MANUFACTURER == null ||
+                !Build.MANUFACTURER.toLowerCase().contains("vivo") &&
+                !Build.MANUFACTURER.toLowerCase().contains("oppo") &&
                 !Build.MANUFACTURER.toLowerCase().contains("honor") &&
                 !Build.MANUFACTURER.toLowerCase().contains("huawei") &&
                 !Build.MANUFACTURER.toLowerCase().contains("alps")

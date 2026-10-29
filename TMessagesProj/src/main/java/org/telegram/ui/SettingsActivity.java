@@ -5,6 +5,8 @@ import static org.telegram.messenger.AndroidUtilities.lerp;
 import static org.telegram.messenger.AndroidUtilities.replaceSingleTag;
 import static org.telegram.messenger.LocaleController.formatString;
 import static org.telegram.messenger.LocaleController.getString;
+import static org.telegram.ui.PremiumPreviewFragment.applyNewSpan;
+import static org.telegram.ui.PremiumPreviewFragment.applyNewSpanTimed;
 import static org.telegram.ui.Stars.StarGiftSheet.replaceUnderstood;
 
 import android.animation.Animator;
@@ -86,6 +88,9 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.SharedPrefsHelper;
+import org.telegram.ui.Cells.TextCell;
+import org.telegram.ui.Wallet.GramWallet;
+import org.telegram.ui.Wallet.WalletActivity;
 import org.telegram.utils.settings.SharedSettings;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
@@ -139,6 +144,7 @@ import org.telegram.ui.Stories.recorder.DualCameraView;
 import org.telegram.ui.TON.TONIntroActivity;
 import org.telegram.ui.bots.BotBiometry;
 import org.telegram.ui.bots.BotDownloads;
+import org.telegram.ui.QrShare.QrShareActivity;
 import org.telegram.ui.bots.BotLocation;
 import org.telegram.ui.bots.BotWebViewSheet;
 import org.telegram.ui.bots.SetupEmojiStatusSheet;
@@ -306,14 +312,24 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         };
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        leftButtonIsBack = true; // the view may be rebuilt (theme, language): checkUi_menuItems swaps it to QR again
         actionBar.setAllowOverlayTitle(true);
         actionBar.setUseContainerForTitles();
         actionBar.setTitle(getString(R.string.Settings), null, true);
+        actionBar.setAdditionalTextLeft(-dp(4));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
-                    finishFragment();
+                    if (hasMainTabs) {
+                        // no back on the main tab: the left button opens the QR code (with the search open, the action bar closes it instead)
+                        final Bundle args = new Bundle();
+                        args.putLong("user_id", getUserConfig().getClientUserId());
+                        args.putBoolean(QrShareActivity.ARG_IMMEDIATE, true);
+                        presentFragment(new QrShareActivity(args));
+                    } else {
+                        finishFragment();
+                    }
                 } else if (id == 2) {
                     presentSettingFragment(new LogoutActivity());
                 }
@@ -685,6 +701,14 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (listView.adapter != null) {
+            listView.adapter.notifyDataSetChanged();
+        }
+    }
+
     private ArrayList<Integer> accountNumbers = new ArrayList<>();
     private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         if (searchItem.isSearchFieldVisible2()) {
@@ -769,6 +793,13 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             items.add(UItem.asShadow(null));
         }*/
 
+        final boolean walletAbove = CherrygramCoreConfig.isDevBuild() || getConnectionsManager().getCurrentTime() - 1791538462 < 4 * 7 * 24 * 60 * 60;
+        if (walletAbove && getMessagesController().config.walletAvailable.get()) {
+            final GramWallet wallet = GramWallet.getInstance(currentAccount);
+            items.add(SettingCell.Factory.of(25, 0, 0, Theme.isCurrentThemeDark() ? R.drawable.settings_wallet_dark : R.drawable.settings_wallet, TextCell.applyNewSpanTimed(getString(R.string.WalletAttachMoney), 1790679020), null, wallet.getBalance() > 0 ? GramWallet.formatGrams(wallet.getBalance()) : null, false));
+            items.add(UItem.asShadow(null));
+        }
+
         telegramSettingsHelper.injectChannelAdvice(items);
         telegramSettingsHelper.injectAccounts(adapter, items, accountNumbers, getUserConfig().getCurrentUser());
         telegramSettingsHelper.injectCherryItems(items, getUserConfig().getCurrentUser());
@@ -783,6 +814,11 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         items.add(SettingCell.Factory.of(10, IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom, R.drawable.settings_language, getString(R.string.SettingsLanguage), LocaleController.getCurrentLanguageName()));
 
         items.add(UItem.asShadow(null));
+        if (!walletAbove && getMessagesController().config.walletAvailable.get()) {
+            final GramWallet wallet = GramWallet.getInstance(currentAccount);
+            items.add(SettingCell.Factory.of(25, 0, 0, Theme.isCurrentThemeDark() ? R.drawable.settings_wallet_dark : R.drawable.settings_wallet, TextCell.applyNewSpanTimed(getString(R.string.WalletAttachMoney), 1790679020), null, wallet.getBalance() > 0 ? GramWallet.formatGrams(wallet.getBalance()) : null, false));
+            items.add(UItem.asShadow(null));
+        }
 
         if (!getMessagesController().premiumFeaturesBlocked()) {
             items.add(SettingCell.Factory.of(11, 0xFFB659FF, 0xFF617CFF, R.drawable.settings_premium, getString(R.string.TelegramPremium)));
@@ -794,21 +830,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
         StarsController.getInstance(currentAccount, true).getBalance();
         if (ApplicationLoader.isBetaBuild() || ApplicationLoader.isStandaloneBuild() || ApplicationLoader.isHuaweiStoreBuild() || (StarsController.getInstance(currentAccount, true).balanceAvailable() && (StarsController.getInstance(currentAccount, true).hasTransactions() || StarsController.getInstance(currentAccount, true).getBalance().positive()))) {
-            StarsController c = StarsController.getTonInstance(currentAccount);
-            long balance = c.getBalance().amount;
-            items.add(SettingCell.Factory.of(13, 0xFF1BA4ED, 0xFF1488E1, R.drawable.settings_gram_24, getString(R.string.MyTON), null, c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : ""));
-        }
-
-        TLRPC.TL_attachMenuBots menuBots = MediaDataController.getInstance(UserConfig.selectedAccount).getAttachMenuBots();
-        if (menuBots != null && menuBots.bots != null && !menuBots.bots.isEmpty()) {
-            for (TLRPC.TL_attachMenuBot attachMenuBot : menuBots.bots) {
-                final long WALLET_BOT_ID = 1985737506L;
-                if (attachMenuBot.show_in_side_menu && attachMenuBot.bot_id == WALLET_BOT_ID) {
-                    UItem item = SettingCell.Factory.ofBot(attachMenuBot, 0xFF1BA4ED, 0xFF1488E1, R.drawable.settings_wallet);
-                    item.object = attachMenuBot;
-                    items.add(item);
-                }
-            }
+            final StarsController c = StarsController.getTonInstance(currentAccount);
+            final long balance = c.getBalance().amount;
+            items.add(SettingCell.Factory.of(13, 0xFF1BA4ED, 0xFF1488E1, R.drawable.filled_gram_earnings, getString(R.string.GramEarnings), null, c.balanceAvailable() && balance > 0 ? StarsIntroActivity.formatStarsAmount(c.getBalance(), 0.85f, ' ') : ""));
         }
 
         if (!getMessagesController().premiumFeaturesBlocked()) {
@@ -830,6 +854,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             items.add(UItem.asShadow(null));
             items.add(UItem.asHeader("Experimental"));
             items.add(SettingCell.Factory.of(24, 0xFFF45255, 0xFFDF3955, 0, getString(R.string.RoundVideoSettings)));
+            items.add(SettingCell.Factory.of(26, 0xFF55CA47, 0xFF27B434, 0, getString(R.string.AudioRecorderSettings)));
         }
 
         if (BuildVars.LOGS_ENABLED || BuildVars.DEBUG_PRIVATE_VERSION) {
@@ -947,6 +972,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             case 13:
                 presentSettingFragment(new TONIntroActivity());
                 break;
+            case 25:
+                presentSettingFragment(new WalletActivity());
+                break;
             case 15:
                 presentSettingFragment(new PremiumPreviewFragment(PremiumPreviewFragment.FEATURES_BUSINESS, "settings"));
                 break;
@@ -983,6 +1011,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             }
             case 24: {
                 presentFragment(new RoundVideoSettingsActivity());
+                break;
+            }
+            case 26: {
+                presentFragment(new AudioRecorderSettingsActivity());
                 break;
             }
         }
@@ -1333,6 +1365,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         private final TextView subtitleView;
         private final TextView valueView;
         private final boolean mini;
+        private boolean hasBackground = true;
 
         public SettingCell(Context context, Theme.ResourcesProvider resourcesProvider) {
             this(context, resourcesProvider, false);
@@ -1361,14 +1394,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
             subtitleView = new TextView(context);
             subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-            if (cgSettings) {
-                subtitleView.setMaxLines(5);
-                subtitleView.setEllipsize(TextUtils.TruncateAt.END);
-                subtitleView.setLineSpacing(dp(2), 0.92f);
-                textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 1, 0, 0));
-            } else {
-                textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 4, 0, 0));
-            }
+            textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 4, 0, 0));
 
             counterView = new TextView(context);
             counterView.setPadding(dp(6.66f), 0, dp(6.66f), 0);
@@ -1422,7 +1448,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
             subtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
             valueView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText, resourcesProvider));
-            iconBackground.setDrawBorder(resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark());
+            iconBackground.setDrawBorder(hasBackground && (resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark()));
         }
 
         private boolean twoLines;
@@ -1431,19 +1457,48 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             int iconColorTop, int iconColorBottom, int icon,
             CharSequence title,
             CharSequence subtitle,
-            CharSequence value
+            CharSequence value,
+            boolean allowMonet
         ) {
+            set(iconColorTop, iconColorBottom, icon, title, subtitle, value, false, allowMonet);
+        }
+
+        public void set(
+            int iconColorTop, int iconColorBottom, int icon,
+            CharSequence title,
+            CharSequence subtitle,
+            CharSequence value,
+            boolean cgSettings,
+            boolean allowMonet
+        ) {
+            applyCgSettings(cgSettings);
+
+            // фон есть только если исходные цвета не (0, 0) — считаем ДО monet-преобразования
+            hasBackground = iconColorTop != 0 || iconColorBottom != 0;
+            // monet применяем только к иконкам с фоном (кошелёк и т.п. с 0,0 остаются как нарисованы)
+            final boolean monet = allowMonet && hasBackground;
+
+            if (monet) {
+                iconColorTop = MonetHelper.getSettingsIconBackgroundColor(iconColorTop);
+                iconColorBottom = MonetHelper.getSettingsIconBackgroundColor(iconColorBottom);
+            }
+
             iconLayout.setVisibility(icon != 0 ? View.VISIBLE : View.GONE);
             titleView.setTranslationX(icon == 0 ? dp(2) : 0);
             subtitleView.setTranslationX(icon == 0 ? dp(2) : 0);
 
             iconBackground.setColor(iconColorTop, iconColorBottom);
             iconView.setImageResource(icon);
-            iconView.setColorFilter(new PorterDuffColorFilter(MonetHelper.getSettingsIconForegroundColor(Color.WHITE), PorterDuff.Mode.SRC_IN));
             titleView.setText(title);
+            if (monet) {
+                iconView.setColorFilter(new PorterDuffColorFilter(MonetHelper.getSettingsIconForegroundColor(Color.WHITE), PorterDuff.Mode.SRC_IN));
+            } else {
+                iconView.clearColorFilter();
+            }
             subtitleView.setVisibility((twoLines = !TextUtils.isEmpty(subtitle)) ? View.VISIBLE : View.GONE);
             subtitleView.setText(subtitle);
             setValue(value);
+            updateColors();
         }
 
         public void setValue(CharSequence value) {
@@ -1554,11 +1609,15 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
                 int iconColorTop    = (int) item.longValue;
                 int iconColorBottom = (int) (item.longValue >>> 32);
+                final int flags = item.intValue;
+
                 ((SettingCell) view).set(
                     iconColorTop, iconColorBottom, item.iconResId,
                     item.text,
                     item.subtext,
-                    item.textValue
+                    item.textValue,
+                    (flags & FLAG_CG_SETTINGS) != 0,
+                    (flags & FLAG_NO_MONET) == 0
                 );
 
                 SettingCell cell = (SettingCell) view;
@@ -1589,14 +1648,19 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 return of(id, iconColorTop, iconColorBottom, icon, title, subtitle, null);
             }
             public static UItem of(int id, int iconColorTop, int iconColorBottom, int icon, CharSequence title, CharSequence subtitle, boolean cgSettings) {
-                SettingCell.cgSettings = cgSettings;
-                return of(id, iconColorTop, iconColorBottom, icon, title, subtitle, null);
+                return of(id, iconColorTop, iconColorBottom, icon, title, subtitle, null, cgSettings, true);
             }
+            public static UItem of(int id, int iconColorTop, int iconColorBottom, int icon, CharSequence title, CharSequence subtitle, boolean cgSettings, boolean allowMonet) {
+                return of(id, iconColorTop, iconColorBottom, icon, title, subtitle, null, cgSettings, allowMonet);
+            }
+
             public static UItem of(int id, int iconColorTop, int iconColorBottom, int icon, CharSequence title, CharSequence subtitle, CharSequence value) {
-
-                iconColorTop = MonetHelper.getSettingsIconBackgroundColor(iconColorTop);
-                iconColorBottom = MonetHelper.getSettingsIconBackgroundColor(iconColorBottom);
-
+                return of(id, iconColorTop, iconColorBottom, icon, title, subtitle, value, true);
+            }
+            public static UItem of(int id, int iconColorTop, int iconColorBottom, int icon, CharSequence title, CharSequence subtitle, CharSequence value, boolean allowMonet) {
+                return of(id, iconColorTop, iconColorBottom, icon, title, subtitle, value, false, allowMonet);
+            }
+            public static UItem of(int id, int iconColorTop, int iconColorBottom, int icon, CharSequence title, CharSequence subtitle, CharSequence value, boolean cgSettings, boolean allowMonet) {
                 final UItem item = UItem.ofFactory(Factory.class);
                 item.id = id;
                 item.iconResId = icon;
@@ -1604,14 +1668,11 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 item.subtext = subtitle;
                 item.textValue = value;
                 item.longValue = ((long) iconColorBottom << 32) | (iconColorTop & 0xFFFFFFFFL);
+                item.intValue = (cgSettings ? FLAG_CG_SETTINGS : 0) | (allowMonet ? 0 : FLAG_NO_MONET);
                 return item;
             }
 
             public static UItem ofBot(TLRPC.TL_attachMenuBot attachMenuBot, int iconColorTop, int iconColorBottom, int icon) {
-
-                iconColorTop = MonetHelper.getSettingsIconBackgroundColor(iconColorTop);
-                iconColorBottom = MonetHelper.getSettingsIconBackgroundColor(iconColorBottom);
-
                 final UItem item = UItem.ofFactory(Factory.class);
                 item.id = Long.hashCode(attachMenuBot.bot_id);
                 item.object = attachMenuBot;
@@ -1623,7 +1684,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
 
         /** Cherrygram start */
-        public static boolean cgSettings = false;
+        public static final int FLAG_CG_SETTINGS = 1;
+        public static final int FLAG_NO_MONET    = 1 << 1; // 0 по умолчанию => monet разрешён
+
+        private boolean cgSettings; // instance, не static
 
         private Runnable onArrowClick;
         private final ImageView arrowView;
@@ -1721,6 +1785,28 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         public void setValueCG(CharSequence value) {
             subtitleView.setVisibility(!TextUtils.isEmpty(value) ? View.VISIBLE : View.GONE);
             subtitleView.setText(value);
+        }
+
+        private void applyCgSettings(boolean cg) {
+            if (cgSettings == cg) return;
+            cgSettings = cg;
+            if (cg) {
+                subtitleView.setMaxLines(5);
+                subtitleView.setEllipsize(TextUtils.TruncateAt.END);
+                subtitleView.setLineSpacing(dp(2), 0.92f);
+            } else {
+                subtitleView.setMaxLines(Integer.MAX_VALUE);
+                subtitleView.setEllipsize(null);
+                subtitleView.setLineSpacing(0, 1f);
+            }
+            ((LinearLayout.LayoutParams) subtitleView.getLayoutParams()).topMargin = dp(cg ? 1 : 4);
+            subtitleView.requestLayout();
+            requestLayout();
+        }
+
+        public static UItem noMonet(UItem item) {
+            item.intValue |= FLAG_NO_MONET;
+            return item;
         }
         /** Cherrygram finish */
 
@@ -1898,7 +1984,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 getMessagesStorage().clearSentMedia();
                 SharedConfig.setNoSoundHintShowed(false);
                 SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
-                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("searchpostsnew").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("voicepausehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("newppsms").remove("monetizationadshint").remove("seekSpeedHintShowed").remove("unsupport_video/av01").remove("statusgiftpage").remove("multistorieshint").remove("trimvoicehint").remove("taptostoryhighlighthint").remove("proxycheckstatusip").remove("callmiconstart").remove("showchattagsinfo").remove("language_showed2").remove("aihintshown").remove("savedmsgschatshint").apply();
+                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("searchpostsnew").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("voicepausehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("newppsms").remove("monetizationadshint").remove("seekSpeedHintShowed").remove("unsupport_video/av01").remove("statusgiftpage").remove("multistorieshint").remove("trimvoicehint").remove("taptostoryhighlighthint").remove("proxycheckstatusip").remove("callmiconstart").remove("showchattagsinfo").remove("language_showed2").remove("aihintshown").remove("savedmsgschatshint").remove("walletcardstickerhint").apply();
                 HintsController.resetAll();
                 SharedPrefsHelper.cleanupAccount(currentAccount);
                 MessagesController.getEmojiSettings(currentAccount).edit().remove("featured_hidden").remove("emoji_featured_hidden").commit();
@@ -2437,9 +2523,30 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
     }
 
+    private boolean leftButtonIsBack = true;
+
     private void checkUi_menuItems() {
-        FragmentFloatingButton.setAnimatedVisibility(otherItem, 1f - animatorSearchPageVisible.getFloatValue());
-        FragmentFloatingButton.setAnimatedVisibility(actionBar.getBackButton(), lerp(hasMainTabs ? 0f : 1f, 1f, animatorSearchPageVisible.getFloatValue()));
+        final float searchVisible = animatorSearchPageVisible.getFloatValue();
+        FragmentFloatingButton.setAnimatedVisibility(otherItem, 1f - searchVisible);
+        if (!hasMainTabs) {
+            FragmentFloatingButton.setAnimatedVisibility(actionBar.getBackButton(), 1f);
+            return;
+        }
+        // the main tab has no back: the left button is the QR code, turning into back while the search is open
+        // (shrinks away and grows back with the other icon; stays visible, so the title does not move)
+        final ImageView button = actionBar.getBackButton();
+        if (button == null) return;
+        final boolean back = searchVisible > 0.5f;
+        if (back != leftButtonIsBack) {
+            leftButtonIsBack = back;
+            button.setImageResource(back ? R.drawable.ic_ab_back : R.drawable.outline_header_qr_24);
+            button.setContentDescription(getString(back ? R.string.AccDescrGoBack : R.string.QrCode));
+        }
+        final float f = Math.abs(searchVisible * 2f - 1f);
+        button.setVisibility(View.VISIBLE);
+        button.setAlpha(f);
+        button.setScaleX(lerp(0.4f, 1f, f));
+        button.setScaleY(lerp(0.4f, 1f, f));
     }
 
 

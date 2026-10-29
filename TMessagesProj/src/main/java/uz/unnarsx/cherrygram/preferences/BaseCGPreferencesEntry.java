@@ -53,6 +53,7 @@ import org.telegram.ui.Components.blur3.capture.IBlur3Capture;
 import org.telegram.ui.Components.blur3.capture.IBlur3Hash;
 import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -347,15 +348,34 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
     }
 
     private static boolean isDeepLinkSectionSlug(String slug) {
+        if (TextUtils.isEmpty(slug)) {
+            return false;
+        }
+
         try {
-            for (var field : DeeplinkHelper.DeepLinksRepo.class.getFields()) {
-                if (field.getType() == String.class && slug.equals(field.get(null))) {
+            for (var field : DeeplinkHelper.DeepLinksRepo.class.getDeclaredFields()) {
+                if (field.getType() != String.class) {
+                    continue;
+                }
+
+                if (!Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
+
+                Object value = field.get(null);
+
+                if (slug.equals(value)) {
+                    CherrygramLogger.d(() ->
+                            "DeepLink match: slug=" + slug + ", field=" + field.getName()
+                    );
                     return true;
                 }
             }
         } catch (IllegalAccessException e) {
             CherrygramLogger.e(e);
         }
+
+        CherrygramLogger.d(() -> "DeepLink NO match: slug=" + slug);
         return false;
     }
 
@@ -366,10 +386,12 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
 
     @Override
     public void onInsets(int left, int top, int right, int bottom) {
+        final int safeTop = Math.max(top, AndroidUtilities.statusBarHeight);
+
         var topPadding = needActionBarPadding() ? ActionBar.getCurrentActionBarHeight() : dp(16);
-        listView.setPadding(0, top + topPadding, 0, bottom);
-        actionBarContainer.setPadding(0, top, 0, 0);
-        super.onInsets(left, top, right, bottom);
+        listView.setPadding(0, safeTop + topPadding, 0, bottom);
+        actionBarContainer.setPadding(0, safeTop, 0, 0);
+        super.onInsets(left, safeTop, right, bottom);
     }
 
     /* Blur */

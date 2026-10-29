@@ -104,8 +104,10 @@ import org.telegram.ui.PhotoViewer;
 import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stars.StarsIntroActivity;
 import org.telegram.ui.Stories.StoriesController;
+import org.telegram.ui.Wallet.GramWallet;
 import org.telegram.ui.community.CommunityUtils;
 import org.telegram.ui.web.BotWebViewContainer;
+import org.telegram.utils.code.highlight.CodeHighlighting;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -4970,6 +4972,24 @@ public class MessageObject {
                     } else {
                         messageText = formatString(isChannel ? R.string.BoostingGiveawayJustStarted : R.string.BoostingGiveawayJustStartedGroup, chat != null ? chat.title : "");
                     }
+                } else if (messageOwner.action instanceof TLRPC.TL_messageActionWalletTonConnectRequest) {
+                    final TLRPC.TL_messageActionWalletTonConnectRequest request = (TLRPC.TL_messageActionWalletTonConnectRequest) messageOwner.action;
+                    if (!TextUtils.isEmpty(request.dapp_name)) {
+                        messageText = formatString(
+                              request.declined ? R.string.WalletTonConnectRequestAppDeclined
+                            : request.accepted ? R.string.WalletTonConnectRequestAppProcessed
+                            : request.expires <= ConnectionsManager.getInstance(currentAccount).getCurrentTime()
+                            ? R.string.WalletTonConnectRequestAppExpired : R.string.WalletTonConnectRequestAppPending,
+                            request.dapp_name
+                        );
+                    } else {
+                        messageText = getString(
+                              request.declined ? R.string.WalletTonConnectRequestDeclined
+                            : request.accepted ? R.string.WalletTonConnectRequestProcessed
+                            : request.expires <= ConnectionsManager.getInstance(currentAccount).getCurrentTime()
+                            ? R.string.WalletTonConnectRequestExpired : R.string.WalletTonConnectRequestPending
+                        );
+                    }
                 } else if (messageOwner.action instanceof TLRPC.TL_messageActionBoostApply) {
                     TLRPC.Chat chat = messageOwner.peer_id != null && messageOwner.peer_id.channel_id != 0 ? getChat(chats, sChats, messageOwner.peer_id.channel_id) : null;
                     boolean isChannel = ChatObject.isChannelAndNotMegaGroup(chat);
@@ -5773,6 +5793,19 @@ public class MessageObject {
                     } else {
                         messageText = replaceWithLink(formatPluralStringComma("PaidMessagesPriceUpdated", (int) action.stars), "un1", fromObject);
                     }
+                } else if (messageOwner.action instanceof TLRPC.TL_messageActionNoPaidMessagesTokenUsed) {
+                    // sent by the one who used a free messaging link (QR code) of the other
+                    if (isOutOwner()) {
+                        final TLRPC.User user;
+                        if (messageOwner.saved_peer_id != null) {
+                            user = getUser(users, sUsers, DialogObject.getPeerDialogId(messageOwner.saved_peer_id));
+                        } else {
+                            user = getUser(users, sUsers, DialogObject.getPeerDialogId(messageOwner.peer_id));
+                        }
+                        messageText = replaceWithLink(getString(R.string.NoPaidMessagesTokenUsedOut), "un1", user);
+                    } else {
+                        messageText = replaceWithLink(getString(R.string.NoPaidMessagesTokenUsed), "un1", fromObject);
+                    }
                 } else if (messageOwner.action instanceof TLRPC.TL_messageActionPaidMessagesRefunded) {
                     final TLRPC.TL_messageActionPaidMessagesRefunded action = (TLRPC.TL_messageActionPaidMessagesRefunded) messageOwner.action;
                     if (isOutOwner()) {
@@ -5938,6 +5971,23 @@ public class MessageObject {
                         messageText = isOut() ? getString(R.string.SharingOfferDisableHeaderShortYou) : replaceTags(formatString(R.string.SharingOfferDisableHeaderShortOther, userName));
                     } else {
                         messageText = isOut() ? getString(R.string.SharingOfferEnableHeaderShortYou) : replaceTags(formatString(R.string.SharingOfferEnableHeaderShortOther, userName));
+                    }
+                } else if (messageOwner.action instanceof TLRPC.TL_messageActionGramTransfer) {
+                    final TLRPC.TL_messageActionGramTransfer action = (TLRPC.TL_messageActionGramTransfer) messageOwner.action;
+                    final TLRPC.User user = getUser(users, sUsers, DialogObject.getPeerDialogId(messageOwner.peer_id));
+                    if (isOut()) {
+                        messageText = replaceWithLink(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.WalletActionSentGrams, GramWallet.formatGramsWithUnit(action.amount))), "un1", user);
+                    } else if (UserObject.isService(DialogObject.getPeerDialogId(messageOwner.peer_id))) {
+                        messageText = AndroidUtilities.replaceTags(LocaleController.formatString(R.string.WalletActionReceivedGramsSomeone, GramWallet.formatGramsWithUnit(action.amount)));
+                    } else {
+                        messageText = replaceWithLink(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.WalletActionReceivedGrams, GramWallet.formatGramsWithUnit(action.amount))), "un1", fromObject);
+                    }
+                    if (isOut()) {
+                        messageTextShort = AndroidUtilities.replaceTags(LocaleController.formatString(R.string.WalletActionSentGramsShort, GramWallet.formatGramsWithUnit(action.amount)));
+                    } else if (UserObject.isService(DialogObject.getPeerDialogId(messageOwner.peer_id))) {
+                        messageTextShort = AndroidUtilities.replaceTags(LocaleController.formatString(R.string.WalletActionReceivedGramsSomeone, GramWallet.formatGramsWithUnit(action.amount)));
+                    } else {
+                        messageTextShort = AndroidUtilities.replaceTags(LocaleController.formatString(R.string.WalletActionReceivedGrams, GramWallet.formatGramsWithUnit(action.amount)).replace("un1", "").trim());
                     }
                 }
             }
@@ -7282,13 +7332,16 @@ public class MessageObject {
     }
 
     public static CharSequence replaceWithLink(CharSequence source, String param, TLObject object) {
+        return replaceWithLink(source, param, object, false);
+    }
+    public static CharSequence replaceWithLink(CharSequence source, String param, TLObject object, boolean makeShort) {
         int start = TextUtils.indexOf(source, param);
         if (start >= 0) {
             CharSequence name;
             String id;
             TLObject spanObject = null;
             if (object instanceof TLRPC.User) {
-                name = UserObject.getUserName((TLRPC.User) object).replace('\n', ' ');
+                name = makeShort ? UserObject.getForcedFirstName((TLRPC.User) object).replace('\n', ' ') : UserObject.getUserName((TLRPC.User) object).replace('\n', ' ');
                 id = "" + ((TLRPC.User) object).id;
             } else if (object instanceof TLRPC.Chat) {
                 name = ((TLRPC.Chat) object).title.replace('\n', ' ');
@@ -7941,7 +7994,7 @@ public class MessageObject {
             entities.add(entityItalic);
             return addEntitiesToText(text, entities, isOutOwner(), true, photoViewer, useManualParse);
         } else {
-            return addEntitiesToText(text, MessagesFilterHelper.INSTANCE.addSpoilerEntities(this, getEntities()), isOutOwner(), true, photoViewer, useManualParse);
+            return addEntitiesToText(text, MessagesFilterHelper.INSTANCE.addSpoilerEntities(this, getEntities(), text), isOutOwner(), true, photoViewer, useManualParse);
         }
     }
 
@@ -8307,6 +8360,9 @@ public class MessageObject {
                 if (linksCount >= MediaDataController.MAX_LINKS_COUNT) continue;
                 linksCount++;
                 spannable.setSpan(new FormattedDateSpan(url, run, (TLRPC.TL_messageEntityFormattedDate) run.urlEntity), run.start, run.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else if (run.urlEntity instanceof TLRPC.TL_messageEntityTonAddress) {
+                hasUrls = true;
+                spannable.setSpan(new URLSpanNoUnderline("tonaddress:" + url, run), run.start, run.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else if (run.urlEntity instanceof TLRPC.TL_messageEntityBankCard) {
                 hasUrls = true;
                 spannable.setSpan(new URLSpanNoUnderline("card:" + url, run), run.start, run.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -8494,6 +8550,7 @@ public class MessageObject {
             generatedWithMinSize = dp(530);
         } else {
             generatedWithMinSize = getParentWidth();
+            generatedWithMinSize = Math.min(generatedWithMinSize, AndroidUtilities.displaySize.x);
         }
         generatedWithDensity = AndroidUtilities.density;
         generatedWithFontSize = Theme.chat_msgTextPaint != null ? Theme.chat_msgTextPaint.getTextSize() : 0;
@@ -8535,7 +8592,7 @@ public class MessageObject {
         if (emojiOnlyCount >= 1 && totalAnimatedEmojiCount <= 100 && (emojiOnlyCount - totalAnimatedEmojiCount) < (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH ? 100 : 50) && (hasValidReplyMessageObject() || isForwarded())) {
             maxWidth = Math.min(maxWidth, (int) (generatedWithMinSize * .65f));
         }
-        return maxWidth;
+        return Math.max(0, maxWidth);
     }
 
     public boolean updateSideMenuEnabled(boolean enabled) {
@@ -9618,7 +9675,7 @@ public class MessageObject {
         if (isSaved) {
             return true;
         }
-        if (forceAvatar || customAvatarDrawable != null || messageOwner != null && messageOwner.guestchat_via_from != null) {
+        if (forceAvatar || customAvatarDrawable != null) {
             return true;
         }
         if (searchType != 0) {
@@ -9645,7 +9702,7 @@ public class MessageObject {
         if (isSaved) {
             return true;
         }
-        if (forceAvatar || customAvatarDrawable != null) {
+        if (forceAvatar || customAvatarDrawable != null || messageOwner != null && messageOwner.guestchat_via_from != null) {
             return true;
         }
         if (searchType != 0) {
@@ -10277,23 +10334,6 @@ public class MessageObject {
         return false;
     }
 
-    public static boolean isAnyKindOfStickerOrEmoji(TLRPC.Document document) {
-        if (document == null) {
-            return false;
-        }
-
-        for (int a = 0, N = document.attributes.size(); a < N; a++) {
-            TLRPC.DocumentAttribute attribute = document.attributes.get(a);
-            if (attribute instanceof TLRPC.TL_documentAttributeSticker) {
-                return true;
-            } else if (attribute instanceof TLRPC.TL_documentAttributeCustomEmoji) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public static boolean isVideoStickerDocument(TLRPC.Document document) {
         if (document != null) {
             for (int a = 0; a < document.attributes.size(); a++) {
@@ -10333,6 +10373,23 @@ public class MessageObject {
                 }
             }
         }
+        return false;
+    }
+
+    public static boolean isAnyKindOfStickerOrEmoji(TLRPC.Document document) {
+        if (document == null) {
+            return false;
+        }
+
+        for (int a = 0, N = document.attributes.size(); a < N; a++) {
+            TLRPC.DocumentAttribute attribute = document.attributes.get(a);
+            if (attribute instanceof TLRPC.TL_documentAttributeSticker) {
+                return true;
+            } else if (attribute instanceof TLRPC.TL_documentAttributeCustomEmoji) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -13097,7 +13154,7 @@ public class MessageObject {
         if (messageOwner.entities == null) return false;
         for (int i = 0; i < messageOwner.entities.size(); ++i) {
             final TLRPC.MessageEntity e = messageOwner.entities.get(i);
-            if (e instanceof TLRPC.TL_messageEntityPhone || e instanceof TLRPC.TL_messageEntityBankCard)
+            if (e instanceof TLRPC.TL_messageEntityPhone || e instanceof TLRPC.TL_messageEntityBankCard || e instanceof TLRPC.TL_messageEntityTonAddress)
                 return true;
         }
         return false;

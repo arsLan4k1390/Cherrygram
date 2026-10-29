@@ -853,7 +853,9 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
                 if (fragment != null && messageObject != null) {
                     if (messageObject.isVoice()) {
                         if (getContext() instanceof LaunchActivity) {
-                            fragment.showDialog(new AudioPlayerAlert(getContext(), resourcesProvider));
+                            AudioPlayerAlert audioPlayerAlert = new AudioPlayerAlert(getContext(), resourcesProvider);
+                            audioPlayerAlert.hideBottomButtons = true;
+                            fragment.showDialog(audioPlayerAlert);
                         }
                     }
                 }

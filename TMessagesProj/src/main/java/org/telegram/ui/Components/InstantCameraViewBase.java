@@ -1,18 +1,26 @@
 package org.telegram.ui.Components;
 
+import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.telegram.messenger.AppGlobalConfig;
 import org.telegram.messenger.ImageReceiver;
+import org.telegram.messenger.UserConfig;
 import org.telegram.utils.settings.SharedSettings;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.telegram.ui.Components.blur3.drawable.color.BlurredBackgroundColorProvider;
+import org.telegram.ui.Stories.recorder.FlashViews;
+import org.telegram.ui.Stories.recorder.SliderView;
 
+import uz.unnarsx.cherrygram.camera.CherryZoomSliderView;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 /** Common UI contract implemented by the legacy and Camera2 round-video views. */
@@ -50,19 +58,18 @@ public abstract class InstantCameraViewBase extends FrameLayout {
             Theme.ResourcesProvider resourcesProvider,
             boolean isNewDesign
     ) {
-        return SharedSettings.roundVideoCamera2Enabled.get() && CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 && CherrygramCameraConfig.INSTANCE.getNewCamera2Design()
+        if (CherrygramCameraConfig.INSTANCE.getUseNewEncoder()) {
+            return new InstantCameraView2(context, delegate, resourcesProvider, isNewDesign);
+        } else {
+            return new InstantCameraView(context, delegate, resourcesProvider, isNewDesign);
+        }
+        /*final boolean useCamera2Impl = SharedSettings.roundVideoCamera2Enabled.isSet() ?
+            SharedSettings.roundVideoCamera2Enabled.get() :
+            AppGlobalConfig.getInstance(UserConfig.selectedAccount).roundVideoRecorder2Allowed.get();
+
+        return useCamera2Impl
                 ? new InstantCameraView2(context, delegate, resourcesProvider, isNewDesign)
-                : new InstantCameraView(context, delegate, resourcesProvider, isNewDesign);
-    }
-
-    /** Selects the implementation used by subsequently created views. */
-    public static void setUseCamera2Implementation(boolean enabled) {
-        SharedSettings.roundVideoCamera2Enabled.set(enabled);
-    }
-
-    /** Returns whether subsequently created views use the Camera2 implementation. */
-    public static boolean isUsingCamera2Implementation() {
-        return SharedSettings.roundVideoCamera2Enabled.get();
+                : new InstantCameraView(context, delegate, resourcesProvider, isNewDesign);*/
     }
 
     /** Sets the host animation callback. */
@@ -198,5 +205,32 @@ public abstract class InstantCameraViewBase extends FrameLayout {
     );
 
     public void updateReplyOffset() {}
+
+    public CherryZoomSliderView zoomControlView;
+
+    public SliderView evControlView;
+    public AnimatorSet evControlAnimation;
+    public Runnable evControlHideRunnable;
+
+    public abstract boolean isFrontFaceCamera();
+
+    public abstract boolean isFlashOn();
+
+    public abstract void setFlashOn(boolean on);
+
+    public abstract void applyFlashState();
+
+    public abstract boolean isRearFlashConfigurable();
+
+    public abstract FlashViews getFlashViews();
+
+    public abstract View getFlashButton();
+
+    public abstract ViewGroup getButtonsContainer();
+
+    public abstract Theme.ResourcesProvider getCameraResourcesProvider();
+
+    public abstract Activity getParentActivity();
     /** Cherrygram finish */
+
 }

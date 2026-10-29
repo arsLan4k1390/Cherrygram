@@ -13,6 +13,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.TextureView;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -63,6 +64,10 @@ public abstract class BaseCameraView extends FrameLayout {
 
     public abstract TextureView getTextureView();
 
+    public View getPreviewScaleView() {
+        return getTextureView();
+    }
+
     public abstract void initTexture();
 
     public abstract void showTexture(boolean show, boolean animated);
@@ -72,5 +77,57 @@ public abstract class BaseCameraView extends FrameLayout {
     public abstract float getTextureHeight(float width, float height);
 
     public abstract void startSwitchingAnimation();
+
+    public void destroy(boolean async, Runnable beforeDestroyRunnable) {
+    }
+
+    public boolean isDual() {
+        return false;
+    }
+
+    public void toggleDual() {
+    }
+
+    public boolean dualAvailable() {
+        return false;
+    }
+
+    public boolean isSavedDual() {
+        return false;
+    }
+
+    public boolean isDualTouch() {
+        return false;
+    }
+
+    public void allowToTapFocus() {
+    }
+
+    public void clearTapFocus() {
+    }
+
+    public void startTakePictureAnimation(boolean haptic) {
+    }
+
+    public void pauseAsTakingPicture() {
+    }
+
+    public int getVideoWidth() {
+        return 0;
+    }
+
+    public int getVideoHeight() {
+        return 0;
+    }
+
+    public Object getBlurRenderNode() {
+        return null;
+    }
+
+    public void listenDraw(Runnable listener) {
+    }
+
+    public void unlistenDraw(Runnable listener) {
+    }
 
 }
