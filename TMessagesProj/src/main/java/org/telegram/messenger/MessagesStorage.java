@@ -6341,8 +6341,6 @@ public class MessagesStorage extends BaseController {
                 }
             }
 
-            // CHERRYGRAM: свитч действует только на пользовательские папки (filter != null).
-            // Для "All Chats"/"Archive" мьют по-прежнему регулируется showBadgeMuted, не трогаем.
             final boolean includeMutedHere = (filter == null) || CherrygramAppearanceConfig.INSTANCE.getTabsIncludeMutedInCounter();
 
             if (read) {
@@ -6377,8 +6375,6 @@ public class MessagesStorage extends BaseController {
                 if ((flags & MessagesController.DIALOG_FILTER_FLAG_GROUPS) != 0) {
                     if ((flags & MessagesController.DIALOG_FILTER_FLAG_ONLY_ARCHIVED) == 0) {
                         unreadCount -= groups[0][0];
-                        // CHERRYGRAM: если фильтр сам не исключает муту, но НАШ свитч выключен —
-                        // ведём себя как будто EXCLUDE_MUTED включён: вычитаем только mention-исключение.
                         if ((flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) == 0 && includeMutedHere) {
                             unreadCount -= groups[0][1];
                         } else {

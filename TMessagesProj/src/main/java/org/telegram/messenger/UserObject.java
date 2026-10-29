@@ -16,6 +16,8 @@ import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 
+import java.util.Locale;
+
 public class UserObject {
 
     public static final long REPLY_BOT = 1271266957L;
@@ -46,6 +48,26 @@ public class UserObject {
 
     public static boolean isBot(TLRPC.User user) {
         return user != null && user.bot;
+    }
+
+    @NonNull
+    public static String getBotStatus(TLRPC.User user) {
+        final String username = getPublicUsername(user);
+        if (username != null) {
+            final String lower = username.toLowerCase(Locale.ROOT);
+            if (lower.endsWith("agent")) {
+                return LocaleController.getString(R.string.BotTypeAgent);
+            } else if (lower.endsWith("game")) {
+                return LocaleController.getString(R.string.BotTypeGame);
+            } else if (lower.endsWith("app")) {
+                return LocaleController.getString(R.string.BotTypeApp);
+            } else if (lower.endsWith("ai")) {
+                return LocaleController.getString(R.string.BotTypeAI);
+            } else if (lower.endsWith("gay")) {
+                return LocaleController.getString(R.string.BotTypeNonBinary);
+            }
+        }
+        return LocaleController.getString(R.string.Bot);
     }
 
     public static boolean isReplyUser(long did) {
@@ -359,4 +381,11 @@ public class UserObject {
     public static boolean isBotForumWithEditableTopics(TLRPC.User user) {
         return user != null && user.bot_forum_view && user.bot_forum_can_manage_topics;
     }
+
+    /** Cherrygram start */
+    public static boolean isBot(int currentAccount, long dialogID) {
+        TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogID);
+        return user != null && user.bot;
+    }
+    /** Cherrygram finish */
 }

@@ -16,8 +16,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -50,7 +48,7 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
 
     private MainTabsPreviewCell tabsView;
     private ArrayList<MainTabsManager.Tab> tabs;
-    private ArrayList<MainTabsManager.Tab> initialTabs;
+    private boolean tabsChanged;
 
     @Override
     protected CharSequence getTitle() {
@@ -65,20 +63,16 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
 
     @Override
     public boolean onFragmentCreate() {
-        initialTabs = new ArrayList<>();
-        for (MainTabsManager.Tab t : MainTabsManager.INSTANCE.getAllTabs()) {
-            initialTabs.add(new MainTabsManager.Tab(t.getType(), t.enabled));
-        }
-
         tabs = new ArrayList<>(MainTabsManager.INSTANCE.getAllTabs());
-
         return super.onFragmentCreate();
     }
 
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        checkSaveTabs();
+        if (tabsChanged) {
+            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgTabsUpdated);
+        }
     }
 
     @Override
@@ -106,6 +100,7 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
 
         tabsView = new MainTabsPreviewCell(getContext());
         tabsView.setEditMode(true);
+        tabsView.setOnTabsChangedListener(this::onTabsChanged);
         tabsView.setTabs(tabs, getContext(), getResourceProvider(), currentAccount, true, true);
 
         previewContainer.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER, dp(5), 0, dp(5), 0));
@@ -172,6 +167,8 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
 
             if (!CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
                 resetMainTabsOrder();
+            } else {
+                onTabsChanged();
             }
             updateRows(true);
 
@@ -190,28 +187,12 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
             CherrygramAppearanceConfig.INSTANCE.setShowMainTabsTitle(!CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle());
 
-            tabsView.removeAllViews();
             tabsView.setTabs(tabs, getContext(), getResourceProvider(), currentAccount, true, true);
 
-            postUpdateTabsNotification();
+            onTabsChanged();
         } else if (item.id == forceOpenChats) {
             CherrygramAppearanceConfig.INSTANCE.setMainTabsForceOpenChats(!CherrygramAppearanceConfig.INSTANCE.getMainTabsForceOpenChats());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getMainTabsForceOpenChats());
-        }
-    }
-
-    @Override
-    public boolean onBackPressed(boolean invoked) {
-        checkSaveTabs();
-        return super.onBackPressed(invoked);
-    }
-
-    private void checkSaveTabs() {
-        MainTabsManager.INSTANCE.saveTabs(tabs);
-//        if (MainTabsManager.getEnabledTabs().size() > 5) CherrygramAppearanceConfig.INSTANCE.setShowMainTabsTitle(false);
-
-        if (!tabs.equals(initialTabs)) {
-            postUpdateTabsNotification();
         }
     }
 
@@ -220,16 +201,14 @@ public class MainTabsPreferencesEntry extends BaseCGPreferencesEntry {
         CherrygramAppearanceConfig.INSTANCE.setShowSearchInTabs(true);
         tabs.clear();
         tabs.addAll(MainTabsManager.INSTANCE.getAllTabs());
-        postUpdateTabsNotification();
+        onTabsChanged();
     }
 
-    private void postUpdateTabsNotification() {
-        new Handler(Looper.getMainLooper()).postDelayed(() ->
-                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgTabsUpdated),
-                200
-        );
-        getParentLayout().rebuildAllFragmentViews(false, false);
+    private void onTabsChanged() {
+        tabsChanged = true;
+        if (getParentLayout() != null) {
+            getParentLayout().rebuildAllFragmentViews(false, false);
+        }
     }
 
 }
-

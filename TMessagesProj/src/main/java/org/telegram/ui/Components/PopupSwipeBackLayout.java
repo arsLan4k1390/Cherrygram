@@ -259,7 +259,11 @@ public class PopupSwipeBackLayout extends FrameLayout {
         View bv = getChildAt(0);
         View fv = getChildAt(currentForegroundIndex);
 
-        boolean b = (transitionProgress > 0.5f ? fv : bv).dispatchTouchEvent(ev);
+        View target = transitionProgress > 0.5f ? fv : bv;
+        final float offsetX = -target.getLeft();
+        ev.offsetLocation(offsetX, 0);
+        boolean b = target.dispatchTouchEvent(ev);
+        ev.offsetLocation(-offsetX, 0);
         if (!b && act == MotionEvent.ACTION_DOWN) {
             return true;
         }

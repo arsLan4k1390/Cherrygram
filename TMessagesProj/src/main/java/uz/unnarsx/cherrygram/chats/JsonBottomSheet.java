@@ -54,7 +54,6 @@ import com.google.gson.JsonSerializer;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
-import org.telegram.messenger.CodeHighlighting;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
@@ -77,6 +76,7 @@ import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
+import org.telegram.utils.code.highlight.CodeHighlighting;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

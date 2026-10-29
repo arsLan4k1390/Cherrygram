@@ -255,14 +255,6 @@
     <string name="CP_MessageMenuItems">訊息選單項目</string>
     <string name="CP_BlurMessageMenu">模糊訊息選單背景</string>
     <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS. Not supported on tablets.</string>
-    <string name="CP_MessageMenuUnifiedScroll">訊息選單隨頁面滾動</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">訊息選單將直接顯示在訊息內容的最下方，並隨頁面捲動，而不再使用兩個獨立的捲動區域。</string>
-    <string name="CP_MessageMenuAutoscroll">訊息自動捲動</string>
-    <string name="CP_MessageMenuAutoscroll_Desc">開啟時自動將訊息選單內容捲動至底部，類似 iOS 版 Telegram 的操作方式。</string>
-    <string name="CP_MessageMenuFixedHeight">更大的訊息選單高度</string>
-    <string name="CP_MessageMenuFixedHeight_Desc">訊息選單將佔據半個螢幕區域，以便更容易使用。</string>
-    <string name="CP_BlurMessageMenuItems">模糊選單項目</string>
-    <string name="CP_BlurMessageMenuItems_Desc">模糊選單項目，呈現更真實的 iOS 外觀。</string>
     <string name="CP_MessageMenuNativeBlur">原生模糊</string>
     <string name="CP_MessageMenuNativeBlur_Desc">訊息選單背景使用 Android 內建高斯模糊，更流暢、動態效果更佳，且對效能影響極小。</string>
     <string name="CP_MessageMenuCompactLayout">緊湊型訊息選單</string>
@@ -389,7 +381,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
     <string name="EP_NavigationAnimation">程式動畫</string>
-    <string name="EP_NavigationAnimationBezier">經典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="CG_PredictiveBackAnimation">預測返回導覽</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>

@@ -43,6 +43,7 @@
     <string name="CG_FoldersTypeIconsTitles">Іконки з назвами</string>
     <string name="CG_ChooseFolderIcon">Виберіть іконку</string>
     <string name="CP_NewTabs_NoCounter">Приховати лічильник на вкладках</string>
+    <string name="CP_IncludeMutedIn_FolderCounters">Включити приглушені чати до лічильників</string>
     <string name="CG_SwipeToUnarchive">Проведіть вліво для розархівування</string>
     <!--Telegram Folders Settings-->
     <!--Telegram Passkeys Settings-->
@@ -96,6 +97,7 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_Edify_Desc">Автоматичне редагування відео для Reels</string>
     <string name="CG_SafeStars_buy">Купити через SafeStars</string>
     <string name="CG_SafeStars_Desc">Багатоланцюговий &amp; Немає KYC</string>
     <string name="CG_SafeStars_BuyPremiumButton">Перевірте на вебсайті</string>
@@ -108,7 +110,7 @@
     <string name="CG_Restart">Перезапустити додаток</string>
     <string name="CG_RestartToApply">Перезавантажте додаток для застосування змін</string>
     <string name="CG_PushService">Сервіс повідомлень Cherrygram.</string>
-    <string name="CG_Kaboom">Доступ до цієї функції, можна отримати без паролю Cherrygram, через системні налаштування. Функція повністю видаляє всі дані додатку. Її можна використати в аварійних ситуаціях.</string>
+    <string name="CG_Kaboom">Ця функція може бути доступною без пароля Cherrygram, через системні налаштування. \n\nЦя функція **повністю видаляє всі локальні дані (Cherrygram\'). Її можна використати в надзвичайних ситуаціях.</string>
     <string name="CG_AppCrashed">Щось пішло не так</string>
     <string name="CG_AppCrashedDesc">Cherrygram перестав працювати. Будь ласка, відправте логи розробникам, щоб вони могли виправити цю помилку якомога швидше</string>
     <string name="CG_CopyReportDetails">Копіювати подробиці репорту</string>
@@ -126,6 +128,8 @@
     <string name="CG_ExportSettings">Експортувати налаштування</string>
     <string name="CG_ImportSettings">Імпортувати налаштування</string>
     <string name="CG_ImportSettingsAlert">Перезаписати налаштування? Імпортування налаштувань з невідомих джерел може призвести до того, що програма не працюватиме.</string>
+    <string name="CG_ResetSettings">Скинути налаштування</string>
+    <string name="CG_ResetSettingsAlert">Усі налаштування Cherrygram будуть скинуті до значень за замовчуванням. Цю дію неможливо скасувати.</string>
     <string name="CG_OpenStickerPack">Тапніть, щоб відкрити наліпку</string>
     <string name="CG_OpenEmojiPack">Тапніть, щоб отримати емодзі</string>
     <string name="CG_ReplyContainsEmojiPack">Ця відповідь містить **%s** емодзі</string>
@@ -190,6 +194,8 @@
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Зовнішній вигляд</string>
     <string name="AP_Header">Заголовок</string>
+    <string name="AP_IconBasedSplash">Заставка, що відповідає іконці</string>
+    <string name="AP_IconBasedSplash_Desc">Екран завантаження відповідатиме обраній іконці програми. Зміни набудуть чинності під час наступного запуску програми. Доступно в Android 13 та новіших версіях.</string>
     <string name="AP_IconReplacements">Набір іконок</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка повідомлень (Telegram)</string>
     <string name="AP_Tablet_Mode">Режим планшета</string>
@@ -206,6 +212,8 @@
     <string name="AP_SystemEmoji">Системні емодзі</string>
     <string name="AP_ShowPencilIcon">Значок олівця для відредагованих повідомлень</string>
     <string name="CP_StrokeOnViews">Відблиски ефектів</string>
+    <string name="AP_StrokeOnViews_Type">Тип</string>
+    <string name="AP_StrokeOnViews_Stroke">Суцільний штрих</string>
     <string name="AP_CenterTitle">Заголовок по центру</string>
     <string name="AP_CenterTitle_AdaptiveWidth">Адаптивна ширина бульбашки</string>
     <string name="AP_HideSearchBar">Приховати панель пошуку в чатах</string>
@@ -214,6 +222,7 @@
     <string name="CP_Snowflakes_Header">Сніжинки</string>
     <string name="CP_ProfileReplyBackground">Повідомлення та профіль</string>
     <string name="CP_CustomizeProfile">Кастомізувати профіль</string>
+    <string name="CP_ProfileHidePhoneNumbers">Приховати номери телефону</string>
     <string name="CP_ProfileChannelPreview">Особистий канал</string>
     <string name="CP_ProfileBirthDatePreview">Дата народження</string>
     <string name="CP_ProfileBusinessPreview">Робочі години і місцезнаходження</string>
@@ -274,16 +283,11 @@
     <string name="CP_MessageMenuItems">Елементи меню повідомлень</string>
     <string name="CP_BlurMessageMenu">Меню повідомлень у стилі iOS</string>
     <string name="CP_BlurMessageMenu_Desc">Застосовує розмитий фон до меню повідомлень та показує панель реакцій над повідомленням, подібно до Telegram на iOS. Не підтримується на планшетах.</string>
-    <string name="CP_MessageMenuUnifiedScroll">Об\'єднана прокрутка</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">Меню та вміст повідомлень відображатимуться на одному суцільному екрані зі спільною прокруткою замість розділення на дві окремі зони.</string>
-    <string name="CP_MessageMenuAutoscroll">Автопрокрутка повідомлень</string>
-    <string name="CP_MessageMenuAutoscroll_Desc">Автоматична прокрутка вмісту меню повідомлень униз при відкритті, як у Telegram на iOS.</string>
-    <string name="CP_MessageMenuFixedHeight">Комфортна висота меню повідомлень</string>
-    <string name="CP_MessageMenuFixedHeight_Desc">Меню повідомлень займатиме половину екрана для спрощення взаємодії.</string>
-    <string name="CP_BlurMessageMenuItems">Розмиття елементів меню</string>
-    <string name="CP_BlurMessageMenuItems_Desc">Розмиває пункти меню для більш автентичного вигляду iOS.</string>
     <string name="CP_MessageMenuNativeBlur">Нативне розмиття</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Для фону меню повідомлень буде використана вбудована в Android система розмиття (blur): плавна, динамічна і з мінімальним впливом на продуктивність.</string>
+    <string name="CG_MsgMenuShowWholeAlbum">Показати весь альбом</string>
+    <string name="CG_MsgMenuShowWholeAlbum_Desc">Натискання на фотографію, відео чи файл з альбому відкриває весь альбом у меню, а не окреме повідомлення.</string>
+    <string name="CP_RememberKeyboardState">Запам\'ятовувати стан клавіатури</string>
     <string name="CP_MessageMenuCompactLayout">Компактне меню</string>
     <string name="CP_MessageMenuCompactLayout_Desc">Відображає основні дії з повідомленням у компактному вигляді внизу меню.</string>
     <string name="CP_MessageMenuCompactLayout_Dot">Крапка поруч із кнопкою означає наявність дії за довгим натисканням.</string>
@@ -332,20 +336,21 @@
     <string name="CP_Message_Filtering_Filter_Desc">Коли фільтр увімкнено, вибрані слова у вхідних повідомленнях будуть автоматично приховані під ефектом спойлера, і їх не можна буде прочитати, доки ви їх не відкриєте.
 </string>
     <string name="CP_Message_Filtering_Field">Введіть слова для фільтру</string>
-    <string name="CP_Message_Filtering_Field_Desc">Розділяйте слова комою, пробілом або новим рядком. Використовуйте дужки, щоб згрупувати кілька слів у фразу. Без урахування регістру. \nПриклад: слово, інше, (декілька слів тут)    </string>
+    <string name="CP_Message_Filtering_Field_Desc">Розділяйте слова комою, пробілом або перенесенням рядка. Використовуйте дужки, щоб об’єднати кілька слів у фразу. Регістр літер не має значення.\nПриклад: слово, інше, (тут кілька слів).</string>
     <string name="CP_Message_Filtering_Translit">Виявлення трансліту</string>
-    <string name="CP_Message_Filtering_Translit_Desc">Коли фільтр увімкнено, він також виявлятиме слова, написані транслітом (наприклад, \"test\" буде розпізнано як \"тест\").
-Це допомагає знаходити та приховувати повідомлення під спойлером, навіть якщо кириличні літери замінено латинськими. Може трохи збільшити навантаження на процесор пристрою    </string>
+    <string name="CP_Message_Filtering_Translit_Desc">Якщо цю функцію увімкнути, фільтр також розпізнаватиме слова, написані транслітерацією (наприклад, «test» розпізнаватиметься як «тест»). Це допомагає виявляти та приховувати повідомлення під спойлером, навіть якщо кириличні літери замінено на латинські. Може дещо збільшити навантаження на процесор пристрою.</string>
     <string name="CP_Message_Filtering_Exact_Words">Точна відповідність слова</string>
-    <string name="CP_Message_Filtering_Exact_Words_Desc">Коли цю опцію увімкнено, будуть приховані лише ті слова, які повністю збігаються зі словами у списку фільтра.
-Якщо слово зустрічається в іншій формі (з префіксами, закінченнями або в складі інших слів), воно не буде приховано    </string>
+    <string name="CP_Message_Filtering_Exact_Words_Desc">Якщо ця опція увімкнена, приховуватимуться лише ті слова, які повністю збігаються зі словами зі списку фільтрів. Якщо слово зустрічається в іншій формі (з префіксами, суфіксами або у складі інших слів), воно не приховуватиметься.</string>
     <string name="CP_Message_Filtering_Exclusions">Винятки</string>
     <string name="CP_Message_Filtering_Exclude_Destination">для оновлення винятків</string>
     <string name="CP_Message_Filtering_Exclude_Sure">буде виключено</string>
+    <string name="CP_Message_Filtering_Exclusions_Users">Виключити користувачів</string>
+    <string name="CP_Message_Filtering_Exclusions_Bots">Виключити ботів</string>
+    <string name="CP_Message_Filtering_Exclusions_Groups">Виключити групи</string>
+    <string name="CP_Message_Filtering_Exclusions_Channels">Виключити канали</string>
+    <string name="CP_Message_Filtering_Exclusions_Desc">Cherrygram **не фільтруватиме** повідомлення у вибраних чатах.</string>
     <string name="CP_Message_Filtering_Entities">Фільтр сутності посилань</string>
-    <string name="CP_Message_Filtering_EntitiesDesc">Коли увімкнено, ця опція поширює фільтрацію на посилання (сутності), що містяться в повідомленнях. Система скануватиме URL-адреси на наявність будь-яких ключових слів з вашого фільтра.
-Якщо збіг знайдено всередині посилання, все повідомлення буде автоматично приховано під спойлером, незалежно від того, чи з’являється ключове слово у видимому тексті.
-\n\nЦе допомагає захиститися від замаскованого спаму, прихованої реклами або фішингових доменів, які інакше могли б обійти звичайну фільтрацію на основі тексту    </string>
+    <string name="CP_Message_Filtering_EntitiesDesc">Якщо цю опцію увімкнути, фільтрування поширюватиметься на посилання (об’єкти), що містяться у повідомленнях. Система перевірятиме URL-адреси на наявність будь-яких налаштованих вами ключових слів для фільтрації. Якщо в посиланні буде виявлено збіг, усе повідомлення автоматично буде приховано під спойлером, незалежно від того, чи з’являється це ключове слово у видимому тексті, чи ні.\n\nЦе допомагає захиститися від замаскованого спаму, прихованої реклами або фішингових доменів, які в іншому випадку могли б обійти звичайну текстову фільтрацію.</string>
     <string name="CP_Message_Filtering_FilterBlocked">Фільтрувати повідомлення від заблокованих користувачів</string>
     <string name="CP_Message_Filtering_FilterBlockedDesc">Коли увімкнено, всі повідомлення та надіслані повідомлення від заблокованих користувачів будуть автоматично фільтруватися.</string>
     <string name="CP_Message_Filtering_FullyHide">Приховати повідомлення</string>
@@ -361,6 +366,12 @@
     <string name="CP_Slider_MediaAmplifier_Hint">Не працює з альбомами (згруповані)</string>
     <string name="CP_LargeVoiceMessages">Адаптивна довжина голосового повідомлення</string>
     <string name="CP_LargeVoiceMessages_Desc">Довжина бульбашки голосового повідомлення залежатиме від тривалості запису та автоматично підлаштовуватиметься під ширину екрана.</string>
+    <string name="CP_RecordMultiMic">Багато мікрофонний запис</string>
+    <string name="CP_RecordMultiMic_Desc">Записує аудіо одночасно з усіх мікрофонів пристрою для більш просторового та детального захоплення голосу</string>
+    <string name="CP_RecordInStereo">Стереозапис</string>
+    <string name="CP_MuteSystemSounds">Вимкнути системні звуки</string>
+    <string name="CP_MuteSystemSounds_Desc">Вимкнення звуків сповіщень та мелодій дзвінків під час запису</string>
+    <string name="CP_RecordInStereo_Desc">Передає ваш голос у стереоформаті. \n\n**Примітка:** Якщо слухач використовує один навушник або гучний зв\'язок, він може чути вас тихо або відчувати пропажу звуку</string>
     <string name="CP_VoiceMessagesAutoPlay">Автовідтворення голосових повідомлень</string>
     <string name="CP_PlayVideo">Відтворювати відео після натискання на кнопку гучності</string>
     <string name="CP_PlayVideo_Desc">При натисканні на кнопку гучності буде ввімкнено відео на екранi в діалозі</string>
@@ -377,6 +388,7 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Камера</string>
     <string name="CP_CameraType">Тип камери</string>
+    <string name="CP_NewEncoder">Новий механізм роботи камери</string>
     <string name="CP_CameraUW">Почати з UW</string>
     <string name="CP_CameraUW_Desc">Запис відеоповідомлення почнеться з Ультра Широкої камери (якщо API Вашого пристрою це підтримує)</string>
     <string name="CP_CameraDualCamera">Подвійна камера</string>
@@ -388,6 +400,7 @@
     <string name="CP_ContinuousAutofocus">Безперервне автофокусування</string>
     <string name="CP_NoiseReduction">Зменшення шуму</string>
     <string name="CP_FaceDetection">Розпізнавання обличчя</string>
+    <string name="CP_BokehEffect">Ефект боке</string>
     <string name="CP_CameraQuality">Якість камери</string>
     <string name="CP_CameraTypeSystem">Системна</string>
     <string name="CP_CameraAspectRatio">Співвідношення сторін камери</string>
@@ -406,11 +419,11 @@
     <string name="CP_Brightness">Яскравість</string>
     <string name="CP_Flash_Hint">Утримуйте кнопку спалаху, щоб налаштувати колір та яскравість спалаху.</string>
     <string name="CP_Flash_Hint_Rear">Утримуйте кнопку спалаху, щоб відрегулювати яскравість спалаху.</string>
+    <string name="CP_Zoom_Hint">Проведіть пальцем по шкалі, щоб розгорнути повзунок масштабування.</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Експериментальні</string>
     <string name="EP_NavigationAnimation">Анімація навігації</string>
-    <string name="EP_NavigationAnimationBezier">Класична</string>
     <string name="EP_NavigationAnimationCrossfading">Ефект перехресного затухання</string>
     <string name="CG_PredictiveBackAnimation">Прогнозована навігація Назад</string>
     <string name="EP_CustomChat">Власний чат для збереження повідомлень</string>

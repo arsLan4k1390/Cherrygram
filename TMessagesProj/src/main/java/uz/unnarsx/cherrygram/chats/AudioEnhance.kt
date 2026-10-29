@@ -10,18 +10,229 @@
 package uz.unnarsx.cherrygram.chats
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import org.telegram.messenger.FileLog
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.math.exp
 import kotlin.math.roundToInt
+import androidx.core.content.edit
+import uz.unnarsx.cherrygram.core.CherrygramLogger
 
 object AudioEnhance {
+
+    private const val PREFS_NAME = "audio_enhance"
+
+    private const val KEY_MUTED = "recording_audio_muted"
+    private const val KEY_MODE_CHANGED = "recording_mode_changed"
+    private const val KEY_VOLUME_CHANGED = "recording_volume_changed"
+
+    private const val KEY_RINGER_MODE = "ringer_mode"
+    private const val KEY_RING_VOLUME = "ring_volume"
+    private const val KEY_NOTIFICATION_VOLUME = "notification_volume"
+
+    private var muted = false
+
+    @JvmStatic
+    fun muteSystemSounds(context: Context) {
+        if (muted) {
+            return
+        }
+
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+        if (prefs.getBoolean(KEY_MUTED, false)) {
+            recoverSystemSounds(context)
+        }
+
+        val currentMode = audioManager.ringerMode
+
+        if (currentMode != AudioManager.RINGER_MODE_NORMAL) {
+            return
+        }
+
+        val ringVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING)
+
+        val notificationVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION)
+
+        prefs.edit(commit = true) {
+            putInt(KEY_RINGER_MODE, currentMode)
+                .putInt(KEY_RING_VOLUME, ringVolume)
+                .putInt(KEY_NOTIFICATION_VOLUME, notificationVolume)
+                .putBoolean(KEY_MUTED, true)
+        }
+
+        try {
+            audioManager.ringerMode = AudioManager.RINGER_MODE_SILENT
+
+            if (audioManager.ringerMode == AudioManager.RINGER_MODE_SILENT) {
+                prefs.edit(commit = true) {
+                    putBoolean(KEY_MODE_CHANGED, true)
+                        .putBoolean(KEY_VOLUME_CHANGED, false)
+                }
+
+                muted = true
+                return
+            }
+        } catch (e: SecurityException) {
+            CherrygramLogger.e(e)
+        } catch (e: Exception) {
+            CherrygramLogger.e(e)
+        }
+
+        var ringChanged = false
+        var notificationChanged = false
+
+        try {
+            audioManager.setStreamVolume(
+                AudioManager.STREAM_RING,
+                0,
+                0
+            )
+            ringChanged = true
+        } catch (e: SecurityException) {
+            CherrygramLogger.e(e)
+        } catch (e: Exception) {
+            CherrygramLogger.e(e)
+        }
+
+        try {
+            audioManager.setStreamVolume(
+                AudioManager.STREAM_NOTIFICATION,
+                0,
+                0
+            )
+            notificationChanged = true
+        } catch (e: SecurityException) {
+            CherrygramLogger.e(e)
+        } catch (e: Exception) {
+            CherrygramLogger.e(e)
+        }
+
+        if (ringChanged || notificationChanged) {
+            prefs.edit(commit = true) {
+                putBoolean(KEY_MODE_CHANGED, false)
+                    .putBoolean(KEY_VOLUME_CHANGED, true)
+            }
+
+            muted = true
+        } else {
+            prefs.edit(commit = true) {
+                clear()
+            }
+
+            muted = false
+        }
+    }
+
+    @JvmStatic
+    fun restoreSystemSounds(context: Context) {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+        if (!prefs.getBoolean(KEY_MUTED, false)) {
+            muted = false
+            return
+        }
+
+        val modeChanged = prefs.getBoolean(KEY_MODE_CHANGED, false)
+
+        val volumeChanged = prefs.getBoolean(KEY_VOLUME_CHANGED, false)
+
+        val originalMode =
+            prefs.getInt(
+                KEY_RINGER_MODE,
+                AudioManager.RINGER_MODE_NORMAL
+            )
+
+        val originalRingVolume =
+            prefs.getInt(
+                KEY_RING_VOLUME,
+                audioManager.getStreamVolume(AudioManager.STREAM_RING)
+            )
+
+        val originalNotificationVolume =
+            prefs.getInt(
+                KEY_NOTIFICATION_VOLUME,
+                audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION)
+            )
+
+        try {
+            if (modeChanged) {
+                try {
+                    audioManager.ringerMode = originalMode
+                } catch (e: SecurityException) {
+                    CherrygramLogger.e(e)
+                }
+            }
+
+            if (volumeChanged) {
+                try {
+                    audioManager.setStreamVolume(
+                        AudioManager.STREAM_RING,
+                        originalRingVolume.coerceIn(
+                            0,
+                            audioManager.getStreamMaxVolume(
+                                AudioManager.STREAM_RING
+                            )
+                        ),
+                        0
+                    )
+                } catch (e: SecurityException) {
+                    CherrygramLogger.e(e)
+                } catch (e: Exception) {
+                    CherrygramLogger.e(e)
+                }
+
+                try {
+                    audioManager.setStreamVolume(
+                        AudioManager.STREAM_NOTIFICATION,
+                        originalNotificationVolume.coerceIn(
+                            0,
+                            audioManager.getStreamMaxVolume(
+                                AudioManager.STREAM_NOTIFICATION
+                            )
+                        ),
+                        0
+                    )
+                } catch (e: SecurityException) {
+                    CherrygramLogger.e(e)
+                } catch (e: Exception) {
+                    CherrygramLogger.e(e)
+                }
+            }
+        } finally {
+            prefs.edit(commit = true) {
+                remove(KEY_MUTED)
+                    .remove(KEY_MODE_CHANGED)
+                    .remove(KEY_VOLUME_CHANGED)
+                    .remove(KEY_RINGER_MODE)
+                    .remove(KEY_RING_VOLUME)
+                    .remove(KEY_NOTIFICATION_VOLUME)
+            }
+
+            muted = false
+        }
+    }
+
+    @JvmStatic
+    fun recoverSystemSounds(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+        if (!prefs.getBoolean(KEY_MUTED, false)) {
+            return
+        }
+
+        restoreSystemSounds(context)
+    }
 
     fun getAudioSource(): Int = when (CherrygramDebugConfig.audioSource) {
         CherrygramDebugConfig.AUDIO_SOURCE_CAMCORDER -> MediaRecorder.AudioSource.CAMCORDER
@@ -53,7 +264,7 @@ object AudioEnhance {
             val stereo = try {
                 AudioRecord(source, sampleRate, AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, monoBufferSize * 2)
             } catch (e: Exception) {
-                FileLog.e(e)
+                CherrygramLogger.e(e)
                 null
             }
             if (stereo != null) {

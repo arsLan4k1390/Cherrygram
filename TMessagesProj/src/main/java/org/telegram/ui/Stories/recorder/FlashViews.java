@@ -42,7 +42,6 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.Components.CubicBezierInterpolator;
-import org.telegram.ui.Components.InstantCameraView;
 import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
@@ -298,16 +297,6 @@ public class FlashViews {
 
             canvas.restore();
         } else {
-            canvas.save();
-
-            if (circlePath != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    canvas.clipOutPath(circlePath);
-                } else {
-                    canvas.clipPath(circlePath, Region.Op.DIFFERENCE);
-                }
-            }
-
             if (gradient != null) {
                 invalidateGradient();
                 gradient.setLocalMatrix(gradientMatrix);
@@ -318,8 +307,6 @@ public class FlashViews {
                     canvas.drawRoundRect(AndroidUtilities.rectTmp, dp(12) - 2, dp(12) - 2, paint);
                 }
             }
-
-            canvas.restore();
         }
     }
 
@@ -350,15 +337,21 @@ public class FlashViews {
         foregroundView.invalidate();
     }
 
-    public void setCircleCutout(InstantCameraView instantCameraView) {
-        if (instantCameraView == null || instantCameraView.getCameraContainer() == null) return;
+    public void setCircleCutout(View targetView) {
+        if (targetView == null || foregroundView == null) return;
+        if (targetView.getWidth() <= 0 || targetView.getHeight() <= 0) return;
 
-        InstantCameraView.InstantViewCameraContainer container = instantCameraView.getCameraContainer();
+        int[] targetLocation = new int[2];
+        int[] foregroundLocation = new int[2];
 
-        int left = container.getLeft();
-        int top = container.getTop();
-        int width = container.getWidth();
-        int height = container.getHeight();
+        targetView.getLocationOnScreen(targetLocation);
+        foregroundView.getLocationOnScreen(foregroundLocation);
+
+        float left = targetLocation[0] - foregroundLocation[0];
+        float top = targetLocation[1] - foregroundLocation[1];
+
+        float width = targetView.getWidth();
+        float height = targetView.getHeight();
 
         float circleCx = left + width / 2f;
         float circleCy = top + height / 2f;

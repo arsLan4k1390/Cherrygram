@@ -12,7 +12,6 @@ package uz.unnarsx.cherrygram.core.configs
 import android.app.Activity
 import android.content.SharedPreferences
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.camera.CameraXUtils
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.float
@@ -33,7 +32,7 @@ object CherrygramCameraConfig {
 
     /** Camera start */
     var disableAttachCamera by sharedPreferences.boolean("CP_DisableAttachCam", true)
-    var useDualCamera by sharedPreferences.boolean("CP_UseDualCameraX", false)
+    var useDualCamera by sharedPreferences.boolean("CP_UseDualCamera", false)
 
     const val Camera16to9 = 0
     const val Camera4to3 = 1
@@ -42,20 +41,15 @@ object CherrygramCameraConfig {
     var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", CameraAspectDefault)
     /** Camera finish */
 
-    var newCamera2Design by sharedPreferences.boolean("CP_NewCamera2Design1", false)
-
     /** Videomessages start */
+    var useNewEncoder by sharedPreferences.boolean("CP_CameraNewEncoder", false)
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
     var startFromUltraWideCam by sharedPreferences.boolean("CP_StartFromUltraWideCam", true)
 
     /** CameraX FPS start */
-    const val CameraXFpsRangeDefault = 0
-    const val CameraXFpsRange25to30 = 1
-    const val CameraXFpsRange30to30 = 2
-    const val CameraXFpsRange30to60 = 3
-    const val CameraXFpsRange60to60 = 4
-    var cameraXFpsRange by sharedPreferences.int("CP_CameraXFpsRangeValueF",
-        if (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE) CameraXFpsRange25to30 else CameraXFpsRangeDefault)
+    const val CameraXFpsRange30 = 0
+    const val CameraXFpsRange60 = 1
+    var cameraXFpsRange by sharedPreferences.int("CP_CameraFpsRange", CameraXFpsRange30)
     /** CameraX FPS finish */
 
     var videoStabilisation by sharedPreferences.boolean("CP_VideoStabilisation", false)

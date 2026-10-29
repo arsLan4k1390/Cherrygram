@@ -401,4 +401,11 @@ public class InstantCameraVideoEncoderOverlayHelper {
         buffer[offset + 6] = right;
         buffer[offset + 7] = top;
     }
+
+    /** Cherrygram start */
+    public int getFrameTexture() {
+        return glTextures[TEXTURE_INDEX_FULL_SAMPLE];
+    }
+    /** Cherrygram finish */
+
 }

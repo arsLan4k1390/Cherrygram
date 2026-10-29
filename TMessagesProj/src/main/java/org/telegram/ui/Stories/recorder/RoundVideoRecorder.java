@@ -50,7 +50,7 @@ public class RoundVideoRecorder extends FrameLayout {
 
         file = StoryEntry.makeCacheFile(UserConfig.selectedAccount, true);
 
-        cameraView = new CameraView(context, true, false, true) {
+        cameraView = new CameraView(context, true, true, true) {
             private final Path circlePath = new Path();
             @Override
             protected void dispatchDraw(Canvas canvas) {
@@ -103,7 +103,11 @@ public class RoundVideoRecorder extends FrameLayout {
                 AndroidUtilities.runOnUIThread(stopRunnable, MAX_DURATION);
             }, cameraView, true);
         });
-        cameraView.initTexture();
+        if (CameraController.getInstance().isCameraInitied()) {
+            cameraView.initTexture();
+        } else {
+            CameraController.getInstance().initCamera(cameraView::initTexture);
+        }
 
         setWillNotDraw(false);
     }

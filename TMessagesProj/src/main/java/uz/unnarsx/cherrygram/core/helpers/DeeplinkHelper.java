@@ -205,6 +205,7 @@ public class DeeplinkHelper {
         public static final String CG_Support_Force = "support_force";
         public static final String CG_Stars = "stars";
         public static final String CG_SafePay = "safePay";
+        public static final String CG_Edify = "edify";
 
         public static final String CG_About = "about";
         public static final String CG_Debug = "debug";

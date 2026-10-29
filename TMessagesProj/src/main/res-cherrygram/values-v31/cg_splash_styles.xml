@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="cg_splash_background_light">#FFFFFF</color>
+    <color name="cg_splash_background_night">#101010</color>
+
+    <style name="Theme.CG.Splash.Base.Light" parent="Theme.TMessages.Start">
+        <item name="android:windowSplashScreenBackground">@color/cg_splash_background_light</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Base.Night" parent="Theme.TMessages.Start">
+        <item name="android:windowSplashScreenBackground">@color/cg_splash_background_night</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Cherry.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_cherry</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Cherry.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_cherry</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Dark.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_dark</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Dark.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_dark</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Dark_Bra.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_dark_bra</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Dark_Bra.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_dark_bra</item>
+    </style>
+
+    <!-- White icon circle blends into the light splash background, light theme uses Base.Light -->
+    <style name="Theme.CG.Splash.White.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_white</item>
+    </style>
+
+    <!-- White icon circle blends into the light splash background, light theme uses Base.Light -->
+    <style name="Theme.CG.Splash.White_Bra.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_white_bra</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Laguna.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_laguna</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Laguna.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_laguna</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Aqua.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_aqua</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Aqua.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_aqua</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Green.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_green</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Green.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_green</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Lavanda.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_lavanda</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Lavanda.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_lavanda</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Violet_Sunset.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_violet_sunset</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Violet_Sunset.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_violet_sunset</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Violet_Sunset_Bra.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_violet_sunset_bra</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Violet_Sunset_Bra.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_violet_sunset_bra</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Sunset.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_sunset</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Sunset.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_sunset</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Sunrise.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_sunrise</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Sunrise.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_sunrise</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Dark_NY.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_dark_ny</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Dark_NY.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_dark_ny</item>
+    </style>
+
+</resources>

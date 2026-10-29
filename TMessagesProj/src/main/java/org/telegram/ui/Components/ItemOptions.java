@@ -354,6 +354,10 @@ public class ItemOptions {
         return add(iconResId, text, false, null, onClickListener);
     }
 
+    public ItemOptions add(int iconResId, CharSequence text, CharSequence subtext, Runnable onClickListener) {
+        return add(iconResId, null, text, subtext, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, null, onClickListener);
+    }
+
     public ItemOptions add(Drawable icon, CharSequence text, Runnable onClickListener) {
         return add(0, icon, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, null, onClickListener);
     }
@@ -375,6 +379,10 @@ public class ItemOptions {
     }
 
     public ItemOptions add(int iconResId, Drawable iconDrawable, CharSequence text, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
+        return add(iconResId, iconDrawable, text, null, iconColorKey, textColorKey, onLongClickListener, onClickListener);
+    }
+
+    public ItemOptions add(int iconResId, Drawable iconDrawable, CharSequence text, CharSequence subtext, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
         if (context == null) {
             return this;
         }
@@ -385,6 +393,9 @@ public class ItemOptions {
             subItem.setTextAndIcon(text, iconResId, iconDrawable);
         } else {
             subItem.setText(text);
+        }
+        if (!TextUtils.isEmpty(subtext)) {
+            subItem.setSubtext(subtext);
         }
 
         subItem.setColors(textColor != null ? textColor : Theme.getColor(textColorKey, resourcesProvider), iconColor != null ? iconColor : Theme.getColor(iconColorKey, resourcesProvider));
@@ -1157,7 +1168,7 @@ public class ItemOptions {
             return lastLayout.getItemsCount();
         } else {
             int itemsCount = 0;
-            for (int j = 0; j < layout.getChildCount() - 1; ++j) {
+            for (int j = 0; j < layout.getChildCount(); ++j) {
                 View child = j == layout.getChildCount() - 1 ? lastLayout : layout.getChildAt(j);
                 if (child instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
                     ActionBarPopupWindow.ActionBarPopupWindowLayout popupLayout = (ActionBarPopupWindow.ActionBarPopupWindowLayout) child;
@@ -1174,7 +1185,7 @@ public class ItemOptions {
         if (lastLayout == layout) {
             return lastLayout.getItemAt(index);
         } else {
-            for (int j = 0; j < layout.getChildCount() - 1; ++j) {
+            for (int j = 0; j < layout.getChildCount(); ++j) {
                 View child = j == layout.getChildCount() - 1 ? lastLayout : layout.getChildAt(j);
                 if (child instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
                     ActionBarPopupWindow.ActionBarPopupWindowLayout popupLayout = (ActionBarPopupWindow.ActionBarPopupWindowLayout) child;
@@ -1240,7 +1251,7 @@ public class ItemOptions {
         setupSelectors();
 
         if (fixedWidthDp > 0) {
-            for (int j = 0; j < layout.getChildCount() - 1; ++j) {
+            for (int j = 0; j < layout.getChildCount(); ++j) {
                 View child = j == layout.getChildCount() - 1 ? lastLayout : layout.getChildAt(j);
                 if (child instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
                     ActionBarPopupWindow.ActionBarPopupWindowLayout popupLayout = (ActionBarPopupWindow.ActionBarPopupWindowLayout) child;
@@ -1251,7 +1262,7 @@ public class ItemOptions {
                 }
             }
         } else if (minWidthDp > 0) {
-            for (int j = 0; j < layout.getChildCount() - 1; ++j) {
+            for (int j = 0; j < layout.getChildCount(); ++j) {
                 View child = j == layout.getChildCount() - 1 ? lastLayout : layout.getChildAt(j);
                 if (child instanceof ActionBarPopupWindow.ActionBarPopupWindowLayout) {
                     ActionBarPopupWindow.ActionBarPopupWindowLayout popupLayout = (ActionBarPopupWindow.ActionBarPopupWindowLayout) child;
@@ -2312,12 +2323,17 @@ public class ItemOptions {
     }
 
     public ItemOptions addSpaceGapCG(int cornerRadius) {
+        if (lastLayout.getItemsCount() <= 0) {
+            return this;
+        }
         if (!(layout instanceof LinearLayout)) {
             layout = new LinearLayout(context);
             ((LinearLayout) layout).setOrientation(LinearLayout.VERTICAL);
+            lastLayout.stretchContentWidth();
             layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         }
         lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert2, resourcesProvider, 0, true, cornerRadius);
+        lastLayout.stretchContentWidth();
         lastLayout.setDispatchKeyEventListener(keyEvent -> {
             if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && actionBarPopupWindow != null && actionBarPopupWindow.isShowing()) {
                 dismiss();
@@ -2448,12 +2464,17 @@ public class ItemOptions {
     }
 
     public ItemOptions addSpaceGap(boolean vertical) {
+        if (lastLayout.getItemsCount() <= 0) {
+            return this;
+        }
         if (!(layout instanceof LinearLayout)) {
             layout = new LinearLayout(context);
             ((LinearLayout) layout).setOrientation(vertical ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+            if (vertical) lastLayout.stretchContentWidth();
             layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, maxHeight > 0 ? maxHeight / AndroidUtilities.density : LayoutHelper.WRAP_CONTENT, Gravity.TOP));
         }
         lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert4, resourcesProvider, !vertical ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_DONT_USE_SCROLLVIEW : 0);
+        if (vertical) lastLayout.stretchContentWidth();
         lastLayout.setDispatchKeyEventListener(keyEvent -> {
             if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && actionBarPopupWindow != null && actionBarPopupWindow.isShowing()) {
                 dismiss();

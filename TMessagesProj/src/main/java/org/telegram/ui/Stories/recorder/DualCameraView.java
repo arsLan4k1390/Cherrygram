@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
@@ -13,6 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 
 import com.google.common.primitives.Floats;
@@ -26,6 +28,7 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.Utilities;
 import org.telegram.messenger.camera.CameraController;
 import org.telegram.messenger.camera.CameraSession;
 import org.telegram.messenger.camera.CameraSessionWrapper;
@@ -37,13 +40,19 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import java.util.Arrays;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.camera.CameraXDualSource;
+
 public class DualCameraView extends CameraView {
 
     private boolean dualAvailable;
 
     public DualCameraView(Context context, boolean frontface, boolean lazy, boolean story) {
-        super(context, frontface, lazy, story);
-        dualAvailable = dualAvailableStatic(context);
+        this(context, frontface, lazy, story, false);
+    }
+
+    public DualCameraView(Context context, boolean frontface, boolean lazy, boolean story, boolean cameraX) {
+        super(context, frontface, lazy, story, cameraX);
+        dualAvailable = cameraX ? CameraXDualSource.isDualSupported(context) : dualAvailableStatic(context);
     }
 
     @Override
@@ -99,13 +108,36 @@ public class DualCameraView extends CameraView {
 //    }
 
     private void setupToScreenMatrix() {
+        final View textureView = getTextureView();
+        final boolean textureResized = isCameraX() && textureView != null
+                && (textureView.getMeasuredWidth() != lastTextureWidth || textureView.getMeasuredHeight() != lastTextureHeight);
+        final boolean keepDual = textureResized && lastTextureWidth > 0 && isDual();
+        if (keepDual) {
+            dualScreenMatrix.set(getDualPosition());
+            dualScreenMatrix.postConcat(toScreen);
+        }
+        if (textureView != null) {
+            lastTextureWidth = textureView.getMeasuredWidth();
+            lastTextureHeight = textureView.getMeasuredHeight();
+        }
         toScreen.reset();
 //        if (applyCameraRotation()) {
 //            toScreen.postRotate(getDualRotation());
 //        }
-        toScreen.postTranslate(1f, -1f);
-        toScreen.postScale(getMeasuredWidth() / 2f, -getMeasuredHeight() / 2f);
+        final View texture = getTextureView();
+        if (isCameraX() && texture != null && texture.getMeasuredWidth() > 0 && texture.getMeasuredHeight() > 0) {
+            final float w = texture.getMeasuredWidth(), h = texture.getMeasuredHeight();
+            toScreen.postTranslate(1f, -1f);
+            toScreen.postScale(w / 2f, -h / 2f);
+            toScreen.postTranslate((getMeasuredWidth() - w) / 2f, (getMeasuredHeight() - h) / 2f);
+        } else {
+            toScreen.postTranslate(1f, -1f);
+            toScreen.postScale(getMeasuredWidth() / 2f, -getMeasuredHeight() / 2f);
+        }
         toScreen.invert(toGL);
+        if (keepDual) {
+            setDualFromScreen(dualScreenMatrix);
+        }
     }
 
     protected boolean applyCameraRotation() {
@@ -131,7 +163,9 @@ public class DualCameraView extends CameraView {
         if (enabledSavedDual) {
             onSavedDualCameraSuccess();
         }
-        log(true);
+        if (!isCameraX()) {
+            log(true);
+        }
     }
 
     private void log(boolean success) {
@@ -203,6 +237,12 @@ public class DualCameraView extends CameraView {
             matrix.postTranslate(getMeasuredWidth() - px - w, px);
             matrix.postConcat(toGL);
         }
+        if (isCameraX()) {
+            dualScreenMatrix.set(matrix);
+            dualScreenMatrix.postConcat(toScreen);
+            setDualFromScreen(dualScreenMatrix);
+            return;
+        }
         updateDualPosition();
     }
 
@@ -217,7 +257,7 @@ public class DualCameraView extends CameraView {
         invMatrix.mapPoints(vertex);
         int shape = getDualShape() % 3;
         boolean square = shape == 0 || shape == 1 || shape == 3;
-        float H = square ? 9 / 16f : 1f;
+        float H = square ? getSquareShapeHeight() : 1f;
         return vertex[0] >= -1 && vertex[0] <= 1 && vertex[1] >= -H && vertex[1] <= H;
     }
 
@@ -370,15 +410,17 @@ public class DualCameraView extends CameraView {
                         snappedRotation = false;
                     }
                 }
-                if (cx < 0) {
-                    finalMatrix.postTranslate(-cx, 0);
-                } else if (cx > getWidth()) {
-                    finalMatrix.postTranslate(getWidth() - cx, 0);
+                final RectF bounds = getDualBounds();
+                final float maxY = Math.min(bounds.bottom, getHeight() - AndroidUtilities.dp(150));
+                if (cx < bounds.left) {
+                    finalMatrix.postTranslate(bounds.left - cx, 0);
+                } else if (cx > bounds.right) {
+                    finalMatrix.postTranslate(bounds.right - cx, 0);
                 }
-                if (cy < 0) {
-                    finalMatrix.postTranslate(0, -cy);
-                } else if (cy > getHeight() - AndroidUtilities.dp(150)) {
-                    finalMatrix.postTranslate(0, getHeight() - AndroidUtilities.dp(150) - cy);
+                if (cy < bounds.top) {
+                    finalMatrix.postTranslate(0, bounds.top - cy);
+                } else if (cy > maxY) {
+                    finalMatrix.postTranslate(0, maxY - cy);
                 }
                 finalMatrix.postConcat(toGL);
                 matrix.set(finalMatrix);
@@ -473,7 +515,7 @@ public class DualCameraView extends CameraView {
         }
         int shape = getDualShape() % 3;
         boolean square = shape == 0 || shape == 1 || shape == 3;
-        float H = square ? 9 / 16f : 1f;
+        float H = square ? getSquareShapeHeight() : 1f;
         verticesSrc[0] = -1;
         verticesSrc[1] = -H;
         verticesSrc[2] = 1;
@@ -643,7 +685,7 @@ public class DualCameraView extends CameraView {
     }
 
     public boolean isSavedDual() {
-        return dualAvailableStatic(getContext()) && MessagesController.getGlobalMainSettings().getBoolean("dualcam", dualAvailableDefault(ApplicationLoader.applicationContext, false));
+        return dualAvailable && MessagesController.getGlobalMainSettings().getBoolean("dualcam", dualAvailableDefault(ApplicationLoader.applicationContext, false));
     }
 
     private void resetSavedDual() {
@@ -662,4 +704,54 @@ public class DualCameraView extends CameraView {
         }
         edit.apply();
     }
+
+    /** Cherrygram start */
+    private float lastTextureWidth, lastTextureHeight;
+    private final Matrix dualScreenMatrix = new Matrix();
+
+    private void setDualFromScreen(Matrix screenMatrix) {
+        final View textureView = getTextureView();
+        final float tw = textureView != null && textureView.getMeasuredWidth() > 0 ? textureView.getMeasuredWidth() : getMeasuredWidth();
+        final float th = textureView != null && textureView.getMeasuredHeight() > 0 ? textureView.getMeasuredHeight() : getMeasuredHeight();
+        if (tw <= 0 || th <= 0) {
+            return;
+        }
+        extractPointsData(screenMatrix);
+        final float scale = w / tw;
+        final RectF bounds = getDualBounds();
+        final float halfW = Math.min(w, bounds.width()) / 2f, halfH = Math.min(scale * th, bounds.height()) / 2f;
+        final float centerX = Utilities.clamp(cx, bounds.right - halfW, bounds.left + halfW);
+        final float centerY = Utilities.clamp(cy, bounds.bottom - halfH, bounds.top + halfH);
+        final Matrix matrix = getDualPosition();
+        matrix.reset();
+        matrix.postScale(scale * tw / 2f, -scale * th / 2f);
+        matrix.postRotate(angle);
+        matrix.postTranslate(centerX, centerY);
+        matrix.postConcat(toGL);
+        updateDualPosition();
+    }
+
+    private final RectF dualBounds = new RectF();
+
+    private RectF getDualBounds() {
+        final View textureView = getTextureView();
+        if (isCameraX() && textureView != null && textureView.getMeasuredWidth() > 0 && textureView.getMeasuredHeight() > 0) {
+            final float left = (getMeasuredWidth() - textureView.getMeasuredWidth()) / 2f;
+            final float top = (getMeasuredHeight() - textureView.getMeasuredHeight()) / 2f;
+            dualBounds.set(left, top, left + textureView.getMeasuredWidth(), top + textureView.getMeasuredHeight());
+        } else {
+            dualBounds.set(0, 0, getWidth(), getHeight());
+        }
+        return dualBounds;
+    }
+
+    private float getSquareShapeHeight() {
+        final View textureView = getTextureView();
+        if (isCameraX() && textureView != null && textureView.getMeasuredWidth() > 0 && textureView.getMeasuredHeight() > 0) {
+            return Math.min(1f, textureView.getMeasuredWidth() / (float) textureView.getMeasuredHeight());
+        }
+        return 9 / 16f;
+    }
+    /** Cherrygram finish */
+
 }

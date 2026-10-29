@@ -43,7 +43,7 @@ import org.telegram.ui.Components.blur3.utils.NinePatchBuilder;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public abstract class BlurredBackgroundDrawable extends Drawable {
     public BlurredBackgroundDrawable() {
@@ -405,15 +405,21 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
         return PixelFormat.TRANSLUCENT;
     }
 
+    public static void drawStroke(Canvas canvas, float left, float top, float right, float bottom, float[] radii, float strokeWidth, boolean isTop, Paint paint) {
+        drawStroke(canvas, left, top, right, bottom, radii, strokeWidth, isTop, paint, paint.getColor());
+    }
 
 
     public static void drawStroke(
         Canvas canvas,
         float left, float top, float right, float bottom,
         float[] radii, float strokeWidth, boolean isTop,
-        Paint paint
+        Paint paint, int strokeColorBottom
     ) {
-        if (!CherrygramChatsConfig.INSTANCE.getGlareEffects()) return;
+
+        if (cgDrawStaticStroke(canvas, left, top, right, bottom, radii[0], strokeWidth, isTop, paint, strokeColorBottom)) {
+            return;
+        }
 
         final boolean radiiAreSame = isTop ?
             radii[0] == radii[1] && radii[1] == radii[2] && radii[2] == radii[3]:
@@ -509,13 +515,21 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
     }
 
     public static void drawStroke(Canvas canvas, RectF rect,
+                                  float radii, float strokeWidth, boolean isTop, Paint paint, int strokeColorBottom) {
+        drawStroke(canvas, rect.left, rect.top, rect.right, rect.bottom, radii, strokeWidth, isTop, paint, strokeColorBottom);
+    }
+
+    public static void drawStroke(Canvas canvas, RectF rect,
                                      float radii, float strokeWidth, boolean isTop, Paint paint) {
-        drawStroke(canvas, rect.left, rect.top, rect.right, rect.bottom, radii, strokeWidth, isTop, paint);
+        drawStroke(canvas, rect.left, rect.top, rect.right, rect.bottom, radii, strokeWidth, isTop, paint, paint.getColor());
     }
 
     public static void drawStroke(Canvas canvas, float left, float top, float right, float bottom,
-                                     float radii, float strokeWidth, boolean isTop, Paint paint) {
-        if (!CherrygramChatsConfig.INSTANCE.getGlareEffects()) return;
+                                     float radii, float strokeWidth, boolean isTop, Paint paint, int strokeColorBottom) {
+
+        if (cgDrawStaticStroke(canvas, left, top, right, bottom, radii, strokeWidth, isTop, paint, strokeColorBottom)) {
+            return;
+        }
 
         final float strokeHalf = strokeWidth / 2f;
         canvas.save();
@@ -725,7 +739,28 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
     }
 
     private void drawStrokeInternalIfNeeded(Canvas canvas) {
-        if (!CherrygramChatsConfig.INSTANCE.getGlareEffects()) return;
+        final int cgType = CherrygramAppearanceConfig.INSTANCE.getGlareEffectsType();
+
+        if (cgType == CherrygramAppearanceConfig.GLARE_EFFECTS_DISABLE) {
+            return;
+        }
+
+        if (cgType == CherrygramAppearanceConfig.GLARE_EFFECTS_STROKE) {
+            final int cgColor = Theme.multAlpha(this.strokeColorBottom, alpha / 255f);
+            if (Color.alpha(cgColor) > 0) {
+                paintStrokeFill.setStyle(Paint.Style.STROKE);
+                paintStrokeFill.setStrokeWidth(dpf2(1) * 2f); // only the inner half stays visible after the clip
+                paintStrokeFill.setColor(cgColor);
+
+                canvas.save();
+                canvas.clipPath(boundProps.path);
+                canvas.drawPath(boundProps.path, paintStrokeFill);
+                canvas.restore();
+
+                paintStrokeFill.setStyle(Paint.Style.FILL);
+            }
+            return;
+        }
 
         final int strokeColorTop = Theme.multAlpha(this.strokeColorTop, alpha / 255f);
         final int strokeColorBottom = Theme.multAlpha(this.strokeColorBottom, alpha / 255f);
@@ -787,6 +822,8 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
 
     @NonNull
     private NinePatchDrawable checkNinePatchDrawable(int fillColor, boolean withStroke) {
+        final int cgType = CherrygramAppearanceConfig.INSTANCE.getGlareEffectsType();
+
         ninePatchHashBuilder.start();
         ninePatchHashBuilder.add(fillColor);
         ninePatchHashBuilder.add(shadowColor);
@@ -795,6 +832,7 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
         ninePatchHashBuilder.addF(shadowLayerDx);
         ninePatchHashBuilder.addF(shadowLayerDy);
         ninePatchHashBuilder.add(withStroke);
+        ninePatchHashBuilder.add(cgType);
         if (withStroke) {
             ninePatchHashBuilder.add(strokeColorTop);
             ninePatchHashBuilder.add(strokeColorBottom);
@@ -828,8 +866,24 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
                         canvas.drawPath(path, paint);
                     }
 
+                    if (withStroke && cgType == CherrygramAppearanceConfig.GLARE_EFFECTS_STROKE) {
+                        final float cgWidth = dpf2(1);
+                        final float[] cgInnerRadii = new float[8];
+                        for (int i = 0; i < 8; i++) {
+                            cgInnerRadii[i] = Math.max(0, radii1[i] - cgWidth);
+                        }
 
-                    if (withStroke) {
+                        final Path cgRing = new Path();
+                        cgRing.setFillType(Path.FillType.EVEN_ODD);
+                        cgRing.addRoundRect(rect, radii1, Path.Direction.CW);
+                        cgRing.addRoundRect(rect.left + cgWidth, rect.top + cgWidth, rect.right - cgWidth, rect.bottom - cgWidth,
+                                cgInnerRadii, Path.Direction.CW);
+
+                        paint.setStyle(Paint.Style.FILL);
+                        paint.setColor(strokeColorBottom);
+                        canvas.drawPath(cgRing, paint);
+                    } else if (withStroke && cgType != CherrygramAppearanceConfig.GLARE_EFFECTS_DISABLE) {
+                        /** Cherrygram finish */
                         final float[] radii = Arrays.copyOf(boundProps.radii, 8);
                         final boolean radiiAreSame = RadiiUtils.radiiAreSame(radii);
                         final float radiusMax = Math.min(rect.width(), rect.height()) / 2f;
@@ -880,4 +934,37 @@ public abstract class BlurredBackgroundDrawable extends Drawable {
 
         return ninePatchDrawable;
     }
+
+    /** Cherrygram start */
+    /** @return true if the stroke is handled here (disabled or solid), false to draw the default one */
+    private static boolean cgDrawStaticStroke(Canvas canvas, float left, float top, float right, float bottom,
+                                              float radius, float strokeWidth, boolean isTop, Paint paint, int strokeColor) {
+        final int type = CherrygramAppearanceConfig.INSTANCE.getGlareEffectsType();
+
+        if (type == CherrygramAppearanceConfig.GLARE_EFFECTS_STROKE) {
+            if (isTop) {
+                strokeWidth = dpf2(1);
+                final float half = strokeWidth / 2f;
+                final float r = Math.max(0, radius - half);
+
+                final int oldColor = paint.getColor();
+                final Paint.Style oldStyle = paint.getStyle();
+                final float oldWidth = paint.getStrokeWidth();
+
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(strokeWidth);
+                paint.setColor(strokeColor);
+                canvas.drawRoundRect(left + half, top + half, right - half, bottom - half, r, r, paint);
+
+                paint.setStrokeWidth(oldWidth);
+                paint.setColor(oldColor);
+                paint.setStyle(oldStyle);
+            }
+            return true;
+        }
+
+        return type == CherrygramAppearanceConfig.GLARE_EFFECTS_DISABLE;
+    }
+    /** Cherrygram finish */
+
 }

@@ -32,6 +32,8 @@ import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
@@ -48,6 +50,7 @@ import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 
 import java.io.File;
+import java.util.ArrayList;
 
 @SuppressLint("ViewConstructor")
 public class CameraXView extends BaseCameraView {
@@ -136,6 +139,18 @@ public class CameraXView extends BaseCameraView {
         placeholderView.setVisibility(View.GONE);
         placeholderView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         previewView.setImplementationMode(PreviewView.ImplementationMode.COMPATIBLE);
+        if (Build.VERSION.SDK_INT >= 35) {
+            previewView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+                @Override
+                public void onChildViewAdded(View parent, View child) {
+                    child.setRequestedFrameRate(View.REQUESTED_FRAME_RATE_CATEGORY_HIGH);
+                }
+
+                @Override
+                public void onChildViewRemoved(View parent, View child) {
+                }
+            });
+        }
         previewView.setFocusableInTouchMode(false);
         previewView.setBackgroundColor(Color.BLACK);
         if (!lazy) {
@@ -179,7 +194,7 @@ public class CameraXView extends BaseCameraView {
                 placeholderView.setVisibility(View.VISIBLE);
             }
         }
-        controller.bindUseCases();
+        controller.bindUseCasesKeepingZoom();
     }
 
     public void closeCamera() {
@@ -246,7 +261,7 @@ public class CameraXView extends BaseCameraView {
     public void startChangeEffectAnimation() {
         placeholderView.setVisibility(View.GONE);
         blurredStubView.animate().setListener(null).cancel();
-        if (firstFrameRendered) {
+        if (firstFrameRendered && getTextureView() != null) {
             Bitmap bitmap = getTextureView().getBitmap(100, 100);
             if (bitmap != null) {
                 Utilities.blurBitmap(bitmap, 3);
@@ -266,7 +281,7 @@ public class CameraXView extends BaseCameraView {
         }
         placeholderView.setVisibility(View.GONE);
         blurredStubView.animate().setListener(null).cancel();
-        if (firstFrameRendered) {
+        if (firstFrameRendered && getTextureView() != null) {
             Bitmap bitmap = getTextureView().getBitmap(100, 100);
             if (bitmap != null) {
                 Utilities.blurBitmap(bitmap, 3);
@@ -376,6 +391,37 @@ public class CameraXView extends BaseCameraView {
     }
 
     @Override
+    public void destroy(boolean async, Runnable beforeDestroyRunnable) {
+        if (beforeDestroyRunnable != null) {
+            beforeDestroyRunnable.run();
+        }
+        closeCamera();
+    }
+
+    private final ArrayList<Runnable> invalidateListeners = new ArrayList<>();
+
+    @Override
+    public void listenDraw(Runnable listener) {
+        invalidateListeners.add(listener);
+    }
+
+    @Override
+    public void unlistenDraw(Runnable listener) {
+        invalidateListeners.remove(listener);
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        if (invalidateListeners == null) {
+            return;
+        }
+        for (int i = 0; i < invalidateListeners.size(); ++i) {
+            invalidateListeners.get(i).run();
+        }
+    }
+
+    @Override
     protected void dispatchDraw(Canvas canvas) {
         if (flipAnimator != null) {
             canvas.drawColor(Color.BLACK);
@@ -396,7 +442,12 @@ public class CameraXView extends BaseCameraView {
 
     @Override
     public TextureView getTextureView() {
-        return (TextureView) (previewView.getChildAt(0));
+        return previewView.getChildAt(0) instanceof TextureView textureView ? textureView : null;
+    }
+
+    @Override
+    public View getPreviewScaleView() {
+        return previewView;
     }
 
     public Bitmap getBitmap() {
@@ -423,9 +474,27 @@ public class CameraXView extends BaseCameraView {
         return getController().isFlashAvailable();
     }
 
+    private void requestMaxRefreshRate() {
+        final View root = getRootView();
+        if (root != null && root.getLayoutParams() instanceof WindowManager.LayoutParams params) {
+            AndroidUtilities.setPreferredMaxRefreshRate((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE), root, params);
+        }
+    }
+
+    private boolean pausedByDetach;
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        if (pausedByDetach && lifecycle != null && !lifecycle.isDestroyed()) {
+            pausedByDetach = false;
+            if (controller != null && controller.isInitiated()) {
+                isStreaming = false;
+                controller.bindUseCasesKeepingZoom();
+            }
+            lifecycle.start();
+        }
+        post(this::requestMaxRefreshRate);
 
         ((DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE)).registerDisplayListener(displayOrientationListener, null);
         worldOrientationListener.enable();
@@ -434,8 +503,9 @@ public class CameraXView extends BaseCameraView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (lifecycle != null) {
-            lifecycle.stop();
+        if (lifecycle != null && !lifecycle.isDestroyed()) {
+            lifecycle.pause();
+            pausedByDetach = true;
         }
         ((DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE)).unregisterDisplayListener(displayOrientationListener);
         worldOrientationListener.disable();
@@ -497,10 +567,10 @@ public class CameraXView extends BaseCameraView {
     }
 
     public float getTextureHeight(float width, float height) {
-        if (controller == null) {
+        Size previewSize = controller != null ? getPreviewSize() : null;
+        if (previewSize == null || previewSize.getWidth() == 0 || previewSize.getHeight() == 0) {
             return height;
         }
-        Size previewSize = getPreviewSize();
         int frameWidth, frameHeight;
         if (worldOrientation == 90 || worldOrientation == 270) {
             frameWidth = previewSize.getWidth();
@@ -509,7 +579,7 @@ public class CameraXView extends BaseCameraView {
             frameWidth = previewSize.getHeight();
             frameHeight = previewSize.getWidth();
         }
-        float s = Math.max(width / (float) frameWidth, height / (float) frameHeight);
+        float s = Math.min(width / (float) frameWidth, height / (float) frameHeight);
         return (int) (s * frameHeight);
     }
 
@@ -594,9 +664,9 @@ public class CameraXView extends BaseCameraView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (controller != null) {
+        Size previewSize = controller != null ? getPreviewSize() : null;
+        if (previewSize != null && previewSize.getWidth() != 0 && previewSize.getHeight() != 0) {
             int frameWidth, frameHeight;
-            Size previewSize = getPreviewSize();
             if (worldOrientation == 90 || worldOrientation == 270) {
                 frameWidth = previewSize.getWidth();
                 frameHeight = previewSize.getHeight();
@@ -637,4 +707,5 @@ public class CameraXView extends BaseCameraView {
     @Override
     public void setFpsLimit(int fpsLimit) {
     }
+
 }

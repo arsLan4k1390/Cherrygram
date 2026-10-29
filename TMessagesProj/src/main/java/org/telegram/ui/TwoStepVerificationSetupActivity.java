@@ -425,7 +425,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
         buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
         buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         buttonTextView.setTypeface(AndroidUtilities.bold());
-        buttonTextView.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 6));
+        buttonTextView.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 24));
         buttonTextView.setOnClickListener(v -> processNext());
 
         switch (currentType) {
@@ -1996,6 +1996,8 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
                     } else {
                         if ("EMAIL_INVALID".equals(error.text)) {
                             showAlertWithText(LocaleController.getString(R.string.AppName), LocaleController.getString(R.string.PasswordEmailInvalid));
+                        } else if ("EMAIL_NOT_ALLOWED".equals(error.text)) {
+                            showAlertWithText(LocaleController.getString(R.string.AppName), LocaleController.getString(R.string.EmailNotAllowed));
                         } else if (error.text.startsWith("FLOOD_WAIT")) {
                             int time = Utilities.parseInt(error.text);
                             String timeString;

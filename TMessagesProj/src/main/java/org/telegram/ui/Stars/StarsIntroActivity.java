@@ -63,11 +63,13 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.view.NestedScrollingParent3;
 import androidx.core.view.NestedScrollingParentHelper;
 import androidx.core.view.ViewCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BillingController;
 import org.telegram.messenger.BirthdayController;
 import org.telegram.messenger.ChatObject;
@@ -637,15 +639,31 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 if (type == 1) {
                     drawable.centerOffsetY = dp(32 - 8);
                 }
-                paints = new Paint[20];
+                // type 2, gold glitter: 20 warm gold paints (some white-hot) plus 20 deeper, more contrasting amber-gold
+                // ones, so about half the particles read clearly on a light sheet
+                paints = new Paint[type == 2 ? 40 : 20];
                 for (int i = 0; i < paints.length; ++i) {
                     paints[i] = new Paint(Paint.ANTI_ALIAS_FLAG);
-                    paints[i].setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0xFFFA5416, 0xFFFFC837, i / (float) (paints.length - 1)), PorterDuff.Mode.SRC_IN));
+                    final int col = type == 2
+                        ? (i >= 20 ? ColorUtils.blendARGB(0xFFF0A800, 0xFFE08800, (i - 20) / 19f) : i % 5 == 0 ? 0xFFFFF6DC : ColorUtils.blendARGB(0xFFFFD66B, 0xFFFFB13B, i / 19f))
+                        : ColorUtils.blendARGB(0xFFFA5416, 0xFFFFC837, i / (float) (paints.length - 1));
+                    paints[i].setColorFilter(new PorterDuffColorFilter(col, PorterDuff.Mode.SRC_IN));
                 }
                 drawable.getPaint = i -> paints[i % paints.length];
                 drawable.size1 = 17;
                 drawable.size2 = 18;
                 drawable.size3 = 19;
+                if (type == 2) {
+                    // smaller, varied, livelier, with longer and varied lives
+                    drawable.goldGlitter = true;
+                    drawable.size1 = 9;
+                    drawable.size2 = 11;
+                    drawable.size3 = 13;
+                    drawable.speedScale = 1.6f;
+                    drawable.minLifeTime = 1400;
+                    drawable.randLifeTime = 1600;
+                    drawable.forceMaxAlpha = true;
+                }
                 drawable.colorKey = Theme.key_windowBackgroundWhiteBlackText;
                 drawable.init();
             }
@@ -1570,6 +1588,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             ton = new SpannableString("TON");
             drawable = context.getResources().getDrawable(R.drawable.mini_gram_72).mutate();
             ColoredImageSpan span = new ColoredImageSpan(drawable);
+            span.recolorDrawable = false;
             span.setSize(dp(18));
             span.setTranslateY(dp(.5f));
             ton.setSpan(span, 0, ton.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -3360,6 +3379,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         span.translate(tx, ty);
         span.spaceScaleX = sx;
         if (ton) {
+            span.recolorDrawable = false;
             span.setScale(scale * 0.2f, scale * 0.2f);
         } else {
             span.setScale(scale, scale);
@@ -3431,6 +3451,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             span = new ColoredImageSpan(ton ? R.drawable.mini_gram_72 : R.drawable.msg_premium_liststar);
             span.setScale(ton ? 0.222f : 1.13f, ton ? 0.222f : 1.13f);
         }
+        if (ton) {
+            span.recolorDrawable = false;
+        }
         if (spanRef != null) {
             spanRef[0] = span;
         }
@@ -3443,6 +3466,21 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         AndroidUtilities.replaceMultipleCharSequence(StarsController.currency, ssb, spacedStar);
         return ssb;
     }
+
+    // swaps gram icon to the white gradient one (for gram icons on top of blue/colored backgrounds)
+    public static <T extends CharSequence> T whiteGram(boolean ton, T cs) {
+        if (!ton || !(cs instanceof Spanned)) return cs;
+        for (ColoredImageSpan span : ((Spanned) cs).getSpans(0, cs.length(), ColoredImageSpan.class)) {
+            if (span.drawable == null || span.drawable instanceof VectorDrawableCompat) continue;
+            final Drawable white = VectorDrawableCompat.create(ApplicationLoader.applicationContext.getResources(), R.drawable.mini_gram_72_white, null);
+            if (white == null) continue;
+            white.setBounds(span.drawable.getBounds());
+            span.drawable = white;
+            span.recolorDrawable = false;
+        }
+        return cs;
+    }
+
     public static SpannableStringBuilder replaceStarsWithPlain(CharSequence cs, float scale) {
         return replaceStarsWithPlain(cs, scale, null);
     }
@@ -3477,10 +3515,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         } else {
             span = new ColoredImageSpan(resId);
         }
+        span.recolorDrawable = false;
         if (ton) {
             scale *= .33f;
-        } else {
-            span.recolorDrawable = false;
         }
         span.setScale(scale, scale);
         spacedStar.setSpan(span, 0, spacedStar.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -5717,7 +5754,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         });
     }
 
-    private static DecimalFormat floatFormat2;
+    public static DecimalFormat floatFormat2;
     public static String formatTON(long ton) {
         if (floatFormat2 == null)
             floatFormat2 = new DecimalFormat("0.####", new DecimalFormatSymbols(Locale.US));
@@ -5734,7 +5771,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
     private static DecimalFormat floatFormat;
     public static CharSequence formatStarsAmount(TL_stars.StarsAmount starsAmount, float relativeSize, char symbol) {
         if (floatFormat == null)
-            floatFormat = new DecimalFormat("0.################", new DecimalFormatSymbols(Locale.US));
+            floatFormat = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US));
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         if (starsAmount instanceof TL_stars.TL_starsTonAmount) {
             if (starsAmount.amount % 1_000_000_000 != 0) {

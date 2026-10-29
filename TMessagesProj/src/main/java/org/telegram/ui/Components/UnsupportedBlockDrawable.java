@@ -99,7 +99,7 @@ public class UnsupportedBlockDrawable extends Drawable {
     public UnsupportedBlockDrawable(Theme.ResourcesProvider resourceProvider) {
         this.resourcesProvider = resourceProvider;
 
-        planeDrawable = ApplicationLoader.applicationContext.getDrawable(R.drawable.send_plane_26).mutate();
+        planeDrawable = ApplicationLoader.applicationContext.getDrawable(R.drawable.cg_settings).mutate();
         bubbleDrawable = ApplicationLoader.applicationContext.getDrawable(R.drawable.large_unsupported).mutate();
 
         buttonBounce.setAdditionalInvalidate(this::invalidateSelf);

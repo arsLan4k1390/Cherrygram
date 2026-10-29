@@ -52,6 +52,7 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBarLayout;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
 import org.telegram.ui.Stories.recorder.HintView2;
@@ -126,6 +127,9 @@ public class ViewPagerFixed extends FrameLayout {
     }
 
     public float getPositionAnimated() {
+        if (pixelScrolling) {
+            return currentPosition + (nextPosition - currentPosition) * pixelScrollProgress;
+        }
         float position = 0;
         if (viewPages[0] != null && viewPages[0].getVisibility() == View.VISIBLE) {
             final float t = Utilities.clamp(1f - Math.abs(viewPages[0].getTranslationX() / getAvailableTranslationX()), 1, 0);
@@ -139,6 +143,9 @@ public class ViewPagerFixed extends FrameLayout {
     }
 
     public float getCurrentPositionAlpha() {
+        if (pixelScrolling) {
+            return 1f - pixelScrollProgress;
+        }
         if (viewPages[0] != null && viewPages[0].getVisibility() == View.VISIBLE) {
             return Utilities.clamp(1f - Math.abs(viewPages[0].getTranslationX() / getAvailableTranslationX()), 1, 0);
         }
@@ -148,6 +155,9 @@ public class ViewPagerFixed extends FrameLayout {
         return nextPosition;
     }
     public float getNextPositionAlpha() {
+        if (pixelScrolling) {
+            return pixelScrollProgress;
+        }
         if (viewPages[1] != null && viewPages[1].getVisibility() == View.VISIBLE) {
             return Utilities.clamp(1f - Math.abs(viewPages[1].getTranslationX() / getAvailableTranslationX()), 1, 0);
         }
@@ -236,7 +246,12 @@ public class ViewPagerFixed extends FrameLayout {
 
         onTabPageSelected(page, forward);
         final int tX = viewPages[0] != null ? viewPages[0].getMeasuredWidth() : 0;
-        if (forward) {
+        pixelScrolling = pixelManualScroll;
+        pixelScrollProgress = 0f;
+        if (pixelScrolling) {
+            setTranslationX(viewPages[1], (forward ? tX : -tX) * ActionBarLayout.PIXEL_SHIFT);
+            viewPages[1].setAlpha(0f);
+        } else if (forward) {
             setTranslationX(viewPages[1], tX);
         } else {
             setTranslationX(viewPages[1], -tX);
@@ -248,7 +263,15 @@ public class ViewPagerFixed extends FrameLayout {
             if (viewPages[1] == null) {
                 return;
             }
-            if (animatingForward) {
+            if (pixelScrolling) {
+                final float width = viewPages[0].getMeasuredWidth();
+                final float shift = width * ActionBarLayout.PIXEL_SHIFT * (animatingForward ? 1f : -1f);
+                final float elapsed = anm.getAnimatedFraction() * ActionBarLayout.PIXEL_DURATION;
+                setTranslationX(viewPages[1], shift * (1f - progress));
+                setTranslationX(viewPages[0], -shift * progress);
+                viewPages[1].setAlpha(MathUtils.clamp((elapsed - ActionBarLayout.PIXEL_OPEN_FADE_DELAY) / ActionBarLayout.PIXEL_FADE_DURATION, 0f, 1f));
+                pixelScrollProgress = progress;
+            } else if (animatingForward) {
                 setTranslationX(viewPages[1], viewPages[0].getMeasuredWidth() * (1f - progress));
                 setTranslationX(viewPages[0], -viewPages[0].getMeasuredWidth() * progress);
             } else {
@@ -266,6 +289,12 @@ public class ViewPagerFixed extends FrameLayout {
         manualScrolling.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                if (pixelScrolling) {
+                    pixelScrolling = false;
+                    for (View page : viewPages) {
+                        if (page != null) page.setAlpha(1f);
+                    }
+                }
                 if (viewPages[1] != null) {
                     swapViews();
                     viewsByType.put(viewTypes[1], viewPages[1]);
@@ -284,8 +313,8 @@ public class ViewPagerFixed extends FrameLayout {
                 notificationsLocker.unlock();
             }
         });
-        manualScrolling.setDuration(getManualScrollDuration());
-        manualScrolling.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+        manualScrolling.setDuration(pixelScrolling ? (long) ActionBarLayout.PIXEL_DURATION : getManualScrollDuration());
+        manualScrolling.setInterpolator(pixelScrolling ? ActionBarLayout.PIXEL_INTERPOLATOR : CubicBezierInterpolator.EASE_OUT_QUINT);
         manualScrolling.start();
         return true;
     }
@@ -902,7 +931,7 @@ public class ViewPagerFixed extends FrameLayout {
             onItemSelected(viewPages[0], oldView, currentPosition, oldPosition);
             setTranslationX(viewPages[0], 0);
             if (tabsView != null) {
-                tabsView.selectTab(currentPosition, nextPosition, currentProgress);
+                tabsView.selectTab(nextPosition, currentPosition, currentProgress);
             }
             onTabAnimationUpdate(true);
         }
@@ -2387,5 +2416,15 @@ public class ViewPagerFixed extends FrameLayout {
     public void setAllowDisallowInterceptTouch(boolean allowDisallowInterceptTouch) {
         this.allowDisallowInterceptTouch = allowDisallowInterceptTouch;
     }
+
+    /** Cherrygram start */
+    private boolean pixelManualScroll;
+    private boolean pixelScrolling;
+    private float pixelScrollProgress;
+
+    public void setPixelManualScroll(boolean pixelManualScroll) {
+        this.pixelManualScroll = pixelManualScroll;
+    }
+    /** Cherrygram finish */
 
 }

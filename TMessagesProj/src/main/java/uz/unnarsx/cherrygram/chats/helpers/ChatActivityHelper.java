@@ -89,7 +89,7 @@ import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
-import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
+import uz.unnarsx.cherrygram.core.configs.backup.BackupHelper;
 import uz.unnarsx.cherrygram.helpers.network.StickersManager;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert;

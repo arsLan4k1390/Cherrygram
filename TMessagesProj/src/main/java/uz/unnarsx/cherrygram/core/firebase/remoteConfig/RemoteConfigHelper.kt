@@ -57,7 +57,7 @@ object RemoteConfigHelper {
         RemoteConfigConstants.always_show_adsgram_in_chats to true,
 
         RemoteConfigConstants.videomessages_resolution to 512,
-        RemoteConfigConstants.use_braille_spoiler to true,
+        RemoteConfigConstants.use_braille_spoiler to false,
 
         RemoteConfigConstants.humo_card_number to "9860100128256904",
         RemoteConfigConstants.tbank_card_number to "9860100128256904",
@@ -66,9 +66,12 @@ object RemoteConfigHelper {
         RemoteConfigConstants.safe_stars_URL to "https://safe-stars.com/?partner=cherrygram",
         RemoteConfigConstants.safe_stars_URL_RU to "https://safe-stars.com/ru/?partner=cherrygram",
         RemoteConfigConstants.allow_use_safesurf to true,
-        RemoteConfigConstants.safe_surf_URL to "https://t.me/safe_surfbot?start=cherry",
+        RemoteConfigConstants.safe_surf_URL to "https://t.me/safe_surfbot?start=cherrygram",
         RemoteConfigConstants.allow_use_safepay to true,
-        RemoteConfigConstants.safe_pay_URL to "https://t.me/safepaycard_bot?start=cherry",
+        RemoteConfigConstants.safe_pay_URL to "https://t.me/safepaycard_bot?start=cherrygram",
+
+        RemoteConfigConstants.allow_use_edify to true,
+        RemoteConfigConstants.edify_url to "https://t.me/edify_reels_bot?start=cherrygram",
 
         RemoteConfigConstants.record_oom_as_nf to true,
         RemoteConfigConstants.use_cg_oom_handler to true,
@@ -76,7 +79,7 @@ object RemoteConfigHelper {
         RemoteConfigConstants.show_proxy_in_settings to false,
         RemoteConfigConstants.proxy_link_in_settings to "https://t.me/proxy?server=45.67.131.84&port=8443&secret=ee0123456789abcdef0123456789abcdef7777772e676f6f676c652e636f6d",
 
-        RemoteConfigConstants.show_deleted_gifts to true,
+        RemoteConfigConstants.show_deleted_gifts to false,
         RemoteConfigConstants.deleted_gifts_config_url to "https://gitlab.com/arsLan4k1390/Cherrygram-IDS/-/raw/main/gift_list.json?inline=false",
         RemoteConfigConstants.deleted_gifts_stickerpack_name to "Cherrygram_HiddenGifts",
         RemoteConfigConstants.deleted_gifts_stickerpack_offset to 0
@@ -294,6 +297,9 @@ object RemoteConfigHelper {
         checkSafePay()
         checkSafePayURL()
 
+        checkEdify()
+        checkEdifyURL()
+
         checkRecordOOMasNonFatal()
         checkUseCGOOMHandler()
 
@@ -419,6 +425,20 @@ object RemoteConfigHelper {
         ::getString,
         { CherrygramFirebaseConfig.safe_pay_URL },
         { CherrygramFirebaseConfig.safe_pay_URL = it }
+    )
+
+    private fun checkEdify() = checkAndUpdate(
+        RemoteConfigConstants.allow_use_edify,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.allowEdify },
+        { CherrygramFirebaseConfig.allowEdify = it }
+    )
+
+    private fun checkEdifyURL() = checkAndUpdate(
+        RemoteConfigConstants.edify_url,
+        ::getString,
+        { CherrygramFirebaseConfig.edify_URL },
+        { CherrygramFirebaseConfig.edify_URL = it }
     )
 
     private fun checkRecordOOMasNonFatal() {

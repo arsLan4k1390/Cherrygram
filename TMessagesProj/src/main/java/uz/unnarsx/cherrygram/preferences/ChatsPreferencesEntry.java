@@ -53,21 +53,21 @@ import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class ChatsPreferencesEntry extends BaseCGPreferencesEntry {
 
-    private final int glareEffectsRow = 1, headerSettingsRow = 2, centerTitleRow = 3, centerTitleAdaptiveWidthRow = 4, unreadBadgeRow = 5, iOSUnreadBadgeRow = 6, chatMenuShortcutsRow = 7;
+    private final int headerSettingsRow = 1, centerTitleRow = 2, centerTitleAdaptiveWidthRow = 3, unreadBadgeRow = 4, iOSUnreadBadgeRow = 5, chatMenuShortcutsRow = 6;
 
-    private final int customBackgroundInChatsRow = 8, snowflakesRow = 9;
+    private final int customBackgroundInChatsRow = 7, snowflakesRow = 8;
 
-    private final int bottomBarSettingsRow = 10, iOSMessageInputField = 11, sendAsChannelButtonRow = 12, hideBottomBarRow = 13, recentEmojisStickersRow = 14;
+    private final int bottomBarSettingsRow = 9, iOSMessageInputField = 10, sendAsChannelButtonRow = 11, hideBottomBarRow = 12, recentEmojisStickersRow = 13;
 
-    private final int messagesPreferencesRow = 15;
+    private final int messagesPreferencesRow = 14;
 
-    private final int customChatRow = 16;
+    private final int customChatRow = 15;
 
-    private final int autoQuoteRow = 17, disableSwipeToNextRow = 18, disableVibrationRow = 19, openLinksInIVRow = 20;
+    private final int autoQuoteRow = 16, disableSwipeToNextRow = 17, disableVibrationRow = 18, openLinksInIVRow = 19;
 
-    private final int hideKbdSliderRow = 21;
+    private final int hideKbdSliderRow = 20;
 
-    private final int voiceMessagesAutoPlayRow = 22, multiMicRow = 23, recordInStereoRow = 24, playVideoOnVolumeBtnRow = 25, autoPauseVideoRow = 26;
+    private final int voiceMessagesAutoPlayRow = 21, multiMicRow = 22, recordInStereoRow = 23, muteSystemSounds = 24, playVideoOnVolumeBtnRow = 25, autoPauseVideoRow = 26;
 
     private final int videoSeekSliderRow = 27;
 
@@ -98,15 +98,11 @@ public class ChatsPreferencesEntry extends BaseCGPreferencesEntry {
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.AP_Header_Appearance)));
-        items.add(SettingsHelper.asSwitchCG(glareEffectsRow, getString(R.string.CP_StrokeOnViews))
-                .setChecked(CherrygramChatsConfig.INSTANCE.getGlareEffects())
-                .slug("glareEffects")
-        );
         items.add(
                 SettingsHelper.asExpandableSwitch(
                         headerSettingsRow,
                         R.drawable.msg_photo_settings_solar,
-                        applyNewSpan(getString(R.string.AP_Header)),
+                        getString(R.string.AP_Header),
                         " "
                 )
                 .setCollapsed(!expandedHeaderSettingsSection)
@@ -165,7 +161,7 @@ public class ChatsPreferencesEntry extends BaseCGPreferencesEntry {
                 SettingsHelper.asExpandableSwitch(
                         bottomBarSettingsRow,
                         R.drawable.msg_photo_settings_solar,
-                        applyNewSpan(getString(R.string.CP_BottomBar)),
+                        getString(R.string.CP_BottomBar),
                         " "
                 )
                 .setCollapsed(!expandedBottomBarSettingsSection)
@@ -264,6 +260,10 @@ public class ChatsPreferencesEntry extends BaseCGPreferencesEntry {
                     .slug("recordInStereo")
             );
         }
+        items.add(SettingsHelper.asSwitchCG(muteSystemSounds, applyNewSpan(getString(R.string.CP_MuteSystemSounds)), getString(R.string.CP_MuteSystemSounds_Desc))
+                .setChecked(CherrygramChatsConfig.INSTANCE.getMuteSystemSounds())
+                .slug("muteSystemSounds")
+        );
         items.add(SettingsHelper.asSwitchCG(voiceMessagesAutoPlayRow, getString(R.string.CP_VoiceMessagesAutoPlay))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getVoiceMessagesAutoPlay())
                 .slug("voiceAutoPlay")
@@ -307,14 +307,7 @@ public class ChatsPreferencesEntry extends BaseCGPreferencesEntry {
 
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == glareEffectsRow) {
-            CherrygramChatsConfig.INSTANCE.setGlareEffects(!CherrygramChatsConfig.INSTANCE.getGlareEffects());
-            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getGlareEffects());
-
-            expandedHeaderSettingsSection = true;
-            expandedBottomBarSettingsSection = true;
-            updateRows(true);
-        } else if (item.id == headerSettingsRow) {
+        if (item.id == headerSettingsRow) {
             expandedHeaderSettingsSection = !expandedHeaderSettingsSection;
             item.collapsed = !item.collapsed;
 
@@ -405,6 +398,9 @@ public class ChatsPreferencesEntry extends BaseCGPreferencesEntry {
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getRecordInStereo());
 
             showRestartBulletin();
+        } else if (item.id == muteSystemSounds) {
+            CherrygramChatsConfig.INSTANCE.setMuteSystemSounds(!CherrygramChatsConfig.INSTANCE.getMuteSystemSounds());
+            SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getMuteSystemSounds());
         } else if (item.id == playVideoOnVolumeBtnRow) {
             CherrygramChatsConfig.INSTANCE.setPlayVideoOnVolume(!CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume());
             SettingsHelper.updateCheckState(view, CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume());

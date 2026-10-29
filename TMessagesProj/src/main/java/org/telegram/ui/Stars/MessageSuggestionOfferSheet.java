@@ -236,7 +236,6 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
 
             iconTon = new ImageView(context);
             iconTon.setImageResource(R.drawable.mini_gram_72);
-            iconTon.setColorFilter(0xFF3391d4);
             starsCountEditOutline.addView(iconTon, LayoutHelper.createFrame(22, 22, Gravity.LEFT | Gravity.CENTER_VERTICAL, 14, 0, 0, 0));
 
             dollarsEqView = new AnimatedTextView(context);
@@ -527,11 +526,11 @@ public class MessageSuggestionOfferSheet extends BottomSheet {
         if (mode == MODE_INPUT) {
             if (!inputAmount.isZero()) {
                 final boolean isTon = inputAmount.currency == AmountUtils.Currency.TON;
-                buttonView.setText(StarsIntroActivity.replaceStars(isTon,
+                buttonView.setText(StarsIntroActivity.whiteGram(isTon, StarsIntroActivity.replaceStars(isTon,
                     LocaleController.formatString(R.string.PostSuggestionsOfferStars, isTon ? inputAmount.asDecimalString() :
                         LocaleController.formatNumber(inputAmount.asDecimal(), ',')),
                     isTon ? spanRefTon: spanRefStars
-                ), animated);
+                )), animated);
             } else {
                 buttonView.setText(LocaleController.getString(R.string.PostSuggestionsOfferForFree), animated);
             }

@@ -333,7 +333,7 @@ public abstract class BaseFragment {
     }
 
     public boolean isActionBarCrossfadeEnabled() {
-        if (CherrygramCoreConfig.INSTANCE.getSpringAnimation() == CherrygramCoreConfig.ANIMATION_SPRING) {
+        if (CherrygramCoreConfig.INSTANCE.getNavigationAnimation() == CherrygramCoreConfig.ANIMATION_SPRING) {
             if (getLastStoryViewer() != null && getLastStoryViewer().attachedToParent()) {
                 return false;
             }

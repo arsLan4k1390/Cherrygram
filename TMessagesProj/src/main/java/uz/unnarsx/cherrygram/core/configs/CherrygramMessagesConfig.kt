@@ -37,11 +37,9 @@ object CherrygramMessagesConfig {
     /** Appearance start */
     /** Message menu start */
     var blurMessageMenuBackground by sharedPreferences.boolean("CP_BlurMessageMenuBackground", false)
-    var msgMenuUnifiedScroll by sharedPreferences.boolean("CP_MsgMenuUnifiedScrollForce", true)
-    var msgMenuAutoScroll by sharedPreferences.boolean("CP_MsgMenuAutoScroll", true)
-    var msgMenuFixedHeight by sharedPreferences.boolean("CP_MsgMenuFixedHeightForce", true)
-    var blurMessageMenuItems by sharedPreferences.boolean("CP_BlurMessageMenuItems", false)
+    var msgMenuShowWholeAlbum by sharedPreferences.boolean("CP_MsgMenuShowWholeAlbum", false)
     var msgMenuNativeBlur by sharedPreferences.boolean("CP_MsgMenuNativeBlur1", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    var rememberKeyboardState by sharedPreferences.boolean("CP_RememberKeyboardState", true)
     var fixMsgMenuAnimation by sharedPreferences.boolean("CP_FixMsgMenuAnim", Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
     /** Message menu items start */
     var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", true)
@@ -95,6 +93,12 @@ object CherrygramMessagesConfig {
     var msgFiltersElements by sharedPreferences.string("CP_MsgFiltersElements", "")
     var msgFiltersDetectTranslit by sharedPreferences.boolean("CP_MsgFiltersDetectTranslit", false)
     var msgFiltersMatchExactWord by sharedPreferences.boolean("CP_MsgFiltersMatchExactWord", false)
+
+    var excludeUsers by sharedPreferences.boolean("CP_MsgFiltersExcludeUsers", false)
+    var excludeBots by sharedPreferences.boolean("CP_MsgFiltersExcludeBots", false)
+    var excludeGroups by sharedPreferences.boolean("CP_MsgFiltersExcludeGroups", false)
+    var excludeChannels by sharedPreferences.boolean("CP_MsgFiltersExcludeChannels", false)
+
     var msgFiltersDetectEntities by sharedPreferences.boolean("CP_MsgFiltersDetectEntities", false)
     var msgFiltersHideFromBlocked by sharedPreferences.boolean("CP_MsgFiltersHideFromBlocked1", false)
     var msgFiltersHideAllUnderSpoiler by sharedPreferences.boolean("CP_MsgFiltersHideAll", false)

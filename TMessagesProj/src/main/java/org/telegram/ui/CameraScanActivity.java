@@ -11,7 +11,6 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -48,6 +47,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
 import androidx.dynamicanimation.animation.FloatValueHolder;
 import androidx.dynamicanimation.animation.SpringAnimation;
@@ -99,11 +99,17 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import uz.unnarsx.cherrygram.camera.BaseCameraView;
+import uz.unnarsx.cherrygram.camera.CameraXController;
+import uz.unnarsx.cherrygram.camera.CameraXUtils;
+import uz.unnarsx.cherrygram.camera.CameraXView;
+
 public class CameraScanActivity extends BaseFragment {
 
+    private @Nullable OrientationController.Request portraitRequest;
     private TextView titleTextView;
     private TextView descriptionText;
-    private CameraView cameraView;
+    private BaseCameraView cameraView;
     private HandlerThread backgroundHandlerThread = new HandlerThread("ScanCamera");
     private Handler handler;
     private TextView recognizedMrzView;
@@ -278,7 +284,10 @@ public class CameraScanActivity extends BaseFragment {
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
         destroy(false, null);
-        AndroidUtilities.unlockOrientation(getParentActivity());
+        if (portraitRequest != null) {
+            portraitRequest.release();
+            portraitRequest = null;
+        }
         if (visionQrReader != null) {
             visionQrReader.release();
         }
@@ -745,8 +754,9 @@ public class CameraScanActivity extends BaseFragment {
                 if (cameraView == null) {
                     return;
                 }
-                CameraSessionWrapper session = cameraView.getCameraSession();
-                if (session != null) {
+                CameraSessionWrapper session = cameraView instanceof CameraView camera ? camera.getCameraSession() : null;
+                CameraXController controller = cameraView instanceof CameraXView cameraXView ? cameraXView.getController() : null;
+                if (session != null || controller != null && controller.isCameraReady()) {
                     ShapeDrawable shapeDrawable = (ShapeDrawable) flashButton.getBackground();
                     if (flashAnimator != null) {
                         flashAnimator.cancel();
@@ -767,16 +777,27 @@ public class CameraScanActivity extends BaseFragment {
                     flashAnimator.start();
                     if (flashButton.getTag() == null) {
                         flashButton.setTag(1);
-                        session.setCurrentFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        if (session != null) {
+                            session.setCurrentFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        } else {
+                            controller.setTorchEnabled(true);
+                        }
                     } else {
                         flashButton.setTag(null);
-                        session.setCurrentFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        if (session != null) {
+                            session.setCurrentFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        } else {
+                            controller.setTorchEnabled(false);
+                        }
                     }
                 }
             });
         }
 
-        AndroidUtilities.lockOrientation(getParentActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        final OrientationController orientation = OrientationController.of(getParentActivity());
+        if (orientation != null && portraitRequest == null) {
+            portraitRequest = orientation.requestPortrait();
+        }
         fragmentView.setKeepScreenOn(true);
 
         return fragmentView;
@@ -832,11 +853,21 @@ public class CameraScanActivity extends BaseFragment {
         if (fragmentView == null || !CameraView.isCameraAllowed()) {
             return;
         }
-        CameraController.getInstance().initCamera(null);
-        cameraView = new CameraView(fragmentView.getContext(), false);
-        cameraView.setUseMaxPreview(true);
-        cameraView.setOptimizeForBarcode(true);
+        if (CameraXUtils.isCurrentCameraCameraX()) {
+            CameraXView cameraXView = new CameraXView(fragmentView.getContext(), false, false);
+            cameraXView.getController().setUltraWideStartAllowed(false);
+            cameraView = cameraXView;
+        } else {
+            CameraController.getInstance().initCamera(null);
+            CameraView camera = new CameraView(fragmentView.getContext(), false);
+            camera.setUseMaxPreview(true);
+            camera.setOptimizeForBarcode(true);
+            cameraView = camera;
+        }
         cameraView.setDelegate(() -> {
+            if (handler != null) {
+                return;
+            }
             startRecognizing();
             if (isQr()) {
                 if (qrAppearing != null) {
@@ -1015,30 +1046,66 @@ public class CameraScanActivity extends BaseFragment {
     }
 
     public void destroy(boolean async, final Runnable beforeDestroyRunnable) {
-        if (cameraView != null) {
-            cameraView.destroy(async, beforeDestroyRunnable);
-            cameraView = null;
+        if (cameraView instanceof CameraView camera) {
+            camera.destroy(async, beforeDestroyRunnable);
+        } else if (cameraView instanceof CameraXView cameraXView) {
+            if (beforeDestroyRunnable != null) {
+                beforeDestroyRunnable.run();
+            }
+            cameraXView.closeCamera();
         }
+        cameraView = null;
         backgroundHandlerThread.quitSafely();
     }
 
     private final Runnable requestShot = new Runnable() {
         @Override
         public void run() {
-            if (cameraView != null && !recognized && cameraView.getCameraSession() != null) {
+            if (cameraView != null && !recognized && isCameraReady()) {
                 handler.post(() -> {
                     try {
-                        cameraView.focusToPoint(cameraView.getWidth() / 2, cameraView.getHeight() / 2, false);
+                        if (cameraView instanceof CameraView camera) {
+                            camera.focusToPoint(camera.getWidth() / 2, camera.getHeight() / 2, false);
+                        }
                     } catch (Exception ignore) {
 
                     }
-                    if (cameraView != null) {
-                        processShot(cameraView.getTextureView().getBitmap());
-                    }
+                    processCurrentFrame();
                 });
             }
         }
     };
+
+    private boolean isCameraReady() {
+        if (cameraView instanceof CameraXView) {
+            return cameraView.isInited();
+        }
+        return cameraView instanceof CameraView camera && camera.getCameraSession() != null;
+    }
+
+    private void stopCameraPreview() {
+        if (cameraView instanceof CameraView camera) {
+            if (camera.getCameraSession() != null) {
+                CameraController.getInstance().stopPreview(camera.getCameraSession());
+            }
+        } else if (cameraView instanceof CameraXView cameraXView) {
+            AndroidUtilities.runOnUIThread(cameraXView::closeCamera);
+        }
+    }
+
+    private void processCurrentFrame() {
+        if (cameraView instanceof CameraXView cameraXView) {
+            AndroidUtilities.runOnUIThread(() -> {
+                if (cameraView != cameraXView) {
+                    return;
+                }
+                final Bitmap bitmap = cameraXView.getBitmap();
+                handler.post(() -> processShot(bitmap));
+            });
+        } else if (cameraView != null) {
+            processShot(cameraView.getTextureView().getBitmap());
+        }
+    }
 
     private void startRecognizing() {
         backgroundHandlerThread.start();
@@ -1065,12 +1132,12 @@ public class CameraScanActivity extends BaseFragment {
         }
         final long from = SystemClock.elapsedRealtime();
         try {
-            Size size = cameraView.getPreviewSize();
+            Size size = cameraView instanceof CameraXView cameraXView ? cameraXView.getPreviewSize() : ((CameraView) cameraView).getPreviewSize();
             if (currentType == TYPE_MRZ) {
                 final MrzRecognizer.Result res = MrzRecognizer.recognize(bitmap, false);
                 if (res != null && !TextUtils.isEmpty(res.firstName) && !TextUtils.isEmpty(res.lastName) && !TextUtils.isEmpty(res.number) && res.birthDay != 0 && (res.expiryDay != 0 || res.doesNotExpire) && res.gender != MrzRecognizer.Result.GENDER_UNKNOWN) {
                     recognized = true;
-                    CameraController.getInstance().stopPreview(cameraView.getCameraSession());
+                    stopCameraPreview();
                     AndroidUtilities.runOnUIThread(() -> {
                         recognizedMrzView.setText(res.rawMRZ);
                         recognizedMrzView.animate().setDuration(200).alpha(1f).setInterpolator(CubicBezierInterpolator.DEFAULT).start();
@@ -1096,9 +1163,7 @@ public class CameraScanActivity extends BaseFragment {
                     if (!recognized) {
                         recognized = true;
                         qrLoading = delegate.processQr(recognizedText, () -> {
-                            if (cameraView != null && cameraView.getCameraSession() != null) {
-                                CameraController.getInstance().stopPreview(cameraView.getCameraSession());
-                            }
+                            stopCameraPreview();
                             AndroidUtilities.runOnUIThread(() -> {
                                 if (delegate != null) {
                                     delegate.didFindQr(recognizedText);
@@ -1126,8 +1191,8 @@ public class CameraScanActivity extends BaseFragment {
                       (recognizeIndex == 0 && res != null && res.bounds == null && !qrLoading) || // first recognition doesn't have bounds
                       (SystemClock.elapsedRealtime() - recognizedStart > 1000 && !qrLoading) // got more than 1 second and nothing is loading
                     ) && recognizedText != null) {
-                    if (cameraView != null && cameraView.getCameraSession() != null && currentType != TYPE_QR_WEB_BOT) {
-                        CameraController.getInstance().stopPreview(cameraView.getCameraSession());
+                    if (currentType != TYPE_QR_WEB_BOT) {
+                        stopCameraPreview();
                     }
                     String text = recognizedText;
                     AndroidUtilities.runOnUIThread(() -> {
@@ -1154,11 +1219,7 @@ public class CameraScanActivity extends BaseFragment {
                     }
                 } else if (recognized) {
                     long delay = Math.max(16, 1000 / sps - (long) averageProcessTime);
-                    handler.postDelayed(() -> {
-                        if (cameraView != null) {
-                            processShot(cameraView.getTextureView().getBitmap());
-                        }
-                    }, delay);
+                    handler.postDelayed(this::processCurrentFrame, delay);
                 }
             }
         } catch (Throwable ignore) {

@@ -713,6 +713,21 @@ public class ActionBarPopupWindow extends PopupWindow {
         public LinearLayout getLinearLayout() {
             return linearLayout;
         }
+
+        public void stretchContentWidth() {
+            if (swipeBackLayout != null) {
+                return;
+            }
+            View v = linearLayout;
+            while (v != null && v != this) {
+                ViewGroup.LayoutParams lp = v.getLayoutParams();
+                if (lp != null) {
+                    lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                }
+                v = v.getParent() instanceof View ? (View) v.getParent() : null;
+            }
+            requestLayout();
+        }
         /** Cherrygram finish */
     }
 

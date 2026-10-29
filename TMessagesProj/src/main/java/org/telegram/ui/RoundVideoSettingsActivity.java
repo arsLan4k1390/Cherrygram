@@ -23,7 +23,7 @@ import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.utils.camera.roundvideo.RoundVideoSession;
+import org.telegram.utils.recorder.round.RoundVideoSession;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
@@ -94,9 +94,9 @@ public class RoundVideoSettingsActivity extends BaseFragment {
             adapter.notifyDataSetChanged();
             return;
         }
-        if (!SharedSettings.roundVideoCamera2Enabled.get()) {
+        /*if (!SharedSettings.roundVideoCamera2Enabled.get()) {
             return;
-        }
+        }*/
         if (position == ROW_OUTPUT_RESOLUTION) {
             showChoice(
                     R.string.RoundVideoOutputResolution,
@@ -192,9 +192,9 @@ public class RoundVideoSettingsActivity extends BaseFragment {
             if (position == ROW_ENABLED) {
                 return true;
             }
-            if (!SharedSettings.roundVideoCamera2Enabled.get()) {
+            /*if (!SharedSettings.roundVideoCamera2Enabled.get()) {
                 return false;
-            }
+            }*/
             return position == ROW_OUTPUT_RESOLUTION
                     || position == ROW_CAMERA_RESOLUTION
                     || position == ROW_FRAME_RATE
@@ -226,7 +226,8 @@ public class RoundVideoSettingsActivity extends BaseFragment {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            boolean enabled = SharedSettings.roundVideoCamera2Enabled.get();
+            boolean enabled = /*SharedSettings.roundVideoCamera2Enabled.get()*/ true;
+
             if (holder.getItemViewType() == TYPE_HEADER) {
                 HeaderCell cell = (HeaderCell) holder.itemView;
                 cell.setText(position == ROW_GENERAL_HEADER

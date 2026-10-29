@@ -51,13 +51,18 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
 
     /** SafeSurf start */
     var allowSafeSurf by sharedPreferences.boolean("CG_AllowSafeSurfUI", true)
-    var safe_surf_URL by sharedPreferences.string("CP_SafeSurfURL", "https://t.me/safe_surfbot?start=cherry")
+    var safe_surf_URL by sharedPreferences.string("CP_SafeSurfURL", "https://t.me/safe_surfbot?start=cherrygram")
     /** SafeSurf finish */
 
     /** SafePay start */
     var allowSafePay by sharedPreferences.boolean("CG_AllowSafePayUI", true)
-    var safe_pay_URL by sharedPreferences.string("CP_SafePayURL", "https://t.me/safepaycard_bot?start=cherry")
+    var safe_pay_URL by sharedPreferences.string("CP_SafePayURL", "https://t.me/safepaycard_bot?start=cherrygram")
     /** SafePay finish */
+
+    /** Edify start */
+    var allowEdify by sharedPreferences.boolean("CG_AllowEdify", true)
+    var edify_URL by sharedPreferences.string("CP_EdifyURL", "https://t.me/edify_reels_bot?start=cherrygram")
+    /** Edify finish */
 
     /** AdsGram start */
     var showAdsRandomly by sharedPreferences.boolean("CG_ShowAdsRandomly", false)
@@ -67,7 +72,7 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
     /** AdsGram finish */
 
     /** Misc start */
-    var useBrailleSpoiler by sharedPreferences.boolean("CG_UseBrailleSpoiler", true)
+    var useBrailleSpoiler by sharedPreferences.boolean("CG_UseBrailleSpoiler", false)
 
     var lastRemoteConfigCheckTime by sharedPreferences.long("CG_LastRemoteConfigCheckTime", 0)
 
@@ -76,7 +81,7 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
     /** Misc finish */
 
     /** Deleted Gifts start */
-    var showDeletedGifts by sharedPreferences.boolean("CG_ShowDeletedGifts", true)
+    var showDeletedGifts by sharedPreferences.boolean("CG_ShowDeletedGifts", false)
     var deletedGiftsConfigURL by sharedPreferences.string("CG_DeletedGiftsConfigURL", "https://gitlab.com/arsLan4k1390/Cherrygram-IDS/-/raw/main/gift_list.json?inline=false")
     var deletedGiftsStickerPackName by sharedPreferences.string("CG_DeletedGiftsStickerPackLink", "Cherrygram_HiddenGifts")
     var deletedGiftsStickerPackOffset by sharedPreferences.int("CG_DeletedGiftsStickerpackOffset", 0)

@@ -50,9 +50,10 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** General start */
     /** Animations start */
-    const val ANIMATION_SPRING = 0
-    const val ANIMATION_CLASSIC = 1
-    var springAnimation by sharedPreferences.int("CG_SpringAnimation", ANIMATION_SPRING)
+    const val ANIMATION_CLASSIC = 0
+    const val ANIMATION_SPRING = 1
+    const val ANIMATION_PIXEL = 2
+    var navigationAnimation by sharedPreferences.int("CG_NavigationAnimation", ANIMATION_SPRING)
 
     var actionbarCrossfade by sharedPreferences.boolean("CG_ActionbarCrossfade", false)
     var predictiveBack by sharedPreferences.boolean("CG_PredictiveBack", true)

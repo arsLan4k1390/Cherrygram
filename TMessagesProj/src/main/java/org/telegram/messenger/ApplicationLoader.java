@@ -50,7 +50,9 @@ import org.telegram.ui.LauncherIconController;
 import java.io.File;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.chats.AudioEnhance;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.memory.MemoryMonitor;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
@@ -767,6 +769,9 @@ public class ApplicationLoader extends Application {
     private void initCG() {
         KaboomWidget.forceUpdateKaboomWidgets(applicationContext);
         FirebaseAnalyticsHelper.INSTANCE.init(applicationContext);
+        if (CherrygramChatsConfig.INSTANCE.getMuteSystemSounds()) {
+            AudioEnhance.recoverSystemSounds(applicationContext);
+        }
 
         if (CherrygramExperimentalConfig.INSTANCE.getUse_CG_OOMHandler()) {
             MemoryMonitor memoryMonitor = new MemoryMonitor(

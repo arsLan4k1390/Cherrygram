@@ -681,48 +681,6 @@ public class LocaleController {
         languagesDict.put(localeInfo.shortName, localeInfo);
 
         localeInfo = new LocaleInfo();
-        localeInfo.name = "日本語";
-        localeInfo.nameEnglish = "Japanese";
-        localeInfo.shortName = "ja_raw";
-        localeInfo.baseLangCode = null;
-        localeInfo.isRtl = false;
-        localeInfo.pathToFile = "unofficial";
-        localeInfo.pluralLangCode = "ja";
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.getKey(), localeInfo);
-        languagesDict.put("ja", localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "简体中文";
-        localeInfo.nameEnglish = "Chinese (Simplified)";
-        localeInfo.shortName = "fengcs";
-        localeInfo.baseLangCode = "zh_hans_raw";
-        localeInfo.isRtl = false;
-        localeInfo.pathToFile = "unofficial";
-        localeInfo.pluralLangCode = "zh_cn";
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.getKey(), localeInfo);
-        languagesDict.put("zh_cn", localeInfo);
-        languagesDict.put("zh_sg", localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "正體中文";
-        localeInfo.nameEnglish = "Chinese (Traditional)";
-        localeInfo.shortName = "taiwan";
-        localeInfo.baseLangCode = "zh_hant_raw";
-        localeInfo.isRtl = false;
-        localeInfo.pathToFile = "unofficial";
-        localeInfo.pluralLangCode = "zh_tw";
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.getKey(), localeInfo);
-        languagesDict.put("zh_tw", localeInfo);
-        languagesDict.put("zh_hk", localeInfo);
-        languagesDict.put("zh_mo", localeInfo);
-
-        localeInfo = new LocaleInfo();
         localeInfo.name = "Українська";
         localeInfo.nameEnglish = "Ukrainian";
         localeInfo.shortName = localeInfo.pluralLangCode = "uk";
@@ -739,6 +697,19 @@ public class LocaleController {
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
+
+        localeInfo = new LocaleInfo();
+        localeInfo.name = "日本語";
+        localeInfo.nameEnglish = "Japanese";
+        localeInfo.shortName = "ja_raw";
+        localeInfo.baseLangCode = null;
+        localeInfo.isRtl = false;
+        localeInfo.pathToFile = "unofficial";
+        localeInfo.pluralLangCode = "ja";
+        localeInfo.builtIn = true;
+        languages.add(localeInfo);
+        languagesDict.put(localeInfo.getKey(), localeInfo);
+        languagesDict.put("ja", localeInfo);
 
         loadOtherLanguages();
         if (remoteLanguages.isEmpty()) {
@@ -828,7 +799,7 @@ public class LocaleController {
         if (countryCode.length() != 2 || countryCode.equals("YL")) return null;
 
         if (countryCode.equals("FT")) {
-            return "\uD83C\uDFF4\u200D\u2620\uFE0F";
+            return "\uD83D\uDC8E";
         } else if (countryCode.equals("XG")) {
             return "\uD83D\uDEF0";
         } else if (countryCode.equals("XV")){

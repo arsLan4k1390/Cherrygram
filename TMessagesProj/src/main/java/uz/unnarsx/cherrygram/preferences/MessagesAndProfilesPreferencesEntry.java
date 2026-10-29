@@ -323,9 +323,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             final TLRPC.User me = getUserConfig().getCurrentUser();
 
                             if (position == phoneRow) {
-                                CharSequence text = "+1 234 567 890";
+                                CharSequence text;
                                 TLRPC.User user = getUserConfig().getCurrentUser();
-                                boolean isFragmentPhoneNumber = false;
+                                boolean isFragmentPhoneNumber;
                                 if (user != null && !TextUtils.isEmpty(user.phone)) {
                                     String phoneNumber = user.phone;
 
@@ -342,8 +342,12 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     if (isFragmentPhoneNumber && !TextUtils.isEmpty(phoneNumber)) {
                                         text = PhoneFormat.getInstance().format("+ " + phoneNumber);
                                     }
+                                    detailCell.setTextAndValue(
+                                            text,
+                                            isFragmentPhoneNumber ? getString(R.string.AnonymousNumber) : Extra.INSTANCE.getCountryByPhone(MessagesAndProfilesPreferencesEntry.this, user),
+                                            false
+                                    );
                                 }
-                                detailCell.setTextAndValue(text, LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile), false);
                             } else if (position == idDcPreviewRow) {
                                 StringBuilder sb = new StringBuilder();
                                 if (me.photo != null && me.photo.dc_id > 0) {

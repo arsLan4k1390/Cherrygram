@@ -20,120 +20,45 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.browser.Browser;
-import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
-import org.telegram.ui.ActionBar.BackDrawable;
-import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Cells.HeaderCell;
-import org.telegram.ui.Cells.ShadowSectionCell;
-import org.telegram.ui.Cells.TextCell;
-import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.StickerImageView;
 import org.telegram.ui.Components.TableView;
+import org.telegram.ui.Components.UItem;
+import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.SettingsActivity;
+import org.telegram.ui.Wallet.WalletRecipientView;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
-import uz.unnarsx.cherrygram.core.CherrygramLogger;
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.firebase.remoteConfig.RemoteConfigHelper;
-import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
-import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.misc.Constants;
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class DonatesPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
-
-    private int rowCount;
-    private ListAdapter listAdapter;
-    private RecyclerListView listView;
-
-    private int stickerViewRow;
-    private int stickerTableInfoRow;
-
-    private int brandedScreenshotsHeaderRow;
-    private int brandedScreenshotsInfoRow;
-    private int brandedScreenshotsSwitchRow;
-    private int brandedScreenshotsDivisorRow;
-
-    private int enjoyingHeaderRow;
-    private int rateUsRow;
-    private int enjoyingEndDivisor;
-    
-    private int bonusesHeaderRow;
-    private int bonusesInfoRow;
-    private int bonusesPriceRow;
-    private int bonusesTermsRow;
-    private int bonusesDivisorRow;
-
-    private int intHeaderRow;
-    private int masterCardRow;
-    private int visaRow;
-    private int intCredsRow;
-    private int intDivisorRow;
-
-    private int rusHeaderRow;
-    private int alfaRow;
-    private int vtbRow;
-    private int sberRow;
-    private int yooMoneyMirRow;
-    private int tinkoffRow;
-    private int yooMoneyRow;
-    private int rusCredsRow;
-    private int rusDivisorRow;
-
-    private int uzbHeaderRow;
-    private int humoRow;
-    private int uzCardRow;
-    private int uzCardMirRow;
-    private int uzbDivisorRow;
-
-    private int walletHeaderRow;
-    private int walletBitcoinRow;
-    private int walletTonRow;
-    private int walletUSDTRow;
-    private int tonKeeperTonRow;
-    private int tonKeeperUSDTRow;
-    private int walletDivisorRow;
-
-    private int binanceHeaderRow;
-    private int binanceIDRow;
-    private int binanceBitcoinRow;
-    private int binanceEthereumRow;
-    private int binanceUSDTRow;
-    private int binanceDivisorRow;
-
-    protected Theme.ResourcesProvider resourcesProvider;
-
-    private final static int update_donates_list = 1;
+public class DonatesPreferencesEntry extends BaseCGPreferencesEntry implements NotificationCenter.NotificationCenterDelegate {
 
     private final boolean isTestBackend = getConnectionsManager().isTestBackend();
     private boolean didDonate = DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
@@ -143,43 +68,40 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         return this;
     }
 
+    private FrameLayout stickerFrame;
+    private StickerImageView stickerImageView;
+
+    @Override
+    protected CharSequence getTitle() {
+        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("donates_screen");
+        return getString(R.string.DP_SupportOptions);
+    }
+
+    @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Support;
+    }
+
     @Override
     public boolean onFragmentCreate() {
         getNotificationCenter().addObserver(this, NotificationCenter.cgDonatesLoaded);
-        updateRowsId(true);
         return super.onFragmentCreate();
     }
 
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-
         getNotificationCenter().removeObserver(this, NotificationCenter.cgDonatesLoaded);
     }
 
     @Override
     public View createView(Context context) {
-        BackDrawable backDrawable = new BackDrawable(false);
-        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
-        actionBar.setBackButtonDrawable(backDrawable);
-
-        actionBar.setTitle(getString(R.string.DP_SupportOptions), null, true);
-        actionBar.setAllowOverlayTitle(false);
-
         if (!isTestBackend) {
             ActionBarMenu menu = actionBar.createMenu();
-            ActionBarMenuItem menuItem = menu.addItem(0, R.drawable.ic_ab_other);
-            menuItem.setContentDescription(getString(R.string.AccDescrMoreOptions));
-            menuItem.addSubItem(update_donates_list, R.drawable.msg_retry, getString(R.string.Refresh));
-        }
-
-        actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
-        actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
-            @Override
-            public void onItemClick(int id) {
-                if (id == -1) {
-                    finishFragment();
-                } else if (id == update_donates_list) {
+            ActionBarMenuItem otherItem = menu.addItem(1, R.drawable.ic_ab_other);
+            otherItem.setContentDescription(getString(R.string.AccDescrMoreOptions));
+            otherItem.setOnClickListener(v -> ItemOptions.makeOptions(this, otherItem)
+                .add(R.drawable.msg_retry, getString(R.string.Refresh), () -> {
                     Continuation<Object> suspendResult = new Continuation<>() {
                         @NonNull
                         @Override
@@ -194,612 +116,168 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     };
                     DonatesManager.INSTANCE.startAutoRefresh(getContext(), true, false, suspendResult);
                     RemoteConfigHelper.INSTANCE.fetchAndActivate(true, suspendResult);
-                }
-            }
-        });
-
-        listAdapter = new ListAdapter(getContext());
-
-        fragmentView = new FrameLayout(getContext());
-        fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
-        FrameLayout frameLayout = (FrameLayout) fragmentView;
-
-        listView = new RecyclerListView(getContext());
-        listView.setVerticalScrollBarEnabled(false);
-        listView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        listView.setAdapter(listAdapter);
-        if (listView.getItemAnimator() != null) {
-            ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
-        }
-        frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-        listView.setOnItemClickListener((view, position, x, y) -> {
-            var holder = listView.findViewHolderForAdapterPosition(position);
-            if (holder == null || !listAdapter.isEnabled(holder)) {
-                return;
-            }
-            if (position == brandedScreenshotsSwitchRow) {
-                CherrygramCoreConfig.INSTANCE.setCgBrandedScreenshots(!CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots());
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots());
-                }
-                CGBulletinCreator.INSTANCE.createRestartBulletin(this);
-            } else if (position == rateUsRow) {
-                CherrygramExtras.INSTANCE.requestReviewFlow(this);
-            } else if (position == masterCardRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Master_UZS, true);
-            } else if (position == visaRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Visa_USD, true);
-            } else if (position == alfaRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Visa_USD, true);
-            } else if (position == vtbRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_T_Bank, true); // Card_Humo
-            } else if (position == sberRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_T_Bank, true); // Card_Anor_UzCard
-            } else if (position == yooMoneyMirRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Yoomoney_MIR, true);
-            } else if (position == tinkoffRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_T_Bank, true);
-//                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard_Kids, true);
-            } else if (position == yooMoneyRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Yoomoney_Account, false);
-            } else if (position == humoRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Humo, true);
-            } else if (position == uzCardRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard_Kids, true);
-            } else if (position == uzCardMirRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard, true);
-            } else if (position == walletBitcoinRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Wallet_Bitcoin, false);
-            } else if (position == walletTonRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Wallet_TON, false);
-            } else if (position == walletUSDTRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Wallet_USDT, false);
-            } else if (position == tonKeeperTonRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Tonkeeper_TON, false);
-            } else if (position == tonKeeperUSDTRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Tonkeeper_USDT, false);
-            } else if (position == binanceIDRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Binance_Account, false);
-            } else if (position == binanceBitcoinRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Binance_Bitcoin, false);
-            } else if (position == binanceEthereumRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Binance_Ethereum, false);
-            } else if (position == binanceUSDTRow) {
-                copyNumberAndMakeToast(CryptoWalletsRepo.Binance_USDT, false);
-            }
-        });
-
-        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("donates_screen");
-
-        actionBar.setAdaptiveBackground(listView);
-
-        return fragmentView;
-    }
-
-    private class ListAdapter extends MD3ListAdapter {
-
-        private final Context mContext;
-
-        private final int VIEW_TYPE_SHADOW = 0;
-        private final int VIEW_TYPE_HEADER = 1;
-        private final int VIEW_TYPE_TEXT_CELL = 2;
-        private final int VIEW_TYPE_TEXT_CHECK = 3;
-//        private final int VIEW_TYPE_TEXT_SETTINGS = 4;
-        private final int VIEW_TYPE_TEXT_INFO_PRIVACY = 5;
-//        private final int VIEW_TYPE_TEXT_DETAIL_SETTINGS = 6;
-        private final int VIEW_TYPE_TABLE = 8;
-        private final int VIEW_TYPE_STICKER = 9;
-
-        ListAdapter(Context context) {
-            forceLearnRole(VIEW_TYPE_TEXT_INFO_PRIVACY, ROLE_CONTENT);
-            mContext = context;
-        }
-
-        private final HashSet<Integer> md3Ignore = new HashSet<>();
-
-        public void addIgnore(int rowId) {
-            md3Ignore.add(rowId);
-        }
-
-        public void removeIgnore(int rowId) {
-            md3Ignore.remove(rowId);
-        }
-
-        @Override
-        protected boolean mustIgnoreViewForPosition(int position) {
-            return md3Ignore.contains(position);
-        }
-
-        @Override
-        public int getItemCount() {
-            return rowCount;
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            switch (holder.getItemViewType()) {
-                case VIEW_TYPE_SHADOW: {
-                    holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
-                    break;
-                }
-                case VIEW_TYPE_HEADER: {
-                    HeaderCell headerCell = (HeaderCell) holder.itemView;
-                    headerCell.setTopMargin(10);
-                    headerCell.setHeight(35);
-                    if (position == brandedScreenshotsHeaderRow) {
-                        headerCell.setText(getString(R.string.DP_CameraCutoutHeader));
-                    } else if (position == enjoyingHeaderRow) {
-                        headerCell.setText(getString(R.string.DP_EnjoyingUs));
-                    } else if (position == bonusesHeaderRow) {
-                        headerCell.setText(getString(R.string.DP_DonateBadge));
-                    } else if (position == intHeaderRow) {
-                        headerCell.setText(getString(R.string.DP_Donate_Method_Int));
-                    } else if (position == rusHeaderRow) {
-                        headerCell.setText(getString(R.string.DP_Donate_Method_Rus));
-                    } else if (position == uzbHeaderRow) {
-                        headerCell.setText(getString(R.string.DP_Donate_Method_Uzb));
-                    } else if (position == walletHeaderRow) {
-                        headerCell.setText("Crypto");
-                    } else if (position == binanceHeaderRow) {
-                        headerCell.setText("Crypto // Binance");
-                    }
-                    break;
-                }
-                case VIEW_TYPE_TEXT_CELL: {
-                    TextCell textCell = (TextCell) holder.itemView;
-                    textCell.getTextView().setPadding(dp(15), 0, 0, 0);
-                    textCell.getImageView().clearColorFilter();
-
-                    CharSequence title = "";
-                    int icon = 0;
-                    boolean divider = false;
-                    boolean isDarkMode = !Theme.isCurrentThemeDay();
-
-                    if (position == rateUsRow) {
-                        title = getString(R.string.DP_RateUs);
-
-                        textCell.getTextView().setPadding(-dp(1), 0, 0, 0);
-                        textCell.setText(title, divider);
-                        break;
-                    } else if (position == masterCardRow) {
-                        title = "MasterCard (MoneySend)";
-                        icon = isDarkMode ? R.drawable.card_master_dark : R.drawable.card_master_light;
-                    } else if (position == visaRow) {
-                        title = "VISA USD (Visa Direct)";
-                        icon = isDarkMode ? R.drawable.card_visa_dark : R.drawable.card_visa_light;
-                    } else if (position == alfaRow) {
-                        title = "Альфа-Банк";
-                        icon = isDarkMode ? R.drawable.card_alfa_dark : R.drawable.card_alfa_light;
-                    } else if (position == vtbRow) {
-                        title = "ВТБ";
-                        icon = isDarkMode ? R.drawable.card_vtb_dark : R.drawable.card_vtb_light;
-                    } else if (position == sberRow) {
-                        title = "СберБанк";
-                        icon = isDarkMode ? R.drawable.card_sber_dark : R.drawable.card_sber_light;
-                    } else if (position == yooMoneyMirRow) {
-                        title = "МИР";
-                        icon = isDarkMode ? R.drawable.card_mir_dark : R.drawable.card_mir_light;
-                    } else if (position == tinkoffRow) {
-                        title = "Т-Банк";
-                        icon = isDarkMode ? R.drawable.card_tinkoff_dark : R.drawable.card_tinkoff_light;
-                    } else if (position == yooMoneyRow) {
-                        title = "YooMoney";
-                        icon = isDarkMode ? R.drawable.card_ym_dark : R.drawable.card_ym_light;
-                    } else if (position == humoRow) {
-                        title = "HUMO";
-                        icon = isDarkMode ? R.drawable.card_humo_dark : R.drawable.card_humo_light;
-                    } else if (position == uzCardRow) {
-                        title = "UzCard";
-                        icon = isDarkMode ? R.drawable.card_uzcard_dark : R.drawable.card_uzcard_light;
-                    } else if (position == uzCardMirRow) {
-                        title = "UzCard-MIR Co-Badge";
-                        icon = isDarkMode ? R.drawable.card_uzcard_mir_dark : R.drawable.card_uzcard_mir_light;
-                    } else if (position == walletBitcoinRow) {
-                        title = "Bitcoin (BTC) // @wallet";
-                        icon = isDarkMode ? R.drawable.card_btc_dark : R.drawable.card_btc_light;
-                    } else if (position == walletTonRow) {
-                        title = "TON Coin // @wallet";
-                        icon = isDarkMode ? R.drawable.card_ton_dark : R.drawable.card_ton_light;
-                    } else if (position == walletUSDTRow) {
-                        title = "USDT (TON) // @wallet";
-                        icon = isDarkMode ? R.drawable.card_usdt_dark : R.drawable.card_usdt_light;
-                        divider = true;
-                    } else if (position == tonKeeperTonRow) {
-                        title = "TON Coin (w5)";
-                        icon = isDarkMode ? R.drawable.card_ton_dark : R.drawable.card_ton_light;
-                    } else if (position == tonKeeperUSDTRow) {
-                        title = "USDT (TON // w5)";
-                        icon = isDarkMode ? R.drawable.card_usdt_dark : R.drawable.card_usdt_light;
-                    } else if (position == binanceIDRow) {
-                        title = "Binance ID";
-                        icon = isDarkMode ? R.drawable.card_binance_dark : R.drawable.card_binance_light;
-                    } else if (position == binanceBitcoinRow) {
-                        title = "Bitcoin (BTC)";
-                        icon = isDarkMode ? R.drawable.card_btc_dark : R.drawable.card_btc_light;
-                    } else if (position == binanceEthereumRow) {
-                        title = "Ethereum (ERC20)";
-                        icon = isDarkMode ? R.drawable.card_eth_dark : R.drawable.card_eth_light;
-                    } else if (position == binanceUSDTRow) {
-                        title = "TetherUS - USDT (TRC20)";
-                        icon = isDarkMode ? R.drawable.card_usdt_dark : R.drawable.card_usdt_light;
-                    }
-                    textCell.setTextAndIcon(title, icon, divider);
-                    break;
-                }
-                case VIEW_TYPE_TEXT_CHECK: {
-                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
-                    textCheckCell.setEnabled(true, null);
-                    if (position == brandedScreenshotsSwitchRow) {
-                        textCheckCell.setTextAndCheck(getString(R.string.DP_CameraCutout), CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots(), false);
-                    }
-                    break;
-                }
-                case VIEW_TYPE_TEXT_INFO_PRIVACY: {
-                    TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
-                    textInfoPrivacyCell.setTopPadding(dp(1));
-                    textInfoPrivacyCell.setBottomPadding(dp(2));
-                    textInfoPrivacyCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-
-                    if (position == brandedScreenshotsInfoRow) {
-                        textInfoPrivacyCell.setText(AndroidUtilities.replaceTags(getString(R.string.DP_CameraCutoutDesc)));
-                    } else if (position == bonusesInfoRow) {
-                        textInfoPrivacyCell.setText(getString(R.string.DP_Donate_Desc));
-                    } else if (position == bonusesTermsRow) {
-                        textInfoPrivacyCell.setTopPadding(-dp(1));
-                        CharSequence termsText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Terms),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> Browser.openUrl(getContext(), Constants.CG_DONATIONS_AND_TERMS_URL)
-                        );
-                        textInfoPrivacyCell.setText(termsText);
-                    }
-                    break;
-                }
-                case VIEW_TYPE_TABLE: {
-                    TableView tableView = (TableView) holder.itemView;
-                    tableView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-
-                    tableView.clear();
-                    if (position == stickerTableInfoRow) {
-                        tableView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
-                        CharSequence moreInfoText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_DonatesMoreInfo),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> Browser.openUrl(getContext(), "https://t.me/CherrygramSupport")
-                        );
-                        tableView.addFullRow(
-                                didDonate && !isTestBackend ? getString(R.string.DP_DonatesThanks) : moreInfoText,
-                                false, true, 15, true
-                        );
-                        addIgnore(position);
-                    } else if (position == bonusesPriceRow) {
-                        tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
-
-                        String amount2 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON (GRAM)";
-                        CharSequence row1Title = getTonSpanned("$2 / €2 / 200₽ \n\n" + amount2);
-
-                        tableView.addRow(
-                                row1Title,
-                                generateDescForDonates(tableView)
-                        );
-
-                        String amount5 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON (GRAM)";
-                        CharSequence row2Title = getTonSpanned("$5 / €5 / 500₽ \n\n" + amount5);
-
-                        tableView.addRow(
-                                row2Title,
-                                generateDescForMarketplace(tableView)
-                        );
-
-                        CharSequence chequeText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Cheque),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> Browser.openUrl(getContext(), "https://t.me/arsLan")
-                        );
-                        tableView.addFullRow(chequeText);
-
-                        int counter = DonatesManager.INSTANCE.donatesCounter(2);
-                        if (counter > 1) {
-                            CharSequence countText = AndroidUtilities.replaceSingleTag(formatPluralString("DP_Donate_Counter", counter) + " \uD83C\uDF52",
-                                    Theme.key_windowBackgroundWhiteLinkText,
-                                    AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                    null
-                            );
-                            tableView.addFullRow(countText, false, true, 15, false);
-                        }
-                    } else if (position == intCredsRow || position == rusCredsRow) {
-                        CharSequence personalDataText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Method_Surname),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> Browser.openUrl(getContext(), "https://t.me/arsLan")
-                        );
-                        tableView.addFullRow(personalDataText);
-                    }
-                    break;
-                }
-                case VIEW_TYPE_STICKER: {
-                    StickerImageView stickerImageView = (StickerImageView) ((FrameLayout) holder.itemView).getChildAt(0);
-                    bindStickerCell(stickerImageView);
-                    addIgnore(position);
-                    break;
-                }
-            }
-        }
-
-        @Override
-        public boolean isEnabled(RecyclerView.ViewHolder holder) {
-            int type = holder.getItemViewType();
-            return type == VIEW_TYPE_TEXT_CELL || type == VIEW_TYPE_TEXT_CHECK /*|| type == VIEW_TYPE_USER*/;
-        }
-
-        @NonNull
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view;
-            switch (viewType) {
-                case VIEW_TYPE_SHADOW:
-                    view = new ShadowSectionCell(mContext);
-                    break;
-                case VIEW_TYPE_HEADER:
-                    view = new HeaderCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case VIEW_TYPE_TEXT_CELL:
-                    view = new TextCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case VIEW_TYPE_TEXT_CHECK:
-                    view = new TextCheckCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case VIEW_TYPE_TEXT_INFO_PRIVACY:
-                    view = new TextInfoPrivacyCell(mContext, 18);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case VIEW_TYPE_TABLE:
-                    view = new TableView(mContext, getResourceProvider());
-                    view.setPadding(dp(15), 0, dp(15), dp(10));
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case VIEW_TYPE_STICKER: {
-                    FrameLayout stickerFrame = new FrameLayout(mContext);
-
-                    StickerImageView stickerImageView = new StickerImageView(mContext, getCurrentAccount());
-                    stickerFrame.addView(stickerImageView, LayoutHelper.createFrame(
-                            RecyclerView.LayoutParams.WRAP_CONTENT,
-                            RecyclerView.LayoutParams.WRAP_CONTENT,
-                            Gravity.CENTER
-                    ));
-
-                    bindStickerCell(stickerImageView);
-                    view = stickerFrame;
-                    break;
-                }
-                default:
-                    throw new IllegalStateException("Unexpected value: " + viewType);
-            }
-            view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-            return new RecyclerListView.Holder(view);
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == brandedScreenshotsDivisorRow || position == enjoyingEndDivisor || position == bonusesDivisorRow || position == intDivisorRow || position == rusDivisorRow || position == uzbDivisorRow || position == binanceDivisorRow || position == walletDivisorRow) {
-                return VIEW_TYPE_SHADOW;
-            } else if (position == brandedScreenshotsHeaderRow || position == enjoyingHeaderRow || position == bonusesHeaderRow || position == intHeaderRow || position == rusHeaderRow || position == uzbHeaderRow || position == walletHeaderRow || position == binanceHeaderRow) {
-                return VIEW_TYPE_HEADER;
-            } else if (position == rateUsRow
-                    || position == masterCardRow || position == visaRow
-                    || position == alfaRow || position == vtbRow || position == sberRow || position == yooMoneyMirRow || position == tinkoffRow || position == yooMoneyRow
-                    || position == humoRow || position == uzCardRow || position == uzCardMirRow
-                    || position == walletBitcoinRow || position == walletTonRow || position == walletUSDTRow || position == tonKeeperTonRow || position == tonKeeperUSDTRow
-                    || position == binanceIDRow || position ==  binanceBitcoinRow || position == binanceEthereumRow || position == binanceUSDTRow
-            ) {
-                return VIEW_TYPE_TEXT_CELL;
-            } else if (position == brandedScreenshotsSwitchRow) {
-                return VIEW_TYPE_TEXT_CHECK;
-            } else if (position == brandedScreenshotsInfoRow || position == bonusesInfoRow || position == bonusesTermsRow) {
-                return VIEW_TYPE_TEXT_INFO_PRIVACY;
-            } else if (position == stickerTableInfoRow || position == bonusesPriceRow || position == intCredsRow || position == rusCredsRow) {
-                return VIEW_TYPE_TABLE;
-            } else if (position == stickerViewRow) {
-                return VIEW_TYPE_STICKER;
-            }
-            return VIEW_TYPE_SHADOW;
-        }
-
-        private void bindStickerCell(StickerImageView stickerImageView) {
-            if (isTestBackend) {
-                stickerImageView.setStickerPackName(AndroidUtilities.STICKERS_PLACEHOLDER_PACK_NAME);
-            } else {
-                stickerImageView.setStickerPackName("HotCherry");
-            }
-
-            int width = 180, height = 180, top = dp(4), bottom = dp(4);
-
-            if (showDonates) {
-                if (DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace()) {
-                    stickerImageView.setStickerNum(33);
-                    width = dp(65);
-                    height = dp(55);
-                    top = 0;
-                    bottom = dp(2);
-                } else if (DonatesManager.INSTANCE.checkAllDonatedAccounts()) {
-                    stickerImageView.setStickerNum(24);
-                } else {
-                    stickerImageView.setStickerNum(7);
-                }
-            } else {
-                stickerImageView.setStickerNum(7);
-            }
-            stickerImageView.getImageReceiver().setAutoRepeat(1);
-
-            FrameLayout.LayoutParams params = LayoutHelper.createFrame(
-                    width, height, Gravity.CENTER, 0, top, 0, bottom
+                })
+                .setDrawScrim(false)
+                .translate(0F, -dp(48F))
+                .show()
             );
-            stickerImageView.setLayoutParams(params);
-
-            stickerImageView.invalidate();
         }
+
+        return super.createView(context);
     }
 
-    private void updateRowsId(boolean notify) {
-        rowCount = 0;
-
-        stickerViewRow = rowCount++;
-        stickerTableInfoRow = rowCount++;
-
-//        if (!CherrygramCoreConfig.isPlayStoreBuild()) {
-            enjoyingHeaderRow = -1;
-            rateUsRow = -1;
-            enjoyingEndDivisor = -1;
-//        } else {
-//            enjoyingHeaderRow = rowCount++;
-//            rateUsRow = rowCount++;
-//            enjoyingEndDivisor = rowCount++;
-//        }
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-//            brandedScreenshotsHeaderRow = rowCount++;
-//            brandedScreenshotsInfoRow = rowCount++;
-//            brandedScreenshotsSwitchRow = rowCount++;
-//            brandedScreenshotsDivisorRow = rowCount++;
-//        } else {
-            brandedScreenshotsHeaderRow = -1;
-            brandedScreenshotsInfoRow = -1;
-            brandedScreenshotsSwitchRow = -1;
-            brandedScreenshotsDivisorRow = -1;
-//        }
-
-        if (showDonates) {
-            bonusesHeaderRow = rowCount++;
-            bonusesInfoRow = rowCount++;
-            bonusesPriceRow = rowCount++;
-            bonusesTermsRow = rowCount++;
-            bonusesDivisorRow = rowCount++;
-
-            intHeaderRow = rowCount++;
-            masterCardRow = rowCount++;
-            visaRow = rowCount++;
-            intCredsRow = rowCount++;
-            intDivisorRow = rowCount++;
-
-            rusHeaderRow = rowCount++;
-            alfaRow = rowCount++;
-            vtbRow = rowCount++;
-            sberRow = rowCount++;
-            yooMoneyMirRow = rowCount++;
-            tinkoffRow = rowCount++;
-            yooMoneyRow = rowCount++;
-            rusCredsRow = rowCount++;
-            rusDivisorRow = rowCount++;
-
-            uzbHeaderRow = rowCount++;
-            humoRow = rowCount++;
-            uzCardRow = rowCount++;
-            uzCardMirRow = rowCount++;
-            uzbDivisorRow = rowCount++;
-
-            walletHeaderRow = rowCount++;
-            walletBitcoinRow = rowCount++;
-            if (CherrygramCoreConfig.isDevBuild()) {
-                walletTonRow = rowCount++;
-            } else {
-                walletTonRow = -1;
-            }
-            walletUSDTRow = rowCount++;
-            tonKeeperTonRow = rowCount++;
-            tonKeeperUSDTRow = rowCount++;
-            walletDivisorRow = rowCount++;
-
-            binanceHeaderRow = rowCount++;
-            binanceIDRow = rowCount++;
-            binanceBitcoinRow = rowCount++;
-            if (CherrygramCoreConfig.isDevBuild()) {
-                binanceEthereumRow = rowCount++;
-            } else {
-                binanceEthereumRow = -1;
-            }
-            binanceUSDTRow = rowCount++;
-            binanceDivisorRow = rowCount++;
+    @Override
+    protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+        if (stickerFrame == null) {
+            stickerFrame = new FrameLayout(getContext()) {
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), heightMeasureSpec);
+                }
+            };
+            stickerImageView = new StickerImageView(getContext(), getCurrentAccount());
+            stickerImageView.setStickerPackName(isTestBackend ? AndroidUtilities.STICKERS_PLACEHOLDER_PACK_NAME : "HotCherry");
+            stickerImageView.getImageReceiver().setAutoRepeat(1);
+            stickerFrame.addView(stickerImageView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
+        }
+        int width = 180, height = 180, top = dp(4), bottom = dp(4);
+        if (showDonates && DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace()) {
+            stickerImageView.setStickerNum(33);
+            width = dp(65);
+            height = dp(55);
+            top = 0;
+            bottom = dp(2);
+        } else if (showDonates && DonatesManager.INSTANCE.checkAllDonatedAccounts()) {
+            stickerImageView.setStickerNum(24);
         } else {
-            bonusesHeaderRow = -1;
-            bonusesInfoRow = -1;
-            bonusesPriceRow = -1;
-            bonusesTermsRow = -1;
-            bonusesDivisorRow = -1;
-
-            intHeaderRow = -1;
-            masterCardRow = -1;
-            visaRow = -1;
-            intCredsRow = -1;
-            intDivisorRow = -1;
-
-            rusHeaderRow = -1;
-            alfaRow = -1;
-            vtbRow = -1;
-            sberRow = -1;
-            yooMoneyMirRow = -1;
-            tinkoffRow = -1;
-            yooMoneyRow = -1;
-            rusCredsRow = -1;
-            rusDivisorRow = -1;
-
-            uzbHeaderRow = -1;
-            humoRow = -1;
-            uzCardRow = -1;
-            uzCardMirRow = -1;
-            uzbDivisorRow = -1;
-
-            walletHeaderRow = -1;
-            walletBitcoinRow = -1;
-            walletTonRow = -1;
-            walletUSDTRow = -1;
-            tonKeeperTonRow = -1;
-            tonKeeperUSDTRow = -1;
-            walletDivisorRow = -1;
-
-            binanceHeaderRow = -1;
-            binanceIDRow = -1;
-            binanceBitcoinRow = -1;
-            binanceEthereumRow = -1;
-            binanceUSDTRow = -1;
-            binanceDivisorRow = -1;
+            stickerImageView.setStickerNum(7);
         }
+        stickerImageView.setLayoutParams(LayoutHelper.createFrame(width, height, Gravity.CENTER, 0, top, 0, bottom));
+        stickerImageView.invalidate();
+        items.add(UItem.asFullyCustom(stickerFrame));
 
-        if (listAdapter != null && notify) {
-            listAdapter.notifyDataSetChanged();
+        TableView stickerInfoTable = new TableView(getContext(), getResourceProvider());
+        stickerInfoTable.setPadding(dp(15), 0, dp(15), dp(10));
+        CharSequence moreInfoText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_DonatesMoreInfo),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> Browser.openUrl(getContext(), "https://t.me/CherrygramSupport")
+        );
+        stickerInfoTable.addFullRow(
+                didDonate && !isTestBackend ? getString(R.string.DP_DonatesThanks) : moreInfoText,
+                false, true, 15, true
+        );
+        items.add(UItem.asFullyCustom(stickerInfoTable));
+
+        if (!showDonates) return;
+
+        items.add(UItem.asHeader(getString(R.string.DP_DonateBadge)));
+        TextInfoPrivacyCell bonusesInfoCell = new TextInfoPrivacyCell(getContext(), 18);
+        bonusesInfoCell.setTopPadding(dp(1));
+        bonusesInfoCell.setBottomPadding(dp(2));
+        bonusesInfoCell.setText(getString(R.string.DP_Donate_Desc));
+        items.add(SettingsHelper.asCustomWithBackground(bonusesInfoCell));
+
+        TableView bonusesPriceTable = new TableView(getContext(), getResourceProvider());
+        bonusesPriceTable.setPadding(dp(15), 0, dp(15), dp(10));
+        bonusesPriceTable.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
+        String amount2 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON (GRAM)";
+        bonusesPriceTable.addRow(getTonSpanned("$2 / €2 / 200₽ \n\n" + amount2), generateDescForDonates(bonusesPriceTable));
+        String amount5 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON (GRAM)";
+        bonusesPriceTable.addRow(getTonSpanned("$5 / €5 / 500₽ \n\n" + amount5), generateDescForMarketplace(bonusesPriceTable));
+        bonusesPriceTable.addFullRow(AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Cheque),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> Browser.openUrl(getContext(), "https://t.me/arsLan")
+        ));
+        int counter = DonatesManager.INSTANCE.donatesCounter(2);
+        if (counter > 1) {
+            CharSequence countText = AndroidUtilities.replaceSingleTag(formatPluralString("DP_Donate_Counter", counter) + " \uD83C\uDF52",
+                    Theme.key_windowBackgroundWhiteLinkText,
+                    AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                    null
+            );
+            bonusesPriceTable.addFullRow(countText, false, true, 15, false);
         }
+        items.add(SettingsHelper.asCustomWithBackground(bonusesPriceTable));
+        items.add(UItem.asShadow(AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Terms),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> Browser.openUrl(getContext(), Constants.CG_DONATIONS_AND_TERMS_URL)
+        )));
+
+        CharSequence personalDataText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Method_Surname),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> Browser.openUrl(getContext(), "https://t.me/arsLan")
+        );
+
+        items.add(UItem.asHeader(getString(R.string.DP_Donate_Method_Int)));
+        items.add(asPaymentCell("MasterCard (MoneySend)", R.drawable.card_master_light, R.drawable.card_master_dark, CardsRepo.Card_Kapital_Master_UZS, true));
+        items.add(asPaymentCell("VISA USD (Visa Direct)", R.drawable.card_visa_light, R.drawable.card_visa_dark, CardsRepo.Card_Kapital_Visa_USD, true));
+        items.add(UItem.asShadow(personalDataText));
+
+        items.add(UItem.asHeader(getString(R.string.DP_Donate_Method_Rus)));
+        items.add(asPaymentCell("Альфа-Банк", R.drawable.card_alfa_light, R.drawable.card_alfa_dark, CardsRepo.Card_Kapital_Visa_USD, true));
+        items.add(asPaymentCell("ВТБ", R.drawable.card_vtb_light, R.drawable.card_vtb_dark, CardsRepo.Card_T_Bank, true)); // Card_Humo
+        items.add(asPaymentCell("СберБанк", R.drawable.card_sber_light, R.drawable.card_sber_dark, CardsRepo.Card_T_Bank, true)); // Card_Anor_UzCard
+        items.add(asPaymentCell("МИР", R.drawable.card_mir_light, R.drawable.card_mir_dark, CardsRepo.Card_Yoomoney_MIR, true));
+        items.add(asPaymentCell("Т-Банк", R.drawable.card_tinkoff_light, R.drawable.card_tinkoff_dark, CardsRepo.Card_T_Bank, true)); // Card_Anor_UzCard_Kids
+        items.add(asPaymentCell("YooMoney", R.drawable.card_ym_light, R.drawable.card_ym_dark, CardsRepo.Card_Yoomoney_Account, false));
+        items.add(UItem.asShadow(personalDataText));
+
+        items.add(UItem.asHeader(getString(R.string.DP_Donate_Method_Uzb)));
+        items.add(asPaymentCell("HUMO", R.drawable.card_humo_light, R.drawable.card_humo_dark, CardsRepo.Card_Humo, true));
+        items.add(asPaymentCell("UzCard", R.drawable.card_uzcard_light, R.drawable.card_uzcard_dark, CardsRepo.Card_Anor_UzCard_Kids, true));
+        items.add(asPaymentCell("UzCard-MIR Co-Badge", R.drawable.card_uzcard_mir_light, R.drawable.card_uzcard_mir_dark, CardsRepo.Card_Anor_UzCard, true));
+        items.add(UItem.asShadow(null));
+
+        items.add(UItem.asHeader("Crypto // w5"));
+        items.add(asPaymentCell("TON Coin", R.drawable.card_ton_light, R.drawable.card_ton_dark, CryptoWalletsRepo.Tonkeeper_TON, false));
+        items.add(asPaymentCell("USDT (TON Network)", R.drawable.card_usdt_light, R.drawable.card_usdt_dark, CryptoWalletsRepo.Tonkeeper_USDT, false));
+        items.add(UItem.asShadow(null));
+
+        items.add(UItem.asHeader("Crypto // @walt"));
+        items.add(asPaymentCell("TON Coin", R.drawable.card_ton_light, R.drawable.card_ton_dark, CryptoWalletsRepo.Wallet_TON, false));
+        items.add(asPaymentCell("USDT (TON Network)", R.drawable.card_usdt_light, R.drawable.card_usdt_dark, CryptoWalletsRepo.Wallet_USDT, false));
+        items.add(asPaymentCell("Bitcoin (BTC)", R.drawable.card_btc_light, R.drawable.card_btc_dark, CryptoWalletsRepo.Wallet_Bitcoin, false));
+        items.add(UItem.asShadow(null));
+
+        items.add(UItem.asHeader("Crypto // Binance"));
+        items.add(asPaymentCell("Binance ID", R.drawable.card_binance_light, R.drawable.card_binance_dark, CryptoWalletsRepo.Binance_Account, false));
+        items.add(asPaymentCell("Bitcoin (BTC)", R.drawable.card_btc_light, R.drawable.card_btc_dark, CryptoWalletsRepo.Binance_Bitcoin, false));
+        if (CherrygramCoreConfig.isDevBuild()) {
+            items.add(asPaymentCell("Ethereum (ERC20)", R.drawable.card_eth_light, R.drawable.card_eth_dark, CryptoWalletsRepo.Binance_Ethereum, false));
+        }
+        items.add(asPaymentCell("TetherUS - USDT (TRC20)", R.drawable.card_usdt_light, R.drawable.card_usdt_dark, CryptoWalletsRepo.Binance_USDT, false));
+        items.add(UItem.asShadow(null));
     }
 
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.cgDonatesLoaded) {
             didDonate = DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
-
-            if (listAdapter != null) {
-                try {
-                    updateRowsId(false);
-
-                    if (stickerViewRow >= 0 && stickerViewRow < rowCount) {
-                        listAdapter.notifyItemChanged(stickerViewRow);
-                    }
-
-                    if (stickerTableInfoRow >= 0 && stickerTableInfoRow < rowCount) {
-                        listAdapter.notifyItemChanged(stickerTableInfoRow);
-                    }
-
-                } catch (Exception e) {
-                    CherrygramLogger.e(e);
-                    updateRowsId(true);
-                }
-            }
+            updateRows(true);
         }
     }
 
-    private void copyNumberAndMakeToast(String cardNumber, boolean card) {
-        AndroidUtilities.addToClipboard(cardNumber);
-        Toast.makeText(getParentActivity(), getString(card ? R.string.CardNumberCopied : R.string.TextCopied), Toast.LENGTH_SHORT).show();
+    private UItem asPaymentCell(CharSequence title, int iconLight, int iconDark, String address, boolean isCard) {
+        WalletRecipientView recipientView = new WalletRecipientView(getContext(), getResourceProvider(), null, null, true);
+        recipientView.setCustom(title, Theme.isCurrentThemeDay() ? iconLight : iconDark, address);
+        recipientView.setOnClickListener(v -> {
+            AndroidUtilities.addToClipboard(address);
+            Toast.makeText(getParentActivity(), getString(isCard ? R.string.CardNumberCopied : R.string.TextCopied), Toast.LENGTH_SHORT).show();
+        });
+
+        FrameLayout frame = new FrameLayout(getContext()) {
+            @Override
+            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), heightMeasureSpec);
+            }
+        };
+        frame.setPadding(dp(12), dp(4), dp(12), dp(4));
+        frame.addView(recipientView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        return UItem.asCustom(frame);
     }
 
     private SpannableStringBuilder generateDescForDonates(TableView tableView) {

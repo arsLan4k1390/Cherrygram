@@ -96,6 +96,8 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
 import uz.unnarsx.cherrygram.camera.BaseCameraView;
+import uz.unnarsx.cherrygram.camera.CameraXDualSource;
+import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 
@@ -103,7 +105,6 @@ import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 public class CameraView extends BaseCameraView implements TextureView.SurfaceTextureListener, CameraController.ICameraView, CameraController.ErrorCallback  {
 
     public boolean WRITE_TO_FILE_IN_BACKGROUND = false;
-    private boolean largePhotos = CherrygramExtras.largePhotosSupported();
 
     public boolean isStory;
     public boolean recordHevc;
@@ -125,7 +126,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
     private int focusAreaSize;
     private Drawable thumbDrawable;
 
-    private final boolean useCamera2 = CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2;
+    private final boolean useCamera2;
     private final CameraSessionWrapper[] cameraSession = new CameraSessionWrapper[2];
     private CameraSessionWrapper cameraSessionRecording;
 
@@ -295,7 +296,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 initFirstCameraAfterSecond = true;
                 updateCameraInfoSize(1);
                 if (handler != null) {
-                    cameraThread.sendMessage(handler.obtainMessage(cameraThread.DO_DUAL_START, info[1].cameraId, 0, dualMatrix), 0);
+                    cameraThread.sendMessage(handler.obtainMessage(cameraThread.DO_DUAL_START, info[1] != null ? info[1].cameraId : 0, 0, dualMatrix), 0);
                 }
                 addToDualWait(1200L);
             });
@@ -305,7 +306,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
         updateCameraInfoSize(1);
         final Handler handler = cameraThread.getHandler();
         if (handler != null) {
-            cameraThread.sendMessage(handler.obtainMessage(cameraThread.DO_DUAL_START, info[1].cameraId, 0, dualMatrix), 0);
+            cameraThread.sendMessage(handler.obtainMessage(cameraThread.DO_DUAL_START, info[1] != null ? info[1].cameraId : 0, 0, dualMatrix), 0);
         }
         addToDualWait(800L);
     }
@@ -408,9 +409,18 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
     }
 
     public CameraView(Context context, boolean frontface, boolean lazy, boolean story) {
+        this(context, frontface, lazy, story, false);
+    }
+
+    public CameraView(Context context, boolean frontface, boolean lazy, boolean story, boolean cameraX) {
         super(context, null);
 
         this.isStory = story;
+        useCamera2 = !cameraX && CameraXUtils.isCurrentCameraCamera2();
+        cameraXSource = cameraX ? new CameraXDualSource(context, frontface) : null;
+        if (cameraX) {
+            previewSize[0] = previewSize[1] = CameraXDualSource.estimateDisplaySize();
+        }
 
         setBackgroundColor(Color.BLACK);
 
@@ -519,7 +529,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 frameHeight = previewSize[0].getWidth();
             }
             float s;
-            if (fit && !isStory) {
+            if (fit && (!isStory || cameraXSource != null)) {
                 s = Math.min(width / (float) frameWidth, height / (float) frameHeight);
             } else {
                 s = Math.max(width / (float) frameWidth, height / (float) frameHeight);
@@ -557,7 +567,12 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             frameWidth = previewSize[0].getHeight();
             frameHeight = previewSize[0].getWidth();
         }
-        float s = Math.max(width / (float) frameWidth , height / (float) frameHeight);
+        float s;
+        if (fit && (!isStory || cameraXSource != null)) {
+            s = Math.min(width / (float) frameWidth, height / (float) frameHeight);
+        } else {
+            s = Math.max(width / (float) frameWidth, height / (float) frameHeight);
+        }
         return (int) (s * frameHeight);
     }
 
@@ -644,6 +659,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             cameraSession[1] = cameraSession0;
 
             isFrontface = !isFrontface;
+            if (cameraXSource != null) {
+                cameraXSource.setMainFront(isFrontface);
+            }
 
             Handler handler = cameraThread.getHandler();
             if (handler != null) {
@@ -722,6 +740,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
     }
 
     private void updateCameraInfoSize(int i) {
+        if (cameraXSource != null) {
+            return;
+        }
         ArrayList<CameraInfo> cameraInfos = CameraController.getInstance().getCameras();
         if (cameraInfos == null) {
             return;
@@ -762,7 +783,6 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             aspectRatio = new Size(16, 9);
             photoMaxWidth = wantedWidth = 1280;
             photoMaxHeight = wantedHeight = 720;
-
         } else {
             if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera1to1 && !isStory) {
                 aspectRatio = new Size(1, 1);
@@ -1011,6 +1031,10 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
     }
 
     public void focusToPoint(int i, int x, int y, int vx, int vy, boolean visible) {
+        if (cameraXSource != null) {
+            x -= textureView.getLeft();
+            y -= textureView.getTop();
+        }
         Rect focusRect = calculateTapArea(x, y, 1f);
         Rect meteringRect = calculateTapArea(x, y, 1.5f);
 
@@ -1069,6 +1093,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 cameraSession[i].destroy(async, beforeDestroyRunnable, null);
             }
         }
+        if (cameraXSource != null) {
+            cameraXSource.release();
+        }
         CameraController.getInstance().removeOnErrorListener(this);
     }
 
@@ -1079,6 +1106,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         Canvas c = canvas;
+        if (child == textureView && cameraXSource != null) {
+            canvas.drawColor(Color.BLACK);
+        }
         if (child == textureView && canvas.isHardwareAccelerated()) {
             if (renderNode != null) {
                 RenderNode node = (RenderNode) renderNode;
@@ -1322,6 +1352,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
         private int drawProgram;
         private int vertexMatrixHandle;
         private int textureMatrixHandle;
+        private int cropMatrixHandle = -1;
         private int cameraMatrixHandle;
         private int oppositeCameraMatrixHandle;
         private int positionHandle;
@@ -1446,7 +1477,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
 
             android.opengl.Matrix.setIdentityM(mSTMatrix[0], 0);
 
-            int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, AndroidUtilities.readRes(R.raw.camera_vert));
+            int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, getCameraVertexShader());
             int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, AndroidUtilities.readRes(R.raw.camera_frag));
             if (vertexShader != 0 && fragmentShader != 0) {
                 drawProgram = GLES20.glCreateProgram();
@@ -1466,6 +1497,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     textureHandle = GLES20.glGetAttribLocation(drawProgram, "aTextureCoord");
                     vertexMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "uMVPMatrix");
                     textureMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "uSTMatrix");
+                    cropMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "cropMatrix");
                     cameraMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "cameraMatrix");
                     oppositeCameraMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "oppositeCameraMatrix");
 
@@ -1642,7 +1674,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
         public void reinitForNewCamera() {
             Handler handler = getHandler();
             if (handler != null) {
-                sendMessage(handler.obtainMessage(DO_REINIT_MESSAGE, info[0].cameraId), 0);
+                sendMessage(handler.obtainMessage(DO_REINIT_MESSAGE, info[0] != null ? info[0].cameraId : 0), 0);
             }
         }
 
@@ -1809,6 +1841,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 if (i == 0 && updateTexImage1 || i == 1 && updateTexImage2) {
                     cameraSurface[i].getTransformMatrix(mSTMatrix[i]);
                 }
+                if (cameraXSource != null) {
+                    updateCameraXCrop(i, currentSession[i]);
+                }
 
                 GLES20.glUseProgram(drawProgram);
                 GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -1827,6 +1862,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 GLES20.glUniformMatrix4fv(oppositeCameraMatrixHandle, 1, false, cameraMatrix[1 - i], 0);
 
                 GLES20.glUniformMatrix4fv(textureMatrixHandle, 1, false, mSTMatrix[i], 0);
+                if (cropMatrixHandle >= 0) {
+                    GLES20.glUniformMatrix4fv(cropMatrixHandle, 1, false, cameraXCrop[i], 0);
+                }
                 GLES20.glUniformMatrix4fv(vertexMatrixHandle, 1, false, mMVPMatrix[i], 0);
                 Size size = previewSize[i];
                 if (size != null && currentSession[i] != null) {
@@ -2186,6 +2224,10 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
         }
 
         private void updateScale(int surfaceIndex) {
+            if (cameraXSource != null) {
+                scaleX = scaleY = 1f;
+                return;
+            }
             int width, height;
             if (previewSize[surfaceIndex] != null) {
                 width = previewSize[surfaceIndex].getWidth();
@@ -2357,7 +2399,21 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 FileLog.d("CameraView " + "create camera"+(useCamera2 ? "2" : "")+" session " + i);
             }
 
-            if (useCamera2) {
+            if (cameraXSource != null) {
+                final CameraXDualSource.Session session = cameraXSource.open(i == 0 ? isFrontface : !isFrontface, surfaceTexture, s -> {
+                    final int index = cameraSession[0] == s ? 0 : cameraSession[1] == s ? 1 : -1;
+                    if (index < 0) {
+                        return;
+                    }
+                    previewSize[index] = s.getDisplaySize();
+                    requestLayout();
+                });
+                if (session == null) return;
+                cameraSession[i] = session;
+                previewSize[i] = session.getDisplaySize();
+                cameraThread.setCurrentSession(cameraSession[i], i);
+                requestLayout();
+            } else if (useCamera2) {
                 Camera2Session session = Camera2Session.create(i == 0 ? isFrontface : !isFrontface, surfaceWidth, surfaceHeight);
                 if (session == null) return;
                 cameraSession[i] = CameraSessionWrapper.of(session);
@@ -2473,6 +2529,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
         private int drawProgram;
         private int vertexMatrixHandle;
         private int textureMatrixHandle;
+        private int cropMatrixHandle = -1;
         private int cameraMatrixHandle;
         private int oppositeCameraMatrixHandle;
         private int positionHandle;
@@ -2859,6 +2916,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
 
                 GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
                 GLES20.glUniformMatrix4fv(textureMatrixHandle, 1, false, mSTMatrix[i], 0);
+                if (cropMatrixHandle >= 0) {
+                    GLES20.glUniformMatrix4fv(cropMatrixHandle, 1, false, cameraXCrop[i], 0);
+                }
 
                 GLES20.glUniform1f(blurHandle, 0);
                 Size size = previewSize[i];
@@ -3201,7 +3261,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             textureBuffer = ByteBuffer.allocateDirect(texData.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
             textureBuffer.put(texData).position(0);
 
-            int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, AndroidUtilities.readRes(R.raw.camera_vert));
+            int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, getCameraVertexShader());
             int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, AndroidUtilities.readRes(R.raw.camera_frag));
             if (vertexShader != 0 && fragmentShader != 0) {
                 drawProgram = GLES20.glCreateProgram();
@@ -3218,6 +3278,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     textureHandle = GLES20.glGetAttribLocation(drawProgram, "aTextureCoord");
                     vertexMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "uMVPMatrix");
                     textureMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "uSTMatrix");
+                    cropMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "cropMatrix");
                     cameraMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "cameraMatrix");
                     oppositeCameraMatrixHandle = GLES20.glGetUniformLocation(drawProgram, "oppositeCameraMatrix");
 
@@ -3472,4 +3533,56 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
     public void onError(int errorId, Camera camera, CameraSessionWrapper cameraSession) {
 
     }
+
+    /** Cherrygram start */
+    private final boolean largePhotos = CherrygramExtras.largePhotosSupported();
+
+    private final CameraXDualSource cameraXSource;
+
+    private final float[][] cameraXCrop = new float[2][16];
+    {
+        android.opengl.Matrix.setIdentityM(cameraXCrop[0], 0);
+        android.opengl.Matrix.setIdentityM(cameraXCrop[1], 0);
+    }
+
+    public boolean isCameraX() {
+        return cameraXSource != null;
+    }
+
+    public CameraXDualSource getCameraXSource() {
+        return cameraXSource;
+    }
+
+    private String getCameraVertexShader() {
+        final String shader = AndroidUtilities.readRes(R.raw.camera_vert);
+        final String uv = "uv = (uSTMatrix * aTextureCoord).xy;";
+        if (cameraXSource == null || shader == null || !shader.contains(uv)) {
+            return shader;
+        }
+        return "uniform mat4 cropMatrix;\n" + shader.replace(uv, "uv = (uSTMatrix * cropMatrix * aTextureCoord).xy;");
+    }
+
+    private void updateCameraXCrop(int i, CameraSessionWrapper session) {
+        final float[] crop = cameraXCrop[i];
+        android.opengl.Matrix.setIdentityM(crop, 0);
+        final android.util.Size frame = session instanceof CameraXDualSource.Session s ? s.getResolution() : null;
+        final Size display = previewSize[i];
+        if (frame == null || display == null) {
+            return;
+        }
+        final float frameAspect = Math.min(frame.getWidth(), frame.getHeight()) / (float) Math.max(frame.getWidth(), frame.getHeight());
+        final float displayAspect = Math.min(display.getWidth(), display.getHeight()) / (float) Math.max(display.getWidth(), display.getHeight());
+        float kx = 1f, ky = 1f;
+        if (displayAspect > frameAspect) {
+            ky = displayAspect / frameAspect;
+        } else {
+            kx = frameAspect / displayAspect;
+        }
+        crop[0] = 1f / kx;
+        crop[5] = 1f / ky;
+        crop[12] = .5f - .5f / kx;
+        crop[13] = .5f - .5f / ky;
+    }
+    /** Cherrygram finish */
+
 }

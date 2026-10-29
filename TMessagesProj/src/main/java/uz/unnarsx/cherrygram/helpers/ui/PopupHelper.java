@@ -264,6 +264,22 @@ public class PopupHelper {
             boolean kaboom,
             Runnable onConfirm
     ) {
+        showWarning(
+                context, resID, title, message, buttonText, timerInSeconds, kaboom, onConfirm, null
+        );
+    }
+
+    public static void showWarning(
+            Context context,
+            int resID,
+            String title,
+            CharSequence message,
+            String buttonText,
+            int timerInSeconds,
+            boolean kaboom,
+            Runnable onConfirm,
+            Runnable onDismissRunnable
+    ) {
         if (!kaboom && CherrygramExtras.isUserAccountAdded(1714120111L) && onConfirm != null) {
             onConfirm.run();
             return;
@@ -309,6 +325,10 @@ public class PopupHelper {
         final BottomSheet sheet = new BottomSheet.Builder(context)
                 .setCustomView(linearLayout)
                 .show();
+
+        if (onDismissRunnable != null) {
+            sheet.setOnDismissListener(onDismissRunnable);
+        }
 
         sheet.setCanDismissWithSwipe(false);
         sheet.setCanDismissWithTouchOutside(false);

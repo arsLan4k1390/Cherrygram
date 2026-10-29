@@ -1550,6 +1550,9 @@ public class RichEditor extends BaseFragment implements NotificationCenter.Notif
     public static Drawable withShadow(Drawable inner) {
         return new ShadowWrapperDrawable(inner);
     }
+    public static Drawable withShadow(Drawable inner, float r, float x, float y, int color) {
+        return new ShadowWrapperDrawable(inner, r, x, y, color);
+    }
 
     public static class RequiresPremiumDrawable extends Drawable {
 
@@ -1653,6 +1656,12 @@ public class RichEditor extends BaseFragment implements NotificationCenter.Notif
             } else {
                 shadowPaint.setShadowLayer(dp(12), 0, dp(4), Theme.multAlpha(0xFF000000, .10f));
             }
+        }
+        ShadowWrapperDrawable(Drawable inner, float r, float x, float y, int color) {
+            this.inner = inner;
+            inner.setCallback(this);
+            shadowPaint.setColor(0x00000000);
+            shadowPaint.setShadowLayer(r, x, y, color);
         }
 
         @Override
