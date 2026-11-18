@@ -8,6 +8,7 @@
 
 package org.telegram.ui.Cells;
 
+import org.telegram.messenger.FileLog;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
@@ -36,6 +37,7 @@ import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
@@ -47,6 +49,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AvatarDrawable;
@@ -67,14 +70,16 @@ import org.telegram.ui.NotificationsSettingsActivity;
 import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoriesUtilities;
+import java.util.HashSet;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.donates.BadgeHelper;
-import uz.unnarsx.cherrygram.misc.Constants;
 
 public class UserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, Theme.Colorable {
 
@@ -168,7 +173,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         if (needAddButton) {
             addButton = new TextView(context);
             addButton.setGravity(Gravity.CENTER);
-            addButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
+            ThemeBind.textColor(addButton, Theme.key_featuredStickers_buttonText, resourcesProvider);
             addButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             addButton.setTypeface(AndroidUtilities.bold());
             addButton.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 14));
@@ -229,7 +234,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         setClipChildren(false);
 
         nameTextView = new SimpleTextView(context);
-        nameTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(nameTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         nameTextView.setTypeface(AndroidUtilities.bold());
         nameTextView.setTextSize(16);
         nameTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
@@ -246,7 +251,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
         imageView = new ImageView(context);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
-        imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+        ThemeBind.colorFilter(imageView, Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider, PorterDuff.Mode.MULTIPLY);
         imageView.setVisibility(GONE);
         addView(imageView, LayoutHelper.createFrame(LayoutParams.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 0 : 16, 0, LocaleController.isRTL ? 16 : 0, 0));
 
@@ -263,7 +268,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             checkBox3 = new ImageView(context);
             checkBox3.setScaleType(ImageView.ScaleType.CENTER);
             checkBox3.setImageResource(R.drawable.account_check);
-            checkBox3.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.colorFilter(checkBox3, Theme.key_featuredStickers_addButton, resourcesProvider, PorterDuff.Mode.MULTIPLY);
             checkBox3.setVisibility(View.GONE);
             addView(checkBox3, LayoutHelper.createFrame(24, 24, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 10 + padding : 0, 0, LocaleController.isRTL ? 0 : 10 + padding, 0));
         }
@@ -272,21 +277,22 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             adminTextView = new TextView(context);
             ScaleStateListAnimator.apply(adminTextView, .05f, 1.2f);
             adminTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            adminTextView.setTextColor(Theme.getColor(Theme.key_profile_creatorIcon, resourcesProvider));
+            ThemeBind.textColor(adminTextView, Theme.key_profile_creatorIcon, resourcesProvider);
             adminTextView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
             addView(adminTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP, LocaleController.isRTL ? 23 : 0, 10, LocaleController.isRTL ? 0 : 23, 0));
         }
 
         if (needMutualIcon) {
-            mutualView = new ImageView(context);
-            mutualView.setImageResource(R.drawable.ic_mutual_contact);
-            mutualView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector, resourcesProvider)));
-            mutualView.setScaleType(ImageView.ScaleType.CENTER);
-            mutualView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
-            mutualView.setVisibility(GONE);
+            mutualView = createIconView(context, R.drawable.ic_mutual_contact);
             mutualView.setOnClickListener(v -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, getString(R.string.AP_MutualContacts_Description)));
-            mutualView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-            addView(mutualView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 8 : 0, 0, LocaleController.isRTL ? 0 : 8, 0));
+
+            noteView = createIconView(context, R.drawable.msg_info);
+            noteView.setOnClickListener(v -> {
+                TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(dialogId);
+                if (hasContactNote(userFull)) {
+                    NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, userFull.note.text);
+                }
+            });
         }
         setFocusable(true);
     }
@@ -329,28 +335,29 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         }
         this.isAdmin = isAdmin;
         this.isOwner = isOwner;
-        final int color;
+        final int colorKey;
         if (isOwner) {
-            color = Theme.getColor(Theme.key_chat_tagCreator, resourcesProvider);
+            colorKey = Theme.key_chat_tagCreator;
         } else if (isAdmin) {
-            color = Theme.getColor(Theme.key_chat_tagAdmin, resourcesProvider);
+            colorKey = Theme.key_chat_tagAdmin;
         } else if (canAddTag && TextUtils.isEmpty(role)) {
-            color = Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider);
+            colorKey = Theme.key_featuredStickers_addButton;
         } else {
-            color = Theme.getColor(Theme.key_chat_inAdminText, resourcesProvider);
+            colorKey = Theme.key_chat_inAdminText;
         }
-        adminTextView.setTextColor(color);
+        final int color = Theme.getColor(colorKey, resourcesProvider);
+        ThemeBind.textColor(adminTextView, colorKey, resourcesProvider);
         if (isAdmin || isOwner) {
             adminTextView.setText(role);
             adminTextView.setPadding(dp(6), dp(0.66f), dp(6), dp(1));
             adminTextView.setTranslationX(dp(6));
-            adminTextView.setBackground(Theme.createRoundRectDrawable(dp(32), Theme.multAlpha(color, .12f)));
+            ThemeBind.fillBackground(adminTextView, Theme.createRoundRectDrawable(dp(32), Theme.multAlpha(color, .12f)), ThemeBind.multAlpha(colorKey, .12f), resourcesProvider);
             adminTextView.setOnClickListener(onClick);
         } else if (canAddTag && TextUtils.isEmpty(role)) {
             adminTextView.setText(getString(R.string.AddTag));
             adminTextView.setPadding(dp(6), dp(0.66f), dp(6), dp(1));
             adminTextView.setTranslationX(dp(6));
-            adminTextView.setBackground(Theme.createRadSelectorDrawable(Theme.multAlpha(color, .12f), dp(32), dp(32)));
+            ThemeBind.selectorBackground(adminTextView, Theme.createRadSelectorDrawable(Theme.multAlpha(color, .12f), dp(32), dp(32)), null, ThemeBind.multAlpha(colorKey, .12f), resourcesProvider);
             adminTextView.setOnClickListener(onClick);
         } else {
             adminTextView.setText(role);
@@ -554,7 +561,18 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             MeasureSpec.makeMeasureSpec(dp(callCellStyle ? 56 : 58) + (needDivider ? 1 : 0), MeasureSpec.EXACTLY));
     }
 
+    private boolean customStatusColors;
+
+    private void refreshStatusColors() {
+        if (customStatusColors) {
+            return;
+        }
+        statusColor = Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider);
+        statusOnlineColor = Theme.getColor(Theme.key_telegram_color_text, resourcesProvider);
+    }
+
     public void setStatusColors(int color, int onlineColor) {
+        customStatusColors = true;
         statusColor = color;
         statusOnlineColor = onlineColor;
     }
@@ -748,7 +766,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                             canvas.restore();
                         }
                     };
-                    premiumDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+                    ThemeBind.drawableColorFilter(this, premiumDrawable, Theme.key_chats_verifiedBackground, resourcesProvider, PorterDuff.Mode.MULTIPLY);
                 }
                 nameTextView.setRightDrawable(premiumDrawable);
             }
@@ -800,14 +818,9 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         avatarImageView.setRoundRadius(isCommunity ? dp(46 * 20 / 72f) :
                 (currentChat != null && currentChat.forum ? dp(14) : dp(24)));
 
-        nameTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(nameTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
 
-        if (mutualView != null) {
-            mutualView.setVisibility(currentUser != null && currentUser.mutual_contact ? VISIBLE : GONE);
-            if (currentUser != null && currentUser.mutual_contact) {
-                nameTextView.setContentDescription(nameTextView.getText() + " (" + getString(R.string.AP_MutualContacts_Description) + ")");
-            }
-        }
+        updateIconViews(currentUser);
     }
 
     @Override
@@ -823,6 +836,34 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
     @Override
     public void updateColors() {
+        try {
+            // recolor in place (a full update(0) re-bind every theme frame is too heavy)
+            final int oldStatusColor = statusColor, oldStatusOnlineColor = statusOnlineColor;
+            refreshStatusColors();
+            if (statusTextView != null) {
+                final int current = statusTextView.getTextColor();
+                if (current == oldStatusOnlineColor && oldStatusOnlineColor != oldStatusColor) {
+                    statusTextView.setTextColor(statusOnlineColor);
+                } else if (current == oldStatusColor) {
+                    statusTextView.setTextColor(statusColor);
+                }
+            }
+            if (avatarImageView != null) {
+                avatarImageView.invalidate();
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+    @Override
+    public void addColorKeys(HashSet<Integer> colors) {
+        colors.add(Theme.key_windowBackgroundWhiteGrayText);
+        colors.add(Theme.key_telegram_color_text);
+        colors.add(Theme.key_windowBackgroundWhite);
+        colors.add(Theme.key_checkboxCheck);
+        colors.add(Theme.key_chat_tagCreator);
+        colors.add(Theme.key_chat_tagAdmin);
+        colors.add(Theme.key_chat_inAdminText);
     }
 
     public void setSelfAsSavedMessages(boolean value) {
@@ -883,13 +924,20 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.emojiLoaded) {
             nameTextView.invalidate();
+        } else if (id == NotificationCenter.userInfoDidLoad) {
+            if (currentObject instanceof TLRPC.User && (Long) args[0] == dialogId) {
+                updateIconViews((TLRPC.User) currentObject);
+            }
         }
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
+        NotificationCenter.getGlobalInstance().addWeakObserver(this, NotificationCenter.emojiLoaded);
+        if (noteView != null) {
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.userInfoDidLoad);
+        }
         emojiStatus.attach();
         botVerification.attach();
         cherrygramStatusDrawable.attach();
@@ -899,6 +947,10 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
+        if (noteView != null) {
+            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.userInfoDidLoad);
+            removeCallbacks(loadFullUserRunnable);
+        }
         emojiStatus.detach();
         botVerification.detach();
         cherrygramStatusDrawable.detach();
@@ -971,8 +1023,8 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                 closeView.setScaleType(ImageView.ScaleType.CENTER);
                 ScaleStateListAnimator.apply(closeView);
                 closeView.setImageResource(R.drawable.ic_close_white);
-                closeView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3, resourcesProvider), PorterDuff.Mode.SRC_IN));
-                closeView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), Theme.RIPPLE_MASK_CIRCLE_AUTO));
+                ThemeBind.colorFilter(closeView, Theme.key_windowBackgroundWhiteGrayText3, resourcesProvider, PorterDuff.Mode.SRC_IN);
+                ThemeBind.selectorBackground(closeView, Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), Theme.RIPPLE_MASK_CIRCLE_AUTO), null, ThemeBind.of(Theme.key_listSelector), resourcesProvider);
                 addView(closeView, LayoutHelper.createFrame(30, 30, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, 0));
             }
             closeView.setOnClickListener(onClick);
@@ -981,39 +1033,148 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
     /** Cherrygram start */
     private ImageView mutualView;
+    private ImageView noteView;
+
+    private ImageView createIconView(Context context, int iconRes) {
+        ImageView view = new ImageView(context);
+        view.setImageResource(iconRes);
+        view.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), Theme.RIPPLE_MASK_CIRCLE_TO_BOUND_EDGE));
+        view.setScaleType(ImageView.ScaleType.CENTER);
+        view.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+        view.setVisibility(GONE);
+        view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        addView(view, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 8 : 0, 0, LocaleController.isRTL ? 0 : 8, 0));
+        return view;
+    }
+
+    private static boolean hasContactNote(TLRPC.UserFull userFull) {
+        return userFull != null && userFull.note != null && !TextUtils.isEmpty(userFull.note.text);
+    }
+
+    private void updateIconViews(TLRPC.User user) {
+        if (mutualView == null) {
+            return;
+        }
+        removeCallbacks(loadFullUserRunnable);
+
+        boolean mutual = user != null && user.mutual_contact;
+        mutualView.setVisibility(mutual ? VISIBLE : GONE);
+
+        boolean canHaveNote = user != null && user.contact && !user.bot && !UserObject.isUserSelf(user);
+        TLRPC.UserFull userFull = canHaveNote ? MessagesController.getInstance(currentAccount).getUserFull(user.id) : null;
+        if (canHaveNote && userFull == null) {
+            FullUserCacheLoader.getInstance(currentAccount).load(user.id);
+            postDelayed(loadFullUserRunnable, LOAD_FULL_USER_DELAY);
+        }
+        boolean hasNote = hasContactNote(userFull);
+        noteView.setVisibility(hasNote ? VISIBLE : GONE);
+
+        LayoutParams lp = (LayoutParams) noteView.getLayoutParams();
+        int margin = dp(mutual ? 8 + 40 : 8);
+        if ((LocaleController.isRTL ? lp.leftMargin : lp.rightMargin) != margin) {
+            if (LocaleController.isRTL) {
+                lp.leftMargin = margin;
+            } else {
+                lp.rightMargin = margin;
+            }
+            noteView.setLayoutParams(lp);
+        }
+
+        int iconsCount = (mutual ? 1 : 0) + (hasNote ? 1 : 0);
+        setRightPadding(iconsCount > 0 ? dp(8 + 40 * iconsCount - 28 - 6) : 0, true, true);
+
+        CharSequence name = nameTextView.getText();
+        StringBuilder description = new StringBuilder(name == null ? "" : name);
+        if (mutual) description.append(" (").append(getString(R.string.AP_MutualContacts_Description)).append(")");
+        if (hasNote) description.append(" (").append(getString(R.string.ContactNote)).append(": ").append(userFull.note.text).append(")");
+        nameTextView.setContentDescription(description);
+    }
+
+    private static final long LOAD_FULL_USER_DELAY = 500;
+    private final Runnable loadFullUserRunnable = new Runnable() {
+        @Override
+        public void run() {
+            MessagesController controller = MessagesController.getInstance(currentAccount);
+            TLRPC.User user = controller.getUser(dialogId);
+            if (user == null || controller.getUserFull(user.id) != null) {
+                return;
+            }
+            if (!FullUserCacheLoader.getInstance(currentAccount).isChecked(user.id)) {
+                postDelayed(this, LOAD_FULL_USER_DELAY);
+                return;
+            }
+            controller.loadFullUser(user, 0, false);
+        }
+    };
+
+    private static final class FullUserCacheLoader {
+        private static final FullUserCacheLoader[] instances = new FullUserCacheLoader[UserConfig.MAX_ACCOUNT_COUNT];
+
+        static FullUserCacheLoader getInstance(int account) {
+            if (instances[account] == null) {
+                instances[account] = new FullUserCacheLoader(account);
+            }
+            return instances[account];
+        }
+
+        private final int account;
+        private final HashSet<Long> requested = new HashSet<>();
+        private final HashSet<Long> checked = new HashSet<>();
+        private final HashSet<Long> queue = new HashSet<>();
+        private final Runnable flushRunnable = this::flush;
+
+        private FullUserCacheLoader(int account) {
+            this.account = account;
+        }
+
+        boolean isChecked(long userId) {
+            return checked.contains(userId);
+        }
+
+        void load(long userId) {
+            if (!requested.add(userId)) {
+                return;
+            }
+            queue.add(userId);
+            AndroidUtilities.cancelRunOnUIThread(flushRunnable);
+            AndroidUtilities.runOnUIThread(flushRunnable);
+        }
+
+        private void flush() {
+            if (queue.isEmpty()) {
+                return;
+            }
+            HashSet<Long> ids = new HashSet<>(queue);
+            queue.clear();
+            MessagesStorage storage = MessagesStorage.getInstance(account);
+            storage.getStorageQueue().postRunnable(() -> {
+                ArrayList<TLRPC.UserFull> infos = storage.loadUserInfos(ids);
+                AndroidUtilities.runOnUIThread(() -> {
+                    checked.addAll(ids);
+                    MessagesController controller = MessagesController.getInstance(account);
+                    for (TLRPC.UserFull info : infos) {
+                        TLRPC.User user = controller.getUser(info.id);
+                        if (user != null) {
+                            controller.processUserInfo(user, info, false, false, 0, null, null, 0, false);
+                        }
+                    }
+                });
+            });
+        }
+    }
 
     private final boolean addEditButton;
 
     private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatusDrawable;
 
     private void checkCherrygramBadges(SimpleTextView nameTextView, TLRPC.User user) {
-        if (user == null) return;
-
-        long emojiDocumentId;
-        boolean isCGPremium = false; // cgPremium
-        boolean isDonated = DonatesManager.INSTANCE.didUserDonate(user.id);
-        boolean forceBra = user.id == Constants.Cherrygram_Owner;
-        boolean showParticles = isCGPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(user.id);
-
-        if (isCGPremium && isDonated) {
-            emojiDocumentId = Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
-        } else if (isCGPremium || isDonated || forceBra) {
-            emojiDocumentId = isCGPremium || forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
-        } else {
-            emojiDocumentId = 0;
+        if (addEditButton || !BadgeHelper.setCherrygramStatus(cherrygramStatusDrawable, user, false)) {
             nameTextView.setRightDrawable2(null);
+            return;
         }
-
-        if (emojiDocumentId != 0 && !addEditButton) {
-            cherrygramStatusDrawable.set(emojiDocumentId, false);
-
-            int color = Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider);
-            cherrygramStatusDrawable.setColor(BadgeHelper.Companion.getEmojiStatusColor(user.id, color, false));
-            cherrygramStatusDrawable.setParticles(showParticles, showParticles);
-
-            nameTextView.setRightDrawable2(cherrygramStatusDrawable);
-            nameTextView.setRightDrawableInside(true);
-        }
+        int color = Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider);
+        cherrygramStatusDrawable.setColor(BadgeHelper.getEmojiStatusColor(user.id, color, false));
+        nameTextView.setRightDrawable2(cherrygramStatusDrawable);
     }
 
     private int joinDate;

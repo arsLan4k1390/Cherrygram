@@ -7,6 +7,7 @@ import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.SharedConfig;
+import org.telegram.ui.ActionBar.Theme;
 
 public class BlurredRecyclerView extends RecyclerListView {
 
@@ -92,4 +93,11 @@ public class BlurredRecyclerView extends RecyclerListView {
         bottomPadding = bottom;
         super.setPadding(left, topPadding + blurTopPadding, right, bottomPadding);
     }
+
+    /** Cherrygram start */
+    public BlurredRecyclerView(Context context, Theme.ResourcesProvider resourcesProvider) {
+        super(context, resourcesProvider);
+    }
+    /** Cherrygram finish */
+
 }

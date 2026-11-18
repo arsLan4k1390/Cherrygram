@@ -110,7 +110,7 @@ class TelegramSettingsHelper(
         }
 
         o.addGapIf(
-            DonatesManager.checkAllDonatedAccountsForMarketplace() && fragment.messageMenuHelper.showDivider()
+            DonatesManager.checkAllDonatedAccountsForMarketplace() && fragment.messageMenuHelper.showGap()
         )
 
         o.addIf(
@@ -341,6 +341,19 @@ class TelegramSettingsHelper(
             var colorBottom = IconBackgroundColors.BLUE_LIGHT.bottom
 
             if ((showMyProfile() || force) && user != null) {
+                val collectible = MessagesController.PeerColor.fromCollectible(user.emoji_status)
+                if (collectible != null) {
+                    /*val dark = Theme.isCurrentThemeDark()
+                    return Pair(
+                        collectible.getBgColor1(dark) or -0x1000000,
+                        collectible.getBgColor2(dark) or -0x1000000
+                    )*/
+                    return Pair(
+                        collectible.getBgColor2(false) or -0x1000000,
+                        collectible.getBgColor1(false) or -0x1000000
+                    )
+                }
+
                 if (user.color is TL_peerColorCollectible) {
                     val p = user.color as TL_peerColorCollectible
                     val dark = Theme.isCurrentThemeDark()
@@ -361,8 +374,8 @@ class TelegramSettingsHelper(
                             colorTop = IconBackgroundColors.BLUE.top
                             colorBottom = IconBackgroundColors.BLUE_LIGHT.bottom
                         } else {
-                            colorTop = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
-                            colorBottom = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
+                            colorTop = color
+                            colorBottom = color
                         }
                     } else {
                         val peerColors = MessagesController.getInstance(UserConfig.selectedAccount).peerColors
@@ -505,10 +518,10 @@ class TelegramSettingsHelper(
         }
     }
 
-    fun handleOnLongClick(item: UItem): Boolean {
+    fun handleOnLongClick(item: UItem, linkPrefix: String): Boolean {
         when (item.id) {
-            1390 -> AndroidUtilities.addToClipboard("tg://${DeeplinkHelper.DeepLinksRepo.CG_Settings}")
-            12 -> AndroidUtilities.addToClipboard("tg://${DeeplinkHelper.DeepLinksRepo.CG_Stars}")
+            1390 -> AndroidUtilities.addToClipboard("https://${linkPrefix}/cgSettings/${DeeplinkHelper.DeepLinksRepo.CG_Settings}")
+            12 -> AndroidUtilities.addToClipboard("https://${linkPrefix}/cgSettings/${DeeplinkHelper.DeepLinksRepo.CG_Stars}")
         }
         return true
     }

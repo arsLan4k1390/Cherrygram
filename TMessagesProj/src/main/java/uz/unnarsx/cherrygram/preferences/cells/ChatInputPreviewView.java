@@ -40,13 +40,13 @@ import org.telegram.ui.Components.SizeNotifierFrameLayout;
 import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.telegram.ui.Components.blur3.drawable.color.BlurredBackgroundColorProvider;
 import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceColor;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceWrapped;
 import org.telegram.ui.Components.chat.ChatInputViewsContainer;
 import org.telegram.ui.Components.chat.ViewPositionWatcher;
 import org.telegram.ui.Components.inset.WindowInsetsStateHolder;
 import org.telegram.ui.Stories.recorder.StoryEntry;
+import org.telegram.utils.glass.source.GlassSourceColor;
+import org.telegram.utils.glass.source.GlassSourceRenderNode;
+import org.telegram.utils.glass.source.GlassSourceWrapped;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
@@ -227,15 +227,15 @@ public class ChatInputPreviewView extends FrameLayout {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             final ViewPositionWatcher viewPositionWatcher = new ViewPositionWatcher(this);
 
-            BlurredBackgroundSourceWrapped navbarContentSourceWallpaper = new BlurredBackgroundSourceWrapped();
-            BlurredBackgroundSourceRenderNode glassBackgroundSourceRenderNode = new BlurredBackgroundSourceRenderNode(navbarContentSourceWallpaper);
+            GlassSourceWrapped navbarContentSourceWallpaper = new GlassSourceWrapped();
+            GlassSourceRenderNode glassBackgroundSourceRenderNode = new GlassSourceRenderNode(navbarContentSourceWallpaper);
             glassBackgroundSourceRenderNode.setUnderSource(navbarContentSourceWallpaper);
 
             glassBackgroundDrawableFactory = new BlurredBackgroundDrawableViewFactory(glassBackgroundSourceRenderNode);
             glassBackgroundDrawableFactory.setLiquidGlassEffectAllowed(LiteMode.isEnabled(LiteMode.FLAG_LIQUID_GLASS));
             glassBackgroundDrawableFactory.setSourceRootView(viewPositionWatcher, this);
         } else {
-            BlurredBackgroundSourceColor sourceColor = new BlurredBackgroundSourceColor();
+            GlassSourceColor sourceColor = new GlassSourceColor();
             sourceColor.setColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
 
             glassBackgroundDrawableFactory = new BlurredBackgroundDrawableViewFactory(sourceColor);

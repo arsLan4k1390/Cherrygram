@@ -19,6 +19,9 @@
 
     <string name="CG_HiddenGifts">Hidden Gifts</string>
     <!--Sign in screen-->
+    <string name="CG_PrivacyAccept">I accept the **Cherrygram Privacy Policy**</string>
+    <string name="CG_PrivacyNotAccepted">Please accept the Cherrygram Privacy Policy to continue</string>
+
     <string name="CG_QRLoginTitle">QR Login</string>
     <string name="CG_QRLoginMessage">Scan the QR code with another device to log in.</string>
 
@@ -271,6 +274,8 @@
     <string name="CP_ReplyBackground">Background in replies</string>
     <string name="CP_ReplyCustomColors">Custom colors in replies and links preview</string>
     <string name="CP_ReplyBackgroundEmoji">Emoji in replies and links preview</string>
+    <string name="CG_NewProfileDesign">New profile design</string>
+    <string name="CG_NewProfileDesign_Desc">The profile color fills the whole screen, and cards, text and icons adapt to it.</string>
     <string name="CP_HideStories">Hide Stories (locally)</string>
     <string name="CP_HideStories_Desc">Stories will disappear from your chats list and from profiles.</string>
     <string name="CP_ArchiveStories">Archive stories</string>
@@ -329,6 +334,8 @@
     <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS. Not supported on tablets.</string>
     <string name="CP_MessageMenuNativeBlur">Native Blur</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Android\'s built-in blur system will be used for the message menu background: smooth, live, and with minimal impact on performance.</string>
+    <string name="CG_MsgMenuOpenByLongPress">Open menu by long press</string>
+    <string name="CG_MsgMenuOpenByLongPress_Desc">Like on iOS: hold a message to open its menu</string>
     <string name="CG_MsgMenuShowWholeAlbum">Show the whole album</string>
     <string name="CG_MsgMenuShowWholeAlbum_Desc">Pressing a photo, video or file from an album opens the whole album in the menu instead of a single message.</string>
     <string name="CP_RememberKeyboardState">Remember keyboard state</string>
@@ -405,6 +412,11 @@
     <string name="CP_Message_Filtering_EntitiesDesc">When enabled, this option extends filtering to links (entities) contained in messages. The system will scan the URLs for any of your configured filter keywords. If a match is found inside the link, the entire message will be automatically hidden under a spoiler, regardless of whether the keyword appears in the visible text or not.\n\nThis helps protect against disguised spam, hidden advertising, or phishing domains that could otherwise bypass regular text-based filtering.</string>
     <string name="CP_Message_Filtering_FilterBlocked">Filter messages from blocked users</string>
     <string name="CP_Message_Filtering_FilterBlockedDesc">When enabled, all messages and forwarded messages from blocked users will automatically be filtered.</string>
+    <string name="CP_Message_Filtering_Shadowban">Shadowban</string>
+    <string name="CP_Message_Filtering_Shadowban_Add">Shadowban</string>
+    <string name="CP_Message_Filtering_Shadowban_Remove">Remove from shadowban</string>
+    <string name="CP_Message_Filtering_Shadowban_Added">**%1$s** has been shadowbanned</string>
+    <string name="CP_Message_Filtering_Shadowban_Removed">**%1$s** has been removed from shadowban</string>
     <string name="CP_Message_Filtering_FullyHide">Hide messages</string>
     <string name="CP_Message_Filtering_FullyHide_Desc">Fully hide filtered messages instead of hiding the text under a spoiler effect.</string>
     <string name="CP_Message_Filtering_HideAll">Entire message spoiler</string>
@@ -509,6 +521,8 @@
     <string name="SP_LockedChats_Lock_Destination_Sure">will be locked</string>
     <string name="SP_HideArchive">Hide archive from chats list</string>
     <string name="SP_HideArchive_Desc">The archive will be masked as Cherrygram channel. \nYou will be able to open archive from drawer or by long tap on search button.</string>
+    <string name="CG_AccSwipeForArchive">Swipe down for channel</string>
+    <string name="CG_AccReleaseForArchive">Release for channel</string>
 
     <string name="SP_AskPin">Require password</string>
     <string name="SP_DoNotAskPin">Don\'t require password</string>
@@ -549,7 +563,7 @@
     <string name="DP_DonatesThanks">Thanks for your support! You made Cherry happy ❤️</string>
 
     <string name="DP_DonateBadge">Donate and unlock bonuses</string>
-    <string name="DP_Donate_Desc">When you donate $2 or more, you\'ll also get some bonus gifts:</string>
+    <string name="DP_Donate_Desc">When you donate $3 or more, you\'ll also get some bonus gifts:</string>
 
     <string name="DP_Donate_Badge_desc">1. **Cherrygram badge** next to your name.</string>
     <string name="DP_Donate_MsgMenuCompactView_Desc">2. Compact view of **message menu** items.</string>

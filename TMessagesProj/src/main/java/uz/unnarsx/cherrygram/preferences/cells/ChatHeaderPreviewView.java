@@ -45,11 +45,11 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.MotionBackgroundDrawable;
 import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceColor;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceWrapped;
 import org.telegram.ui.Components.chat.ViewPositionWatcher;
 import org.telegram.ui.Stories.recorder.StoryEntry;
+import org.telegram.utils.glass.source.GlassSourceColor;
+import org.telegram.utils.glass.source.GlassSourceRenderNode;
+import org.telegram.utils.glass.source.GlassSourceWrapped;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
@@ -86,9 +86,9 @@ public class ChatHeaderPreviewView extends FrameLayout {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             final ViewPositionWatcher viewPositionWatcher = new ViewPositionWatcher(this);
 
-            BlurredBackgroundSourceWrapped navbarContentSourceWallpaper = new BlurredBackgroundSourceWrapped();
+            GlassSourceWrapped navbarContentSourceWallpaper = new GlassSourceWrapped();
 
-            BlurredBackgroundSourceRenderNode glassBackgroundSourceRenderNode = new BlurredBackgroundSourceRenderNode(navbarContentSourceWallpaper);
+            GlassSourceRenderNode glassBackgroundSourceRenderNode = new GlassSourceRenderNode(navbarContentSourceWallpaper);
             glassBackgroundSourceRenderNode.setUnderSource(navbarContentSourceWallpaper);
 
             BlurredBackgroundDrawableViewFactory glassBackgroundDrawableFactory = new BlurredBackgroundDrawableViewFactory(glassBackgroundSourceRenderNode);
@@ -97,7 +97,7 @@ public class ChatHeaderPreviewView extends FrameLayout {
 
             actionBar.setupGlass(glassBackgroundDrawableFactory, BlurredBackgroundProviderImpl.topPanelChatActivity(resourcesProvider));
         } else {
-            BlurredBackgroundSourceColor sourceColor = new BlurredBackgroundSourceColor();
+            GlassSourceColor sourceColor = new GlassSourceColor();
             sourceColor.setColor(fragment.getThemedColor(Theme.key_windowBackgroundWhite));
             BlurredBackgroundDrawableViewFactory factory = new BlurredBackgroundDrawableViewFactory(sourceColor);
             actionBar.setupGlass(factory, BlurredBackgroundProviderImpl.topPanelChatActivity(resourcesProvider));

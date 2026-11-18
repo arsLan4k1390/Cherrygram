@@ -42,6 +42,7 @@ import androidx.core.graphics.ColorUtils;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
@@ -54,6 +55,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_stars;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.Bulletin;
@@ -301,6 +303,9 @@ public class CustomEmojiReactionsWindow {
                 AndroidUtilities.rectTmp.set(left, top, right, bottom);
                 reactionsContainerLayout.getDelegate().drawRoundRect(canvas, AndroidUtilities.rectTmp, 0, containerView.getX() + x, getBlurOffset() + y, 255,true);
             });
+            if (type != TYPE_STORY) {
+                selectAnimatedEmojiDialog.searchBox.setUseCustomBackground();
+            }
         }
         if (attachToParent) {
             ViewGroup group = (ViewGroup) reactionsContainerLayout.getParent();
@@ -492,12 +497,38 @@ public class CustomEmojiReactionsWindow {
                 reactionsContainerLayout.setCustomEmojiEnterProgress(Utilities.clamp(enterTransitionProgress, 1f, 0f));
                 if (!enter) {
                     reactionsContainerLayout.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
-                    reactionsContainerLayout.setSkipDraw(false);
-                    removeView();
-                    Runtime.getRuntime().gc(); //to prevent garbage collection when reopening
-                    reactionsContainerLayout.setCustomEmojiReactionsBackground(type != TYPE_STICKER_SET_EMOJI && type != TYPE_MESSAGE_EFFECTS);
+                    if (type != TYPE_STORY && reactionsContainerLayout.getDelegate() != null && reactionsContainerLayout.getDelegate().drawBackground()) {
+                        final ValueAnimator handoff = ValueAnimator.ofFloat(0f, 1f);
+                        handoff.setDuration(GLASS_HANDOFF_DURATION);
+                        handoff.setInterpolator(CubicBezierInterpolator.EASE_BOTH);
+                        handoff.addUpdateListener(a -> {
+                            reactionsContainerLayout.setGlassHandoff((float) a.getAnimatedValue());
+                            containerView.invalidate();
+                        });
+                        handoff.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                finishClose();
+                            }
+                        });
+                        reactionsContainerLayout.setGlassHandoff(0f);
+                        handoff.start();
+                    } else {
+                        finishClose();
+                    }
                 }
                 transition = false;
+            }
+
+            private void finishClose() {
+                reactionsContainerLayout.setSkipDraw(false);
+                reactionsContainerLayout.setCustomEmojiReactionsBackground(type != TYPE_STICKER_SET_EMOJI && type != TYPE_MESSAGE_EFFECTS);
+                windowView.postDelayed(() -> {
+                    windowView.setVisibility(View.INVISIBLE);
+                    reactionsContainerLayout.setGlassHandoff(-1f);
+                    removeView();
+                    Runtime.getRuntime().gc(); //to prevent garbage collection when reopening
+                }, WINDOW_REMOVE_DELAY);
             }
         });
 
@@ -793,7 +824,19 @@ public class CustomEmojiReactionsWindow {
         }
     }
 
-    public class ContainerView extends FrameLayout {
+    public class ContainerView extends FrameLayout implements Theme.Colorable {
+
+        @Override
+        public void updateColors() {
+            try {
+                if (type != TYPE_STORY_LIKES && backgroundPaint != null) {
+                    backgroundPaint.setColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuBackground, resourcesProvider));
+                    invalidate();
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
 
         Drawable shadow;
         Rect shadowPad = new Rect();
@@ -805,7 +848,7 @@ public class CustomEmojiReactionsWindow {
             super(context);
             shadow = ContextCompat.getDrawable(context, R.drawable.reactions_bubble_shadow).mutate();
             shadowPad.left = shadowPad.top = shadowPad.right = shadowPad.bottom = dp(7);
-            shadow.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chat_messagePanelShadow, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.drawableColorFilter(this, shadow, Theme.key_chat_messagePanelShadow, resourcesProvider, PorterDuff.Mode.MULTIPLY);
             if (type == TYPE_STORY_LIKES) {
                 backgroundPaint.setColor(ColorUtils.blendARGB(Color.BLACK, Color.WHITE, 0.13f));
             } else {
@@ -878,7 +921,8 @@ public class CustomEmojiReactionsWindow {
 
             transitionReactions.clear();
             if (type == TYPE_STORY || (reactionsContainerLayout.getDelegate() != null && reactionsContainerLayout.getDelegate().drawBackground())) {
-                reactionsContainerLayout.getDelegate().drawRoundRect(canvas, drawingRect, radius, getX(), getBlurOffset(), 255, true);
+                final float handoff = reactionsContainerLayout.getGlassHandoff();
+                reactionsContainerLayout.getDelegate().drawRoundRect(canvas, drawingRect, radius, getX(), getBlurOffset(), handoff >= 0 ? Math.round(255 * (1f - handoff)) : 255, true);
             } else {
                 shadow.setAlpha((int) (Utilities.clamp(progressClpamped / 0.05f, 1f, 0f) * 255));
                 shadow.setBounds((int) drawingRect.left - shadowPad.left, (int) drawingRect.top - shadowPad.top, (int) drawingRect.right + shadowPad.right, (int) drawingRect.bottom + shadowPad.bottom);
@@ -1152,4 +1196,10 @@ public class CustomEmojiReactionsWindow {
     public SelectAnimatedEmojiDialog getSelectAnimatedEmojiDialog() {
         return selectAnimatedEmojiDialog;
     }
+
+    /** Cherrygram start */
+    private static final long GLASS_HANDOFF_DURATION = 200;
+    private static final long WINDOW_REMOVE_DELAY = 48;
+    /** Cherrygram finish */
+
 }

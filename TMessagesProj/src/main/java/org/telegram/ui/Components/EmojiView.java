@@ -126,6 +126,7 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.Cells.ContextLinkCell;
 import org.telegram.ui.Cells.EmptyCell;
 import org.telegram.ui.Cells.FeaturedStickerSetInfoCell;
@@ -139,9 +140,8 @@ import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory;
 import org.telegram.ui.Components.blur3.DownscaleScrollableNoiseSuppressor;
 import org.telegram.ui.Components.blur3.capture.IBlur3Capture;
 import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceColor;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
-import org.telegram.ui.Components.chat.ViewPositionWatcher;
+import org.telegram.utils.glass.source.GlassSourceColor;
+import org.telegram.utils.glass.source.GlassSourceRenderNode;
 import org.telegram.ui.Components.emojiview.FoundEmojiPacksRecyclerView;
 import org.telegram.ui.Components.emojiview.FoundStickerPackButton;
 import org.telegram.ui.Components.emojiview.FoundStickerPackButtonContainer;
@@ -151,6 +151,7 @@ import org.telegram.ui.Components.inset.InAppKeyboardInsetView;
 import org.telegram.ui.ContentPreviewViewer;
 import org.telegram.ui.StickersActivity;
 import org.telegram.utils.glass.GlassEngine;
+import org.telegram.utils.glass.positions.GlassPositionsArray;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -168,9 +169,11 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
+import me.vkryl.core.BitwiseUtils;
 
 @SuppressLint("ViewConstructor")
 public class EmojiView extends FrameLayout implements
+        Theme.Colorable,
         FactorAnimator.Target,
         NotificationCenter.NotificationCenterDelegate,
         InAppKeyboardInsetView {
@@ -601,7 +604,7 @@ public class EmojiView extends FrameLayout implements
                 layout.imageView.setImageResource(R.drawable.msg_settings_premium);
                 layout.imageView.setScaleX(.8f);
                 layout.imageView.setScaleY(.8f);
-                layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+                ThemeBind.colorFilter(layout.imageView, Theme.key_chats_verifiedBackground, resourcesProvider, PorterDuff.Mode.MULTIPLY);
                 Bulletin.UndoButton undoButton = new Bulletin.UndoButton(getContext(), true, resourcesProvider);
                 undoButton.setUndoAction(undoAction);
                 layout.setButton(undoButton);
@@ -770,7 +773,7 @@ public class EmojiView extends FrameLayout implements
         }
     }
 
-    private class SearchField extends FrameLayout implements FactorAnimator.Target {
+    private class SearchField extends FrameLayout implements Theme.Colorable, FactorAnimator.Target {
         private static final int ANIMATOR_ID_SHADOW_VISIBILITY = 0;
         private final BoolAnimator animatorShadowVisibility = new BoolAnimator(
             ANIMATOR_ID_SHADOW_VISIBILITY, this, CubicBezierInterpolator.EASE_OUT, 200);
@@ -798,12 +801,12 @@ public class EmojiView extends FrameLayout implements
 
             shadowView = new View(context);
             shadowView.setVisibility(INVISIBLE);
-            shadowView.setBackgroundColor(getThemedColor(Theme.key_chat_emojiPanelShadowLine));
+            ThemeBind.backgroundColor(shadowView, Theme.key_chat_emojiPanelShadowLine, EmojiView.this.resourcesProvider);
             addView(shadowView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AndroidUtilities.getShadowHeight(), Gravity.BOTTOM | Gravity.LEFT));
 
             backgroundView = new View(context);
             if (shouldDrawBackground) {
-                backgroundView.setBackgroundColor(getThemedColor(Theme.key_chat_emojiPanelBackground));
+                ThemeBind.backgroundColor(backgroundView, Theme.key_chat_emojiPanelBackground, EmojiView.this.resourcesProvider);
             }
             addView(backgroundView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, searchFieldHeight));
 
@@ -893,7 +896,7 @@ public class EmojiView extends FrameLayout implements
             searchEditText.setSingleLine(true);
             searchEditText.setImeOptions(EditorInfo.IME_ACTION_SEARCH | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             searchEditText.setHint(getString(R.string.Search));
-            searchEditText.setCursorColor(getThemedColor(Theme.key_featuredStickers_addedIcon));
+            ThemeBind.cursorColor(searchEditText, Theme.key_featuredStickers_addedIcon, EmojiView.this.resourcesProvider);
             searchEditText.setCursorSize(dp(20));
             searchEditText.setCursorWidth(1.5f);
             searchEditText.setTranslationY(dp(-2));
@@ -928,7 +931,7 @@ public class EmojiView extends FrameLayout implements
             if (shouldDrawBackground) {
                 inputBoxGradient = new View(context);
                 Drawable gradientDrawable = context.getResources().getDrawable(R.drawable.gradient_right).mutate();
-                gradientDrawable.setColorFilter(new PorterDuffColorFilter(Theme.blendOver(getThemedColor(Theme.key_chat_emojiPanelBackground), getThemedColor(Theme.key_chat_emojiSearchBackground)), PorterDuff.Mode.MULTIPLY));
+                ThemeBind.drawableColorFilter(this, gradientDrawable, ThemeBind.blendOver(Theme.key_chat_emojiPanelBackground, Theme.key_chat_emojiSearchBackground), EmojiView.this.resourcesProvider, PorterDuff.Mode.MULTIPLY);
                 inputBoxGradient.setBackground(gradientDrawable);
                 inputBoxGradient.setAlpha(0f);
                 inputBox.addView(inputBoxGradient, LayoutHelper.createFrame(18, LayoutHelper.MATCH_PARENT, Gravity.LEFT));
@@ -942,7 +945,7 @@ public class EmojiView extends FrameLayout implements
                     return Theme.getColor(Theme.key_chat_emojiSearchIcon, resourcesProvider);
                 }
             });
-            clear.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), Theme.RIPPLE_MASK_CIRCLE_20DP, AndroidUtilities.dp(15)));
+            ThemeBind.selectorBackground(clear, Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), Theme.RIPPLE_MASK_CIRCLE_20DP, AndroidUtilities.dp(15)), null, ThemeBind.of(Theme.key_listSelector), resourcesProvider);
             clear.setAlpha(0f);
             clear.setOnClickListener(e -> {
                 searchEditText.setText("");
@@ -983,7 +986,7 @@ public class EmojiView extends FrameLayout implements
                 categoriesListView.isGlassDesign = glassDesign;
                 categoriesListView.setDontOccupyWidth((int) (searchEditText.getPaint().measureText(searchEditText.getHint() + "")) + dp(16));
                 if (shouldDrawBackground) {
-                    categoriesListView.setBackgroundColor(Theme.blendOver(getThemedColor(Theme.key_chat_emojiPanelBackground), getThemedColor(Theme.key_chat_emojiSearchBackground)));
+                    ThemeBind.backgroundColor(categoriesListView, ThemeBind.blendOver(Theme.key_chat_emojiPanelBackground, Theme.key_chat_emojiSearchBackground), EmojiView.this.resourcesProvider);
                 }
                 categoriesListView.setOnScrollIntoOccupiedWidth(scrolled -> {
                     searchEditText.setTranslationX(-Math.max(0, scrolled));
@@ -1133,7 +1136,20 @@ public class EmojiView extends FrameLayout implements
                 shadowView.setVisibility(factor > 0 ? VISIBLE : INVISIBLE);
             }
         }
-    }
+
+        private int colorsGeneration = ThemeBind.generation();
+
+        @Override
+        public void updateColors() {
+            try {
+                searchEditText.setCursorColor(getThemedColor(Theme.key_featuredStickers_addedIcon));
+                invalidate();
+
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
 
     private class TypedScrollListener extends RecyclerListView.OnScrollListener {
 
@@ -1475,7 +1491,7 @@ public class EmojiView extends FrameLayout implements
         public ImageViewEmoji(Context context) {
             super(context);
             setScaleType(ImageView.ScaleType.CENTER);
-            setBackground(Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector), AndroidUtilities.dp(2), AndroidUtilities.dp(2)));
+            ThemeBind.selectorBackground(this, Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector), AndroidUtilities.dp(2), AndroidUtilities.dp(2)), null, ThemeBind.of(Theme.key_listSelector));
         }
 
         public void setImageDrawable(Drawable drawable, boolean recent) {
@@ -1556,9 +1572,9 @@ public class EmojiView extends FrameLayout implements
 
     private final DownscaleScrollableNoiseSuppressor scrollableViewNoiseSuppressor;
     private final IBlur3Capture blurCaptureMethod;
-    private final BlurredBackgroundSourceRenderNode blurredBackgroundSourceRenderNode;
+    private final GlassSourceRenderNode blurredBackgroundSourceRenderNode;
 
-    private final BlurredBackgroundSourceColor blurredBackgroundSourceColor;
+    private final GlassSourceColor blurredBackgroundSourceColor;
     private final BlurredBackgroundDrawableViewFactory blurredBackgroundDrawableFactory;
 
     private final GlassEngine glassEngine = new GlassEngine();
@@ -1574,7 +1590,7 @@ public class EmojiView extends FrameLayout implements
         boolean savedMessages = fragment instanceof ChatActivity ca && ca.getDialogId() == ca.getUserConfig().clientUserId;
         boolean showAnimatedEmoji = savedMessages || (needAnimatedEmoji && ((chatFull != null && chatFull.emojiset != null) || UserConfig.getInstance(currentAccount).isPremium()));
 
-        blurredBackgroundSourceColor = new BlurredBackgroundSourceColor();
+        blurredBackgroundSourceColor = new GlassSourceColor();
         blurredBackgroundSourceColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
 
         if (frozenAtStart) {
@@ -1749,7 +1765,7 @@ public class EmojiView extends FrameLayout implements
         emojiGridView.setTopGlowOffset(AndroidUtilities.dp(38));
         emojiGridView.setBottomGlowOffset(AndroidUtilities.dp(36));
         emojiGridView.setPadding(AndroidUtilities.dp(5), AndroidUtilities.dp(36), AndroidUtilities.dp(5), AndroidUtilities.dp(44));
-        emojiGridView.setGlowColor(getThemedColor(Theme.key_chat_emojiPanelBackground));
+        ThemeBind.listGlowColor(emojiGridView, Theme.key_chat_emojiPanelBackground, resourcesProvider);
         emojiGridView.setItemSelectorColorProvider(p -> 0);
         emojiGridView.setClipToPadding(false);
         emojiLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
@@ -1816,9 +1832,6 @@ public class EmojiView extends FrameLayout implements
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 updateEmojiTabsPosition();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && scrollableViewNoiseSuppressor != null) {
-                    scrollableViewNoiseSuppressor.onScrolled(dx, dy);
-                }
                 super.onScrolled(recyclerView, dx, dy);
 
                 if (emojiSearchAdapter != null && emojiGridView.getAdapter() == emojiSearchAdapter) {
@@ -1957,7 +1970,7 @@ public class EmojiView extends FrameLayout implements
 
         final int emojiTabsColor = getThemedColor(Theme.key_chat_emojiPanelBackground);
         if (Color.alpha(emojiTabsColor) >= 0xFF) {
-            emojiTabs.setBackgroundColor(emojiTabsColor);
+            ThemeBind.backgroundColor(emojiTabs, Theme.key_chat_emojiPanelBackground, resourcesProvider);
         }
         emojiAdapter.processEmoji(true);
         emojiTabs.updateEmojiPacks(getEmojipacks());
@@ -1966,7 +1979,7 @@ public class EmojiView extends FrameLayout implements
         emojiTabsShadow = new View(context);
         emojiTabsShadow.setAlpha(0.0f);
         emojiTabsShadow.setTag(1);
-        emojiTabsShadow.setBackgroundColor(getThemedColor(Theme.key_chat_emojiPanelShadowLine));
+        ThemeBind.backgroundColor(emojiTabsShadow, Theme.key_chat_emojiPanelShadowLine, resourcesProvider);
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AndroidUtilities.getShadowHeight(), Gravity.TOP | Gravity.LEFT);
         layoutParams.topMargin = AndroidUtilities.dp(36);
         emojiContainer.addView(emojiTabsShadow, layoutParams);
@@ -2066,15 +2079,7 @@ public class EmojiView extends FrameLayout implements
                 ((SimpleItemAnimator) gifGridView.getItemAnimator()).setSupportsChangeAnimations(false);
                 gifGridView.setAdapter(gifAdapter = new GifAdapter(context, true));
                 gifSearchAdapter = new GifAdapter(context);
-                gifGridView.setOnScrollListener(new TypedScrollListener(Type.GIFS) {
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && scrollableViewNoiseSuppressor != null) {
-                            scrollableViewNoiseSuppressor.onScrolled(dx, dy);
-                        }
-                    }
-                });
+                gifGridView.setOnScrollListener(new TypedScrollListener(Type.GIFS));
                 gifGridView.setOnTouchListener((v, event) -> ContentPreviewViewer.getInstance().onTouch(event, gifGridView, 0, gifOnItemClickListener, contentPreviewViewerDelegate, resourcesProvider));
                 gifOnItemClickListener = (view, position) -> {
                     if (delegate == null) {
@@ -2128,7 +2133,7 @@ public class EmojiView extends FrameLayout implements
                 gifTabs.setUnderlineHeight(AndroidUtilities.getShadowHeight());
                 gifTabs.setIndicatorColor(getThemedColor(Theme.key_chat_emojiPanelStickerPackSelectorLine));
                 gifTabs.setUnderlineColor(getThemedColor(Theme.key_chat_emojiPanelShadowLine));
-                gifTabs.setBackgroundColor(getThemedColor(Theme.key_chat_emojiPanelBackground));
+                ThemeBind.backgroundColor(gifTabs, Theme.key_chat_emojiPanelBackground, resourcesProvider);
 //                gifContainer.addView(gifTabs, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, StickerTabView.SMALL_HEIGHT, Gravity.LEFT | Gravity.TOP));
                 updateGifTabs();
 
@@ -2251,9 +2256,6 @@ public class EmojiView extends FrameLayout implements
                 @Override
                 public void onScrolled(int dx, int dy) {
                     super.onScrolled(dx, dy);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && scrollableViewNoiseSuppressor != null) {
-                        scrollableViewNoiseSuppressor.onScrolled(dx, dy);
-                    }
                     if (stickersTabContainer != null) {
                         stickersTab.setUnderlineHeight(stickersGridView.canScrollVertically(-1) ? AndroidUtilities.getShadowHeight() : 0);
                     }
@@ -2364,7 +2366,7 @@ public class EmojiView extends FrameLayout implements
                 delegate.onStickerSelected(cell, cell.getSticker(), query, cell.getParentObject(), cell.getSendAnimationData(), true, 0, 0);
             };
             stickersGridView.setOnItemClickListener(stickersOnItemClickListener);
-            stickersGridView.setGlowColor(getThemedColor(Theme.key_chat_emojiPanelBackground));
+            ThemeBind.listGlowColor(stickersGridView, Theme.key_chat_emojiPanelBackground, resourcesProvider);
             stickersContainer.addView(stickersGridView);
             stickersScrollHelper = new RecyclerAnimationScrollHelper(stickersGridView, stickersLayoutManager);
 
@@ -2816,8 +2818,8 @@ public class EmojiView extends FrameLayout implements
         addView(pager, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP));
 
         mediaBanTooltip = new CorrectlyMeasuringTextView(context);
-        mediaBanTooltip.setBackground(Theme.createRoundRectDrawable(AndroidUtilities.dp(6), getThemedColor(Theme.key_chat_gifSaveHintBackground)));
-        mediaBanTooltip.setTextColor(getThemedColor(Theme.key_chat_gifSaveHintText));
+        ThemeBind.fillBackground(mediaBanTooltip, Theme.createRoundRectDrawable(AndroidUtilities.dp(6), getThemedColor(Theme.key_chat_gifSaveHintBackground)), ThemeBind.of(Theme.key_chat_gifSaveHintBackground), resourcesProvider);
+        ThemeBind.textColor(mediaBanTooltip, Theme.key_chat_gifSaveHintText, resourcesProvider);
         mediaBanTooltip.setPadding(AndroidUtilities.dp(12), AndroidUtilities.dp(7), AndroidUtilities.dp(12), AndroidUtilities.dp(7));
         mediaBanTooltip.setGravity(Gravity.CENTER_VERTICAL);
         mediaBanTooltip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -2851,12 +2853,13 @@ public class EmojiView extends FrameLayout implements
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             scrollableViewNoiseSuppressor = new DownscaleScrollableNoiseSuppressor();
-            blurredBackgroundSourceRenderNode = new BlurredBackgroundSourceRenderNode(null);
+            glassEngine.addNoiseSuppressor(scrollableViewNoiseSuppressor);
+            blurredBackgroundSourceRenderNode = new GlassSourceRenderNode(null);
             blurredBackgroundSourceRenderNode.setUnderSource(blurredBackgroundSourceColor);
             blurredBackgroundSourceRenderNode.setScrollableNoiseSuppressor(scrollableViewNoiseSuppressor, DownscaleScrollableNoiseSuppressor.DRAW_GLASS);
 
             blurredBackgroundDrawableFactory = new BlurredBackgroundDrawableViewFactory(blurredBackgroundSourceRenderNode);
-            blurredBackgroundDrawableFactory.setLiquidGlassEffectAllowed(LiteMode.isEnabled(LiteMode.FLAG_LIQUID_GLASS));
+            blurredBackgroundDrawableFactory.setLiquidGlassEffectAllowed(true);
             blurredBackgroundDrawableFactory.setOutset(LiteMode.isEnabled(LiteMode.FLAG_LIQUID_GLASS) ? dp(8) : dp(48));
             blurredBackgroundDrawableFactory.setGlassEngine(glassEngine);
 
@@ -3860,7 +3863,9 @@ public class EmojiView extends FrameLayout implements
         }
     }
 
-    private class EmojiPackButton extends FrameLayout {
+    private class EmojiPackButton extends FrameLayout implements Theme.Colorable {
+        private int lastAddButtonColor;
+        private boolean lastAddButtonColorDark;
         int position;
 
         FrameLayout addButtonView;
@@ -3874,7 +3879,7 @@ public class EmojiView extends FrameLayout implements
             addButtonTextView.setAnimationProperties(.3f, 0, 250, CubicBezierInterpolator.EASE_OUT_QUINT);
             addButtonTextView.setTextSize(AndroidUtilities.dp(14));
             addButtonTextView.setTypeface(AndroidUtilities.bold());
-            addButtonTextView.setTextColor(getThemedColor(Theme.key_featuredStickers_buttonText));
+            ThemeBind.textColor(addButtonTextView, Theme.key_featuredStickers_buttonText, EmojiView.this.resourcesProvider);
             addButtonTextView.setGravity(Gravity.CENTER);
 
             addButtonView = new FrameLayout(getContext());
@@ -3983,9 +3988,30 @@ public class EmojiView extends FrameLayout implements
                 premiumButtonView.setVisibility(lockShow ? View.VISIBLE : View.GONE);
             }
         }
-    }
 
-    private class EmojiPackHeader extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
+        private int colorsGeneration = ThemeBind.generation();
+
+        @Override
+        public void updateColors() {
+            try {
+                final int addColor = getThemedColor(Theme.key_featuredStickers_addButton);
+                if (addButtonView != null && (addColor != lastAddButtonColor || lastAddButtonColorDark != Theme.isCurrentThemeDark())) {
+                    lastAddButtonColorDark = Theme.isCurrentThemeDark(); // the ripple shade depends on dark / light
+                    lastAddButtonColor = addColor;
+                    Theme.setSelectorDrawableColor(addButtonView.getBackground(), addColor, false);
+                    Theme.setSelectorDrawableColor(addButtonView.getBackground(), Theme.AdaptiveRipple.calcRippleColor(addColor), true);
+                    addButtonView.invalidate();
+                }
+                invalidate();
+
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
+
+    private class EmojiPackHeader extends FrameLayout implements Theme.Colorable, NotificationCenter.NotificationCenterDelegate {
+        private int lastAddButtonColor, lastAddButtonPressedColor;
 
         RLottieImageView lockView;
         SimpleTextView headerView;
@@ -4006,12 +4032,12 @@ public class EmojiView extends FrameLayout implements
 
             lockView = new RLottieImageView(context);
             lockView.setAnimation(R.raw.unlock_icon, 24, 24);
-            lockView.setColorFilter(getThemedColor(Theme.key_chat_emojiPanelStickerSetName));
+            ThemeBind.colorFilter(lockView, Theme.key_chat_emojiPanelStickerSetName, EmojiView.this.resourcesProvider, PorterDuff.Mode.SRC_ATOP);
             addView(lockView, LayoutHelper.createFrameRelatively(20, 20, Gravity.START, 10, 15, 0, 0));
 
             headerView = new SimpleTextView(context);
             headerView.setTextSize(15);
-            headerView.setTextColor(getThemedColor(Theme.key_chat_emojiPanelStickerSetName));
+            ThemeBind.textColor(headerView, Theme.key_chat_emojiPanelStickerSetName, EmojiView.this.resourcesProvider);
             headerView.setTypeface(AndroidUtilities.bold());
             headerView.setOnClickListener(e -> {
                 if (this.pack != null && this.pack.set != null) {
@@ -4020,9 +4046,9 @@ public class EmojiView extends FrameLayout implements
             });
             markView = new TextView(context);
             markView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
-            markView.setTextColor(getThemedColor(Theme.key_chat_emojiPanelStickerSetName));
+            ThemeBind.textColor(markView, Theme.key_chat_emojiPanelStickerSetName, EmojiView.this.resourcesProvider);
             markView.setTypeface(AndroidUtilities.bold());
-            markView.setBackground(Theme.createRoundRectDrawable(dp(8), Theme.multAlpha(getThemedColor(Theme.key_chat_emojiPanelIcon), .12f)));
+            ThemeBind.fillBackground(markView, Theme.createRoundRectDrawable(dp(8), Theme.multAlpha(getThemedColor(Theme.key_chat_emojiPanelIcon), .12f)), ThemeBind.multAlpha(Theme.key_chat_emojiPanelIcon, .12f), EmojiView.this.resourcesProvider);
             markView.setPadding(dp(6), dp(1.5f), dp(6), dp(1.5f));
             markView.setText(getString(R.string.GroupEmoji));
 
@@ -4048,7 +4074,7 @@ public class EmojiView extends FrameLayout implements
             addButtonView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             addButtonView.setTypeface(AndroidUtilities.bold());
             addButtonView.setText(getString(R.string.Add));
-            addButtonView.setTextColor(getThemedColor(Theme.key_featuredStickers_buttonText));
+            ThemeBind.textColor(addButtonView, Theme.key_featuredStickers_buttonText, EmojiView.this.resourcesProvider);
             addButtonView.setBackground(Theme.AdaptiveRipple.createRect(getThemedColor(Theme.key_featuredStickers_addButton), getThemedColor(Theme.key_featuredStickers_addButtonPressed), 16));
             addButtonView.setPadding(AndroidUtilities.dp(14), 0, AndroidUtilities.dp(14), 0);
             addButtonView.setGravity(Gravity.CENTER);
@@ -4091,7 +4117,7 @@ public class EmojiView extends FrameLayout implements
                 inputStickerSetID.access_hash = pack.set.access_hash;
                 TLRPC.TL_messages_stickerSet stickerSet = MediaDataController.getInstance(currentAccount).getStickerSet(inputStickerSetID, true);
                 if (stickerSet == null || stickerSet.set == null) {
-                    NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.groupStickersDidLoad);
+                    NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.groupStickersDidLoad);
                     MediaDataController.getInstance(currentAccount).getStickerSet(toInstall = inputStickerSetID, false);
                 } else {
                     install(stickerSet);
@@ -4103,7 +4129,7 @@ public class EmojiView extends FrameLayout implements
             removeButtonView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             removeButtonView.setTypeface(AndroidUtilities.bold());
             removeButtonView.setText(getString(R.string.StickersRemove));
-            removeButtonView.setTextColor(getThemedColor(Theme.key_featuredStickers_removeButtonText));
+            ThemeBind.textColor(removeButtonView, Theme.key_featuredStickers_removeButtonText, EmojiView.this.resourcesProvider);
             removeButtonView.setBackground(Theme.AdaptiveRipple.createRect(0, getThemedColor(Theme.key_featuredStickers_addButton) & 0x1affffff, 16));
             removeButtonView.setPadding(AndroidUtilities.dp(12), 0, AndroidUtilities.dp(12), 0);
             removeButtonView.setGravity(Gravity.CENTER);
@@ -4127,7 +4153,7 @@ public class EmojiView extends FrameLayout implements
                 inputStickerSetID.access_hash = pack.set.access_hash;
                 TLRPC.TL_messages_stickerSet stickerSet = MediaDataController.getInstance(currentAccount).getStickerSet(inputStickerSetID, true);
                 if (stickerSet == null || stickerSet.set == null) {
-                    NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.groupStickersDidLoad);
+                    NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.groupStickersDidLoad);
                     MediaDataController.getInstance(currentAccount).getStickerSet(toUninstall = inputStickerSetID, false);
                 } else {
                     uninstall(stickerSet);
@@ -4370,7 +4396,35 @@ public class EmojiView extends FrameLayout implements
                 removeButtonView.setVisibility(state == BUTTON_STATE_REMOVE ? View.VISIBLE : View.GONE);
             }
         }
-    }
+
+        private int colorsGeneration = ThemeBind.generation();
+
+        @Override
+        public void updateColors() {
+            try {
+                final int addColor = getThemedColor(Theme.key_featuredStickers_addButton);
+                final int addPressedColor = getThemedColor(Theme.key_featuredStickers_addButtonPressed);
+                if (addColor != lastAddButtonColor || addPressedColor != lastAddButtonPressedColor) {
+                    lastAddButtonColor = addColor;
+                    lastAddButtonPressedColor = addPressedColor;
+                    if (addButtonView != null) {
+                        Theme.setSelectorDrawableColor(addButtonView.getBackground(), addColor, false);
+                        Theme.setSelectorDrawableColor(addButtonView.getBackground(), addPressedColor, true);
+                        addButtonView.invalidate();
+                    }
+                    if (removeButtonView != null) {
+                        // ripple only (no content layer)
+                        Theme.setSelectorDrawableColor(removeButtonView.getBackground(), addColor & 0x1affffff, true);
+                        removeButtonView.invalidate();
+                    }
+                }
+                invalidate();
+
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
 
     private boolean emojiPackAlertOpened = false;
     public void openEmojiPackAlert(TLRPC.StickerSet set) {
@@ -4594,11 +4648,6 @@ public class EmojiView extends FrameLayout implements
         }
     }
 
-    private final RectF blurredRectF = new RectF();
-    private final ArrayList<RectF> blurredRectList = new ArrayList<>(1); {
-        blurredRectList.add(blurredRectF);
-    }
-
     @Override
     protected void dispatchDraw(@NonNull Canvas canvas) {
         updateBottomTabContainerPosition();
@@ -4606,18 +4655,16 @@ public class EmojiView extends FrameLayout implements
     }
 
     private void invalidateBlurCaptures(int flags) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && scrollableViewNoiseSuppressor != null) {
-            ViewPositionWatcher.computeRectInParent(typeTabs, this, blurredRectF);
-            blurredRectF.inset(
-                LiteMode.isEnabled(LiteMode.FLAG_LIQUID_GLASS) ? 0 : -dp(48),
-                LiteMode.isEnabled(LiteMode.FLAG_LIQUID_GLASS) ? 0 : -dp(48)
-            );
-            blurredRectF.right = getMeasuredWidth();
-            blurredRectF.bottom = Math.min(blurredRectF.bottom, getMeasuredHeight());
-
-            scrollableViewNoiseSuppressor.setupRenderNodes(blurredRectList, blurredRectF.isEmpty() ? 0 : 1);
-            scrollableViewNoiseSuppressor.invalidateResultRenderNodes(blurCaptureMethod, getWidth(), getHeight());
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || scrollableViewNoiseSuppressor == null) {
+            return;
         }
+
+        if (BitwiseUtils.hasFlag(flags, GlassEngine.FLAG_INVALIDATED_POSITIONS)) {
+            GlassPositionsArray glassPositionsArray = glassEngine.getAllVisibleDrawablesWithDisplayListPositionsMerged();
+            scrollableViewNoiseSuppressor.setupRenderNodes(glassPositionsArray);
+        }
+
+        scrollableViewNoiseSuppressor.invalidateResultRenderNodes(blurCaptureMethod, getWidth(),getHeight());
     }
 
     private final GradientDrawable fadeDrawable = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, null);
@@ -5886,14 +5933,36 @@ public class EmojiView extends FrameLayout implements
         super.requestLayout();
     }
 
+    @Override
     public void updateColors() {
+        try {
+            updateColorsInternal();
+            updateExtraColors();
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    private void updateExtraColors() {
+        if (blurredBackgroundSourceColor != null) {
+            blurredBackgroundSourceColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
+        }
+        if (typeTabs != null) {
+            typeTabs.setIndicatorColor(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_chat_emojiPanelIconSelected), 20));
+        }
+    }
+
+    private void updateColorsInternal() {
         if (!shouldDrawBackground) {
             setBackground(null);
             bottomTabContainerBackground.setBackground(null);
         } else if (AndroidUtilities.isInMultiwindow || forseMultiwindowLayout) {
             Drawable background = getBackground();
-            if (background != null) {
-                background.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelBackground), PorterDuff.Mode.MULTIPLY));
+            final int bgColor = getThemedColor(Theme.key_chat_emojiPanelBackground);
+            if (background != null && (background != lastFilteredBackground || bgColor != lastBackgroundFilterColor)) {
+                lastFilteredBackground = background;
+                lastBackgroundFilterColor = bgColor;
+                background.setColorFilter(new PorterDuffColorFilter(bgColor, PorterDuff.Mode.MULTIPLY));
             }
         } else {
             setBackgroundColor(getThemedColor(Theme.key_chat_emojiPanelBackground));
@@ -5963,29 +6032,45 @@ public class EmojiView extends FrameLayout implements
                 gifTabs.setBackground(null);
             }
         }
+        final int iconFilterColor = glassDesign ? getGlassIconColor(0.6f) : getThemedColor(Theme.key_chat_emojiPanelBackspace);
+        final boolean iconFilterChanged = iconFilterColor != lastIconFilterColor;
+        lastIconFilterColor = iconFilterColor;
         if (backspaceButton != null) {
-            backspaceButton.setColorFilter(new PorterDuffColorFilter(glassDesign ? getGlassIconColor(0.6f) : getThemedColor(Theme.key_chat_emojiPanelBackspace), PorterDuff.Mode.MULTIPLY));
+            if (iconFilterChanged) {
+                backspaceButton.setColorFilter(new PorterDuffColorFilter(iconFilterColor, PorterDuff.Mode.MULTIPLY));
+            }
             if (emojiSearchField == null) {
                 Theme.setSelectorDrawableColor(backspaceButton.getBackground(), getThemedColor(Theme.key_chat_emojiPanelBackground), false);
                 Theme.setSelectorDrawableColor(backspaceButton.getBackground(), getThemedColor(Theme.key_chat_emojiPanelBackground), true);
             }
         }
-        if (stickerSettingsButton != null) {
-            stickerSettingsButton.setColorFilter(new PorterDuffColorFilter(glassDesign ? getGlassIconColor(0.6f) : getThemedColor(Theme.key_chat_emojiPanelBackspace), PorterDuff.Mode.MULTIPLY));
+        if (stickerSettingsButton != null && iconFilterChanged) {
+            stickerSettingsButton.setColorFilter(new PorterDuffColorFilter(iconFilterColor, PorterDuff.Mode.MULTIPLY));
         }
-        if (searchButton != null) {
-            searchButton.setColorFilter(new PorterDuffColorFilter(glassDesign ? getGlassIconColor(0.6f) : getThemedColor(Theme.key_chat_emojiPanelBackspace), PorterDuff.Mode.MULTIPLY));
+        if (searchButton != null && iconFilterChanged) {
+            searchButton.setColorFilter(new PorterDuffColorFilter(iconFilterColor, PorterDuff.Mode.MULTIPLY));
         }
         if (mediaBanTooltip != null) {
-            ((ShapeDrawable) mediaBanTooltip.getBackground()).getPaint().setColor(getThemedColor(Theme.key_chat_gifSaveHintBackground));
+            if (mediaBanTooltip.getBackground() instanceof ShapeDrawable) {
+                ((ShapeDrawable) mediaBanTooltip.getBackground()).getPaint().setColor(getThemedColor(Theme.key_chat_gifSaveHintBackground));
+                mediaBanTooltip.invalidate();
+            }
             mediaBanTooltip.setTextColor(getThemedColor(Theme.key_chat_gifSaveHintText));
         }
         if (gifSearchAdapter != null) {
-            gifSearchAdapter.progressEmptyView.imageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelEmptyText), PorterDuff.Mode.MULTIPLY));
+            final int emptyColor = getThemedColor(Theme.key_chat_emojiPanelEmptyText);
+            if (emptyColor != lastEmptyImageFilterColor) {
+                lastEmptyImageFilterColor = emptyColor;
+                gifSearchAdapter.progressEmptyView.imageView.setColorFilter(new PorterDuffColorFilter(emptyColor, PorterDuff.Mode.MULTIPLY));
+            }
             gifSearchAdapter.progressEmptyView.textView.setTextColor(getThemedColor(Theme.key_chat_emojiPanelEmptyText));
             gifSearchAdapter.progressEmptyView.progressView.setProgressColor(getThemedColor(Theme.key_progressCircle));
         }
-        animatedEmojiTextColorFilter = new PorterDuffColorFilter(getThemedColor(Theme.key_featuredStickers_addButton), PorterDuff.Mode.SRC_IN);
+        final int animatedEmojiTextColor = getThemedColor(Theme.key_featuredStickers_addButton);
+        if (animatedEmojiTextColorFilter == null || animatedEmojiTextColor != lastAnimatedEmojiTextColor) {
+            lastAnimatedEmojiTextColor = animatedEmojiTextColor;
+            animatedEmojiTextColorFilter = new PorterDuffColorFilter(animatedEmojiTextColor, PorterDuff.Mode.SRC_IN);
+        }
 
         for (int a = 0; a < tabIcons.length; a++) {
             Theme.setEmojiDrawableColor(tabIcons[a], glassDesign ? getGlassIconColor(0.4f) : getThemedColor(Theme.key_chat_emojiBottomPanelIcon), false);
@@ -6015,9 +6100,18 @@ public class EmojiView extends FrameLayout implements
             emojiLockPaint.setAlpha((int) (emojiLockPaint.getAlpha() * .5f));
         }
         if (emojiLockDrawable != null) {
-            emojiLockDrawable.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelStickerSetName), PorterDuff.Mode.MULTIPLY));
+            final int lockColor = getThemedColor(Theme.key_chat_emojiPanelStickerSetName);
+            if (emojiLockDrawable != lastEmojiLockDrawable || lockColor != lastEmojiLockColor) {
+                lastEmojiLockDrawable = emojiLockDrawable;
+                lastEmojiLockColor = lockColor;
+                emojiLockDrawable.setColorFilter(new PorterDuffColorFilter(lockColor, PorterDuff.Mode.MULTIPLY));
+            }
         }
     }
+
+    // last colors applied by updateColorsInternal(): color filters are only recreated when the color changed
+    private Drawable lastFilteredBackground, lastEmojiLockDrawable;
+    private int lastBackgroundFilterColor, lastIconFilterColor, lastEmptyImageFilterColor, lastAnimatedEmojiTextColor, lastEmojiLockColor;
 
     public boolean customOutline;
 
@@ -6167,6 +6261,8 @@ public class EmojiView extends FrameLayout implements
     }
 
     private NotificationCenter.ObserversGroup observersGroup;
+    private NotificationCenter.ObserversGroup visibleObserversGroup;
+    private boolean visibleObserversGroupHasRecents;
 
     @Override
     protected void onAttachedToWindow() {
@@ -6206,9 +6302,17 @@ public class EmojiView extends FrameLayout implements
             if (visibility != GONE) {
                 Emoji.sortEmoji();
                 emojiAdapter.notifyDataSetChanged();
-                NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.stickersDidLoad);
+                // weak: these used to be strong observers that nothing removed, leaking the view (and its activity)
+                if (visibleObserversGroup == null) {
+                    visibleObserversGroup = NotificationCenter.getInstance(currentAccount)
+                        .createWeakObserversGroup(this)
+                        .add(NotificationCenter.stickersDidLoad);
+                }
                 if (stickersGridAdapter != null) {
-                    NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.recentDocumentsDidLoad);
+                    if (!visibleObserversGroupHasRecents) {
+                        visibleObserversGroupHasRecents = true;
+                        visibleObserversGroup.add(NotificationCenter.recentDocumentsDidLoad);
+                    }
                     updateStickerTabs(false);
                     reloadStickersAdapter();
                 /*if (gifGridView != null && delegate != null) {
@@ -6235,6 +6339,11 @@ public class EmojiView extends FrameLayout implements
         if (observersGroup != null) {
             observersGroup.removeAllObservers();
             observersGroup = null;
+        }
+        if (visibleObserversGroup != null) {
+            visibleObserversGroup.removeAllObservers();
+            visibleObserversGroup = null;
+            visibleObserversGroupHasRecents = false;
         }
     }
 
@@ -6718,7 +6827,7 @@ public class EmojiView extends FrameLayout implements
 
             setNestedScrollingEnabled(true);
             setSelectorRadius(AndroidUtilities.dp(4));
-            setSelectorDrawableColor(getThemedColor(Theme.key_listSelector));
+            ThemeBind.listSelectorColor(this, Theme.key_listSelector, resourcesProvider);
             setTag(9);
             setItemAnimator(null);
             setLayoutAnimation(null);
@@ -6902,7 +7011,7 @@ public class EmojiView extends FrameLayout implements
                                     alertDialog.show();
                                     TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                                     if (button != null) {
-                                        button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
+                                        ThemeBind.textColor(button, Theme.key_text_RedBold);
                                     }
                                 }
                             }
@@ -6958,7 +7067,7 @@ public class EmojiView extends FrameLayout implements
                     LinearLayout containerLayout = new LinearLayout(context);
                     containerLayout.setOrientation(LinearLayout.VERTICAL);
                     containerLayout.setGravity(Gravity.CENTER);
-                    containerLayout.setBackground(Theme.createRoundRectDrawable(dp(13), Theme.multAlpha(getThemedColor(Theme.key_chat_emojiPanelIcon), .12f)));
+                    ThemeBind.fillBackground(containerLayout, Theme.createRoundRectDrawable(dp(13), Theme.multAlpha(getThemedColor(Theme.key_chat_emojiPanelIcon), .12f)), ThemeBind.multAlpha(Theme.key_chat_emojiPanelIcon, .12f), EmojiView.this.resourcesProvider);
 
                     ScaleStateListAnimator.apply(containerLayout, .1f, 1.5f);
                     containerLayout.setOnClickListener(v -> {
@@ -6969,12 +7078,12 @@ public class EmojiView extends FrameLayout implements
 
                     final ImageView icon = new ImageView(context);
                     icon.setImageResource(R.drawable.menu_sticker_add);
-                    icon.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelIcon), PorterDuff.Mode.SRC_IN));
+                    ThemeBind.colorFilter(icon, Theme.key_chat_emojiPanelIcon, EmojiView.this.resourcesProvider, PorterDuff.Mode.SRC_IN);
                     containerLayout.addView(icon, LayoutHelper.createLinear(24, 24, Gravity.CENTER, 0, 0, 0, 0));
 
                     final TextView text = new TextView(context);
                     text.setGravity(Gravity.CENTER);
-                    text.setTextColor(getThemedColor(Theme.key_chat_emojiPanelIcon));
+                    ThemeBind.textColor(text, Theme.key_chat_emojiPanelIcon, EmojiView.this.resourcesProvider);
                     text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11);
                     text.setTypeface(AndroidUtilities.bold());
                     text.setText(getString(R.string.Create));
@@ -7213,8 +7322,8 @@ public class EmojiView extends FrameLayout implements
             super(context);
             textView = new TextView(context);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
-            textView.setBackground(Theme.createRoundRectDrawable(AndroidUtilities.dp(11), ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_chat_emojiPanelStickerSetName, resourcesProvider), 99)));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhite, resourcesProvider);
+            ThemeBind.fillBackground(textView, Theme.createRoundRectDrawable(AndroidUtilities.dp(11), ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_chat_emojiPanelStickerSetName, resourcesProvider), 99)), ThemeBind.alpha(Theme.key_chat_emojiPanelStickerSetName, 99), resourcesProvider);
             textView.setTypeface(AndroidUtilities.bold());
             textView.setPadding(AndroidUtilities.dp(6), AndroidUtilities.dp(1.66f), AndroidUtilities.dp(6), AndroidUtilities.dp(2f));
             addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
@@ -8134,13 +8243,13 @@ public class EmojiView extends FrameLayout implements
                     TextView textView = new TextView(getContext());
                     textView.setText(getString(R.string.NoEmojiFound));
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                    textView.setTextColor(getThemedColor(Theme.key_chat_emojiPanelEmptyText));
+                    ThemeBind.textColor(textView, Theme.key_chat_emojiPanelEmptyText, EmojiView.this.resourcesProvider);
                     frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 10, 0, 0));
 
                     ImageView imageView = new ImageView(getContext());
                     imageView.setScaleType(ImageView.ScaleType.CENTER);
                     imageView.setImageResource(R.drawable.msg_emoji_question);
-                    imageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelEmptyText), PorterDuff.Mode.MULTIPLY));
+                    ThemeBind.colorFilter(imageView, Theme.key_chat_emojiPanelEmptyText, EmojiView.this.resourcesProvider, PorterDuff.Mode.MULTIPLY);
                     frameLayout.addView(imageView, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT));
                     imageView.setOnClickListener(new OnClickListener() {
                         @Override
@@ -8159,7 +8268,7 @@ public class EmojiView extends FrameLayout implements
                             TextView textView = new TextView(getContext());
                             textView.setText(getString(R.string.EmojiSuggestions));
                             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-                            textView.setTextColor(getThemedColor(Theme.key_dialogTextBlue2));
+                            ThemeBind.textColor(textView, Theme.key_dialogTextBlue2, EmojiView.this.resourcesProvider);
                             textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
                             textView.setTypeface(AndroidUtilities.bold());
                             linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 24, 0, 0));
@@ -8167,14 +8276,14 @@ public class EmojiView extends FrameLayout implements
                             textView = new TextView(getContext());
                             textView.setText(AndroidUtilities.replaceTags(getString(R.string.EmojiSuggestionsInfo)));
                             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-                            textView.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
+                            ThemeBind.textColor(textView, Theme.key_dialogTextBlack, EmojiView.this.resourcesProvider);
                             textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
                             linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 11, 0, 0));
 
                             textView = new TextView(getContext());
                             textView.setText(LocaleController.formatString("EmojiSuggestionsUrl", R.string.EmojiSuggestionsUrl, lastSearchAlias != null ? lastSearchAlias : lastSearchKeyboardLanguage));
                             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-                            textView.setTextColor(getThemedColor(Theme.key_dialogTextLink));
+                            ThemeBind.textColor(textView, Theme.key_dialogTextLink, EmojiView.this.resourcesProvider);
                             textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
                             linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 18, 0, 16));
                             textView.setOnClickListener(new OnClickListener() {
@@ -9210,7 +9319,7 @@ public class EmojiView extends FrameLayout implements
         }
     }
 
-    private class GifProgressEmptyView extends FrameLayout {
+    private class GifProgressEmptyView extends FrameLayout implements Theme.Colorable {
 
         private final ImageView imageView;
         private final TextView textView;
@@ -9224,13 +9333,13 @@ public class EmojiView extends FrameLayout implements
             imageView = new ImageView(getContext());
             imageView.setScaleType(ImageView.ScaleType.CENTER);
             imageView.setImageResource(R.drawable.gif_empty);
-            imageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelEmptyText), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.colorFilter(imageView, Theme.key_chat_emojiPanelEmptyText, EmojiView.this.resourcesProvider, PorterDuff.Mode.MULTIPLY);
             addView(imageView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 8, 0, 0));
 
             textView = new TextView(getContext());
             textView.setText(getString(R.string.NoGIFsFound));
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-            textView.setTextColor(getThemedColor(Theme.key_chat_emojiPanelEmptyText));
+            ThemeBind.textColor(textView, Theme.key_chat_emojiPanelEmptyText, EmojiView.this.resourcesProvider);
             addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 42, 0, 0));
 
             progressView = new RadialProgressView(context, resourcesProvider);
@@ -9264,7 +9373,20 @@ public class EmojiView extends FrameLayout implements
                 progressView.setVisibility(loadingState ? VISIBLE : GONE);
             }
         }
-    }
+
+        private int colorsGeneration = ThemeBind.generation();
+
+        @Override
+        public void updateColors() {
+            try {
+                progressView.setProgressColor(getThemedColor(Theme.key_progressCircle));
+                invalidate();
+
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
 
     private interface SearchRunnable extends Runnable {
         void loadNext();
@@ -9870,14 +9992,14 @@ public class EmojiView extends FrameLayout implements
                     ImageView imageView = new ImageView(context);
                     imageView.setScaleType(ImageView.ScaleType.CENTER);
                     imageView.setImageResource(R.drawable.stickers_empty);
-                    imageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelEmptyText), PorterDuff.Mode.MULTIPLY));
+                    ThemeBind.colorFilter(imageView, Theme.key_chat_emojiPanelEmptyText, EmojiView.this.resourcesProvider, PorterDuff.Mode.MULTIPLY);
                     imageView.setTranslationY(-AndroidUtilities.dp(24));
                     frameLayout.addView(imageView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 42, 0, 28));
 
                     TextView textView = new TextView(context);
                     textView.setText(getString(R.string.NoStickersFound));
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                    textView.setTextColor(getThemedColor(Theme.key_chat_emojiPanelEmptyText));
+                    ThemeBind.textColor(textView, Theme.key_chat_emojiPanelEmptyText, EmojiView.this.resourcesProvider);
                     frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 42, 0, 9));
 
                     view = frameLayout;

@@ -2,6 +2,7 @@ import groovy.json.JsonOutput
 
 import io.github.valacuz.proguard.dictionary.DictionaryGeneratorPluginExtension
 import io.github.valacuz.proguard.dictionary.tasks.generate.strategy.ObfuscationStrategy
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -39,10 +40,10 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
 
-    implementation 'com.google.firebase:firebase-messaging:25.1.2'
-    implementation 'com.huawei.hms:push:6.11.0.300'
-    implementation 'com.huawei.hms:maps:6.11.0.304'
-    implementation 'com.huawei.hms:location:6.11.0.301'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.huawei.hms:push:6.5.0.300'
+    implementation 'com.huawei.hms:maps:6.6.0.300'
+    implementation 'com.huawei.hms:location:6.4.0.300'
 }
 
 proguardDictGenerator {
@@ -54,21 +55,22 @@ proguardDictGenerator {
     variantNameFilter = null // Regex pattern
 }
 
-android {
-    kotlinOptions {
-        jvmTarget = '17'
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
     }
+}
 
+android {
     compileSdkVersion 36
     buildToolsVersion '36.0.0'
 
     defaultConfig.applicationId = APP_PACKAGE
 
 
-    lintOptions {
-        disable 'MissingTranslation'
-        disable 'ExtraTranslation'
-        disable 'BlockedPrivateApi'
+    lint {
+        disable += ['MissingTranslation', 'ExtraTranslation', 'BlockedPrivateApi']
+        checkReleaseBuilds = false
     }
 
     compileOptions {
@@ -99,7 +101,7 @@ android {
         }
     }
 
-    packagingOptions {
+    packaging {
         jniLibs {
             useLegacyPackaging = true
         }
@@ -187,8 +189,8 @@ android {
         externalNativeBuild {
             cmake {
                 version '3.22.1'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-23' //, '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
-                targets 'tmessages.49'
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-24' //, '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
+                targets 'tmessages.49', 'twidget'
             }
         }
     }
@@ -197,10 +199,6 @@ android {
         buildConfig = true
     }
     namespace 'org.telegram.messenger.huawei'
-
-    lintOptions {
-        checkReleaseBuilds false
-    }
 
     bundle {
         language {

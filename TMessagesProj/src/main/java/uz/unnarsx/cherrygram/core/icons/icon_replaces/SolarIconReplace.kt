@@ -14,6 +14,7 @@ import uz.unnarsx.cherrygram.core.icons.newHashMap
 
 class SolarIconReplace : BaseIconReplace() {
     override val replaces: HashMap<Int, Int> = newHashMap(
+        R.drawable.ic_ab_other to R.drawable.ic_ab_other_solar,
         R.drawable.arrow_more to R.drawable.arrow_more_solar,
         R.drawable.attach_send to R.drawable.attach_send_solar,
         R.drawable.bot_file to R.drawable.msg_round_file_solar,
@@ -302,6 +303,7 @@ class SolarIconReplace : BaseIconReplace() {
         R.drawable.msg_round_file_s to R.drawable.msg_round_file_solar,
         R.drawable.msg_satellite to R.drawable.msg_satellite_solar,
         R.drawable.msg_saved to R.drawable.msg_saved_solar,
+        R.drawable.outline_saved_24 to R.drawable.msg_saved_solar,
         R.drawable.msg_screencast to R.drawable.msg_screencast_solar,
         R.drawable.msg_screencast_off to R.drawable.msg_screencast_off_solar,
         R.drawable.msg_search to R.drawable.msg_search_solar,

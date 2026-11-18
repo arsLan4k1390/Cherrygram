@@ -14,17 +14,20 @@ final class RoundVideoSwitchTimingStore {
     private static final int MAX_SAMPLE_MS = 2_000;
     private static final int DEFAULT_BACK_TO_FRONT_MS = 680;
     private static final int DEFAULT_FRONT_TO_BACK_MS = 630;
+    private static final int DEFAULT_LENS_SWITCH_MS = 450;
 
     private static final int BACK_TO_FRONT = 0;
     private static final int FRONT_TO_BACK = 1;
+    private static final int LENS_SWITCH = 2;
 
     private static final String[] KEYS = {
             "round_video_switch_back_to_front_ms",
-            "round_video_switch_front_to_back_ms"
+            "round_video_switch_front_to_back_ms",
+            "round_video_switch_lens_ms"
     };
-    private static final int[][] samples = new int[2][SAMPLE_COUNT];
-    private static final int[] counts = new int[2];
-    private static final int[] nextIndices = new int[2];
+    private static final int[][] samples = new int[KEYS.length][SAMPLE_COUNT];
+    private static final int[] counts = new int[KEYS.length];
+    private static final int[] nextIndices = new int[KEYS.length];
     private static boolean loaded;
 
     private RoundVideoSwitchTimingStore() {
@@ -87,6 +90,7 @@ final class RoundVideoSwitchTimingStore {
     private static int average(int direction) {
         int count = counts[direction];
         if (count == 0) {
+            if (direction == LENS_SWITCH) return DEFAULT_LENS_SWITCH_MS;
             return direction == BACK_TO_FRONT
                     ? DEFAULT_BACK_TO_FRONT_MS
                     : DEFAULT_FRONT_TO_BACK_MS;
@@ -116,7 +120,7 @@ final class RoundVideoSwitchTimingStore {
             @NonNull RoundVideoSession.CameraFacing to
     ) {
         if (from == to) {
-            throw new IllegalArgumentException("Camera switch direction must change");
+            return LENS_SWITCH;
         }
         return from == RoundVideoSession.CameraFacing.BACK ? BACK_TO_FRONT : FRONT_TO_BACK;
     }

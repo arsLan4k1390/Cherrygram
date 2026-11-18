@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="splash"
+            android:width="320dp"
+            android:height="320dp"
+            android:viewportWidth="320"
+            android:viewportHeight="320">
+            <group
+                android:name="scaleme"
+                android:pivotX="160"
+                android:pivotY="160">
+                <group
+                    android:scaleX="0.296296"
+                    android:scaleY="0.296296">
+                    <clip-path
+                        android:name="mask"
+                        android:pathData="M0 540a540 540 0 1 0 1080 0a540 540 0 1 0-1080 0z"/>
+                        <path
+                            android:name="bg0"
+                            android:pathData="M0 0H1080V1080H0z">
+                            <aapt:attr name="android:fillColor">
+                                <gradient android:type="linear" android:startX="0" android:startY="0" android:endX="0" android:endY="1080">
+                                    <item android:offset="0" android:color="#FF17283B"/>
+                                    <item android:offset="1" android:color="#FF101A29"/>
+                                </gradient>
+                            </aapt:attr>
+                        </path>
+                        <group android:pivotX="540" android:pivotY="540" android:scaleX="1.0485" android:scaleY="1.0485">
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star0"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M308.67 266.27C308.41 265.84 307.71 263.65 307.10 261.38C306.10 257.64 305.57 257.14 301.50 256.00C295.84 254.42 295.74 252.55 301.25 251.39C305.20 250.56 305.60 250.17 307.00 245.76C308.88 239.80 310.44 239.72 311.90 245.51C312.96 249.71 313.33 250.10 317.52 251.22C323.19 252.73 323.22 254.40 317.60 255.97C313.58 257.10 313.10 257.59 311.96 261.63C310.73 266.05 309.55 267.71 308.67 266.27Z"/>
+                                </group>
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star1"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M164.61 160.92C164.36 160.14 163.65 157.87 163.04 155.89C162.08 152.75 161.39 152.15 157.80 151.39C152.03 150.15 151.88 148.31 157.43 146.91C161.72 145.83 162.10 145.46 163.36 141.13C165.00 135.49 166.03 135.49 168.02 141.13C169.34 144.85 170.09 145.60 173.52 146.56C178.58 147.98 178.61 150.01 173.60 151.41C170.32 152.33 169.48 153.14 168.32 156.48C166.68 161.22 165.26 162.92 164.61 160.92Z"/>
+                                </group>
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star2"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M220.55 317.75C220.33 317.06 219.75 315.16 219.25 313.52C218.54 311.18 217.54 310.35 214.63 309.66C210.21 308.61 210.35 307.07 215.00 305.50C217.69 304.59 218.66 303.51 219.78 300.17C221.39 295.32 222.53 295.53 223.99 300.95C224.87 304.23 225.56 304.93 228.57 305.65C233.03 306.72 233.37 308.05 229.50 309.30C225.20 310.69 224.29 311.64 223.56 315.54C222.92 318.97 221.30 320.16 220.55 317.75Z"/>
+                                </group>
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star3"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M246.57 118.53C246.01 115.52 245.39 114.91 241.96 113.99C236.98 112.65 236.95 111.63 241.85 110.16C244.90 109.25 245.90 108.34 246.62 105.83C247.88 101.43 249.63 101.24 250.42 105.43C250.99 108.45 251.63 109.11 255.04 110.13C260.03 111.62 260.05 112.64 255.11 113.97C251.75 114.88 251.13 115.49 250.56 118.51C249.72 123.00 247.41 123.01 246.57 118.53Z"/>
+                                </group>
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star4"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M221.18 156.50C220.56 155.12 219.36 154.00 218.52 154.00C217.68 154.00 217.00 153.32 217.00 152.50C217.00 151.68 217.85 151.00 218.89 151.00C220.08 151.00 221.02 150.06 221.41 148.50C221.76 147.12 222.47 146.00 223.00 146.00C223.53 146.00 224.24 147.12 224.59 148.50C224.98 150.06 225.92 151.00 227.11 151.00C228.15 151.00 229.00 151.68 229.00 152.50C229.00 153.32 228.15 154.00 227.11 154.00C225.92 154.00 224.98 154.94 224.59 156.50C224.24 157.88 223.59 159.00 223.14 159.00C222.69 159.00 221.81 157.88 221.18 156.50Z"/>
+                                </group>
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star5"
+                                        android:fillAlpha="0.55"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M299.65 221.00C299.26 219.03 298.44 217.99 297.27 217.98C293.12 217.95 292.58 216.20 296.25 214.67C298.50 213.73 299.96 212.38 300.17 211.05C300.35 209.88 300.95 208.92 301.50 208.92C302.05 208.92 302.65 209.88 302.83 211.05C303.04 212.38 304.50 213.73 306.75 214.67C310.38 216.18 309.89 217.95 305.85 217.98C304.92 217.99 303.74 219.31 303.15 221.00C302.57 222.65 301.69 224.00 301.18 224.00C300.67 224.00 299.98 222.65 299.65 221.00Z"/>
+                                </group>
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star6"
+                                        android:fillAlpha="0.55"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M277.58 306.46C277.22 305.02 275.85 303.51 274.41 302.97C271.65 301.92 272.01 300.00 274.96 300.00C276.12 300.00 277.26 298.80 278.03 296.75L279.25 293.50L280.26 296.70C280.89 298.72 282.01 300.01 283.30 300.20C286.13 300.62 286.72 303.00 284.00 303.00C282.50 303.00 281.47 303.94 280.69 306.00C279.31 309.67 278.42 309.80 277.58 306.46Z"/>
+                                </group>
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star7"
+                                        android:fillAlpha="0.55"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M162.46 303.71C162.13 302.38 160.69 300.89 159.18 300.32L156.50 299.30L159.25 298.17C160.76 297.56 162.00 296.39 162.00 295.58C162.00 292.93 163.99 292.83 164.98 295.44C165.58 297.02 166.72 298.00 167.98 298.00C170.76 298.00 170.52 299.44 167.50 300.82C166.12 301.44 165.00 302.62 165.00 303.42C165.00 305.96 163.08 306.18 162.46 303.71Z"/>
+                                </group>
+                                <group android:translateX="-303.08" android:translateY="-286.2" android:scaleX="3.825" android:scaleY="3.825">
+                                    <path
+                                        android:name="star8"
+                                        android:fillColor="#FFFFFFFF"
+                                        android:pathData="M107.59 218.50C107.18 216.89 106.26 216.00 104.98 216.00C103.89 216.00 103.00 215.33 103.00 214.50C103.00 213.68 103.68 213.00 104.52 213.00C105.36 213.00 106.56 211.88 107.18 210.50C107.81 209.12 108.71 208.00 109.19 208.00C109.66 208.00 110.48 209.12 111.00 210.50C111.52 211.88 112.61 213.00 113.42 213.00C116.03 213.00 116.19 214.98 113.65 215.94C112.28 216.46 110.88 217.81 110.52 218.94C109.63 221.73 108.35 221.53 107.59 218.50Z"/>
+                                </group>
+                        </group>
+                </group>
+                <path
+                    android:fillType="evenOdd"
+                    android:fillColor="#FFFFFFFF"
+                    android:pathData="M191.66 63.75c1.75 3.46 0.56 7.64-2.76 9.73-2.11 1.33-3.98 2.64-5.64 3.91 19.56 0.95 42.51 8.84 54.34 46.1-40.9 3.79-56.96-14.99-65.18-32.7-0.55 1.58-0.82 3.1-0.92 4.53-0.43 6.64 2.84 14.08 8.75 22.92 2.69 4.02 5.7 8.02 8.82 12.17l0.7 0.91c3.3 4.4 6.72 8.99 9.61 13.55 2.03 3.19 3.98 6.65 5.47 10.31 20.26 3.87 35.54 21.3 35.54 42.2 0 23.76-19.72 43.01-44.04 43.01s-44.04-19.25-44.04-43c0-20.83 15.16-38.2 35.3-42.16-0.45-0.77-0.93-1.56-1.44-2.37-2.53-3.98-5.6-8.1-8.94-12.55l-0.73-0.98c-3.07-4.08-6.33-8.4-9.27-12.8-5.81-8.69-11.3-18.94-11.31-29.98-5.07 5.59-9.71 11.81-13.83 18.36-8.83 14.05-14.66 28.62-17.05 39.92 8.19 1.17 15.65 4.53 21.72 9.47 0.2 0.16 0.25 0.45 0.1 0.67-6.38 9.26-10.1 20.41-10.1 32.41 0 12 3.72 23.16 10.1 32.42 0.15 0.21 0.1 0.5-0.1 0.67-7.63 6.2-17.43 9.92-28.13 9.92-24.33 0-44.04-19.25-44.04-43 0-20.57 14.78-37.77 34.55-42.01 2.38-14.34 9.48-32.15 19.7-48.4 12.53-19.92 30.78-39.18 53.23-47.02 3.72-1.3 7.85 0.33 9.6 3.79Z"/>
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="scaleme">
+        <aapt:attr name="android:animation">
+            <set android:ordering="together">
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:duration="@integer/splash_screen_duration"
+                    android:valueFrom="0.0"
+                    android:valueTo="0.60"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_extra_slow_in"/>
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:duration="@integer/splash_screen_duration"
+                    android:valueFrom="0.0"
+                    android:valueTo="0.60"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_extra_slow_in"/>
+                <objectAnimator
+                    android:propertyName="alpha"
+                    android:duration="@integer/splash_screen_duration"
+                    android:valueFrom="0.0"
+                    android:valueTo="1.0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:interpolator/fast_out_extra_slow_in"/>
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

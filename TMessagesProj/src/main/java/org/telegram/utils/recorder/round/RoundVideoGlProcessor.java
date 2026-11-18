@@ -121,6 +121,8 @@ final class RoundVideoGlProcessor {
     private long glStartedNs;
 
     private volatile boolean started;
+    /** Display rotation applied to the camera quad; see RoundVideoOverlayRenderer. */
+    private volatile int displayRotation;
     private volatile boolean recordingStarted;
     private volatile Runnable firstFrameListener;
     private Runnable dualSwitchFrameListener;
@@ -128,6 +130,9 @@ final class RoundVideoGlProcessor {
     private volatile RuntimeException initializationError;
 
     private final Runnable switchFrameRunnable = this::drawSwitchFrame;
+    private static final long SWITCH_HOLD_MAX_MS = 3_000L;
+    private volatile boolean switchHold;
+    private long switchHoldStartedNs;
 
     RoundVideoGlProcessor(
             @NonNull Size inputSize,
@@ -448,6 +453,19 @@ final class RoundVideoGlProcessor {
         }
     }
 
+    /**
+     * Rotates the recorded and previewed frame by the display rotation (0, 90, 180 or 270
+     * degrees) so a device held in landscape records an upright picture. Safe before start.
+     */
+    public void setDisplayRotation(int degrees) {
+        displayRotation = degrees;
+        Handler currentHandler = handler;
+        if (!started || currentHandler == null) return;
+        currentHandler.post(() -> {
+            if (overlayRenderer != null) overlayRenderer.setDisplayRotation(degrees);
+        });
+    }
+
     public void configureSecondaryInput(
             @NonNull Size size,
             int cropSize,
@@ -568,7 +586,7 @@ final class RoundVideoGlProcessor {
                 + ", vendor=" + GLES20.glGetString(GLES20.GL_VENDOR)
                 + ", renderer=" + GLES20.glGetString(GLES20.GL_RENDERER)
                 + ", version=" + GLES20.glGetString(GLES20.GL_VERSION)
-                + ", contentRotation=" + contentRotation
+                + ", displayRotation=" + displayRotation
                 + ", elapsedMs=" + elapsedMs(glStartedNs));
         createInputSurface();
         overlayRenderer = new RoundVideoOverlayRenderer(
@@ -577,7 +595,7 @@ final class RoundVideoGlProcessor {
                 sourceCropSize,
                 compositionEnabled
         );
-        overlayRenderer.setContentRotation(contentRotation);
+        overlayRenderer.setDisplayRotation(displayRotation);
         GLES20.glViewport(0, 0, outputSize, outputSize);
     }
 
@@ -705,7 +723,7 @@ final class RoundVideoGlProcessor {
             lastFrameTime = frameTime;
             if (switchState != SWITCH_NONE) {
                 renderPreviewAndNotify(cameraTexture, matrix);
-                if (!newCameraSessionReady) {
+                if (!newCameraSessionReady || isSwitchHeld()) {
                     return;
                 }
                 boolean firstNewFrame = !hasNewCameraFrame;
@@ -1163,18 +1181,29 @@ final class RoundVideoGlProcessor {
 
     /** Cherrygram start */
     private Runnable switchFirstFrameListener;
-    private volatile int contentRotation;
 
-    public void setContentRotation(int degrees) {
-        contentRotation = degrees;
+    public void setSwitchHold(boolean hold) {
         Handler currentHandler = handler;
-        if (!started || currentHandler == null) return;
+        if (!started || currentHandler == null) {
+            switchHold = false;
+            return;
+        }
         currentHandler.post(() -> {
-            if (overlayRenderer != null) {
-                overlayRenderer.setContentRotation(degrees);
-                diagnostics.log("GL content rotation: " + degrees);
-            }
+            if (switchHold == hold) return;
+            switchHold = hold;
+            switchHoldStartedNs = SystemClock.elapsedRealtimeNanos();
+            diagnostics.log("camera switch hold: " + hold + ", state=" + switchState);
         });
+    }
+
+    private boolean isSwitchHeld() {
+        if (!switchHold) return false;
+        if (SystemClock.elapsedRealtimeNanos() - switchHoldStartedNs > SWITCH_HOLD_MAX_MS * 1_000_000L) {
+            switchHold = false;
+            diagnostics.log("camera switch hold timed out");
+            return false;
+        }
+        return true;
     }
     /** Cherrygram finish */
 

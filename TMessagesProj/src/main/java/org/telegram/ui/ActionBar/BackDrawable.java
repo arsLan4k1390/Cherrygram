@@ -260,6 +260,15 @@ public class BackDrawable extends Drawable {
         invalidateSelf();
     }
 
+    public void setMoveBackProgress(float progress) {
+        if (moveBackProgress == progress && finalMoveBackProgress == progress) {
+            return;
+        }
+        moveBackProgress = finalMoveBackProgress = progress;
+        moveBackLastFrameTime = 0;
+        invalidateSelf();
+    }
+
     public static float getAnimatorDurationScale(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             return ValueAnimator.getDurationScale();

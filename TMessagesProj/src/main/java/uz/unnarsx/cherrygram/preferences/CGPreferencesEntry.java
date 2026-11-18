@@ -36,7 +36,6 @@ import java.util.ArrayList;
 
 import kotlin.Pair;
 import uz.unnarsx.cherrygram.chats.CGChatMenuInjector;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.firebase.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
@@ -128,19 +127,17 @@ public class CGPreferencesEntry extends BaseCGPreferencesEntry {
                 )
                 .slug(DeeplinkHelper.DeepLinksRepo.CG_Camera)
         );
-        if (CherrygramExperimentalConfig.INSTANCE.getUse_CG_OOMHandler()) {
-            items.add(
-                    SettingsActivity.SettingCell.Factory.of(
-                            experimentalRow,
-                            IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
-                            R.drawable.settings_tube_filled_solar,
-                            getString(R.string.EP_Category_Experimental),
-                            getString(R.string.CGP_Experimental_Desc),
-                            true
-                    )
-                    .slug(DeeplinkHelper.DeepLinksRepo.CG_Experimental)
-            );
-        }
+        items.add(
+                SettingsActivity.SettingCell.Factory.of(
+                        experimentalRow,
+                        IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
+                        R.drawable.settings_tube_filled_solar,
+                        getString(R.string.EP_Category_Experimental) + " // W.I.P",
+                        getString(R.string.CGP_Experimental_Desc),
+                        true
+                )
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_Experimental)
+        );
         items.add(
                 SettingsActivity.SettingCell.Factory.of(
                         privacyRow,

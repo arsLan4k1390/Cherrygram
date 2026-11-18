@@ -55,12 +55,12 @@ public class LauncherIconController {
         SUNSET_CHERRY("CG_Icon_Sunset", R.drawable.icon_background_sunset, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunset, R.style.Theme_CG_Splash_Sunset_Light, R.style.Theme_CG_Splash_Sunset_Night),
         SUNRISE_CHERRY("CG_Icon_Sunrise", R.drawable.icon_background_sunrise, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunrise, R.style.Theme_CG_Splash_Sunrise_Light, R.style.Theme_CG_Splash_Sunrise_Night),
         TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_5_background_sa, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo, 0, 0),
-        NOX_CHERRY("CG_Icon_Night", R.mipmap.icon_2_background_sa, R.drawable.icon_foreground_cherry, R.string.AppIconNox, 0, 0),
+        NOX_CHERRY("CG_Icon_Night", R.mipmap.icon_2_background_sa, R.drawable.icon_foreground_cherry, R.string.AppIconNox, R.style.Theme_CG_Splash_Nox_Cherry_Light, R.style.Theme_CG_Splash_Nox_Cherry_Night),
         DARK_NY("CG_Icon_Dark_NY", R.drawable.icon_background_dark_ny, R.drawable.icon_foreground_cherry_bra, R.string.AP_ChangeIcon_Cherry_NY, R.style.Theme_CG_Splash_Dark_NY_Light, R.style.Theme_CG_Splash_Dark_NY_Night),
 
-        PREMIUM("PremiumIcon", R.drawable.icon_3_background_sa, R.mipmap.icon_3_foreground, R.string.AppIconPremium, 0, 0, true),
-        TURBO("TurboIcon", R.drawable.icon_5_background_sa, R.mipmap.icon_5_foreground, R.string.AppIconTurbo, 0, 0, true),
-        NOX("NoxIcon", R.mipmap.icon_2_background_sa, R.drawable.icon_foreground, R.string.AppIconNox, 0, 0, true);
+        PREMIUM("PremiumIcon", R.drawable.icon_3_background_sa, R.mipmap.icon_3_foreground, R.string.AppIconPremium, R.style.Theme_CG_Splash_Premium_Light, R.style.Theme_CG_Splash_Premium_Night, true),
+        TURBO("TurboIcon", R.drawable.icon_5_background_sa, R.mipmap.icon_5_foreground, R.string.AppIconTurbo, R.style.Theme_CG_Splash_Turbo_Light, R.style.Theme_CG_Splash_Turbo_Night, true),
+        NOX("NoxIcon", R.mipmap.icon_2_background_sa, R.drawable.icon_foreground, R.string.AppIconNox, R.style.Theme_CG_Splash_Nox_Light, R.style.Theme_CG_Splash_Nox_Night, true);
 
         public final String key;
         public final int background;

@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
+import uz.unnarsx.cherrygram.chats.ui.WindowBlurHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramFirebaseConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
@@ -67,6 +68,8 @@ public class DonatesPreferencesEntry extends BaseCGPreferencesEntry implements N
         if (force) this.showDonates = !isTestBackend;
         return this;
     }
+
+    private static final float BADGE_BLUR_RADIUS_DP = 10f;
 
     private FrameLayout stickerFrame;
     private StickerImageView stickerImageView;
@@ -176,15 +179,15 @@ public class DonatesPreferencesEntry extends BaseCGPreferencesEntry implements N
         bonusesInfoCell.setTopPadding(dp(1));
         bonusesInfoCell.setBottomPadding(dp(2));
         bonusesInfoCell.setText(getString(R.string.DP_Donate_Desc));
-        items.add(SettingsHelper.asCustomWithBackground(bonusesInfoCell));
+//        items.add(SettingsHelper.asCustomWithBackground(bonusesInfoCell));
 
         TableView bonusesPriceTable = new TableView(getContext(), getResourceProvider());
         bonusesPriceTable.setPadding(dp(15), 0, dp(15), dp(10));
         bonusesPriceTable.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
-        String amount2 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON (GRAM)";
-        bonusesPriceTable.addRow(getTonSpanned("$2 / €2 / 200₽ \n\n" + amount2), generateDescForDonates(bonusesPriceTable));
-        String amount5 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON (GRAM)";
-        bonusesPriceTable.addRow(getTonSpanned("$5 / €5 / 500₽ \n\n" + amount5), generateDescForMarketplace(bonusesPriceTable));
+        String amount2 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 3.0, false) + " TON (GRAM)";
+        bonusesPriceTable.addRow(getTonSpanned("$3 / €3 / 300₽ \n\n" + amount2), generateDescForDonates(bonusesPriceTable));
+        String amount5 = DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 6.0, true) + " TON (GRAM)";
+        bonusesPriceTable.addRow(getTonSpanned("$6 / €6 / 600₽ \n\n" + amount5), generateDescForMarketplace(bonusesPriceTable));
         bonusesPriceTable.addFullRow(AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Cheque),
                 Theme.key_windowBackgroundWhiteLinkText,
                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
@@ -233,12 +236,12 @@ public class DonatesPreferencesEntry extends BaseCGPreferencesEntry implements N
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader("Crypto // w5"));
-        items.add(asPaymentCell("TON Coin", R.drawable.card_ton_light, R.drawable.card_ton_dark, CryptoWalletsRepo.Tonkeeper_TON, false));
+        items.add(asPaymentCell("GRAM (ex. TON Coin)", R.drawable.card_ton_light, R.drawable.card_ton_dark, CryptoWalletsRepo.Tonkeeper_TON, false));
         items.add(asPaymentCell("USDT (TON Network)", R.drawable.card_usdt_light, R.drawable.card_usdt_dark, CryptoWalletsRepo.Tonkeeper_USDT, false));
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader("Crypto // @walt"));
-        items.add(asPaymentCell("TON Coin", R.drawable.card_ton_light, R.drawable.card_ton_dark, CryptoWalletsRepo.Wallet_TON, false));
+        items.add(asPaymentCell("GRAM (ex. TON Coin)", R.drawable.card_ton_light, R.drawable.card_ton_dark, CryptoWalletsRepo.Wallet_TON, false));
         items.add(asPaymentCell("USDT (TON Network)", R.drawable.card_usdt_light, R.drawable.card_usdt_dark, CryptoWalletsRepo.Wallet_USDT, false));
         items.add(asPaymentCell("Bitcoin (BTC)", R.drawable.card_btc_light, R.drawable.card_btc_dark, CryptoWalletsRepo.Wallet_Bitcoin, false));
         items.add(UItem.asShadow(null));
@@ -285,14 +288,14 @@ public class DonatesPreferencesEntry extends BaseCGPreferencesEntry implements N
                 Theme.key_windowBackgroundWhiteLinkText,
                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
                 () -> {
-                    getMessageMenuHelper().checkBlur(getParentActivity(), true, true, 50f);
+                    WindowBlurHelper.setWindowBlur(getParentActivity(), true, true, BADGE_BLUR_RADIUS_DP, 0f);
                     ItemOptions.makeOptions(DonatesPreferencesEntry.this, tableView)
                             .addEmojiStatus(getUserConfig().getCurrentUser(), Constants.CHERRY_EMOJI_ID_VERIFIED, false)
                             .forceTop(true)
                             .setDrawScrim(false)
                             .setGravity(Gravity.RIGHT)
                             .translate(-dp(30), dp(50))
-                            .setOnDismiss(() -> getMessageMenuHelper().checkBlur(getParentActivity(), false, false, 0f))
+                            .setOnDismiss(() -> WindowBlurHelper.setWindowBlur(getParentActivity(), false, false))
                             .show();
                 }
         );
@@ -324,14 +327,14 @@ public class DonatesPreferencesEntry extends BaseCGPreferencesEntry implements N
                 Theme.key_windowBackgroundWhiteLinkText,
                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
                 () -> {
-                    getMessageMenuHelper().checkBlur(getParentActivity(), true, true, 50f);
+                    WindowBlurHelper.setWindowBlur(getParentActivity(), true, true, BADGE_BLUR_RADIUS_DP, 0f);
                     ItemOptions.makeOptions(DonatesPreferencesEntry.this, tableView)
                             .addEmojiStatus(getUserConfig().getCurrentUser(), Constants.CHERRY_EMOJI_ID_VERIFIED, true)
                             .forceTop(true)
                             .setDrawScrim(false)
                             .setGravity(Gravity.RIGHT)
                             .translate(-dp(30), dp(100))
-                            .setOnDismiss(() -> getMessageMenuHelper().checkBlur(getParentActivity(), false, false, 0f))
+                            .setOnDismiss(() -> WindowBlurHelper.setWindowBlur(getParentActivity(), false, false))
                             .show();
                 }
         );

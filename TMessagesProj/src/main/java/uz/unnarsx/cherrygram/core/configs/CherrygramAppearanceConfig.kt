@@ -83,6 +83,8 @@ object CherrygramAppearanceConfig {
     /** Main tabs finish */
 
     /** Messages and profiles start */
+    var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", true)
+    var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", true)
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
     var disablePremiumStatuses by sharedPreferences.boolean("CP_DisablePremiumStatuses", SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW)
     var replyBackground by sharedPreferences.boolean("CP_ReplyBackground", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
@@ -100,6 +102,7 @@ object CherrygramAppearanceConfig {
     var profileBusinessPreview by sharedPreferences.boolean("CP_ProfileBusinessPreview", true)
     var profileBackgroundColor by sharedPreferences.boolean("CP_ProfileBackgroundColor", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var profileBackgroundEmoji by sharedPreferences.boolean("CP_ProfileBackgroundEmoji", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
+    var newProfileDesign by sharedPreferences.boolean("AP_NewProfileDesign", false)
     /** Messages and profiles finish */
 
     /** Drawer items start */

@@ -145,10 +145,19 @@ public class DispatchQueue extends Thread {
                 Looper.loop();
                 return;
             } catch (Exception e) {
-                FileLog.e(e, false);
+                FileLog.e(new RuntimeException("Uncaught exception in " + getName(), e), false);
                 FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
+                try {
+                    onLoopException(e);
+                } catch (Throwable t) {
+                    FileLog.e(t, false);
+                }
             }
         }
+    }
+
+    protected void onLoopException(Exception e) {
+
     }
 
     public boolean isReady() {

@@ -8,6 +8,7 @@
 
 package org.telegram.ui.Cells;
 
+import org.telegram.messenger.FileLog;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
@@ -51,6 +52,7 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.AvatarDrawable;
@@ -71,8 +73,10 @@ import org.telegram.ui.Stories.StoriesUtilities;
 import org.telegram.ui.community.CommunityUtils;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.donates.BadgeHelper;
 
 import java.util.Locale;
+import java.util.HashSet;
 
 public class ProfileSearchCell extends BaseCell implements NotificationCenter.NotificationCenterDelegate, Theme.Colorable {
 
@@ -172,6 +176,9 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
 
         statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(20));
         statusDrawable.setCallback(this);
+
+        cherrygramStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(20));
+        cherrygramStatusDrawable.setCallback(this);
     }
 
     private boolean allowBotOpenButton;
@@ -201,7 +208,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
 
     @Override
     protected boolean verifyDrawable(@NonNull Drawable who) {
-        return statusDrawable == who || botVerificationDrawable == who || super.verifyDrawable(who);
+        return statusDrawable == who || botVerificationDrawable == who || cherrygramStatusDrawable == who || super.verifyDrawable(who);
     }
 
     public void setAd(TLRPC.TL_sponsoredPeer sponsoredPeer) {
@@ -210,6 +217,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
 
     private boolean allowEmojiStatus = !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
     public void setAllowEmojiStatus(boolean allowEmojiStatus) {
+        allowCherrygramStatus = allowEmojiStatus;
         if (CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
             this.allowEmojiStatus = false;
         } else {
@@ -346,18 +354,20 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         }
         statusDrawable.detach();
         botVerificationDrawable.detach();
+        cherrygramStatusDrawable.detach();
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         avatarImage.onAttachedToWindow();
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
+        NotificationCenter.getGlobalInstance().addWeakObserver(this, NotificationCenter.emojiLoaded);
         if (showPremiumBlocked) {
-            NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.userIsPremiumBlockedUpadted);
+            NotificationCenter.getGlobalInstance().addWeakObserver(this, NotificationCenter.userIsPremiumBlockedUpadted);
         }
         statusDrawable.attach();
         botVerificationDrawable.attach();
+        cherrygramStatusDrawable.attach();
     }
 
     @Override
@@ -633,6 +643,9 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
                 nameWidth -= statusDrawable.getIntrinsicWidth();
             }
         }
+        if (!cherrygramStatusDrawable.isEmpty() && !LocaleController.isRTL) {
+            nameWidth -= getCherrygramStatusOffset() + cherrygramStatusDrawable.getIntrinsicWidth();
+        }
 
         if (nameWidth < 0) {
             nameWidth = 0;
@@ -821,6 +834,10 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             botVerificationDrawable.set(botVerificationIcon, animated);
         }
         botVerificationDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+
+        if (BadgeHelper.setCherrygramStatus(cherrygramStatusDrawable, savedMessages || !allowCherrygramStatus ? null : user, animated)) {
+            cherrygramStatusDrawable.setColor(BadgeHelper.getEmojiStatusColor(user.id, Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider), false));
+        }
     }
 
     private boolean rectangularAvatar;
@@ -999,6 +1016,12 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             }
             setDrawableBounds(statusDrawable, x, nameTop + (nameLayout.getHeight() - statusDrawable.getIntrinsicHeight()) / 2f);
             statusDrawable.draw(canvas);
+
+            if (!cherrygramStatusDrawable.isEmpty()) {
+                x += LocaleController.isRTL ? -getCherrygramStatusOffset() : getCherrygramStatusOffset();
+                setDrawableBounds(cherrygramStatusDrawable, x, nameTop + (nameLayout.getHeight() - cherrygramStatusDrawable.getIntrinsicHeight()) / 2f);
+                cherrygramStatusDrawable.draw(canvas);
+            }
         }
 
         if (ad != null && adText != null && adBackgroundPaint != null) {
@@ -1218,8 +1241,38 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
 
     @Override
     public void updateColors() {
+        if (colorsGeneration != ThemeBind.generation()) {
+            colorsGeneration = ThemeBind.generation();
+            try {
+                update(0);
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+            return;
+        }
         if (nameLayout != null && getMeasuredWidth() > 0) {
             buildLayout();
         }
     }
+
+    private int colorsGeneration = ThemeBind.generation();
+    @Override
+    public void addColorKeys(HashSet<Integer> colors) {
+        colors.add(Theme.key_chats_verifiedBackground);
+        colors.add(Theme.key_windowBackgroundWhiteGrayText);
+        colors.add(Theme.key_chats_secretName);
+        colors.add(Theme.key_chats_name);
+        colors.add(Theme.key_windowBackgroundWhiteGrayText3);
+        colors.add(Theme.key_windowBackgroundWhiteBlueText3);
+    }
+
+    /** Cherrygram start */
+    private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatusDrawable;
+    private boolean allowCherrygramStatus = true;
+
+    private int getCherrygramStatusOffset() {
+        return statusDrawable.isEmpty() ? 0 : statusDrawable.getIntrinsicWidth() + dp(3);
+    }
+    /** Cherrygram finish */
+
 }

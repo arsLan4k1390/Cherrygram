@@ -53,8 +53,8 @@ object BackupHelper {
 
         // Appearance
         "AP_Icon_Replacements1", "AP_OneUI_SwitchStyle", "AP_DisableDividers", "AP_GlareEffect", "AP_CenterTitle",
-        "AP_HideSearchField", "AP_IconBasedSplash",
-        "CP_ShowSeconds", "CP_DisablePremiumStatuses",
+        "AP_HideSearchField", "AP_IconBasedSplash", "AP_NewProfileDesign",
+        "CP_ForwardMsgDate", "AP_PencilIcon", "CP_ShowSeconds", "CP_DisablePremiumStatuses",
         "CP_ReplyBackground", "CP_ReplyCustomColors", "CP_ReplyBackgroundEmoji", "CP_ProfileHidePhoneNumber", "CP_ProfileChannelPreview",
         "AP_ShowID_DC_new", "CP_ProfileBirthDatePreview", "CP_ProfileBusinessPreview", "CP_ProfileBackgroundColor",
         "CP_ProfileBackgroundEmoji", "AP_FoldersAtBottom", "AP_FolderNameInHeader", "CP_NewTabs_RemoveAllChats", "CP_NewTabs_NoCounter",
@@ -83,7 +83,7 @@ object BackupHelper {
         "CP_MsgFiltersMatchExactWord", "CP_MsgFiltersDetectEntities", "CP_MsgFiltersFullyHideMessages", "CP_MsgFiltersHideFromBlocked1",
         "CP_MsgFiltersHideAll", "CP_MsgFiltersCollapseAutomatically", "CP_MsgFilterTransparentMsg",
         "CP_MsgFiltersExcludeUsers", "CP_MsgFiltersExcludeBots", "CP_MsgFiltersExcludeGroups", "CP_MsgFiltersExcludeChannels",
-        "CP_AutoQuoteReplies", "CP_WideMessagesLayout", "CP_TimeOnStick", "CP_ForwardMsgDate", "AP_PencilIcon",
+        "CP_AutoQuoteReplies", "CP_WideMessagesLayout", "CP_TimeOnStick",
         "CP_LeftBottomButtonAction", "CP_DoubleTapAction", "CP_MessageSlideAction", "CP_DeleteForAll",
         "CP_MuteSystemSounds", "CP_VoiceMessagesAutoPlay", "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration", "CP_OpenLinksInIV",
         "CP_VideoSeekDuration", "CP_Notification_Sound", "CP_VibrationInChats", "CP_SilenceNonContacts", "CG_UnarchiveOnSwipe",

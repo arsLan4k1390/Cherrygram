@@ -43,6 +43,7 @@ import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.Emoji;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
@@ -61,6 +62,7 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.Cells.GroupCreateUserCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.ChatActivity;
@@ -73,6 +75,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
+
+    @Override
+    public void onThemeColorsChanged() {
+        super.onThemeColorsChanged();
+        try {
+            final int color = Theme.getColor(Theme.key_dialogBackground);
+            if (navBarColor != color) {
+                fixNavigationBar(color);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
 
     private String slug;
     private int filterId = -1;
@@ -167,7 +182,7 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
             fragment.showDialog(alertDialog);
             TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
             if (button != null) {
-                button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
+                ThemeBind.textColor(button, Theme.key_text_RedBold);
             }
         } else {
             showDeleteAlert.run();
@@ -344,7 +359,7 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
         containerView.addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 10, 16, 10));
 
         buttonShadow = new View(getContext());
-        buttonShadow.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+        ThemeBind.backgroundColor(buttonShadow, Theme.key_windowBackgroundGray);
         containerView.addView(buttonShadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1f / AndroidUtilities.density, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 6, 0, 6, 68));
         recyclerListView.setPadding(dp(6), 0, dp(6), dp(button != null ? 68 : 0));
 
@@ -692,7 +707,7 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
         }
     }
 
-    private static class Button extends FrameLayout {
+    private static class Button extends FrameLayout implements Theme.Colorable {
         Paint paint;
         AnimatedTextView.AnimatedTextDrawable text;
         AnimatedTextView.AnimatedTextDrawable countText;
@@ -941,7 +956,44 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
             info.setClassName("android.widget.Button");
             info.setContentDescription(text.getText() + (lastCount > 0 ? ", " + formatPluralString("Chats", lastCount) : ""));
         }
-    }
+
+        private int lastButtonColor;
+
+        private boolean lastButtonDark = Theme.isCurrentThemeDark();
+
+        @Override
+        public void updateColors() {
+            if (paint == null || text == null) {
+                return;
+            }
+            final int color = Theme.getColor(Theme.key_featuredStickers_addButton);
+            if (color != lastButtonColor || lastButtonDark != Theme.isCurrentThemeDark()) { // the ripple shade depends on dark / light
+                lastButtonColor = color;
+                lastButtonDark = Theme.isCurrentThemeDark();
+                if (rippleView != null) {
+                    rippleView.setBackground(Theme.AdaptiveRipple.rect(color, 8));
+                }
+                if (background != null) {
+                    background.getPaint().setColor(color);
+                    background.invalidateSelf();
+                }
+            }
+            paint.setColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+            text.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+            updateCountTextColor();
+            invalidate();
+        }
+
+        private void updateCountTextColor() {
+            try {
+                if (countText != null) {
+                    countText.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton));
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+}
 
     @Override
     protected CharSequence getTitle() {
@@ -979,14 +1031,14 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
                     view = titleCell = new TitleCell(getContext(), invite instanceof TL_chatlists.TL_chatlists_chatlistInviteAlready || updates != null, escapedTitle, titleEntities, titleNoanimate);
                 } else if (viewType == VIEW_TYPE_HINT) {
                     view = new TextInfoPrivacyCell(getContext());
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+                    ThemeBind.backgroundColor(view, Theme.key_windowBackgroundGray);
                 } else if (viewType == VIEW_TYPE_USER) {
                     GroupCreateUserCell userCell = new GroupCreateUserCell(getContext(), 1, 0, false, true);
-                    userCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    ThemeBind.backgroundColor(userCell, Theme.key_windowBackgroundWhite);
                     view = userCell;
                 } else if (viewType == VIEW_TYPE_HEADER) {
                     view = new HeaderCell(getContext());
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    ThemeBind.backgroundColor(view, Theme.key_windowBackgroundWhite);
                 }
                 return new RecyclerListView.Holder(view);
             }
@@ -1134,14 +1186,14 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
             textView = new AnimatedTextView(context, true, true, false);
             textView.setTextSize(dp(15));
             textView.setTypeface(AndroidUtilities.bold());
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlueHeader);
             textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
             addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.BOTTOM, 21, 15, 21, 2));
 
             actionTextView = new AnimatedTextView(context, true, true, true);
             actionTextView.setAnimationProperties(.45f, 0, 250, CubicBezierInterpolator.EASE_OUT_QUINT);
             actionTextView.setTextSize(dp(15));
-            actionTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
+            ThemeBind.textColor(actionTextView, Theme.key_windowBackgroundWhiteBlueHeader);
             actionTextView.setGravity(LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT);
             addView(actionTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 20, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, 21, 15, 21, 2));
 
@@ -1177,7 +1229,18 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
         }
     }
 
-    private class TitleCell extends FrameLayout {
+    private class TitleCell extends FrameLayout implements Theme.Colorable {
+
+        @Override
+        public void updateColors() {
+            try {
+                if (titleTextView != null) {
+                    titleTextView.setEmojiColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
 
         private boolean already;
         private CharSequence title;
@@ -1197,7 +1260,7 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
             addView(preview, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.TOP | Gravity.FILL_HORIZONTAL, 0, 17.33f, 0, 0));
 
             titleTextView = new AnimatedEmojiSpan.TextViewEmojis(context);
-            titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            ThemeBind.textColor(titleTextView, Theme.key_windowBackgroundWhiteBlackText);
             titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
             titleTextView.setTypeface(AndroidUtilities.bold());
             titleTextView.setGravity(Gravity.CENTER);
@@ -1210,7 +1273,7 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
             addView(titleTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 32, 78.3f, 32, 0));
 
             subtitleTextView = new AnimatedEmojiSpan.TextViewEmojis(context);
-            subtitleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            ThemeBind.textColor(subtitleTextView, Theme.key_windowBackgroundWhiteBlackText);
             subtitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             subtitleTextView.setLines(2);
             subtitleTextView.setGravity(Gravity.CENTER);
@@ -1247,7 +1310,7 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
             );
         }
 
-        private class FoldersPreview extends View {
+        private class FoldersPreview extends View implements Theme.Colorable {
 
             TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
             TextPaint selectedTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
@@ -1461,7 +1524,35 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
                 countText.setText(count > 0 ? "+" + count : "", animated);
                 invalidate();
             }
-        }
+
+            @Override
+            public void updateColors() {
+                if (paint == null || selectedTextPaint == null || selectedPaint == null) {
+                    return;
+                }
+                paint.setColor(Theme.multAlpha(Theme.getColor(Theme.key_profile_tabText), .8f));
+                selectedTextPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText2));
+                selectedPaint.setColor(Theme.getColor(Theme.key_featuredStickers_unread));
+                updateTextColors();
+                invalidate();
+            }
+
+            private void updateTextColors() {
+                try {
+                    if (countText != null) {
+                        countText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    }
+                    final int textColor = Theme.multAlpha(Theme.getColor(Theme.key_profile_tabText), .8f);
+                    if (leftFolder2 != null) leftFolder2.setColor(textColor);
+                    if (leftFolder != null) leftFolder.setColor(textColor);
+                    if (middleFolder != null) middleFolder.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText2));
+                    if (rightFolder != null) rightFolder.setColor(textColor);
+                    if (rightFolder2 != null) rightFolder2.setColor(textColor);
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            }
+}
     }
 
     private void updateHeaderCell(boolean animated) {

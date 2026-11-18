@@ -131,6 +131,8 @@ public class PopupHelper {
             ArrayList<Runnable> clickListener,
             Runnable dismissRunnable
     ) {
+        if (fragment == null || fragment.getContext() == null) return;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getContext(), fragment.getResourceProvider());
         builder.setTitle(title);
         final LinearLayout linearLayout = new LinearLayout(fragment.getContext());
@@ -184,14 +186,15 @@ public class PopupHelper {
 
     private static final Set<String> TELEGRAM_PACKAGES = Set.of("org.telegram.messenger", "org.telegram.messenger.web", "org.telegram.messenger.beta");
 
-    private static Intent findOfficialTelegram(Context context, String uri) {
+    private static Intent findOfficialTelegram(Context context, String uriString) {
+        Uri uri = Uri.parse(uriString);
         var pm = context.getPackageManager();
-        var intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(uri));
-        var activities = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        for (var info : activities) {
-            if (TELEGRAM_PACKAGES.contains(info.activityInfo.packageName)) {
-                intent.setPackage(info.activityInfo.packageName);
+
+        for (String packageName : TELEGRAM_PACKAGES) {
+            var intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.setPackage(packageName);
+
+            if (intent.resolveActivity(pm) != null) {
                 return intent;
             }
         }
@@ -226,7 +229,7 @@ public class PopupHelper {
             buttonTextView.setOnClickListener(v -> {
                 try {
                     context.startActivity(officialIntent);
-                } catch (ActivityNotFoundException e) {
+                } catch (ActivityNotFoundException | SecurityException e) {
                     context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=org.telegram.messenger")));
                 }
             });
@@ -330,8 +333,8 @@ public class PopupHelper {
             sheet.setOnDismissListener(onDismissRunnable);
         }
 
-        sheet.setCanDismissWithSwipe(false);
-        sheet.setCanDismissWithTouchOutside(false);
+//        sheet.setCanDismissWithSwipe(false);
+//        sheet.setCanDismissWithTouchOutside(false);
         button.setTimer(timerInSeconds, () -> {
             sheet.setCanDismissWithSwipe(true);
             sheet.setCanDismissWithTouchOutside(true);

@@ -23,14 +23,12 @@ import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem
 import org.telegram.ui.ActionBar.ActionBarPopupWindow
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.LayoutHelper
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.ui.MessageMenuCompactView
-import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
@@ -50,7 +48,8 @@ object CGMessageMenuInjector {
         val isVoiceOrVideoMessage = selectedObject.type == MessageObject.TYPE_VOICE || selectedObject.type == MessageObject.TYPE_ROUND_VIDEO
         val isVoiceMessage = selectedObject.type == MessageObject.TYPE_VOICE
         val isPhoto = selectedObject.type == MessageObject.TYPE_PHOTO
-        val showDivider = chatActivity.messageMenuHelper.showDivider()
+        val gapParams = { LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8) }
+        val createGap = { chatActivity.messageMenuHelper.createGap(chatActivity.context, chatActivity.resourceProvider) }
 
         val backCell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
         backCell.setItemHeight(46)
@@ -72,23 +71,7 @@ object CGMessageMenuInjector {
             )
         )
 
-        if (showDivider) {
-            if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider(true)) {
-                linearLayout.addView(
-                    ActionBarPopupWindow.GapView(
-                        chatActivity.context,
-                        MessageMenuHelper.getMessageMenuGapColor(chatActivity.resourceProvider),
-                        Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
-                    ),
-                    LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
-                )
-            } else {
-                linearLayout.addView(
-                    ActionBarPopupWindow.GapView(chatActivity.context, chatActivity.resourceProvider),
-                    LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
-                )
-            }
-        }
+        linearLayout.addView(createGap(), gapParams())
 
         val sections = ArrayList<View>()
 
@@ -182,19 +165,7 @@ object CGMessageMenuInjector {
             sections.add(cell)
         }
 
-        if (showDivider) {
-            val gap = if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider(true)) {
-                ActionBarPopupWindow.GapView(
-                    chatActivity.context,
-                    MessageMenuHelper.getMessageMenuGapColor(chatActivity.resourceProvider),
-                    Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
-                )
-            } else {
-                ActionBarPopupWindow.GapView(chatActivity.context, chatActivity.resourceProvider)
-            }
-            gap.layoutParams = LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
-            sections.add(gap)
-        }
+        sections.add(createGap().apply { layoutParams = gapParams() })
 
         val settingsCell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
         settingsCell.setTextAndIcon(getString(R.string.Settings), R.drawable.msg_settings)
@@ -224,23 +195,7 @@ object CGMessageMenuInjector {
             popupLayout.swipeBack?.openForeground(foregroundIndex)
         }
 
-        if (showDivider) {
-            if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider(true)) {
-                popupLayout.addView(
-                    ActionBarPopupWindow.GapView(
-                        chatActivity.context,
-                        MessageMenuHelper.getMessageMenuGapColor(chatActivity.resourceProvider),
-                        Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.resourceProvider)
-                    ),
-                    LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
-                )
-            } else {
-                popupLayout.addView(
-                    ActionBarPopupWindow.GapView(chatActivity.context, chatActivity.resourceProvider),
-                    LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
-                )
-            }
-        }
+        popupLayout.addView(createGap(), gapParams())
     }
 
     fun injectOpenInExternal(
@@ -377,6 +332,26 @@ object CGMessageMenuInjector {
         options.add(ChatActivityHelper.OPTION_IMPORT_SETTINGS)
         items.add(getString(R.string.CG_ImportSettings))
         icons.add(R.drawable.msg_customize)
+    }
+
+    fun injectSelectMessage(
+        chatActivity: ChatActivity?,
+        message: MessageObject,
+        type: Int,
+        threadMessageObjects: ArrayList<MessageObject>?,
+        items: ArrayList<CharSequence?>,
+        options: ArrayList<Int?>,
+        icons: ArrayList<Int?>
+    ) {
+        val show = chatActivity != null && chatActivity.messageMenuHelper.openMenuByLongPress() &&
+                type >= 2 && type != 20 && !message.isSponsored && !chatActivity.isInsideContainer &&
+                !(threadMessageObjects != null && threadMessageObjects.contains(message) && !chatActivity.isThreadChat)
+
+        if (show) {
+            items.add(getString(R.string.Select))
+            options.add(ChatActivityHelper.OPTION_SELECT_MESSAGE)
+            icons.add(R.drawable.msg_select)
+        }
     }
 
     fun injectJSON(

@@ -203,9 +203,35 @@ public class CameraXView extends BaseCameraView {
         }
     }
 
+    private boolean lensBlurActive;
+    private boolean lensBlurWaitStream;
+    private boolean lensBlurWaitZoom;
+    private final Runnable lensSwitchStubFallback = this::endLensSwitchBlur;
+
+    private void startLensSwitchAnimation() {
+        startChangeEffectAnimation();
+        lensBlurActive = true;
+        lensBlurWaitStream = true;
+        lensBlurWaitZoom = true;
+        AndroidUtilities.cancelRunOnUIThread(lensSwitchStubFallback);
+        AndroidUtilities.runOnUIThread(lensSwitchStubFallback, 4000);
+    }
+
+    private void onLensSwitchSettled() {
+        lensBlurWaitZoom = false;
+        if (lensBlurActive && !lensBlurWaitStream) endLensSwitchBlur();
+    }
+
+    private void endLensSwitchBlur() {
+        AndroidUtilities.cancelRunOnUIThread(lensSwitchStubFallback);
+        lensBlurActive = false;
+        onFirstFrameRendered();
+    }
+
     private void observeStream() {
         previewView.getPreviewStreamState().observe(lifecycle, streamState -> {
             if (streamState == PreviewView.StreamState.STREAMING) {
+                lensBlurWaitStream = false;
                 delegate.onCameraInit();
                 isStreaming = true;
                 firstFrameRendered = true;
@@ -221,6 +247,10 @@ public class CameraXView extends BaseCameraView {
     }
 
     private void onFirstFrameRendered() {
+        if (lensBlurActive) {
+            if (!lensBlurWaitStream && !lensBlurWaitZoom) endLensSwitchBlur();
+            return;
+        }
         if (blurredStubView.getVisibility() == View.VISIBLE) {
             blurredStubView.animate().alpha(0).setListener(new AnimatorListenerAdapter() {
                 @Override
@@ -385,6 +415,8 @@ public class CameraXView extends BaseCameraView {
         addView(previewView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
         lifecycle = new CameraXController.CameraLifecycle();
         controller = new CameraXController(lifecycle, previewView.getMeteringPointFactory(), previewView.getSurfaceProvider());
+        controller.setOnLensSwitchStarted(this::startLensSwitchAnimation);
+        controller.setOnLensSettled(this::onLensSwitchSettled);
         controller.setFrontFace(frontface);
         controller.initCamera(getContext(), controller.isFrontface(), this::observeStream);
         textureInited = true;

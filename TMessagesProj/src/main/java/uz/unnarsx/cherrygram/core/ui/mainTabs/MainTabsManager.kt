@@ -98,21 +98,21 @@ object MainTabsManager {
         showSearch: Boolean
     ): GlassTabView {
         return when (type) {
-            TabType.CHATS -> GlassTabView.createMainTab(
+            TabType.CHATS -> GlassTabView.createMainTabCG(
                 context,
                 resourceProvider,
                 GlassTabView.TabAnimation.CHATS,
                 R.string.MainTabsChats
             )
 
-            TabType.CONTACTS -> GlassTabView.createMainTab(
+            TabType.CONTACTS -> GlassTabView.createMainTabCG(
                 context,
                 resourceProvider,
                 GlassTabView.TabAnimation.CONTACTS,
                 R.string.MainTabsContacts
             )
 
-            TabType.CALLS -> GlassTabView.createMainTab(
+            TabType.CALLS -> GlassTabView.createMainTabCG(
                 context,
                 resourceProvider,
                 GlassTabView.TabAnimation.CALLS,
@@ -128,7 +128,7 @@ object MainTabsManager {
                         R.string.Settings
                     )
                 } else {
-                    GlassTabView.createMainTab(
+                    GlassTabView.createMainTabCG(
                         context,
                         resourceProvider,
                         GlassTabView.TabAnimation.SETTINGS,

@@ -120,4 +120,37 @@
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_dark_ny</item>
     </style>
 
+    <style name="Theme.CG.Splash.Nox_Cherry.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_nox_cherry</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Nox_Cherry.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_nox_cherry</item>
+    </style>
+
+    <!-- Telegram icons, animation follows the Telegram splash -->
+    <style name="Theme.CG.Splash.Premium.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_premium</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Premium.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_premium</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Turbo.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_turbo</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Turbo.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_turbo</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Nox.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_nox</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Nox.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_nox</item>
+    </style>
+
 </resources>

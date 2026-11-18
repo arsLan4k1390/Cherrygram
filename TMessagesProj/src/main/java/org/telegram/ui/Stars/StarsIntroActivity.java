@@ -1,6 +1,7 @@
 package org.telegram.ui.Stars;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
+import org.telegram.utils.glass.BaseFragmentSimpleGlass;
 import static org.telegram.messenger.LocaleController.formatPluralString;
 import static org.telegram.messenger.LocaleController.formatPluralStringComma;
 import static org.telegram.messenger.LocaleController.formatPluralStringSpaced;
@@ -60,8 +61,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
-import androidx.core.view.NestedScrollingParent3;
-import androidx.core.view.NestedScrollingParentHelper;
 import androidx.core.view.ViewCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -105,6 +104,7 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.AvatarSpan;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.SessionCell;
@@ -146,6 +146,11 @@ import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalRecyclerView;
 import org.telegram.ui.Components.ViewPagerFixed;
+import org.telegram.ui.Components.SiblingRecyclerPagerLayout;
+import org.telegram.ui.Components.RecyclerPagerView;
+import org.telegram.ui.Components.blur3.utils.Blur3Utils;
+import org.telegram.ui.Components.blur3.drawable.color.impl.BlurredBackgroundProviderImpl;
+import org.telegram.utils.glass.GlassEngine;
 import org.telegram.ui.Components.spoilers.SpoilerEffect2;
 import org.telegram.ui.Gifts.GiftSheet;
 import org.telegram.ui.GradientHeaderActivity;
@@ -168,6 +173,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import me.vkryl.android.animator.BoolAnimator;
+
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class StarsIntroActivity extends GradientHeaderActivity implements NotificationCenter.NotificationCenterDelegate {
@@ -178,6 +185,23 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
     private GLIconTextureView iconTextureView;
 
     private StarsTransactionsLayout transactionsLayout;
+    private SiblingRecyclerPagerLayout scrollCoordinator;
+    private View transactionsBoundary;
+    private View listTopOverlay;
+    private BoolAnimator actionBarShownAnimator;
+    private BoolAnimator tabsPinnedAnimator;
+    private BoolAnimator headerVisibleAnimator;
+    private int transactionsRow = RecyclerView.NO_POSITION;
+    private int contentInsetTop;
+    private int contentInsetBottom;
+    private boolean receivedInsets;
+    private boolean savedTransactionsPinned;
+    private final Runnable alignTransactionsBoundary = () -> {
+        if (scrollCoordinator != null && transactionsRow != RecyclerView.NO_POSITION) {
+            traceTransactions("POSTED_ALIGN");
+            scrollCoordinator.alignCommonBoundaryToPin();
+        }
+    };
     private View emptyLayout;
     private FireworksOverlay fireworksOverlay;
 
@@ -199,11 +223,11 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
     @Override
     public boolean onFragmentCreate() {
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starTransactionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starSubscriptionsLoaded);
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botStarsUpdated);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starOptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starTransactionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starSubscriptionsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.botStarsUpdated);
         StarsController.getInstance(currentAccount).invalidateTransactions(true);
         StarsController.getInstance(currentAccount).invalidateSubscriptions(true);
         StarsController.getInstance(currentAccount).getOptions();
@@ -212,6 +236,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
     @Override
     public void onFragmentDestroy() {
+        if (listView != null) {
+            listView.removeCallbacks(alignTransactionsBoundary);
+        }
         super.onFragmentDestroy();
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starOptionsLoaded);
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starBalanceUpdated);
@@ -220,9 +247,27 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.botStarsUpdated);
     }
 
+    private void traceTransactions(String event) {
+        if (scrollCoordinator == null) {
+            return;
+        }
+        android.util.Log.d("SiblingScroll", "Stars event=" + event
+                + " row=" + transactionsRow + " hasTransactions=" + hadTransactions
+                + " savedPosition=" + savedScrollPosition + " savedOffset=" + savedScrollOffset
+                + " savedPinned=" + savedTransactionsPinned
+                + " boundaryAttached=" + (transactionsBoundary != null && transactionsBoundary.getParent() != null)
+                + " boundaryTop=" + (transactionsBoundary == null ? 0 : transactionsBoundary.getTop())
+                + " boundaryHeight=" + (transactionsBoundary == null ? 0 : transactionsBoundary.getHeight()));
+        scrollCoordinator.traceNextDraws(event, 30);
+    }
+
     private boolean hadTransactions;
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
+        if (id == NotificationCenter.starTransactionsLoaded || id == NotificationCenter.starSubscriptionsLoaded
+                || id == NotificationCenter.starOptionsLoaded) {
+            traceTransactions("NOTIFICATION_" + id);
+        }
         if (
             id == NotificationCenter.starOptionsLoaded
 //            || id == NotificationCenter.starTransactionsLoaded
@@ -231,9 +276,6 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             if (adapter != null) {
                 adapter.update(true);
             }
-            if (savedScrollPosition == 0 && savedScrollOffset < 0) {
-                savedScrollOffset = 0;
-            }
             applyScrolledPosition();
         } else if (id == NotificationCenter.starTransactionsLoaded) {
             final StarsController c = StarsController.getInstance(currentAccount);
@@ -241,10 +283,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 hadTransactions = c.hasTransactions();
                 saveScrollPosition();
                 if (adapter != null) {
-                    adapter.update(true);
-                }
-                if (savedScrollPosition == 0 && savedScrollOffset < 0) {
-                    savedScrollOffset = 0;
+                    // Replace the placeholder without animating the fullscreen boundary.
+                    adapter.update(false);
                 }
                 applyScrolledPosition();
             }
@@ -262,16 +302,55 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
     }
 
     @Override
+    protected boolean useSimpleActionBar() {
+        return true;
+    }
+
+    @Override
     public View createView(Context context) {
         useFillLastLayoutManager = false;
         particlesViewHeight = dp(32 + 190 + 16);
-        transactionsLayout = new StarsTransactionsLayout(context, currentAccount, false, 0, getClassGuid(), getResourceProvider());
+        scrollCoordinator = new SiblingRecyclerPagerLayout(context);
+        scrollCoordinator.setDebugLoggingEnabled(true);
+        scrollCoordinator.setCommonInsetsManagedExternally(true);
+        if (!receivedInsets) {
+            contentInsetTop = parentLayout != null && parentLayout.isLayersLayout() ? 0 : AndroidUtilities.statusBarHeight;
+            contentInsetBottom = AndroidUtilities.navigationBarHeight;
+        }
+        scrollCoordinator.setGeometry(new SiblingRecyclerPagerLayout.Geometry() {
+            @Override
+            public float tabsPinnedTop(SiblingRecyclerPagerLayout parent) {
+                // the glass of the tabs (inset by 9.66dp) 7dp under the header's buttons
+                return Math.max(0, BaseFragmentSimpleGlass.getPillGlassTop(contentInsetTop) - dp(9.66f));
+            }
+
+            @Override
+            public int pageBottomInset(SiblingRecyclerPagerLayout parent) {
+                return contentInsetBottom;
+            }
+
+            @Override
+            public void onTabsPinnedChanged(boolean pinned) {
+                if (tabsPinnedAnimator != null) {
+                    tabsPinnedAnimator.setValue(pinned, true);
+                }
+                if (contentView != null) {
+                    contentView.invalidate();
+                }
+            }
+        });
+        scrollCoordinator.setVerticalBleed(
+                -Math.min(-dp(8), contentInsetTop - dp(48)),
+                -Math.min(-dp(8), contentInsetBottom - dp(48)));
+        transactionsBoundary = scrollCoordinator.createBoundarySpacer(context);
+        transactionsLayout = new StarsTransactionsLayout(context, currentAccount, false, 0,
+                getClassGuid(), getResourceProvider(), scrollCoordinator);
         emptyLayout = new View(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 int firstViewHeight;
                 if (StarsIntroActivity.this.isLandscapeMode) {
-                    firstViewHeight = StarsIntroActivity.this.statusBarHeight + actionBar.getMeasuredHeight() - dp(16);
+                    firstViewHeight = StarsIntroActivity.this.statusBarHeight + getHeaderView().getMeasuredHeight() - dp(16);
                 } else {
                     int h = dp(140) + statusBarHeight;
                     if (backgroundView.getMeasuredHeight() + dp(24) > h) {
@@ -285,8 +364,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         };
 
         super.createView(context);
+        configureTransactionsGlass();
         if (parentLayout != null && parentLayout.isRightLayout()) {
-            actionBar.setBackButtonImage(R.drawable.ic_ab_close);
+            simpleActionBar.setBackButtonImage(R.drawable.ic_ab_close);
         }
 
         aboveTitleView = new FrameLayout(context);
@@ -328,7 +408,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         starBalanceTextView.setTypeface(AndroidUtilities.bold());
         starBalanceTextView.setTextSize(dp(32));
         starBalanceTextView.setGravity(Gravity.CENTER);
-        starBalanceTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourceProvider));
+        ThemeBind.textColor(starBalanceTextView, Theme.key_windowBackgroundWhiteBlackText, resourceProvider);
 
         starBalanceIcon = new SpannableStringBuilder("S");
         final ImageReceiverSpan starBalanceIconSpan = new ImageReceiverSpan(starBalanceTextView, currentAccount, 42);
@@ -343,7 +423,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         starBalanceTitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         starBalanceTitleView.setGravity(Gravity.CENTER);
         starBalanceTitleView.setText(LocaleController.getString(R.string.YourStarsBalance));
-        starBalanceTitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourceProvider));
+        ThemeBind.textColor(starBalanceTitleView, Theme.key_windowBackgroundWhiteGrayText2, resourceProvider);
         balanceLayout.addView(starBalanceTitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 24, 0, 24, 0));
 
         FrameLayout buttonsLayout = new FrameLayout(getContext());
@@ -483,137 +563,174 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
     }
 
     @Override
-    protected ContentView createContentView() {
-        return new NestedFrameLayout(getContext());
+    protected LinearLayoutManager createMainLayoutManager(Context context) {
+        return scrollCoordinator.createCommonLayoutManager(context);
     }
 
-    private class NestedFrameLayout extends ContentView implements NestedScrollingParent3 {
+    @Override
+    protected void attachMainList(Context context) {
+        contentView.addView(scrollCoordinator, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+        scrollCoordinator.setCommonRecyclerView(listView, () -> transactionsRow);
+        scrollCoordinator.setPager(transactionsLayout, transactionsLayout.viewPager,
+                page -> ((StarsTransactionsLayout.Page) page).listView);
+        scrollCoordinator.setTabs(transactionsLayout.tabsContainer, ViewGroup.LayoutParams.WRAP_CONTENT);
+        transactionsLayout.tabsContainer.setLayoutParams(LayoutHelper.createFrame(
+                LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, -4, 0, -4, 0));
+        applyScrollInsets();
+    }
 
-        private NestedScrollingParentHelper nestedScrollingParentHelper;
-
-        public NestedFrameLayout(Context context) {
-            super(context);
-            nestedScrollingParentHelper = new NestedScrollingParentHelper(this);
-        }
-
-        @Override
-        public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type, int[] consumed) {
-            try {
-                if (target == listView && transactionsLayout.isAttachedToWindow()) {
-                    RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                    int bottom = ((View) transactionsLayout.getParent()).getBottom();
-                    if (listView.getHeight() - listView.getPaddingBottom() - bottom >= 0) {
-                        consumed[1] = dyUnconsumed;
-                        innerListView.scrollBy(0, dyUnconsumed);
-                    }
-                }
-            } catch (Throwable e) {
-                FileLog.e(e);
-                AndroidUtilities.runOnUIThread(() -> {
-                    try {
-                        RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                        if (innerListView != null && innerListView.getAdapter() != null) {
-                            innerListView.getAdapter().notifyDataSetChanged();
-                        }
-                    } catch (Throwable e2) {
-
-                    }
-                });
+    private void configureTransactionsGlass() {
+        final FrameLayout captureRoot = contentView;
+        getBaseSimpleGlass().setViews(captureRoot, listView, simpleActionBar, resourceProvider);
+        simpleActionBar.setBackground(null);
+        // Keep the header above the coordinator's fade, and ActionBar controls above the header.
+        backgroundView.bringToFront();
+        simpleActionBar.bringToFront();
+        // The common list translates independently; it cannot bound capture of sibling pages.
+        getBaseSimpleGlass().setClipView(scrollCoordinator);
+        listView.setCaptureSectionsDecoratorAllowed(true);
+        transactionsLayout.setGlassEngine(glassEngine);
+        final SiblingRecyclerPagerLayout.ScrollCapture listCapture = (canvas, position, view) -> {
+            RecyclerListView recyclerListView = (RecyclerListView) view;
+            Blur3Utils.captureRelativeParent(recyclerListView, canvas, position,
+                    recyclerListView, captureRoot);
+        };
+        getBaseSimpleGlass().setCapture((canvas, position) ->
+                scrollCoordinator.captureScrollingContent(canvas, position, listCapture));
+        FrameLayout tabs = transactionsLayout.tabsContainer;
+        listTopOverlay = new View(getContext());
+        listTopOverlay.setAlpha(0f);
+        scrollCoordinator.addView(listTopOverlay, scrollCoordinator.indexOfChild(tabs),
+                LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 0, Gravity.TOP));
+        listTopOverlay.setBackground(getBaseSimpleGlass().createActionBarFadeDrawable(listTopOverlay));
+        actionBarShownAnimator = new BoolAnimator(0, (id, factor, fraction, callee) ->
+                updateListTopOverlayTranslation(), CubicBezierInterpolator.EASE_OUT_QUINT, 380);
+        tabsPinnedAnimator = new BoolAnimator(1, (id, factor, fraction, callee) ->
+                updateListTopOverlayTranslation(), CubicBezierInterpolator.EASE_OUT_QUINT, 380);
+        headerVisibleAnimator = new BoolAnimator(2, (id, factor, fraction, callee) ->
+                listTopOverlay.setAlpha(factor), CubicBezierInterpolator.EASE_OUT_QUINT, 380);
+        actionBarShownAnimator.setValue(listView.canScrollVertically(-1) || simpleActionBar.isActionModeShowed(), false);
+        tabsPinnedAnimator.setValue(scrollCoordinator.areTabsPinned(), false);
+        listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                actionBarShownAnimator.setValue(listView.canScrollVertically(-1)
+                        || simpleActionBar.isActionModeShowed(), true);
             }
+        });
+        updateListTopOverlaySize();
+        tabs.setBackground(getBaseSimpleGlass().factory.create(tabs)
+                .setColorProvider(BlurredBackgroundProviderImpl.simpleActionBar(resourceProvider))
+                .setPadding(dp(9.66f))
+                .setRadius(dp(18)));
+    }
+
+    private void updateListTopOverlaySize() {
+        if (listTopOverlay == null) {
+            return;
         }
-
-        @Override
-        public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, int type) {
-
+        int height = contentInsetTop + ActionBar.getCurrentActionBarHeight() + dp(44);
+        ViewGroup.LayoutParams params = listTopOverlay.getLayoutParams();
+        if (params.height != height) {
+            params.height = height;
+            listTopOverlay.setLayoutParams(params);
         }
+        updateListTopOverlayTranslation();
+    }
 
-        @Override
-        public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
-            return super.onNestedPreFling(target, velocityX, velocityY);
+    private void updateListTopOverlayTranslation() {
+        if (listTopOverlay == null) {
+            return;
         }
+        float actionBarFactor = actionBarShownAnimator == null ? 0f : actionBarShownAnimator.getFloatValue();
+        float tabsFactor = tabsPinnedAnimator == null ? 0f : tabsPinnedAnimator.getFloatValue();
+        listTopOverlay.setTranslationY(-(1f - actionBarFactor) * ActionBar.getCurrentActionBarHeight()
+                - (1f - tabsFactor) * dp(44));
+    }
 
-        @Override
-        public void onNestedPreScroll(View target, int dx, int dy, int[] consumed, int type) {
-            if (target == listView && transactionsLayout.isAttachedToWindow()) {
-                boolean searchVisible = actionBar.isSearchFieldVisible();
-                int t = ((View) transactionsLayout.getParent()).getTop() - AndroidUtilities.statusBarHeight - ActionBar.getCurrentActionBarHeight();
-                int bottom = ((View) transactionsLayout.getParent()).getBottom();
-                if (dy < 0) {
-                    boolean scrolledInner = false;
-                    if (listView.getHeight() - listView.getPaddingBottom() - bottom >= 0) {
-                        RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) innerListView.getLayoutManager();
-                        int pos = linearLayoutManager.findFirstVisibleItemPosition();
-                        if (pos != RecyclerView.NO_POSITION) {
-                            RecyclerView.ViewHolder holder = innerListView.findViewHolderForAdapterPosition(pos);
-                            int top = holder != null ? holder.itemView.getTop() : -1;
-                            int paddingTop = innerListView.getPaddingTop();
-                            if (top != paddingTop || pos != 0) {
-                                consumed[1] = pos != 0 ? dy : Math.max(dy, (top - paddingTop));
-                                innerListView.scrollBy(0, dy);
-                                scrolledInner = true;
-                            }
-                        }
-                    }
-                    if (searchVisible) {
-                        if (!scrolledInner && t < 0) {
-                            consumed[1] = dy - Math.max(t, dy);
-                        } else {
-                            consumed[1] = dy;
-                        }
-                    }
-                } else {
-                    if (searchVisible) {
-                        RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                        consumed[1] = dy;
-                        if (t > 0) {
-                            consumed[1] -= dy;
-                        }
-                        if (innerListView != null && consumed[1] > 0) {
-                            innerListView.scrollBy(0, consumed[1]);
-                        }
-                    } else if (dy > 0) {
-                        RecyclerListView innerListView = transactionsLayout.getCurrentListView();
-                        if (listView.getHeight() - listView.getPaddingBottom() - bottom >= 0 && innerListView != null && !innerListView.canScrollVertically(1)) {
-                            consumed[1] = dy;
-                            listView.stopScroll();
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public boolean onStartNestedScroll(View child, View target, int axes, int type) {
-            return axes == ViewCompat.SCROLL_AXIS_VERTICAL;
-        }
-
-        @Override
-        public void onNestedScrollAccepted(View child, View target, int axes, int type) {
-            nestedScrollingParentHelper.onNestedScrollAccepted(child, target, axes);
-        }
-
-        @Override
-        public void onStopNestedScroll(View target, int type) {
-            nestedScrollingParentHelper.onStopNestedScroll(target);
-        }
-
-        @Override
-        public void onStopNestedScroll(View child) {
-
+    @Override
+    protected void onHeaderBackgroundVisibilityChanged(boolean visible) {
+        if (headerVisibleAnimator != null && headerVisibleAnimator.getValue() != visible) {
+            headerVisibleAnimator.setValue(visible, true);
         }
     }
 
+    @Override
+    protected View getMainScrollLayer() {
+        return scrollCoordinator;
+    }
+
+    @Override
+    protected float getMainListOffsetY() {
+        return listView == null ? 0f : listView.getY();
+    }
+
+    @Override
+    public void onInsets(int left, int top, int right, int bottom) {
+        receivedInsets = true;
+        contentInsetTop = top;
+        contentInsetBottom = bottom;
+        applyScrollInsets();
+    }
+
+    private void applyScrollInsets() {
+        updateListTopOverlaySize();
+        if (listView == null || scrollCoordinator == null || listView.getLayoutParams() == null) {
+            return;
+        }
+        int marginTop = Math.min(-dp(8), contentInsetTop - dp(48));
+        int marginBottom = Math.min(-dp(8), contentInsetBottom - dp(48));
+        AndroidUtilities.setViewLayoutMargins(listView, 0, marginTop, 0, marginBottom);
+        // The gradient header's spacer already includes the top inset. Only compensate bleed.
+        listView.setPadding(listView.getPaddingLeft(), -marginTop,
+                listView.getPaddingRight(), contentInsetBottom - marginBottom);
+        scrollCoordinator.setVerticalBleed(-marginTop, -marginBottom);
+    }
+
+    @Override
+    public void saveScrollPosition() {
+        traceTransactions("SAVE_BEFORE");
+        super.saveScrollPosition();
+        savedTransactionsPinned = scrollCoordinator != null && scrollCoordinator.areTabsPinned();
+        if (listView != null && savedScrollPosition >= 0) {
+            savedScrollOffset -= listView.getPaddingTop();
+        }
+        traceTransactions("SAVE_AFTER");
+    }
+
+    @Override
+    public void applyScrolledPosition(boolean ignorePaddingView) {
+        traceTransactions("RESTORE_BEFORE");
+        super.applyScrolledPosition(ignorePaddingView);
+        if (savedTransactionsPinned && scrollCoordinator != null && transactionsRow != RecyclerView.NO_POSITION) {
+            scrollCoordinator.alignCommonBoundaryToPin();
+        }
+        savedTransactionsPinned = false;
+        traceTransactions("RESTORE_AFTER");
+    }
+
+    @Override
+    public boolean isSwipeBackEnabled(MotionEvent event) {
+        if (scrollCoordinator == null || event == null
+                || scrollCoordinator.isCommonContentAt(event.getX(), event.getY())) {
+            return super.isSwipeBackEnabled(event);
+        }
+        return !scrollCoordinator.canStartPageSwipe() || transactionsLayout.viewPager.isCurrentTabFirst();
+    }
+
+    /** Returns whether transaction tabs are currently pinned under the ActionBar. */
     public boolean attachedTransactionsLayout() {
-        if (transactionsLayout == null || !(transactionsLayout.getParent() instanceof View))
-            return false;
-        int bottom = ((View) transactionsLayout.getParent()).getBottom();
-        return listView.getHeight() - listView.getPaddingBottom() - bottom >= 0;
+        return scrollCoordinator != null && scrollCoordinator.areTabsPinned();
+    }
+
+    @Override
+    protected boolean usesActionBarFadeBackground() {
+        return true;
     }
 
     @Override
     protected boolean drawActionBarShadow() {
-        return !attachedTransactionsLayout();
+        return false;
     }
 
     @Override
@@ -726,6 +843,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
     private final int BUTTON_AFFILIATE = -4;
 
     public void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+        traceTransactions("FILL_BEFORE");
+        boolean wasPinned = scrollCoordinator != null && scrollCoordinator.areTabsPinned();
+        transactionsRow = RecyclerView.NO_POSITION;
         if (getContext() == null) {
             return;
         }
@@ -760,10 +880,16 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         }
 
         if (hadTransactions = c.hasTransactions()) {
-            items.add(UItem.asFullscreenCustom(transactionsLayout, ActionBar.getCurrentActionBarHeight() + AndroidUtilities.statusBarHeight + dp(24) + AndroidUtilities.navigationBarHeight));
+            transactionsRow = items.size();
+            items.add(UItem.asCustomShadow(transactionsBoundary, LayoutHelper.WRAP_CONTENT));
+            if (wasPinned && listView != null) {
+                listView.removeCallbacks(alignTransactionsBoundary);
+                listView.post(alignTransactionsBoundary);
+            }
         } else {
             items.add(UItem.asCustomShadow(emptyLayout));
         }
+        traceTransactions("FILL_AFTER");
     }
 
     public void onItemClick(UItem item, int position) {
@@ -823,7 +949,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
 
             headerTextView = new TextView(context);
-            headerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(headerTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             headerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             headerTextView.setText(getString(R.string.StarsBalance));
             headerTextView.setGravity(Gravity.RIGHT);
@@ -845,7 +971,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             amountTextView.adaptWidth = true;
             amountTextView.getDrawable().setHacks(false, true, true);
             amountTextView.setTypeface(AndroidUtilities.bold());
-            amountTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(amountTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             amountTextView.setTextSize(dp(13));
             amountTextView.setGravity(Gravity.RIGHT);
             amountTextView.setPadding(dp(19), 0, 0, 0);
@@ -871,8 +997,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         protected void onAttachedToWindow() {
             super.onAttachedToWindow();
             updateBalance(false);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botStarsUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.botStarsUpdated);
         }
 
         @Override
@@ -992,19 +1118,19 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             this.resourcesProvider = resourcesProvider;
 
             starDrawableOutline = context.getResources().getDrawable(R.drawable.star_small_outline).mutate();
-            starDrawableOutline.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
+            ThemeBind.drawableColorFilter(this, starDrawableOutline, Theme.key_dialogBackground, resourcesProvider, PorterDuff.Mode.SRC_IN);
             starDrawable = context.getResources().getDrawable(R.drawable.star_small_inner).mutate();
             setWillNotDraw(false);
 
             textView = new TextView(context);
             textView.setTypeface(AndroidUtilities.bold());
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             addView(textView, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | Gravity.START, 48, 0, 0, 0));
 
             textView2 = new AnimatedTextView(context);
             textView2.setTextSize(dp(15));
-            textView2.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+            ThemeBind.textColor(textView2, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
             textView2.setGravity(LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT);
             addView(textView2, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, 21, Gravity.CENTER_VERTICAL | Gravity.END, 0, 0, 19, 0));
         }
@@ -1151,8 +1277,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             lastId = item.id;
             textView.setText(item.text, animated);
             final int color = Theme.getColor(item.accent ? Theme.key_windowBackgroundWhiteBlueText2 : Theme.key_windowBackgroundWhiteBlackText);
-            textView.setTextColor(color);
-            arrowView.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+            ThemeBind.textColor(textView, item.accent ? Theme.key_windowBackgroundWhiteBlueText2 : Theme.key_windowBackgroundWhiteBlackText);
+            ThemeBind.colorFilter(arrowView, item.accent ? Theme.key_windowBackgroundWhiteBlueText2 : Theme.key_windowBackgroundWhiteBlackText, PorterDuff.Mode.SRC_IN);
             if (animated) {
                 arrowView.animate().rotation(item.collapsed ? 0 : 180).setDuration(340).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             } else {
@@ -1166,8 +1292,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             lastId = -1;
             textView.setText(text, animated);
             final int color = Theme.getColor(Theme.key_windowBackgroundWhiteBlueText2);
-            textView.setTextColor(color);
-            arrowView.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlueText2);
+            ThemeBind.colorFilter(arrowView, Theme.key_windowBackgroundWhiteBlueText2, PorterDuff.Mode.SRC_IN);
             if (animated) {
                 arrowView.animate().rotation(collapsed ? 0 : 180).setDuration(340).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             } else {
@@ -1228,6 +1354,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         private final ViewPagerFixed viewPager;
         private final PageAdapter adapter;
         private final ViewPagerFixed.TabsView tabsView;
+        private final FrameLayout tabsContainer;
+        private final SiblingRecyclerPagerLayout scrollCoordinator;
         private final long bot_id;
 
         private static class PageAdapter extends ViewPagerFixed.Adapter {
@@ -1238,6 +1366,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             private final int classGuid;
             private final Theme.ResourcesProvider resourcesProvider;
             private final long bot_id;
+            private RecyclerPagerView coordinatedPager;
+            private GlassEngine glassEngine;
 
             public PageAdapter(Context context, int currentAccount, boolean ton, long bot_id, int classGuid, Theme.ResourcesProvider resourcesProvider) {
                 this.context = context;
@@ -1279,13 +1409,47 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 return items.size();
             }
 
-            @Override
-            public View createView(int viewType) {
-                return new Page(context, ton, bot_id, viewType, currentAccount, classGuid, resourcesProvider);
+            private int getTypesMask() {
+                int mask = 0;
+                for (int i = 0; i < items.size(); i++) {
+                    mask |= 1 << items.get(i).intValue;
+                }
+                return mask;
+            }
+
+            private int findType(int type) {
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).intValue == type) {
+                        return i;
+                    }
+                }
+                return 0;
             }
 
             @Override
-            public void bindView(View view, int position, int viewType) {}
+            public View createView(int viewType) {
+                Page page = new Page(context, ton, bot_id, viewType, currentAccount, classGuid, resourcesProvider);
+                if (coordinatedPager != null) {
+                    page.setClipChildren(false);
+                    page.setClipToPadding(false);
+                    page.listView.setClipToPadding(false);
+                    page.listView.setSections(dp(12), dp(16), false);
+                    page.listView.adapter.setApplyBackground(false);
+                    page.listView.setCaptureSectionsDecoratorAllowed(true);
+                    page.listView.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+                    if (glassEngine != null) {
+                        glassEngine.addScrolledView(page.listView);
+                    }
+                }
+                return page;
+            }
+
+            @Override
+            public void bindView(View view, int position, int viewType) {
+                if (coordinatedPager != null) {
+                    coordinatedPager.onPageBound(view);
+                }
+            }
 
             @Override
             public int getItemViewType(int position) {
@@ -1308,45 +1472,113 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
         @Override
         public void didReceivedNotification(int id, int account, Object... args) {
-            if (id == NotificationCenter.starTransactionsLoaded) {
-                adapter.fill();
-                viewPager.fillTabs(true);
+            if (id == NotificationCenter.starTransactionsLoaded && bot_id == 0
+                    || id == NotificationCenter.botStarsTransactionsLoaded && bot_id != 0 && (long) args[0] == bot_id) {
+                refreshTabs(true);
             }
         }
 
-        public StarsTransactionsLayout(Context context, int currentAccount, boolean ton, long bot_id, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+        private void refreshTabs(boolean animated) {
+            if (scrollCoordinator == null) {
+                adapter.fill();
+                viewPager.fillTabs(animated);
+                return;
+            }
+            int previousTypes = adapter.getTypesMask();
+            View current = viewPager.getCurrentView();
+            int selectedType = current instanceof Page ? ((Page) current).type : StarsController.ALL_TRANSACTIONS;
+            adapter.fill();
+            if (previousTypes != adapter.getTypesMask()) {
+                // Preserve the selected transaction category when a preceding tab is inserted.
+                // Finish the old gesture before remapping positions; page types key the cache.
+                viewPager.onTouchEvent(null);
+                viewPager.setPosition(adapter.findType(selectedType));
+                viewPager.updateCurrent();
+                viewPager.fillTabs(false);
+                scrollCoordinator.onPagerChanged();
+            } else if (!animated) {
+                viewPager.fillTabs(false);
+            }
+        }
+
+        /** Creates a fullscreen transaction host; the coordinator owns the detached tabs container. */
+        public StarsTransactionsLayout(Context context, int currentAccount, boolean ton, long bot_id, int classGuid,
+                                       Theme.ResourcesProvider resourcesProvider, SiblingRecyclerPagerLayout coordinator) {
             super(context);
+            scrollCoordinator = coordinator;
             this.currentAccount = currentAccount;
             this.ton = ton;
             this.bot_id = bot_id;
 
             setOrientation(VERTICAL);
 
-            viewPager = new ViewPagerFixed(context);
-            viewPager.setAdapter(adapter = new PageAdapter(context, currentAccount, ton, bot_id, classGuid, resourcesProvider));
-            tabsView = viewPager.createTabsView(true, 3);
+            viewPager = coordinator == null ? new ViewPagerFixed(context)
+                    : new RecyclerPagerView(context, resourcesProvider, coordinator);
+            adapter = new PageAdapter(context, currentAccount, ton, bot_id, classGuid, resourcesProvider);
+            adapter.coordinatedPager = coordinator == null ? null : (RecyclerPagerView) viewPager;
+            viewPager.setAdapter(adapter);
+            tabsView = viewPager.createTabsView(true, coordinator == null
+                    ? 3 : ViewPagerFixed.SELECTOR_TYPE_BUBBLE_STYLE);
 
             View separatorView = new View(context);
-            separatorView.setBackgroundColor(Theme.getColor(Theme.key_divider, resourcesProvider));
+            ThemeBind.backgroundColor(separatorView, Theme.key_divider, resourcesProvider);
 
-            addView(tabsView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
-            addView(separatorView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 1f / AndroidUtilities.density));
+            if (coordinator == null) {
+                tabsContainer = null;
+                addView(tabsView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+                addView(separatorView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 1f / AndroidUtilities.density));
+                setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+            } else {
+                setClipChildren(false);
+                setClipToPadding(false);
+                tabsContainer = new FrameLayout(context);
+                tabsContainer.setPadding(dp(4), dp(4), dp(4), dp(4));
+                tabsContainer.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP));
+            }
             addView(viewPager, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+        }
 
-            setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        /** Returns the pager hosted by this transaction layout. */
+        public ViewPagerFixed getViewPager() {
+            return viewPager;
+        }
+
+        /** Returns detached tabs in coordinated mode; null in legacy embedded mode. */
+        public FrameLayout getTabsContainer() {
+            return tabsContainer;
+        }
+
+        /** Resolves the scrolling list inside a page created by this layout's adapter. */
+        public RecyclerListView getPageListView(View page) {
+            return ((Page) page).listView;
+        }
+
+        /** Registers the pager and existing/future page lists with the screen's glass engine. */
+        public void setGlassEngine(GlassEngine engine) {
+            if (engine == null || adapter.glassEngine == engine) {
+                return;
+            }
+            adapter.glassEngine = engine;
+            engine.addScrolledView(viewPager);
+            for (View page : viewPager.getViewPages()) {
+                if (page instanceof Page) {
+                    engine.addScrolledView(((Page) page).listView);
+                }
+            }
         }
 
         @Override
         protected void onAttachedToWindow() {
-            adapter.fill();
-            viewPager.fillTabs(false);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starTransactionsLoaded);
+            refreshTabs(false);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, bot_id == 0
+                    ? NotificationCenter.starTransactionsLoaded : NotificationCenter.botStarsTransactionsLoaded);
             super.onAttachedToWindow();
         }
 
         @Override
         protected void onDetachedFromWindow() {
-            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starTransactionsLoaded);
+            NotificationCenter.getInstance(currentAccount).removeObserver(this, bot_id == 0
+                    ? NotificationCenter.starTransactionsLoaded : NotificationCenter.botStarsTransactionsLoaded);
             super.onDetachedFromWindow();
         }
 
@@ -1422,9 +1654,9 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             protected void onAttachedToWindow() {
                 super.onAttachedToWindow();
                 if (bot_id != 0) {
-                    NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.botStarsTransactionsLoaded);
+                    NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.botStarsTransactionsLoaded);
                 } else {
-                    NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starTransactionsLoaded);
+                    NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starTransactionsLoaded);
                 }
                 listView.adapter.update(false);
             }
@@ -1554,21 +1786,21 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
             titleTextView = new TextView(context);
             titleTextView.setTypeface(AndroidUtilities.bold());
-            titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(titleTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             titleTextView.setEllipsize(TextUtils.TruncateAt.END);
             titleTextView.setSingleLine(true);
             textLayout.addView(titleTextView, titleTextViewParams = LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 4.33f));
 
             subtitleTextView = new LinkSpanDrawable.LinksTextView(context);
-            subtitleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(subtitleTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             subtitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             subtitleTextView.setEllipsize(TextUtils.TruncateAt.END);
             subtitleTextView.setSingleLine(true);
             textLayout.addView(subtitleTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, .33f));
 
             dateTextView = new TextView(context);
-            dateTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+            ThemeBind.textColor(dateTextView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
             dateTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             dateTextView.setEllipsize(TextUtils.TruncateAt.END);
             dateTextView.setSingleLine(true);
@@ -1826,11 +2058,11 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
             if (transaction.amount.amount > 0 || transaction.amount.amount == 0 && transaction.amount.nanos > 0) {
                 amountTextView.setVisibility(View.VISIBLE);
-                amountTextView.setTextColor(Theme.getColor(Theme.key_color_green));
+                ThemeBind.textColor(amountTextView, Theme.key_color_green);
                 amountTextView.setText(TextUtils.concat("+", formatStarsAmount(transaction.amount), " ", isTon ? ton : star));
             } else if (transaction.amount.amount < 0 || transaction.amount.amount == 0 && transaction.amount.nanos < 0) {
                 amountTextView.setVisibility(View.VISIBLE);
-                amountTextView.setTextColor(Theme.getColor(Theme.key_color_red));
+                ThemeBind.textColor(amountTextView, Theme.key_color_red);
                 amountTextView.setText(TextUtils.concat(formatStarsAmount(transaction.amount), " ", isTon ? ton : star));
             } else {
                 amountTextView.setVisibility(View.GONE);
@@ -1925,20 +2157,20 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             addView(textLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 1, Gravity.CENTER_VERTICAL, 0, 0, 0, 0));
 
             titleView = new SimpleTextView(context);
-            titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(titleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             titleView.setTextSize(16);
             titleView.setTypeface(AndroidUtilities.bold());
             NotificationCenter.listenEmojiLoading(titleView);
             textLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 2));
 
             productView = new TextView(context);
-            productView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(productView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             productView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             productView.setVisibility(View.GONE);
             textLayout.addView(productView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 1));
 
             subtitleView = new TextView(context);
-            subtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+            ThemeBind.textColor(subtitleView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
             subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             textLayout.addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 0));
 
@@ -1947,14 +2179,14 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             addView(priceLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 0, Gravity.CENTER_VERTICAL, 0, 0, 18, 0));
 
             priceTitleView = new TextView(context);
-            priceTitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(priceTitleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             priceTitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             priceTitleView.setTypeface(AndroidUtilities.bold());
             priceTitleView.setGravity(Gravity.RIGHT);
             priceLayout.addView(priceTitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT, 0, 0, 0, 1));
 
             priceSubtitleView = new TextView(context);
-            priceSubtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+            ThemeBind.textColor(priceSubtitleView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
             priceSubtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             priceSubtitleView.setGravity(Gravity.RIGHT);
             priceLayout.addView(priceSubtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT, 0, 0, 0, 0));
@@ -2008,18 +2240,18 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             if (subscription.canceled || subscription.bot_canceled) {
                 subtitleView.setText(formatString(subscription.until_date < now ? R.string.StarsSubscriptionExpired : R.string.StarsSubscriptionExpires, LocaleController.formatDateChat(subscription.until_date)));
                 priceTitleView.setVisibility(View.GONE);
-                priceSubtitleView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
+                ThemeBind.textColor(priceSubtitleView, Theme.key_color_red, resourcesProvider);
                 priceSubtitleView.setText(LocaleController.getString(subscription.bot_canceled ? (business ? R.string.StarsSubscriptionStatusBizCancelled : R.string.StarsSubscriptionStatusBotCancelled) : R.string.StarsSubscriptionStatusCancelled));
             } else if (subscription.until_date < now) {
                 subtitleView.setText(formatString(R.string.StarsSubscriptionExpired, LocaleController.formatDateChat(subscription.until_date)));
                 priceTitleView.setVisibility(View.GONE);
-                priceSubtitleView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
+                ThemeBind.textColor(priceSubtitleView, Theme.key_color_red, resourcesProvider);
                 priceSubtitleView.setText(LocaleController.getString(R.string.StarsSubscriptionStatusExpired));
             } else {
                 subtitleView.setText(formatString(R.string.StarsSubscriptionRenews, LocaleController.formatDateChat(subscription.until_date)));
                 priceTitleView.setVisibility(View.VISIBLE);
                 priceTitleView.setText(replaceStarsWithPlain("⭐️ " + Long.toString(subscription.pricing.amount), .8f));
-                priceSubtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
+                ThemeBind.textColor(priceSubtitleView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
                 if (subscription.pricing.period == StarsController.PERIOD_MONTHLY) {
                     priceSubtitleView.setText(getString(R.string.StarsParticipantSubscriptionPerMonth));
                 } else if (subscription.pricing.period == StarsController.PERIOD_MINUTE) {
@@ -2189,7 +2421,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             priceView.setPadding(dp(5.33f), 0, dp(5.33f), 0);
             priceView.setBackground(Theme.createRoundRectDrawable(dp(16), 0xFFEEB402));
             FrameLayout backgroundLayout = new FrameLayout(context);
-            backgroundLayout.setBackground(Theme.createRoundRectDrawable(dp(20), Theme.getColor(Theme.key_dialogBackground, resourcesProvider)));
+            ThemeBind.fillBackground(backgroundLayout, Theme.createRoundRectDrawable(dp(20), Theme.getColor(Theme.key_dialogBackground, resourcesProvider)), ThemeBind.of(Theme.key_dialogBackground), resourcesProvider);
             backgroundLayout.setPadding(dp(1.33f), dp(1.33f), dp(1.33f), dp(1.33f));
             backgroundLayout.addView(priceView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 16, Gravity.FILL));
             imageViewLayout.addView(backgroundLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 16+2.66f, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
@@ -2214,7 +2446,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         TextView titleView = new TextView(context);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         titleView.setTypeface(AndroidUtilities.bold());
-        titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
         if (subscription_period > 0) {
             titleView.setText(Emoji.replaceEmoji(photo != null ? purchase : getString(R.string.StarsConfirmSubscriptionTitle), titleView.getPaint().getFontMetricsInt(), false));
         } else {
@@ -2227,7 +2459,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (photo != null) {
             LinearLayout chipLayout = new LinearLayout(context);
             chipLayout.setOrientation(LinearLayout.HORIZONTAL);
-            chipLayout.setBackground(Theme.createRoundRectDrawable(dp(28), Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider)));
+            ThemeBind.fillBackground(chipLayout, Theme.createRoundRectDrawable(dp(28), Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider)), ThemeBind.of(Theme.key_windowBackgroundGray), resourcesProvider);
             BackupImageView imageView = new BackupImageView(context);
             imageView.setRoundRadius(dp(14));
             AvatarDrawable avatarDrawable = new AvatarDrawable();
@@ -2236,7 +2468,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             chipLayout.addView(imageView, LayoutHelper.createLinear(28, 28));
             TextView textView = new TextView(context);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             textView.setText(UserObject.getUserName(user));
             chipLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 6, 0, 10, 0));
             linearLayout.addView(chipLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 28, Gravity.CENTER_HORIZONTAL, 0, 8, 0, 2));
@@ -2244,7 +2476,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
         TextView subtitleView = new TextView(context);
         subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
         if (messageObject != null && messageObject.messageOwner != null && messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaPaidMedia) {
             long did = messageObject.getDialogId();
             if (messageObject.messageOwner != null && messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.from_id != null) {
@@ -2313,8 +2545,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         linearLayout.addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48));
 
         LinkSpanDrawable.LinksTextView footerTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(footerTextView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(footerTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
         footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(subscription_period > 0 ? R.string.StarsConfirmSubscriptionTOS : R.string.StarsConfirmPurchaseTOS), () -> {
             Browser.openUrl(context, getString(R.string.StarsTOSLink));
@@ -2386,7 +2618,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         topView.addView(imageView, LayoutHelper.createFrame(80, 80, Gravity.CENTER));
 
         Drawable starBg = context.getResources().getDrawable(R.drawable.star_small_outline);
-        starBg.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
+        ThemeBind.drawableColorFilter(topView, starBg, Theme.key_dialogBackground, resourcesProvider, PorterDuff.Mode.SRC_IN);
         Drawable starFg = context.getResources().getDrawable(R.drawable.star_small_inner);
 
         ImageView starBgView = new ImageView(context);
@@ -2422,14 +2654,14 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         TextView titleView = new TextView(context);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         titleView.setTypeface(AndroidUtilities.bold());
-        titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
         titleView.setText(getString(R.string.StarsSubscribeTitle));
         titleView.setGravity(Gravity.CENTER);
         linearLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 8, 0, 0));
 
         TextView subtitleView = new TextView(context);
         subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
         if (chatInvite.subscription_pricing.period == StarsController.PERIOD_MONTHLY) {
             subtitleView.setText(AndroidUtilities.replaceTags(formatPluralString("StarsSubscribeText", (int) chatInvite.subscription_pricing.amount, chatInvite.title)));
         } else {
@@ -2443,7 +2675,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (!TextUtils.isEmpty(chatInvite.about)) {
             TextView aboutView = new TextView(context);
             aboutView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            aboutView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+            ThemeBind.textColor(aboutView, Theme.key_dialogTextBlack, resourcesProvider);
             aboutView.setText(Emoji.replaceEmoji(chatInvite.about, aboutView.getPaint().getFontMetricsInt(), false));
             aboutView.setGravity(Gravity.CENTER);
             linearLayout.addView(aboutView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 6, 0, 22));
@@ -2459,8 +2691,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         }));
         infoTextView.setGravity(Gravity.CENTER);
         infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-        infoTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-        infoTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(infoTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
+        ThemeBind.linkTextColor(infoTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
         linearLayout.addView(infoTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 14, 14, 14, 6));
 
         b.setCustomView(linearLayout);
@@ -2490,7 +2722,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             }
         });
 
-        sheet.fixNavigationBar(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        sheet.fixNavigationBarKey(Theme.key_dialogBackground);
         BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
         if (!AndroidUtilities.isTablet() && lastFragment != null && !AndroidUtilities.hasDialogOnTop(lastFragment)) {
             sheet.makeAttached(lastFragment);
@@ -2527,8 +2759,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
             }
             super.show();
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starBalanceUpdated);
         }
 
         @Override
@@ -2562,8 +2794,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             itemAnimator.setDurations(350);
             recyclerListView.setItemAnimator(itemAnimator);
-            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
-            fixNavigationBar(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
+            setBackgroundColorKey(Theme.key_windowBackgroundWhite);
+            fixNavigationBarKey(Theme.key_windowBackgroundWhite);
 
             actionBar.setTitle(getTitle());
 
@@ -2571,15 +2803,15 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             LinkSpanDrawable.LinksTextView footerTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
             footerView.setPadding(0, dp(11), 0, dp(11));
             footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-            footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-            footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(footerTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
+            ThemeBind.linkTextColor(footerTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
             footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTOS), () -> {
                 Browser.openUrl(getContext(), getString(R.string.StarsTOSLink));
             }));
             footerTextView.setGravity(Gravity.CENTER);
             footerTextView.setMaxWidth(HintView2.cutInFancyHalf(footerTextView.getText(), footerTextView.getPaint()));
             footerView.addView(footerTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
-            footerView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+            ThemeBind.backgroundColor(footerView, Theme.key_dialogBackground, resourcesProvider);
 
             fireworksOverlay = new FireworksOverlay(getContext());
             containerView.addView(fireworksOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -2724,8 +2956,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
             }
             super.show();
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starBalanceUpdated);
         }
 
         @Override
@@ -2795,7 +3027,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             itemAnimator.setDurations(350);
             recyclerListView.setItemAnimator(itemAnimator);
-            setBackgroundColor(Theme.getColor(Theme.key_dialogBackgroundGray, resourcesProvider));
+            setBackgroundColorKey(Theme.key_dialogBackgroundGray);
 
             this.starsNeeded = starsNeeded;
             headerView = new HeaderView(context, currentAccount, resourcesProvider);
@@ -2859,8 +3091,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             LinkSpanDrawable.LinksTextView footerTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
             footerView.setPadding(0, dp(11), 0, dp(11));
             footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-            footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-            footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(footerTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
+            ThemeBind.linkTextColor(footerTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
             if (canBuy) {
                 footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTOS), () -> {
                     Browser.openUrl(getContext(), getString(R.string.StarsTOSLink));
@@ -2871,7 +3103,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             footerTextView.setGravity(Gravity.CENTER);
             footerTextView.setMaxWidth(HintView2.cutInFancyHalf(footerTextView.getText(), footerTextView.getPaint()));
             footerView.addView(footerTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
-            footerView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+            ThemeBind.backgroundColor(footerView, Theme.key_dialogBackground, resourcesProvider);
 
             fireworksOverlay = new FireworksOverlay(getContext());
             containerView.addView(fireworksOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -3045,13 +3277,13 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 titleView = new TextView(context);
                 titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                 titleView.setTypeface(AndroidUtilities.bold());
-                titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
                 titleView.setGravity(Gravity.CENTER);
                 addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 2, 0, 0));
 
                 subtitleView = new TextView(context);
                 subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
                 subtitleView.setGravity(Gravity.CENTER);
                 addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 18));
             }
@@ -3106,8 +3338,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             this.whenPurchased = whenPurchased;
             topPadding = .2f;
 
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starGiftOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starGiftOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starBalanceUpdated);
 
             fixNavigationBar();
             recyclerListView.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);
@@ -3123,7 +3355,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             itemAnimator.setDurations(350);
             recyclerListView.setItemAnimator(itemAnimator);
-            setBackgroundColor(Theme.getColor(Theme.key_dialogBackgroundGray, resourcesProvider));
+            setBackgroundColorKey(Theme.key_dialogBackgroundGray);
 
             headerView = new HeaderView(context, currentAccount, resourcesProvider);
 
@@ -3153,15 +3385,15 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             LinkSpanDrawable.LinksTextView footerTextView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
             footerView.setPadding(0, dp(11), 0, dp(11));
             footerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-            footerTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
-            footerTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(footerTextView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
+            ThemeBind.linkTextColor(footerTextView, Theme.key_chat_messageLinkIn, resourcesProvider);
             footerTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTOS), () -> {
                 Browser.openUrl(getContext(), getString(R.string.StarsTOSLink));
             }));
             footerTextView.setGravity(Gravity.CENTER);
             footerTextView.setMaxWidth(HintView2.cutInFancyHalf(footerTextView.getText(), footerTextView.getPaint()));
             footerView.addView(footerTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
-            footerView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+            ThemeBind.backgroundColor(footerView, Theme.key_dialogBackground, resourcesProvider);
 
             fireworksOverlay = new FireworksOverlay(getContext());
             containerView.addView(fireworksOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -3299,14 +3531,14 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 titleView = new TextView(context);
                 titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                 titleView.setTypeface(AndroidUtilities.bold());
-                titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(titleView, Theme.key_dialogTextBlack, resourcesProvider);
                 titleView.setGravity(Gravity.CENTER);
                 addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 2, 0, 0));
 
                 subtitleView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                subtitleView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.linkTextColor(subtitleView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-                subtitleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(subtitleView, Theme.key_dialogTextBlack, resourcesProvider);
                 subtitleView.setGravity(Gravity.CENTER);
                 addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 9, 0, 18));
             }
@@ -4060,7 +4292,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             }
 
             TextView textView = new TextView(context);
-            textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
             textView.setTypeface(AndroidUtilities.bold());
             textView.setGravity(Gravity.CENTER);
@@ -4071,16 +4303,16 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             textView.setTypeface(AndroidUtilities.bold());
             textView.setGravity(Gravity.CENTER);
-            textView.setTextColor(Theme.getColor(positive ? Theme.key_color_green : Theme.key_color_red, resourcesProvider));
+            ThemeBind.textColor(textView, positive ? Theme.key_color_green : Theme.key_color_red, resourcesProvider);
             textView.setText(replaceStarsWithPlain(transaction.amount, TextUtils.concat((positive ? "+" : ""), formatStarsAmount(transaction.amount), " ⭐️"), .8f));
             SpannableStringBuilder s = new SpannableStringBuilder(textView.getText());
             if (transaction.refund) {
                 appendStatus(s, textView, getString(R.string.StarsRefunded));
             } else if (transaction.failed) {
-                textView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_color_red, resourcesProvider);
                 appendStatus(s, textView, getString(R.string.StarsFailed));
             } else if (transaction.pending) {
-                textView.setTextColor(Theme.getColor(Theme.key_color_yellow, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_color_yellow, resourcesProvider);
                 appendStatus(s, textView, getString(R.string.StarsPending));
             }
             textView.setText(s);
@@ -4088,10 +4320,10 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
             if (transaction.paid_message && transaction.starref_commission_permille > 0 && positive) {
                 textView = new LinkSpanDrawable.LinksTextView(context);
-                textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setGravity(Gravity.CENTER);
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
                 SpannableStringBuilder text = new SpannableStringBuilder();
                 text.append(AndroidUtilities.replaceTags(formatString(R.string.StarsTransactionMessageFeeInfo, percents(1000 - transaction.starref_commission_permille))));
@@ -4127,15 +4359,15 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 final boolean self = UserObject.isUserSelf(user);
 
                 if (self) {
-                    textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+                    ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
                     textView.setText(replaceStarsWithPlain(transaction.amount, TextUtils.concat(formatStarsAmount(transaction.amount), " ⭐️"), .8f));
                 }
 
                 textView = new LinkSpanDrawable.LinksTextView(context);
-                textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                 textView.setGravity(Gravity.CENTER);
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
                 textView.setText(TextUtils.concat(
                     AndroidUtilities.replaceTags(self ? formatString(R.string.ActionGiftStarsSubtitle, UserObject.getForcedFirstName(received)) : getString(R.string.ActionGiftStarsSubtitleYou)),
@@ -4151,7 +4383,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 36, 0, 36, 4));
             } else if (transaction.description != null && transaction.extended_media.isEmpty()) {
                 textView = new TextView(context);
-                textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                 textView.setGravity(Gravity.CENTER);
                 textView.setText(transaction.description);
@@ -4468,8 +4700,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 LinkSpanDrawable.LinksTextView textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
                 textView.setPadding(dp(12.66f), dp(9.33f), dp(12.66f), dp(9.33f));
                 textView.setEllipsize(TextUtils.TruncateAt.END);
-                textView.setTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setSingleLine(true);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
@@ -4515,8 +4747,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 LinkSpanDrawable.LinksTextView textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
                 textView.setPadding(dp(12.66f), dp(9.33f), dp(12.66f), dp(9.33f));
                 textView.setEllipsize(TextUtils.TruncateAt.END);
-                textView.setTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
                 SpannableStringBuilder ssb = new SpannableStringBuilder("");
@@ -4608,8 +4840,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
         if (!ton) {
             LinkSpanDrawable.LinksTextView textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-            textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+            ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTransactionTOS), () -> {
                 Browser.openUrl(context, getString(R.string.StarsTOSLink));
@@ -4713,7 +4945,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         topView.addView(imageView, LayoutHelper.createFrame(100, 100, Gravity.CENTER));
 
         Drawable starBg = context.getResources().getDrawable(R.drawable.star_small_outline);
-        starBg.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogBackground, resourcesProvider), PorterDuff.Mode.SRC_IN));
+        ThemeBind.drawableColorFilter(topView, starBg, Theme.key_dialogBackground, resourcesProvider, PorterDuff.Mode.SRC_IN);
         Drawable starFg = context.getResources().getDrawable(R.drawable.star_small_inner);
 
         if (subscription.photo == null) {
@@ -4733,7 +4965,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         }
 
         TextView textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
@@ -4747,7 +4979,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         textView = new TextView(context);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText4, resourcesProvider);
         if (subscription.pricing.period == StarsController.PERIOD_MONTHLY) {
             textView.setText(replaceStarsWithPlain(formatString(R.string.StarsSubscriptionPrice, subscription.pricing.amount), .8f));
         } else {
@@ -4760,8 +4992,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
         textView.setPadding(dp(12.66f), dp(9.33f), dp(12.66f), dp(9.33f));
         textView.setEllipsize(TextUtils.TruncateAt.END);
-        textView.setTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
+        ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setSingleLine(true);
         ((LinkSpanDrawable.LinksTextView) textView).setDisablePaddingsOffsetY(true);
@@ -4817,8 +5049,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         linearLayout.addView(tableView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 17, 0, 0));
 
         textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTransactionTOS), () -> {
             Browser.openUrl(context, getString(R.string.StarsTOSLink));
@@ -4829,8 +5061,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         if (now < subscription.until_date) {
             if (subscription.can_refulfill) {
                 textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setText(formatString(bot ? R.string.StarsSubscriptionBotRefulfillInfo : R.string.StarsSubscriptionRefulfillInfo, LocaleController.formatDateChat(subscription.until_date)));
                 textView.setSingleLine(false);
@@ -4869,8 +5101,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 });
             } else if (subscription.bot_canceled) {
                 textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                textView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_color_red, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setText(getString(business ? R.string.StarsSubscriptionBusinessCancelledText : R.string.StarsSubscriptionBotCancelledText));
                 textView.setSingleLine(false);
@@ -4879,8 +5111,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 26, 7, 26, 15));
             } else if (subscription.canceled) {
                 textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                textView.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_color_red, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setText(getString(R.string.StarsSubscriptionCancelledText));
                 textView.setSingleLine(false);
@@ -4915,8 +5147,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
             } else {
                 textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-                textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-                textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+                ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+                ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 textView.setText(formatString(R.string.StarsSubscriptionCancelInfo, LocaleController.formatDateChat(subscription.until_date)));
                 textView.setSingleLine(false);
@@ -4926,7 +5158,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
                 ButtonWithCounterView button = new ButtonWithCounterView(context, false, resourcesProvider);
                 button.setText(getString(R.string.StarsSubscriptionCancel), false);
-                button.setTextColor(Theme.getColor(Theme.key_color_red, resourcesProvider));
+                button.setTextColorKey(Theme.key_color_red);
                 linearLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 button.setOnClickListener(v -> {
                     if (button.isLoading()) return;
@@ -4959,8 +5191,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             }
         } else {
             textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-            textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+            ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             textView.setText(formatString(R.string.StarsSubscriptionExpiredInfo, LocaleController.formatDateChat(subscription.until_date)));
             textView.setSingleLine(false);
@@ -5067,7 +5299,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         iconView.setPaused(false);
 
         TextView textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
@@ -5111,8 +5343,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         linearLayout.addView(tableView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 16, 17, 16, 0));
 
         textView = new LinkSpanDrawable.LinksTextView(context, resourcesProvider);
-        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(textView, Theme.key_chat_messageLinkIn, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.StarsTransactionTOS), () -> {
             Browser.openUrl(context, getString(R.string.StarsTOSLink));
@@ -5184,7 +5416,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         titleView.setTypeface(AndroidUtilities.bold());
         titleView.setText(getString(R.string.PaidContentTitle));
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(titleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         linearLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 4, 0, 4, 18));
 
         final EditTextBoldCursor editText = new EditTextBoldCursor(context);
@@ -5192,7 +5424,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         editTextContainer.setForceForceUseCenter(true);
         editTextContainer.setText(getString(R.string.PaidContentPriceTitle));
         editTextContainer.setLeftPadding(dp(14 + 22));
-        editText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        ThemeBind.textColor(editText, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
         editText.setCursorSize(AndroidUtilities.dp(20));
         editText.setCursorWidth(1.5f);
         editText.setBackground(null);
@@ -5203,8 +5435,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         editText.setTypeface(Typeface.DEFAULT);
         editText.setSelectAllOnFocus(true);
-        editText.setHighlightColor(Theme.getColor(Theme.key_chat_inTextSelectionHighlight, resourcesProvider));
-        editText.setHandlesColor(Theme.getColor(Theme.key_chat_TextSelectionCursor, resourcesProvider));
+        ThemeBind.highlightColor(editText, Theme.key_chat_inTextSelectionHighlight, resourcesProvider);
+        ThemeBind.editHandlesColor(editText, Theme.key_chat_TextSelectionCursor, resourcesProvider);
         editText.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         editText.setOnFocusChangeListener((v, hasFocus) -> editTextContainer.animateSelection(hasFocus, !TextUtils.isEmpty(editText.getText())));
         LinearLayout editTextLayout = new LinearLayout(context);
@@ -5220,7 +5452,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
         TextView subPriceView = new TextView(context);
         subPriceView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        subPriceView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText3));
+        ThemeBind.textColor(subPriceView, Theme.key_windowBackgroundWhiteGrayText3);
         editTextContainer.addView(subPriceView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 0, 0, 14, 0));
 
         final LinkSpanDrawable.LinksTextView infoView = new LinkSpanDrawable.LinksTextView(context);
@@ -5228,8 +5460,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             Browser.openUrl(context, getString(R.string.PaidContentInfoLink));
         }), true));
         infoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-        infoView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider));
-        infoView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        ThemeBind.textColor(infoView, Theme.key_windowBackgroundWhiteGrayText2, resourcesProvider);
+        ThemeBind.linkTextColor(infoView, Theme.key_chat_messageLinkIn, resourcesProvider);
         linearLayout.addView(infoView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 14, 3, 14, 24));
 
         ButtonWithCounterView button = new ButtonWithCounterView(context, resourcesProvider).setRound();
@@ -5636,7 +5868,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         linearLayout.addView(imageView, LayoutHelper.createLinear(160, 160, Gravity.CENTER, 0, -8, 0, 10));
 
         TextView textView = new TextView(context);
-        textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_dialogTextBlack, resourcesProvider);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
@@ -5647,7 +5879,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Theme.getColor(Theme.key_text_RedBold, resourcesProvider));
+        ThemeBind.textColor(textView, Theme.key_text_RedBold, resourcesProvider);
         textView.setText(getString(R.string.Gift2SoldOutSheetSubtitle));
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 0, 20, 4));
 

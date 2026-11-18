@@ -250,12 +250,12 @@ public class ChatsPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Record)));
-        items.add(SettingsHelper.asSwitchCG(multiMicRow, applyNewSpan(getString(R.string.CP_RecordMultiMic)), getString(R.string.CP_RecordMultiMic_Desc))
+        items.add(SettingsHelper.asSwitchCG(multiMicRow, getString(R.string.CP_RecordMultiMic), getString(R.string.CP_RecordMultiMic_Desc))
                 .setChecked(CherrygramChatsConfig.INSTANCE.getRecordMultiMic())
                 .slug("multiMic")
         );
         if (CherrygramChatsConfig.INSTANCE.getRecordMultiMic()) {
-            items.add(SettingsHelper.asSwitchCG(recordInStereoRow, applyNewSpan(getString(R.string.CP_RecordInStereo)), AndroidUtilities.replaceTags(getString(R.string.CP_RecordInStereo_Desc)))
+            items.add(SettingsHelper.asSwitchCG(recordInStereoRow, getString(R.string.CP_RecordInStereo), AndroidUtilities.replaceTags(getString(R.string.CP_RecordInStereo_Desc)))
                     .setChecked(CherrygramChatsConfig.INSTANCE.getRecordInStereo())
                     .slug("recordInStereo")
             );

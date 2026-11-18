@@ -64,6 +64,7 @@ import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.SelectAnimatedEmojiDialog;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
@@ -172,9 +173,9 @@ public class AvatarConstructorFragment extends BaseFragment {
         actionBar.setCastShadows(false);
         actionBar.setAddToContainer(false);
         actionBar.setOccupyStatusBar(true);
-        actionBar.setTitleColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false);
-        actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_listSelector), false);
+        ThemeBind.actionBarTitleColor(actionBar, Theme.key_windowBackgroundWhiteBlackText);
+        ThemeBind.actionBarItemsColor(actionBar, Theme.key_windowBackgroundWhiteBlackText, false);
+        ThemeBind.actionBarItemsBackgroundColor(actionBar, Theme.key_listSelector, false);
         BackDrawable backDrawable = new BackDrawable(false);
         backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
         actionBar.setBackButtonDrawable(backDrawable);
@@ -399,7 +400,7 @@ public class AvatarConstructorFragment extends BaseFragment {
             }
         };
         nestedSizeNotifierLayout.setFitsSystemWindows(true);
-        nestedSizeNotifierLayout.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+        ThemeBind.backgroundColor(nestedSizeNotifierLayout, Theme.key_windowBackgroundGray);
 
 
         linearLayout.setClipChildren(false);
@@ -416,7 +417,7 @@ public class AvatarConstructorFragment extends BaseFragment {
 
         chooseBackgroundHint = new TextView(getContext());
         chooseBackgroundHint.setText(getString(R.string.ChooseBackground));
-        chooseBackgroundHint.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+        ThemeBind.textColor(chooseBackgroundHint, Theme.key_windowBackgroundWhiteGrayText);
         chooseBackgroundHint.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         chooseBackgroundHint.setGravity(Gravity.CENTER);
         linearLayout.addView(chooseBackgroundHint, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 10, 21, 10));
@@ -446,7 +447,7 @@ public class AvatarConstructorFragment extends BaseFragment {
 
         chooseEmojiHint = new TextView(getContext());
         chooseEmojiHint.setText(getString(R.string.ChooseEmojiOrSticker));
-        chooseEmojiHint.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+        ThemeBind.textColor(chooseEmojiHint, Theme.key_windowBackgroundWhiteGrayText);
         chooseEmojiHint.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         chooseEmojiHint.setGravity(Gravity.CENTER);
         linearLayout.addView(chooseEmojiHint, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 18, 21, 10));
@@ -1262,7 +1263,7 @@ public class AvatarConstructorFragment extends BaseFragment {
         textView.setText(getString(R.string.SetColor));
         textView.setGravity(Gravity.CENTER);
         textView.setTypeface(AndroidUtilities.bold());
-        textView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+        ThemeBind.textColor(textView, Theme.key_featuredStickers_buttonText);
         button.addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
 
         colorPickerContainer.addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, -8, 16, 16));

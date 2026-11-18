@@ -94,8 +94,7 @@ public class UpdaterBottomSheet extends BottomSheet {
     private static final int[] RANDOM_UPDATE_STICKERS = {5, 7, 8, 15, 16, 23, 24, 25, 26, 31, 33};
     private static final int NO_UPDATE_STICKER_NUM = 7;
 
-    private static final int HEADER_ICON_SIZE_DP = 20;
-    private static final int HEADER_TEXT_LEFT_PADDING_DP = HEADER_ICON_SIZE_DP + 2;
+    private static final int HEADER_ICON_SIZE_DP = 60;
 
     private static final String CHANGELOG_BLOCK_SEPARATOR = "\n\n";
 
@@ -175,10 +174,6 @@ public class UpdaterBottomSheet extends BottomSheet {
         this.resourcesProvider = fragment.getResourceProvider();
     }
 
-    // ========================================================================================
-    // Lifecycle
-    // ========================================================================================
-
     @Override
     public void onBackPressed() {
         if (!isForce) {
@@ -201,10 +196,6 @@ public class UpdaterBottomSheet extends BottomSheet {
         }
     }
 
-    // ========================================================================================
-    // List content
-    // ========================================================================================
-
     private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         if (available) {
             addChangelogSection(items);
@@ -223,13 +214,27 @@ public class UpdaterBottomSheet extends BottomSheet {
         }
     }
 
-    // ----------------------------------------------------------------------------------------
-    // Header (icon + title + subtitle)
-    // ----------------------------------------------------------------------------------------
+    private LinearLayout createHeaderContainer() {
+        LinearLayout header = new LinearLayout(getContext());
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setPadding(dp(16), dp(8), dp(16), dp(8));
+        return header;
+    }
 
-    private FrameLayout createHeaderContainer() {
-        FrameLayout header = new FrameLayout(getContext());
-        header.setPadding(dp(12), 0, dp(12), 0);
+    private View createHeader(View icon, CharSequence title, CharSequence subtitle) {
+        LinearLayout header = createHeaderContainer();
+
+        header.addView(icon, LayoutHelper.createLinear(HEADER_ICON_SIZE_DP, HEADER_ICON_SIZE_DP, Gravity.CENTER_VERTICAL, 0, 0, 12, 0));
+
+        LinearLayout texts = new LinearLayout(getContext());
+        texts.setOrientation(LinearLayout.VERTICAL);
+        texts.setGravity(Gravity.CENTER_VERTICAL);
+
+        texts.addView(createHeaderTitleView(title.toString()), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 26));
+        texts.addView(createHeaderSubtitleView(subtitle), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 18));
+
+        header.addView(texts, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f));
         return header;
     }
 
@@ -237,29 +242,12 @@ public class UpdaterBottomSheet extends BottomSheet {
         setCanDismissWithSwipe(false);
         setCanDismissWithTouchOutside(false);
 
-        FrameLayout header = createHeaderContainer();
-        header.setPadding(dp(12), 0, 0, available ? dp(8) : 0);
-        header.addView(createUpdateStickerView(), LayoutHelper.createFrame(dp(HEADER_ICON_SIZE_DP), dp(HEADER_ICON_SIZE_DP), Gravity.LEFT | Gravity.CENTER_VERTICAL));
-
-        SimpleTextView nameView = createHeaderTitleView(getString(R.string.UP_UpdateAvailable));
-        header.addView(nameView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, dp(10), Gravity.LEFT, dp(HEADER_TEXT_LEFT_PADDING_DP), dp(3), 0, 0));
-
         String subtitle = getString(R.string.CG_AppName) + " " + update.build_flavor + " " + update.version + " | " + update.release_date;
-        header.addView(createHeaderSubtitleView(subtitle), LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, dp(5), Gravity.LEFT, dp(HEADER_TEXT_LEFT_PADDING_DP), dp(13), 0, 0));
-
-        return header;
+        return createHeader(createUpdateStickerView(), getString(R.string.UP_UpdateAvailable), subtitle);
     }
 
     private View addDefaultHeder() {
-        FrameLayout header = createHeaderContainer();
-        header.addView(createStaticStickerView(NO_UPDATE_STICKER_NUM), LayoutHelper.createFrame(dp(HEADER_ICON_SIZE_DP), dp(HEADER_ICON_SIZE_DP), Gravity.LEFT | Gravity.CENTER_VERTICAL));
-
-        SimpleTextView titleView = createHeaderTitleView(getString(R.string.UP_Category_Updates));
-        header.addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, dp(10), Gravity.LEFT, dp(HEADER_TEXT_LEFT_PADDING_DP), dp(3), 0, 0));
-
-        header.addView(createHeaderSubtitleView(AboutPreferencesEntry.getLastCheckUpdateTime()), LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, dp(5), Gravity.LEFT, dp(HEADER_TEXT_LEFT_PADDING_DP), dp(13), 0, 0));
-
-        return header;
+        return createHeader(createStaticStickerView(NO_UPDATE_STICKER_NUM), getString(R.string.UP_Category_Updates), AboutPreferencesEntry.getLastCheckUpdateTime());
     }
 
     private View createBottomButtonsView() {
@@ -287,7 +275,6 @@ public class UpdaterBottomSheet extends BottomSheet {
         return container;
     }
 
-    /** Sticker taken from the update payload if present, otherwise a random HotCherry sticker. */
     private View createUpdateStickerView() {
         if (update.sticker == null) {
             return createRandomStickerView();
@@ -370,17 +357,12 @@ public class UpdaterBottomSheet extends BottomSheet {
         return subtitleView;
     }
 
-    // ----------------------------------------------------------------------------------------
-    // "Update available" content: changelog + download button
-    // ----------------------------------------------------------------------------------------
-
     private void addChangelogSection(ArrayList<UItem> items) {
 //        items.add(UItem.asShadow(null));
         List<ChangelogPart> parts = splitChangelogParts();
         for (int i = 0; i < parts.size(); i++) {
             ChangelogPart part = parts.get(i);
 
-            // Если у части есть заголовок, создаем его с правильными headerEntities
             if (!TextUtils.isEmpty(part.headerText)) {
                 SpannableStringBuilder whatsNew = new SpannableStringBuilder(part.headerText);
                 MessageObject.addEntitiesToText(whatsNew, part.headerEntities, false, true, false, false);
@@ -394,10 +376,8 @@ public class UpdaterBottomSheet extends BottomSheet {
                 items.add(UItem.asFullyCustom(headerCell));
             }
 
-            // Добавляем само тело (ScrollView)
             items.add(UItem.asCustom(createChangelogScrollView(part)));
 
-            // Разделитель между блоками или шедов после последнего
             if (i < parts.size() - 1) {
                 UItem space = UItem.asSpace(dp(10));
                 space.transparent = true;
@@ -452,13 +432,6 @@ public class UpdaterBottomSheet extends BottomSheet {
         return changelogTextView;
     }
 
-    /**
-     * Splits {@link #update}'s changelog text into language blocks on {@link #CHANGELOG_BLOCK_SEPARATOR},
-     * carrying over only the entities that fall fully inside each block and rebasing their offsets.
-     * An entity that straddles the separator (starts in one block, ends in the next) is dropped rather
-     * than guessed at — that shouldn't happen for a hand-written RU/EN changelog, but a stray blank line
-     * inside a formatted span could theoretically produce one.
-     */
     private List<ChangelogPart> splitChangelogParts() {
         String fullText = update.text;
         if (TextUtils.isEmpty(fullText)) {
@@ -486,7 +459,6 @@ public class UpdaterBottomSheet extends BottomSheet {
             String bodyText = blockText;
             int bodyAbsoluteStart = lastIndex;
 
-            // Ищем перенос строки для отделения заголовка
             int lineBreakIndex = blockText.indexOf("\n");
             if (lineBreakIndex > 0) {
                 String potentialHeader = blockText.substring(0, lineBreakIndex).trim();
@@ -497,25 +469,20 @@ public class UpdaterBottomSheet extends BottomSheet {
                         || potentialHeader.toLowerCase().contains("список изменений")
                 ) {
                     headerText = potentialHeader;
-                    // Пропускаем \n (и возможный \r перед ним)
                     int bodyStartIndex = lineBreakIndex + 1;
                     bodyText = blockText.substring(bodyStartIndex);
                     bodyAbsoluteStart = lastIndex + bodyStartIndex;
                 }
             }
 
-            // Собираем энтити раздельно для заголовка и для тела
             ArrayList<TLRPC.MessageEntity> headerEntities = new ArrayList<>();
             ArrayList<TLRPC.MessageEntity> bodyEntities = new ArrayList<>();
 
             if (update.entities != null) {
                 for (TLRPC.MessageEntity entity : update.entities) {
-                    // Энтити заголовка (если заголовок вообще есть в этом блоке)
                     if (headerText != null && entity.offset >= lastIndex && (entity.offset + entity.length) < bodyAbsoluteStart) {
                         headerEntities.add(cloneEntityWithOffset(entity, entity.offset - lastIndex));
-                    }
-                    // Энтити тела
-                    else if (entity.offset >= bodyAbsoluteStart && (entity.offset + entity.length) <= blockEndIndex) {
+                    } else if (entity.offset >= bodyAbsoluteStart && (entity.offset + entity.length) <= blockEndIndex) {
                         bodyEntities.add(cloneEntityWithOffset(entity, entity.offset - bodyAbsoluteStart));
                     }
                 }
@@ -532,15 +499,11 @@ public class UpdaterBottomSheet extends BottomSheet {
         return parts;
     }
 
-    /** Deep-clones a {@link TLRPC.MessageEntity} via a TL serialize/deserialize round trip and rebases its offset. */
     private TLRPC.MessageEntity cloneEntityWithOffset(TLRPC.MessageEntity original, int newOffset) {
         try {
             NativeByteBuffer buffer = new NativeByteBuffer(original.getObjectSize());
             original.serializeToStream(buffer);
             buffer.position(0);
-            // serializeToStream() writes the constructor id as the first int; "constructor" itself is a
-            // static field on each concrete subclass (TL_messageEntityBold, ...), not on the base
-            // MessageEntity type, so we read it back from the buffer rather than off `original`.
             int constructor = buffer.readInt32(true);
             TLRPC.MessageEntity clone = TLRPC.MessageEntity.TLdeserialize(buffer, constructor, true);
             buffer.reuse();
@@ -552,9 +515,6 @@ public class UpdaterBottomSheet extends BottomSheet {
         }
     }
 
-    /**
-     * One renderable changelog block: its own text plus the entities rebased to that text.
-     */
     private record ChangelogPart(
             CharSequence headerText,
             ArrayList<TLRPC.MessageEntity> headerEntities,
@@ -617,10 +577,6 @@ public class UpdaterBottomSheet extends BottomSheet {
         wrapper.addView(scheduleButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 25, Gravity.CENTER));
         return wrapper;
     }
-
-    // ----------------------------------------------------------------------------------------
-    // "No update" content: build info + settings + check button
-    // ----------------------------------------------------------------------------------------
 
     private void addSettingsSection(ArrayList<UItem> items) {
         String buildType = CGResourcesHelper.getBuildType() + " | " + CGResourcesHelper.getAbiCode();
@@ -708,26 +664,14 @@ public class UpdaterBottomSheet extends BottomSheet {
         }
     }
 
-    /**
-     * Play уже качает/докачал обновление (DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS), а эта шторка
-     * открыта в режиме available = false. Переоткрываем как available = true, чтобы юзер увидел
-     * реальный прогресс/кнопку "Установить сейчас" вместо ложного "нет обновлений".
-     */
     private void reopenAsUpdateAvailableIfPossible() {
         if (SharedConfig.pendingAppUpdate == null) {
-            // Загрузка по факту идёт, но TL-объекта апдейта уже нет (например, был явно очищен
-            // где-то ещё) — переоткрыть шторку с чейнджлогом нечем, показываем нейтральный
-            // фидбек вместо ложного "нет обновлений".
             BulletinFactory.of(getContainer(), resourcesProvider).createErrorBulletin(formatString(R.string.AppUpdateDownloading, 0)).show();
             return;
         }
         dismiss();
         AndroidUtilities.runOnUIThread(() -> UpdaterBottomSheet.showAlert(fragment, true, SharedConfig.pendingAppUpdate), 200);
     }
-
-    // ----------------------------------------------------------------------------------------
-    // Secondary (round icon) buttons: translate + apk source
-    // ----------------------------------------------------------------------------------------
 
     private void addSecondaryButtons(LinearLayout buttonsView) {
         LinearLayout.LayoutParams secondaryButtonParams = new LinearLayout.LayoutParams(dp(48), dp(48));
@@ -788,11 +732,6 @@ public class UpdaterBottomSheet extends BottomSheet {
         fragment.getMessagesController().openByUserName(Constants.CG_APKS_CHANNEL_USERNAME, fragment, 1);
     }
 
-    // ----------------------------------------------------------------------------------------
-    // Shared helpers
-    // ----------------------------------------------------------------------------------------
-
-    /** Layout params for the main flexible (weight = 1) button in the buttons row: download / check-for-updates. */
     private LinearLayout.LayoutParams flexButtonLayoutParams() {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, dp(48), 1f);
         params.rightMargin = dp(8);
@@ -878,8 +817,6 @@ public class UpdaterBottomSheet extends BottomSheet {
             }
 
             if (!appUpdateInfo.isUpdateTypeAllowed(updateType)) {
-                // fallback: если IMMEDIATE недоступен на устройстве (бывает на некоторых сборках/каналах),
-                // откатываемся на FLEXIBLE, чтобы не блокировать апдейт вовсе
                 if (isForce && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
                     launchUpdateFlow(appUpdateInfo, AppUpdateType.FLEXIBLE);
                 } else {

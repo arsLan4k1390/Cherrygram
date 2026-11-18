@@ -36,13 +36,13 @@ import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int messageMenuRow = 1, messageSizeRow = 2, directShareRow = 3,
-            wideMessagesLayout = 4, hideTimeOnStickersRow = 5, showForwardDateRow = 6, pencilIconForEditedRow = 7;
+            wideMessagesLayout = 4, hideTimeOnStickersRow = 5;
 
-    private final int geminiSettingsRow = 8, voiceTranscriptionRow = 9;
+    private final int geminiSettingsRow = 6, voiceTranscriptionRow = 7;
 
-    private final int messageFilterRow = 10, leftBottomBtnRow = 11, doubleTapRow = 12, slideActionRow = 13, deleteForAllRow = 14;
+    private final int messageFilterRow = 8, leftBottomBtnRow = 9, doubleTapRow = 10, slideActionRow = 11, deleteForAllRow = 12;
 
-    private final int reactionsOverlayRow = 15, reactionAnimationRow = 16, tapsOnPremiumStickersRow = 17, premiumStickersAutoplayRow = 18;
+    private final int reactionsOverlayRow = 13, reactionAnimationRow = 14, tapsOnPremiumStickersRow = 15, premiumStickersAutoplayRow = 16;
 
     @Override
     protected CharSequence getTitle() {
@@ -79,14 +79,6 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(SettingsHelper.asSwitchCG(hideTimeOnStickersRow, getString(R.string.CP_TimeOnStick))
                 .setChecked(CherrygramMessagesConfig.INSTANCE.getHideStickerTime())
                 .slug("hideTimeOnStickers")
-        );
-        items.add(SettingsHelper.asSwitchCG(showForwardDateRow, getString(R.string.CP_ForwardMsgDate))
-                .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgForwardDate())
-                .slug("showForwardDate")
-        );
-        items.add(SettingsHelper.asSwitchCG(pencilIconForEditedRow, getString(R.string.AP_ShowPencilIcon))
-                .setChecked(CherrygramMessagesConfig.INSTANCE.getShowPencilIcon())
-                .slug("showPencilIcon")
         );
         items.add(UItem.asShadow(null));
 
@@ -163,12 +155,6 @@ public class MessagesPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == hideTimeOnStickersRow) {
             CherrygramMessagesConfig.INSTANCE.setHideStickerTime(!CherrygramMessagesConfig.INSTANCE.getHideStickerTime());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getHideStickerTime());
-        } else if (item.id == showForwardDateRow) {
-            CherrygramMessagesConfig.INSTANCE.setMsgForwardDate(!CherrygramMessagesConfig.INSTANCE.getMsgForwardDate());
-            SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgForwardDate());
-        } else if (item.id == pencilIconForEditedRow) {
-            CherrygramMessagesConfig.INSTANCE.setShowPencilIcon(!CherrygramMessagesConfig.INSTANCE.getShowPencilIcon());
-            SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getShowPencilIcon());
         } else if (item.id == geminiSettingsRow) {
             CherrygramPreferencesNavigator.INSTANCE.createGemini(this);
         } else if (item.id == voiceTranscriptionRow) {

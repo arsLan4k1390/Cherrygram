@@ -44,6 +44,8 @@ object Constants {
     var UPDATE_APP_URL = if (CherrygramCoreConfig.isPlayStoreBuild()) "https://play.google.com/store/apps/details?id=uz.unnarsx.cherrygram" else CG_CHANNEL_URL
 
     @JvmField
+    var CG_WEB_SITE_URL = "https://arslan4k1390.github.io/cherrygram/"
+    @JvmField
     var CG_PRIVACY_URL = "https://arslan4k1390.github.io/cherrygram/privacy"
     @JvmField
     var CG_DONATIONS_AND_TERMS_URL = "https://arslan4k1390.github.io/cherrygram/donation-terms"

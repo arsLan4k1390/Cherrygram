@@ -9,12 +9,14 @@
 
 package uz.unnarsx.cherrygram.donates
 
+import android.graphics.drawable.Drawable
 import androidx.core.graphics.toColorInt
-import org.telegram.messenger.MessagesController
-import org.telegram.messenger.UserConfig
+import org.telegram.messenger.LiteMode
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Components.AnimatedEmojiDrawable
 import uz.unnarsx.cherrygram.core.CherrygramLogger
+import uz.unnarsx.cherrygram.misc.Constants
 
 enum class BadgeHelper {
 
@@ -81,17 +83,10 @@ enum class BadgeHelper {
             }
         }
 
-        @JvmOverloads
-        fun getEmojiStatusColor(userId: Long, defaultColor: Int, forceDonates: Boolean, isMessageCell: Boolean = false): Int {
+        @JvmStatic
+        fun getEmojiStatusColor(userId: Long, defaultColor: Int, forceDonates: Boolean): Int {
             if (userId == 0L) return defaultColor
             if (forceDonates) return DONATES.forTheme()
-
-            if (isMessageCell) {
-                val user = MessagesController.getInstance(UserConfig.selectedAccount)?.getUser(userId)
-                if (user?.premium == true) {
-                    return defaultColor
-                }
-            }
 
             val isCGPremium = false; // cgPremium
             val isDonated = DonatesManager.didUserDonateForMarketplace(userId)
@@ -104,7 +99,7 @@ enum class BadgeHelper {
 
             return when {
                 isCGPremium && isDonated -> DONATES.forTheme()
-                isCGPremium -> PREMIUM.forTheme() // convertColor("#C7637F", 255) //B45872
+                isCGPremium -> PREMIUM.forTheme()
                 isDonated -> DONATES.forTheme()
                 else -> defaultColor
             }
@@ -126,6 +121,36 @@ enum class BadgeHelper {
             val rgb = color and 0x00FFFFFF
 
             return "#%06X, %d".format(rgb, alpha)
+        }
+
+        @JvmStatic
+        fun getCherrygramStatusId(user: TLRPC.User?): Long {
+            if (user == null) return 0L
+            return when {
+                user.id == Constants.Cherrygram_Owner -> Constants.CHERRY_EMOJI_ID_VERIFIED_BRA
+                DonatesManager.didUserDonate(user.id) -> Constants.CHERRY_EMOJI_ID_VERIFIED
+                else -> 0L
+            }
+        }
+
+        @JvmStatic
+        fun hasCherrygramStatusParticles(user: TLRPC.User?): Boolean {
+            if (user == null || !LiteMode.isEnabled(LiteMode.FLAG_PARTICLES)) return false
+            return user.id == Constants.Cherrygram_Owner
+                    || DonatesManager.didUserDonateForMarketplace(user.id)
+        }
+
+        @JvmStatic
+        fun setCherrygramStatus(drawable: AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable, user: TLRPC.User?, animated: Boolean): Boolean {
+            val statusId = getCherrygramStatusId(user)
+            if (statusId == 0L) {
+                drawable.set(null as Drawable?, animated)
+                drawable.setParticles(false, animated)
+                return false
+            }
+            drawable.set(statusId, animated)
+            drawable.setParticles(hasCherrygramStatusParticles(user), animated)
+            return true
         }
 
         private fun Int.toHexString(): String {

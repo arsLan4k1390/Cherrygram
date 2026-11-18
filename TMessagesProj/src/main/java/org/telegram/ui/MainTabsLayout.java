@@ -59,21 +59,20 @@ public class MainTabsLayout extends AnimatedLinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (isForMainTabsCG) {
+            onMeasureMainTabsCG(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
         int width = MeasureSpec.getSize(widthMeasureSpec);
         final int height = MeasureSpec.getSize(heightMeasureSpec);
         final int tabHeight = height - getPaddingTop() - getPaddingBottom();
-        final int tabWidth = dp(CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle() ? 24 : 12);
 
         if (maxWidthPx > 0 && width > maxWidthPx) {
             width = maxWidthPx;
         }
 
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        int searchOffset = dp(DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS);
-        int absoluteMaxLimit = screenWidth - searchOffset - dp(DialogsActivity.MAIN_TABS_MARGIN * 2);
-
-        final int maxTotalWidthForTabs = Math.max(width, absoluteMaxLimit) - getPaddingLeft() - getPaddingRight();
-        final int minTotalWidthForTabs = Math.min(dp(320) / 2, maxTotalWidthForTabs);
+        final int maxTotalWidthForTabs = width - getPaddingLeft() - getPaddingRight();
+        final int minTotalWidthForTabs = Math.min(dp(320), maxTotalWidthForTabs);
 
         int chosenPass = PASS_TEXT_SIZES_DP.length - 1;
         float lastMeasuredTextSize = -1;
@@ -111,16 +110,9 @@ public class MainTabsLayout extends AnimatedLinearLayout {
                 continue;
             }
 
-            float baseTabWidth = tabWidth + dp(12) * 2;
-            final float w = Math.max(tabsTextWidth[a], baseTabWidth);
+            tabsTextWidthWithMargin[a] = tabsTextWidth[a] + tabPadding * 2;
+            tabsWeight[a] = tabsTextWidthWithMargin[a] > (maxTabTextWidthIfEq + tabPadding * 2) ? 0 : 1;
 
-            if (w > maxTabTextWidthIfEq) {
-                tabsTextWidthWithMargin[a] = w + dp(13) * 2;
-            } else {
-                tabsTextWidthWithMargin[a] = w + dp(16) * 2;
-            }
-
-            tabsWeight[a] = 1;
             totalWidth += tabsTextWidthWithMargin[a];
             totalWeight += tabsWeight[a];
         }
@@ -138,17 +130,7 @@ public class MainTabsLayout extends AnimatedLinearLayout {
                 tabsTextWidthWithMargin[a] *= m;
             }
         } else if (totalWidth < minTotalWidthForTabs) {
-
-            float targetWidth;
-
-            if (visibleChildCount == 1) {
-                targetWidth = totalWidth + tabWidth;
-                targetWidth = Math.min(targetWidth, maxTotalWidthForTabs * 0.5f);
-            } else {
-                targetWidth = minTotalWidthForTabs;
-            }
-
-            final float growW = targetWidth - totalWidth;
+            final float growW = minTotalWidthForTabs - totalWidth;
             final float growP = growW / totalWeight;
 
             for (int a = 0, N = getChildCount(); a < N; a++) {
@@ -744,4 +726,135 @@ public class MainTabsLayout extends AnimatedLinearLayout {
     private static float getCenterX(View v) {
         return v.getX() + v.getWidth() * 0.5f;
     }
+
+    /** Cherrygram start */
+    private boolean isForMainTabsCG = false;
+
+    public void setForMainTabsCG(boolean cherrygramMainTabs) {
+        if (isForMainTabsCG != cherrygramMainTabs) {
+            isForMainTabsCG = cherrygramMainTabs;
+            requestLayout();
+        }
+    }
+
+    private void onMeasureMainTabsCG(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        final int height = MeasureSpec.getSize(heightMeasureSpec);
+        final int tabHeight = height - getPaddingTop() - getPaddingBottom();
+        final int tabWidth = dp(!CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle() ? 12 : 24);
+
+        if (maxWidthPx > 0 && width > maxWidthPx) {
+            width = maxWidthPx;
+        }
+
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        int searchOffset = dp(DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS);
+        int absoluteMaxLimit = screenWidth - searchOffset - dp(DialogsActivity.MAIN_TABS_MARGIN * 2);
+        final int maxTotalWidthForTabs = Math.max(width, absoluteMaxLimit) - getPaddingLeft() - getPaddingRight();
+        final int minTotalWidthForTabs = Math.min(dp(320) / 2, maxTotalWidthForTabs);
+
+        int chosenPass = PASS_TEXT_SIZES_DP.length - 1;
+        float lastMeasuredTextSize = -1;
+        for (int pass = 0; pass < PASS_TEXT_SIZES_DP.length; pass++) {
+            if (PASS_TEXT_SIZES_DP[pass] != lastMeasuredTextSize) {
+                measureTabTexts(PASS_TEXT_SIZES_DP[pass]);
+                lastMeasuredTextSize = PASS_TEXT_SIZES_DP[pass];
+            }
+            final int padding = dp(PASS_PADDINGS_DP[pass]);
+            float total = 0;
+            for (int a = 0, N = getChildCount(); a < N; a++) {
+                if (!isViewVisible(getChildAt(a))) continue;
+                final float withMargin = tabsTextWidth[a] + padding * 2;
+                total += withMargin;
+            }
+            final boolean fits = total <= maxTotalWidthForTabs;
+            if (fits || pass == PASS_TEXT_SIZES_DP.length - 1) {
+                chosenPass = pass;
+                break;
+            }
+        }
+
+        applyPassTextSize(chosenPass);
+
+        final int tabPadding = dp(PASS_PADDINGS_DP[chosenPass]);
+        final int maxTabTextWidthIfEq = (maxTotalWidthForTabs / Math.max(1, visibleChildCount)) - tabPadding * 2;
+
+        float totalWidth = 0;
+        int totalWeight = 0;
+        for (int a = 0, N = getChildCount(); a < N; a++) {
+            final View child = getChildAt(a);
+            if (!isViewVisible(child)) {
+                tabsTextWidth[a] = tabsTextWidthWithMargin[a] = 0;
+                tabsWeight[a] = 0;
+                continue;
+            }
+
+            float baseTabWidth = tabWidth + dp(12) * 2;
+            final float w = Math.max(tabsTextWidth[a], baseTabWidth);
+
+            if (w > maxTabTextWidthIfEq) {
+                tabsTextWidthWithMargin[a] = w + dp(13) * 2;
+            } else {
+                tabsTextWidthWithMargin[a] = w + dp(16) * 2;
+            }
+
+            tabsWeight[a] = 1;
+            totalWidth += tabsTextWidthWithMargin[a];
+            totalWeight += tabsWeight[a];
+        }
+
+        if (totalWeight == 0) {
+            for (int a = 0, N = getChildCount(); a < N; a++) {
+                tabsWeight[a] = isViewVisible(getChildAt(a)) ? 1 : 0;
+            }
+            totalWeight = visibleChildCount;
+        }
+
+        if (totalWidth > maxTotalWidthForTabs) {
+            final float m = maxTotalWidthForTabs / totalWidth;
+            for (int a = 0, N = getChildCount(); a < N; a++) {
+                tabsTextWidthWithMargin[a] *= m;
+            }
+        } else if (totalWidth < minTotalWidthForTabs) {
+
+            float targetWidth;
+
+            if (visibleChildCount == 1) {
+                targetWidth = totalWidth + tabWidth;
+                targetWidth = Math.min(targetWidth, maxTotalWidthForTabs * 0.5f);
+            } else {
+                targetWidth = minTotalWidthForTabs;
+            }
+
+            final float growW = targetWidth - totalWidth;
+            final float growP = growW / totalWeight;
+
+            for (int a = 0, N = getChildCount(); a < N; a++) {
+                tabsTextWidthWithMargin[a] += growP * tabsWeight[a];
+            }
+        }
+
+        int l = 0;
+        for (int a = 0, N = getChildCount(); a < N; a++) {
+            if (!isViewVisible(getChildAt(a))) {
+                continue;
+            }
+
+            tabsWidth[a] = Math.round(tabsTextWidthWithMargin[a]);
+            tabsLeftPos[a] = l;
+            l += tabsWidth[a];
+        }
+        setMeasuredDimension(l + getPaddingLeft() + getPaddingRight(), height);
+        for (int a = 0, N = getChildCount(); a < N; a++) {
+            final View child = getChildAt(a);
+            child.measure(
+                MeasureSpec.makeMeasureSpec(tabsWidth[a], MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(tabHeight, MeasureSpec.EXACTLY));
+        }
+
+        calculateTotalSizesAfterMeasure();
+    }
+
+    /** Cherrygram finish */
+
 }

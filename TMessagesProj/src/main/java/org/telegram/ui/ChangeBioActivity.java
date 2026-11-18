@@ -22,6 +22,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,21 +41,22 @@ import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.CodepointsLengthInputFilter;
 import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.OutlineTextContainerView;
+import org.telegram.ui.Components.NumberTextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class ChangeBioActivity extends BaseFragment {
 
     private EditTextBoldCursor firstNameField;
-    private OutlineTextContainerView firstNameFieldContainer;
-
     private View doneButton;
+    private NumberTextView checkTextView;
     private TextView helpTextView;
 
     private final static int done_button = 1;
@@ -84,9 +86,8 @@ public class ChangeBioActivity extends BaseFragment {
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         fragmentView.setOnTouchListener((v, event) -> true);
 
-        firstNameFieldContainer = new OutlineTextContainerView(context);
-        firstNameFieldContainer.setText(LocaleController.getString(R.string.UserBio));
-        linearLayout.addView(firstNameFieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 24, 24, 24, 0));
+        FrameLayout fieldContainer = new FrameLayout(context);
+        linearLayout.addView(fieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 24, 24, 20, 0));
 
         firstNameField = new EditTextBoldCursor(context) {
             @Override
@@ -98,29 +99,16 @@ public class ChangeBioActivity extends BaseFragment {
             }
         };
         firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-        firstNameField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        firstNameField.setBackground(null);
+        ThemeBind.hintTextColor(firstNameField, Theme.key_windowBackgroundWhiteHintText);
+        ThemeBind.textColor(firstNameField, Theme.key_windowBackgroundWhiteBlackText);
+        firstNameField.setBackgroundDrawable(null);
+        ThemeBind.lineColors(firstNameField, Theme.key_windowBackgroundWhiteInputField, Theme.key_windowBackgroundWhiteInputFieldActivated, Theme.key_text_RedRegular, getResourceProvider());
         firstNameField.setMaxLines(4);
-        firstNameField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        firstNameField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        firstNameField.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        firstNameField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated));
-        firstNameField.setCursorWidth(1.5f);
+        firstNameField.setPadding(AndroidUtilities.dp(LocaleController.isRTL ? 24 : 0), 0, AndroidUtilities.dp(LocaleController.isRTL ? 0 : 24), AndroidUtilities.dp(6));
         firstNameField.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
-        firstNameField.setOnFocusChangeListener((v, hasFocus) -> firstNameFieldContainer.animateSelection(hasFocus ? 1 : 0));
-        int padding = AndroidUtilities.dp(16);
-        firstNameField.setPadding(padding, padding, padding, padding);
-        firstNameField.setCursorSize(AndroidUtilities.dp(20));
-        firstNameFieldContainer.addView(firstNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-        firstNameFieldContainer.attachEditText(firstNameField);
-        firstNameField.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if (i == EditorInfo.IME_ACTION_NEXT || i == EditorInfo.IME_ACTION_DONE) {
-                doneButton.performClick();
-                return true;
-            }
-            return false;
-        });
-
+        firstNameField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        firstNameField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        firstNameField.setImeOptions(EditorInfo.IME_ACTION_DONE);
         InputFilter[] inputFilters = new InputFilter[1];
         inputFilters[0] = new CodepointsLengthInputFilter(getMessagesController().getAboutLimit()) {
             @Override
@@ -135,13 +123,17 @@ public class ChangeBioActivity extends BaseFragment {
                     if (v != null) {
                         v.vibrate(200);
                     }
-                    AndroidUtilities.shakeView(firstNameFieldContainer);
+                    AndroidUtilities.shakeView(checkTextView);
                 }
                 return result;
             }
         };
         firstNameField.setFilters(inputFilters);
         firstNameField.setMinHeight(AndroidUtilities.dp(36));
+        firstNameField.setHint(LocaleController.getString(R.string.UserBio));
+        ThemeBind.cursorColor(firstNameField, Theme.key_windowBackgroundWhiteBlackText);
+        firstNameField.setCursorSize(AndroidUtilities.dp(20));
+        firstNameField.setCursorWidth(1.5f);
         firstNameField.setOnEditorActionListener((textView, i, keyEvent) -> {
             if (i == EditorInfo.IME_ACTION_DONE && doneButton != null) {
                 doneButton.performClick();
@@ -162,16 +154,24 @@ public class ChangeBioActivity extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                firstNameFieldContainer.setText(String.format("%s (%d)", LocaleController.getString(R.string.UserBio), getMessagesController().getAboutLimit() - Character.codePointCount(s, 0, s.length())));
+                checkTextView.setNumber(getMessagesController().getAboutLimit() - Character.codePointCount(s, 0, s.length()), true);
             }
         });
 
-        firstNameFieldContainer.setText(String.format("%s (%d)", LocaleController.getString(R.string.UserBio), getMessagesController().getAboutLimit()));
+        fieldContainer.addView(firstNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 0, 4, 0));
+
+        checkTextView = new NumberTextView(context);
+        checkTextView.setCenterAlign(true);
+        checkTextView.setTextSize(15);
+        checkTextView.setNumber(getMessagesController().getAboutLimit(), false);
+        checkTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4));
+        checkTextView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        fieldContainer.addView(checkTextView, LayoutHelper.createFrame(26, 20, LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT, 0, 4, 4, 0));
 
         helpTextView = new TextView(context);
         helpTextView.setFocusable(true);
         helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        helpTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText8));
+        ThemeBind.textColor(helpTextView, Theme.key_windowBackgroundWhiteGrayText8);
         helpTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         helpTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.UserBioInfo)));
         linearLayout.addView(helpTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 24, 10, 24, 0));
@@ -259,20 +259,38 @@ public class ChangeBioActivity extends BaseFragment {
     public ArrayList<ThemeDescription> getThemeDescriptions() {
         ArrayList<ThemeDescription> themeDescriptions = new ArrayList<>();
 
-        themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
 
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
 
-        themeDescriptions.add(new ThemeDescription(firstNameField, ThemeDescription.FLAG_TEXTCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-        themeDescriptions.add(new ThemeDescription(firstNameField, ThemeDescription.FLAG_HINTTEXTCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteHintText));
         themeDescriptions.add(new ThemeDescription(firstNameField, ThemeDescription.FLAG_BACKGROUNDFILTER, null, null, null, null, Theme.key_windowBackgroundWhiteInputField));
         themeDescriptions.add(new ThemeDescription(firstNameField, ThemeDescription.FLAG_BACKGROUNDFILTER | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, null, null, null, null, Theme.key_windowBackgroundWhiteInputFieldActivated));
 
-        themeDescriptions.add(new ThemeDescription(helpTextView, ThemeDescription.FLAG_TEXTCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteGrayText8));
+
+        themeDescriptions.add(new ThemeDescription(checkTextView, ThemeDescription.FLAG_TEXTCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteGrayText4));
 
         return themeDescriptions;
+    }
+
+    @Override
+    public void onThemeColorsChanged() {
+        try {
+            super.onThemeColorsChanged();
+            if (checkTextView != null) {
+                checkTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4));
+            }
+            // firstNameField line / cursor colors: ThemeBind bindings set in createView
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    /** theme editor: colors this page shows (former ThemeDescription keys) */
+    @Override
+    public void addThemeColorKeys(HashSet<Integer> keys) {
+        super.addThemeColorKeys(keys);
+        keys.add(Theme.key_actionBarDefaultSelector);
+        keys.add(Theme.key_actionBarDefaultTitle);
+        keys.add(Theme.key_actionBarDefaultIcon);
+        keys.add(Theme.key_actionBarDefault);
+        keys.add(Theme.key_windowBackgroundWhite);
     }
 }

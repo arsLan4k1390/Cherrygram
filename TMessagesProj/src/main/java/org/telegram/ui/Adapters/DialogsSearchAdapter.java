@@ -50,6 +50,7 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.Cells.DialogCell;
 import org.telegram.ui.Cells.GraySectionCell;
 import org.telegram.ui.Cells.HashtagSearchCell;
@@ -1663,7 +1664,7 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
                         return super.onInterceptTouchEvent(e);
                     }
                 };
-                horizontalListView.setSelectorDrawableColor(Theme.getColor(Theme.key_listSelector));
+                ThemeBind.listSelectorColor(horizontalListView, Theme.key_listSelector);
                 horizontalListView.setTag(9);
                 horizontalListView.setItemAnimator(null);
                 horizontalListView.setLayoutAnimation(null);
@@ -1735,7 +1736,7 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_PROFILE_CELL: {
                 ProfileSearchCell cell = (ProfileSearchCell) holder.itemView;
-                cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                ThemeBind.backgroundColor(cell, Theme.key_windowBackgroundWhite);
                 long oldDialogId = cell.getDialogId();
 
                 TLRPC.User user = null;
@@ -2151,7 +2152,7 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
             case VIEW_TYPE_DIALOG_CELL:
             case VIEW_TYPE_PUBLIC_POST: {
                 DialogCell cell = (DialogCell) holder.itemView;
-                cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                ThemeBind.backgroundColor(cell, Theme.key_windowBackgroundWhite);
                 cell.useSeparator = (position != getItemCount() - 1);
                 MessageObject messageObject = (MessageObject) getItem(position);
                 boolean isLocalForum = searchForumResultMessages.contains(messageObject);
@@ -2170,7 +2171,7 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
             }
             case VIEW_TYPE_HASHTAG_CELL: {
                 HashtagSearchCell cell = (HashtagSearchCell) holder.itemView;
-                cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                ThemeBind.backgroundColor(cell, Theme.key_windowBackgroundWhite);
                 cell.setText(searchResultHashtags.get(position - 1));
                 cell.setNeedDivider(position != searchResultHashtags.size());
                 break;
@@ -2440,7 +2441,7 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
 
             TextView titleView = new TextView(context);
             titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
-            titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(titleView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             titleView.setTypeface(AndroidUtilities.bold());
             titleView.setText(LocaleController.getString(R.string.SearchMessagesFilterEmptyTitle));
             titleView.setGravity(Gravity.CENTER);
@@ -2448,7 +2449,7 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
 
             textView = new TextView(context);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+            ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             textView.setText(LocaleController.formatString(R.string.SearchMessagesFilterEmptyText, ""));
             textView.setGravity(Gravity.CENTER);
             addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 0, 0, 14));
@@ -2457,8 +2458,8 @@ public class DialogsSearchAdapter extends RecyclerListView.SelectionAdapter {
             button.setPadding(dp(12), dp(4), dp(12), dp(4));
             button.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             button.setText(LocaleController.getString(R.string.SearchMessagesFilterEmptySearchAll));
-            button.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
-            button.setBackground(Theme.createSimpleSelectorRoundRectDrawable(6, 0, Theme.multAlpha(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), .15f)));
+            ThemeBind.textColor(button, Theme.key_featuredStickers_addButton, resourcesProvider);
+            ThemeBind.selectorBackground(button, Theme.createSimpleSelectorRoundRectDrawable(6, 0, Theme.multAlpha(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), .15f)), null, ThemeBind.multAlpha(Theme.key_featuredStickers_addButton, .15f), resourcesProvider);
             button.setOnClickListener(v -> onClickAll.run());
             addView(button, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 0, 0, 38));
         }

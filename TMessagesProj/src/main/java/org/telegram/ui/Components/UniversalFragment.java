@@ -18,6 +18,7 @@ import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.Business.QuickRepliesController;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.DialogsActivity;
@@ -30,24 +31,32 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 public abstract class UniversalFragment extends BaseFragment {
 
     public UniversalRecyclerView listView;
+    protected FrameLayout contentView;
 
     @Override
     public View createView(Context context) {
-        BackDrawable backDrawable = new BackDrawable(false);
-        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
-        actionBar.setBackButtonDrawable(backDrawable);
-        actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(getTitle(), null, isGilroyEnabled);
-        actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
+        final ActionBar.ActionBarMenuOnItemClick onItemClick = new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
                     finishFragment();
                 }
             }
-        });
+        };
+        BackDrawable backDrawable = new BackDrawable(false);
+        backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
+        if (simpleActionBar != null) {
+            simpleActionBar.setBackButtonDrawable(backDrawable);
+            simpleActionBar.setTitle(getTitle());
+            simpleActionBar.setActionBarMenuOnItemClick(onItemClick);
+        } else {
+            actionBar.setBackButtonDrawable(backDrawable);
+            actionBar.setAllowOverlayTitle(true);
+            actionBar.setTitle(getTitle());
+            actionBar.setActionBarMenuOnItemClick(onItemClick);
+        }
 
-        FrameLayout contentView = new SizeNotifierFrameLayout(context) {
+        contentView = new SizeNotifierFrameLayout(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 super.onMeasure(
@@ -56,7 +65,10 @@ public abstract class UniversalFragment extends BaseFragment {
                 );
             }
         };
-        contentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+        if (!useSimpleActionBar()) {
+            // simple screens: the sectioned list draws the screen background itself
+            ThemeBind.backgroundColor(contentView, Theme.key_windowBackgroundGray);
+        }
 
         listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, this::onLongClick) {
             @Override

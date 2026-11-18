@@ -44,7 +44,12 @@ import me.vkryl.android.animator.BoolAnimator;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
-public class Switch extends View {
+public class Switch extends View implements Theme.Colorable {
+
+    @Override
+    public void updateColors() {
+        colorSet = 0; // the ripple color is re-read from the theme on the next press
+    }
     private final BoolAnimator animatorIconVisibility = new BoolAnimator(this, CubicBezierInterpolator.EASE_OUT_QUINT, 380L, true);
 
     private RectF rectF;
@@ -409,10 +414,10 @@ public class Switch extends View {
             x = (getMeasuredWidth() - width) / 2;
             y = getMeasuredHeight() / 2 - thumb / 2;
 
-            float start = x + thumb / 2f;
-            float end = x + width - thumb / 2f;
+            float start = x + thumb / 2f + AndroidUtilities.dp(1);
+            float end = x + width - thumb / 2f + AndroidUtilities.dp(2);
 
-            tx = (int) (start + (end - start) * progress + AndroidUtilities.dp(isChecked ? 2 : 1));
+            tx = (int) (start + (end - start) * progress);
         } else {
             thumb = AndroidUtilities.dp(20);
             x = (getMeasuredWidth() - width) / 2;
@@ -496,15 +501,10 @@ public class Switch extends View {
 
             if (CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle()) {
                 rectF.set(x, y, getMeasuredWidth(), getMeasuredHeight() / 2 + thumb / 2);
-                if (!isChecked) {
-                    canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint4);
-                    canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint4);
-
-                    if (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) {
-                        canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint5);
-                        canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint5);
-                    }
-
+                if (!isChecked && Color.alpha(color) < 255) {
+                    Paint grayPaint = Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight() ? paint5 : paint4;
+                    canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), grayPaint);
+                    canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), grayPaint);
                 }
                 canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint);
                 canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint);

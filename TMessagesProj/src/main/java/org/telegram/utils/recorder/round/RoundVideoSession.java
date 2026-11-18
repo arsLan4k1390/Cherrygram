@@ -552,8 +552,11 @@ public final class RoundVideoSession {
     private boolean finishAfterCameraStops;
     private boolean finishWithAudio;
     private boolean cancelAfterCameraStops;
+    private boolean pauseAfterRecordingStarts;
     private boolean cameraStopPending;
     private boolean cleanupStarted;
+    /** The host released the session while FINISHING; resources go once the output completes. */
+    private boolean releaseAfterCompletion;
     private volatile boolean cancelRequested;
     private long recordedDurationMs;
     private long recordingStartedAtRealtimeMs;
@@ -685,6 +688,7 @@ public final class RoundVideoSession {
         requireMainThread();
         if (state != State.PREVIEWING || trimEndMs - trimStartMs >= maximumDurationMs) return false;
         resumeCount++;
+        pauseAfterRecordingStarts = false;
         diagnostics.log("resume requested: trim=" + trimStartMs + ".." + trimEndMs
                 + ", sourceDurationMs=" + recordedDurationMs);
         releasePlayer();
@@ -830,7 +834,9 @@ public final class RoundVideoSession {
         requireMainThread();
         if (state == State.RELEASED || state == State.COMPLETED) return false;
         diagnostics.log("cancel requested: state=" + state);
-        if (!cancelOutput(OutputInvalidationReason.CANCELLED)) return false;
+        // A generation completed on the output thread is still cancellable until its result is
+        // delivered on the main thread, which happens together with the COMPLETED state.
+        cancelOutput(OutputInvalidationReason.CANCELLED, true);
         disableCameraEffects();
         releasePlayer();
         setState(State.RELEASED);
@@ -843,12 +849,24 @@ public final class RoundVideoSession {
         return true;
     }
 
-    /** Releases UI, camera and playback resources. Active recordings are cancelled. */
+    /**
+     * Releases UI, camera and playback resources. Active recordings are cancelled. A release
+     * while the final output is being produced keeps finishing detached from the host, so the
+     * completed output is still delivered, and releases the session right after that.
+     */
     @MainThread
     public void release() {
         requireMainThread();
         if (state == State.RELEASED) {
             if (!cleanupStarted) finishCancellation();
+            return;
+        }
+        if (state == State.FINISHING) {
+            if (releaseAfterCompletion) return;
+            releaseAfterCompletion = true;
+            diagnostics.log("release deferred: output is still finishing");
+            disableCameraEffects();
+            releasePlayer();
             return;
         }
         if (state != State.COMPLETED) {
@@ -952,6 +970,11 @@ public final class RoundVideoSession {
                 }
 
                 @Override
+                public void onSegmentInterrupted(@NonNull Exception error) {
+                    mainHandler.post(() -> handleSegmentInterrupted(error));
+                }
+
+                @Override
                 public void onAmplitude(double amplitude) {
                     mainHandler.post(() -> {
                         if (state == State.RECORDING) listener.onAmplitude(amplitude);
@@ -982,7 +1005,6 @@ public final class RoundVideoSession {
         notifyCapabilities();
         diagnostics.log("camera configured: facing=" + info.facing
                 + ", mode=" + info.cameraResolution
-                + ", preview=" + info.previewSize
                 + ", recording=" + info.recordingSize
                 + ", fps=" + info.frameRate.getValue()
                 + ", maxZoom=" + maximumZoomRatio
@@ -1001,8 +1023,22 @@ public final class RoundVideoSession {
         diagnostics.log("recording started: retainedDurationMs=" + recordedDurationMs);
         setState(State.RECORDING);
         long remaining = maximumDurationMs - recordedDurationMs;
-        if (remaining <= 0) pauseRecording();
-        else mainHandler.postDelayed(durationLimitRunnable, remaining);
+        if (remaining <= 0 || pauseAfterRecordingStarts) {
+            pauseAfterRecordingStarts = false;
+            pauseRecording();
+        } else {
+            mainHandler.postDelayed(durationLimitRunnable, remaining);
+        }
+    }
+
+    /** Ends the active segment early and previews what was recorded instead of failing. */
+    private void handleSegmentInterrupted(@NonNull Exception error) {
+        diagnostics.error("recording segment interrupted in state=" + state, error);
+        if (state == State.RECORDING) {
+            pauseRecording();
+        } else if (state == State.STARTING) {
+            pauseAfterRecordingStarts = true;
+        }
     }
 
     private void handleRecordingStopped() {
@@ -1039,7 +1075,7 @@ public final class RoundVideoSession {
             try {
                 currentWriter.createPreview(snapshot);
                 ensureNotCancelled();
-                long duration = RoundVideoRemuxer.getDurationMs(snapshot);
+                long duration = currentWriter.getDurationMs();
                 diagnostics.log("preview snapshot completed: durationMs=" + duration
                         + ", size=" + snapshot.length()
                         + ", elapsedMs=" + elapsedMs(previewSnapshotStartedNs));
@@ -1134,12 +1170,14 @@ public final class RoundVideoSession {
                             writer,
                             trimStartMs,
                             trimEndMs,
-                            true
+                            true,
+                            encoderConfig(oldWriter)
                     );
                     retainedDuration = result.durationMs;
                     diagnostics.log("resume trim remux completed: requested="
                             + trimStartMs + ".." + trimEndMs
                             + ", actualStartMs=" + result.startMs
+                            + ", mode=" + result.mode
                             + ", retainedDurationMs=" + retainedDuration
                             + ", outputSize=" + writer.getFile().length()
                             + ", elapsedMs=" + elapsedMs(rebuildStartedNs));
@@ -1180,7 +1218,7 @@ public final class RoundVideoSession {
             long finishStartedNs = System.nanoTime();
             try {
                 currentWriter.finish();
-                long actualDurationMs = RoundVideoRemuxer.getDurationMs(currentWriter.getFile());
+                long actualDurationMs = currentWriter.getDurationMs();
                 diagnostics.log("active output finalized: size=" + currentWriter.getFile().length()
                         + ", durationMs=" + actualDurationMs
                         + ", elapsedMs=" + elapsedMs(finishStartedNs));
@@ -1193,6 +1231,7 @@ public final class RoundVideoSession {
                     try {
                         replaceWithFinalRange(
                                 source,
+                                currentWriter.getEncoderFrameRate(),
                                 0,
                                 Math.min(maximumDurationMs, actualDurationMs),
                                 includeAudio,
@@ -1227,7 +1266,14 @@ public final class RoundVideoSession {
                         + ", elapsedMs=" + elapsedMs(finishStartedNs));
                 ensureNotCancelled();
                 if (replace) {
-                    replaceWithFinalRange(source, trimStartMs, trimEndMs, includeAudio, reason);
+                    replaceWithFinalRange(
+                            source,
+                            currentWriter.getEncoderFrameRate(),
+                            trimStartMs,
+                            trimEndMs,
+                            includeAudio,
+                            reason
+                    );
                 } else {
                     completeOutput(
                             currentGeneration,
@@ -1250,6 +1296,7 @@ public final class RoundVideoSession {
 
     private void replaceWithFinalRange(
             @NonNull File source,
+            int sourceEncoderFrameRate,
             long startMs,
             long endMs,
             boolean includeAudio,
@@ -1268,17 +1315,36 @@ public final class RoundVideoSession {
                 writer,
                 startMs,
                 endMs,
-                includeAudio
+                includeAudio,
+                encoderConfig(sourceEncoderFrameRate)
         );
         writer.finish();
-        long outputDurationMs = RoundVideoRemuxer.getDurationMs(writer.getFile());
+        long outputDurationMs = writer.getDurationMs();
         diagnostics.log("final range remux completed: durationMs=" + outputDurationMs
-                + ", requestedDurationMs=" + result.durationMs
+                + ", requestedDurationMs=" + (endMs - startMs)
                 + ", actualStartMs=" + result.startMs
+                + ", mode=" + result.mode
                 + ", size=" + writer.getFile().length()
                 + ", elapsedMs=" + elapsedMs(remuxStartedNs));
         ensureNotCancelled();
         completeOutput(outputGeneration, writer.getFile(), outputDurationMs, includeAudio);
+    }
+
+    @NonNull
+    private RoundVideoRemuxer.EncoderConfig encoderConfig(@NonNull RoundVideoMp4Writer sourceWriter) {
+        return encoderConfig(sourceWriter.getEncoderFrameRate());
+    }
+
+    /** Trimming re-encodes with the configuration the source was recorded with. */
+    @NonNull
+    private RoundVideoRemuxer.EncoderConfig encoderConfig(int sourceEncoderFrameRate) {
+        return new RoundVideoRemuxer.EncoderConfig(
+                outputResolution.getSize(),
+                videoBitrate,
+                sourceEncoderFrameRate > 0
+                        ? sourceEncoderFrameRate
+                        : requestedFrameRate.getValue()
+        );
     }
 
     private void completeOutput(
@@ -1314,6 +1380,7 @@ public final class RoundVideoSession {
                         hasAudio,
                         activeFrameRate == null ? FrameRate.FPS_30 : activeFrameRate
                 ));
+                if (releaseAfterCompletion) release();
             });
         });
     }
@@ -1463,7 +1530,7 @@ public final class RoundVideoSession {
     private void fail(@NonNull Exception error) {
         if (state == State.ERROR || state == State.RELEASED) return;
         diagnostics.error("fatal error in state=" + state, error);
-        if (!cancelOutput(OutputInvalidationReason.ERROR)) return;
+        if (!cancelOutput(OutputInvalidationReason.ERROR, false)) return;
         disableCameraEffects();
         releasePlayer();
         mainHandler.removeCallbacks(durationLimitRunnable);
@@ -1529,10 +1596,13 @@ public final class RoundVideoSession {
         return File.createTempFile(prefix, ".mp4", outputDirectory);
     }
 
-    private boolean cancelOutput(@NonNull OutputInvalidationReason reason) {
+    private boolean cancelOutput(
+            @NonNull OutputInvalidationReason reason,
+            boolean includeCompleted
+    ) {
         synchronized (outputLock) {
             OutputGeneration generation = outputGeneration;
-            if (generation != null && generation.completed) return false;
+            if (generation != null && generation.completed && !includeCompleted) return false;
             cancelRequested = true;
             if (generation != null && !generation.invalidated) {
                 generation.invalidated = true;

@@ -1,5 +1,7 @@
 package org.telegram.ui.Components;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -25,8 +27,10 @@ import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Cells.DialogCell;
 import org.telegram.ui.Stories.recorder.HintView2;
 import org.telegram.ui.TopicsFragment;
 
@@ -121,6 +125,10 @@ public class PullForegroundDrawable {
     };
 
     public PullForegroundDrawable(CharSequence pullText, CharSequence releaseText) {
+        if (CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
+            pullText = getString(R.string.CG_AccSwipeForArchive);
+            releaseText = getString(R.string.CG_AccReleaseForArchive);
+        }
         tooltipTextPaint.setTypeface(AndroidUtilities.bold());
 //        tooltipTextPaint.setTextAlign(Paint.Align.CENTER);
         tooltipTextPaint.setTextSize(AndroidUtilities.dp(16));
@@ -400,33 +408,44 @@ public class PullForegroundDrawable {
         canvas.restore();
 
         if (!isTopic && changeAvatarColor && outProgress > 0) {
-            canvas.save();
-            int iw = Theme.dialogs_archiveAvatarDrawable.getIntrinsicWidth();
-
             int startCx = startPadding + radius;
             int startCy = cell.getHeight() - smallMargin - radius;
 
-            float scaleStart = (float) AndroidUtilities.dp(24) / iw;
-            float scale = scaleStart + (1f - scaleStart) * outProgress + bounceP;
+            if (CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList() && cell instanceof DialogCell) {
+                ImageReceiver avatar = ((DialogCell) cell).avatarImage;
+                float avatarSize = Math.max(1f, avatar.getImageWidth());
 
-            int x = (int) cX;
-            int y = (int) cY;
-            canvas.translate((startCx - cX) * (1f - outProgress), (startCy - cY) * (1f - outProgress));
-            canvas.scale(scale, scale, cX, cY);
+                float scaleStart = (float) AndroidUtilities.dp(24) / avatarSize;
+                float scale = scaleStart + (1f - scaleStart) * outProgress + bounceP;
 
-            Theme.dialogs_archiveAvatarDrawable.setProgress(0f);
-            if (!Theme.dialogs_archiveAvatarDrawableRecolored) {
-                Theme.dialogs_archiveAvatarDrawable.beginApplyLayerColors();
-                Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow1", Theme.getNonAnimatedColor(avatarBackgroundColorKey));
-                Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow2", Theme.getNonAnimatedColor(avatarBackgroundColorKey));
-                Theme.dialogs_archiveAvatarDrawable.commitApplyLayerColors();
-                Theme.dialogs_archiveAvatarDrawableRecolored = true;
+                canvas.save();
+                canvas.translate((startCx - cX) * (1f - outProgress), (startCy - cY) * (1f - outProgress));
+                canvas.scale(scale, scale, cX, cY);
+                avatar.draw(canvas);
+                canvas.restore();
+            } else {
+                canvas.save();
+                int iw = Theme.dialogs_archiveAvatarDrawable.getIntrinsicWidth();
+
+                float scaleStart = (float) AndroidUtilities.dp(24) / iw;
+                float scale = scaleStart + (1f - scaleStart) * outProgress + bounceP;
+
+                canvas.translate((startCx - cX) * (1f - outProgress), (startCy - cY) * (1f - outProgress));
+                canvas.scale(scale, scale, cX, cY);
+
+                Theme.dialogs_archiveAvatarDrawable.setProgress(0f);
+                if (!Theme.dialogs_archiveAvatarDrawableRecolored) {
+                    Theme.dialogs_archiveAvatarDrawable.beginApplyLayerColors();
+                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow1", Theme.getNonAnimatedColor(avatarBackgroundColorKey));
+                    Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow2", Theme.getNonAnimatedColor(avatarBackgroundColorKey));
+                    Theme.dialogs_archiveAvatarDrawable.commitApplyLayerColors();
+                    Theme.dialogs_archiveAvatarDrawableRecolored = true;
+                }
+
+                Theme.dialogs_archiveAvatarDrawable.setBounds((int) (cX - iw / 2f), (int) (cY - iw / 2f), (int) (cX + iw / 2f), (int) (cY + iw / 2f));
+                Theme.dialogs_archiveAvatarDrawable.draw(canvas);
+                canvas.restore();
             }
-
-            Theme.dialogs_archiveAvatarDrawable.setBounds((int) (cX - iw / 2f), (int) (cY - iw / 2f), (int) (cX + iw / 2f), (int) (cY + iw / 2f));
-            Theme.dialogs_archiveAvatarDrawable.draw(canvas);
-
-            canvas.restore();
         }
 
 //        if (isTopic) {
@@ -630,7 +649,7 @@ public class PullForegroundDrawable {
         outProgress = value;
         int color = ColorUtils.blendARGB(Theme.getNonAnimatedColor(avatarBackgroundColorKey), Theme.getNonAnimatedColor(backgroundActiveColorKey), 1f - outProgress);
         paintBackgroundAccent.setColor(color);
-        if (changeAvatarColor && isDraw()) {
+        if (changeAvatarColor && isDraw() && !CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
             Theme.dialogs_archiveAvatarDrawable.beginApplyLayerColors();
             Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow1", color);
             Theme.dialogs_archiveAvatarDrawable.setLayerColor("Arrow2", color);

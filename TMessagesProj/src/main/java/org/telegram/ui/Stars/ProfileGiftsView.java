@@ -133,7 +133,7 @@ public class ProfileGiftsView extends View implements NotificationCenter.Notific
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starUserGiftsLoaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.starUserGiftsLoaded);
 
         for (Gift gift : gifts) {
             gift.emojiDrawable.addView(this);

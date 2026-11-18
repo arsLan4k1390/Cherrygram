@@ -61,6 +61,7 @@ import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.Business.BusinessLinksController;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Forum.ForumUtilities;
@@ -79,8 +80,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
+import uz.unnarsx.cherrygram.donates.BadgeHelper;
 
-public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.Target, NotificationCenter.NotificationCenterDelegate {
+public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.Target, NotificationCenter.NotificationCenterDelegate, Theme.Colorable {
 
     private static final int ANIMATOR_ID_TIME_ITEM_VISIBLE = 0;
     private final BoolAnimator animatorTimeVisible = new BoolAnimator(ANIMATOR_ID_TIME_ITEM_VISIBLE, this, CubicBezierInterpolator.EASE_OUT_QUINT, 320);
@@ -359,6 +361,10 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 avatarImageView.setVisibility(GONE);
             }
         }
+        if (!avatarImageIsHidden && isCentered() && !showAvatarWhenCentered()) {
+            avatarImageIsHidden = true;
+            avatarImageView.setVisibility(GONE);
+        }
         avatarImageView.setContentDescription(getString(R.string.AccDescrProfilePicture));
         avatarImageView.setRoundRadius(dp(21));
         addView(avatarImageView);
@@ -376,7 +382,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
 
         titleTextView = new SimpleTextConnectedView(context, titleTextLargerCopyView);
         titleTextView.setEllipsizeByGradient(true);
-        titleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
+        ThemeBind.textColor(titleTextView, Theme.key_actionBarDefaultTitle, resourcesProvider);
         titleTextView.setTextSize(18);
         titleTextView.setGravity(isCentered() ? Gravity.CENTER_HORIZONTAL : Gravity.LEFT);
         titleTextView.setTypeface(AndroidUtilities.bold());
@@ -387,7 +393,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 (
                         parentFragment.getCurrentUser() != null && parentFragment.getCurrentUser().premium || parentFragment.getCurrentUser() != null && DialogObject.getEmojiStatusDocumentId(parentFragment.getCurrentUser().emoji_status) != 0
                         || parentFragment.getCurrentChat() != null && DialogObject.getEmojiStatusDocumentId(parentFragment.getCurrentChat().emoji_status) != 0
-                );
+                ) || getCherrygramStatusId() != 0;
         titleTextView.setPadding(
                 isCentered() && hasEmoji && parentFragment.getMessagesController().isDialogMuted(parentFragment.getDialogId(), parentFragment.getTopicId(), parentFragment.getCurrentChat()) ? dp(25) : 0,
                 dp(6),
@@ -401,7 +407,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             animatedSubtitleTextView = new AnimatedTextView(context, true, true, true);
             animatedSubtitleTextView.setAnimationProperties(.3f, 0, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
             animatedSubtitleTextView.setEllipsizeByGradient(true);
-            animatedSubtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
+            ThemeBind.textColor(animatedSubtitleTextView, Theme.key_actionBarDefaultSubtitle, resourcesProvider);
             animatedSubtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
             animatedSubtitleTextView.setTextSize(dp(14));
             animatedSubtitleTextView.setGravity(isCentered() ? Gravity.CENTER_HORIZONTAL : Gravity.LEFT);
@@ -411,7 +417,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         } else {
             subtitleTextView = new SimpleTextConnectedView(context, subtitleTextLargerCopyView);
             subtitleTextView.setEllipsizeByGradient(true);
-            subtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
+            ThemeBind.textColor(subtitleTextView, Theme.key_actionBarDefaultSubtitle, resourcesProvider);
             subtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
             subtitleTextView.setTextSize(14);
             subtitleTextView.setGravity(isCentered() ? Gravity.CENTER_HORIZONTAL : Gravity.LEFT);
@@ -462,7 +468,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
 
             starBgItem = new ImageView(context);
             starBgItem.setImageResource(R.drawable.star_small_outline);
-            starBgItem.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefault), PorterDuff.Mode.SRC_IN));
+            ThemeBind.colorFilter(starBgItem, Theme.key_actionBarDefault, resourcesProvider, PorterDuff.Mode.SRC_IN);
             starBgItem.setAlpha(0.0f);
             starBgItem.setVisibility(View.INVISIBLE);
             starBgItem.setScaleY(0.0f);
@@ -498,6 +504,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         }
 
         emojiStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(titleTextView, dp(24));
+        cherrygramStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(titleTextView, dp(CHERRYGRAM_STATUS_SIZE_DP));
         botVerificationDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(titleTextView, dp(17));
     }
 
@@ -529,7 +536,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             if (pressed) {
                 bounce.setPressed(false);
                 pressed = false;
-                if (isClickable()) {
+                if (isClickable() && ev.getAction() == MotionEvent.ACTION_UP) {
                     openProfile(false);
                 }
                 AndroidUtilities.cancelRunOnUIThread(this.onLongClick);
@@ -822,6 +829,9 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
     }
 
     public void setTitleColors(int title, int subtitle) {
+        // caller-owned colors (re-applied by the caller's theme hook): drop the default-key bindings
+        ThemeBind.clear(titleTextView);
+        ThemeBind.clear(subtitleTextView);
         titleTextView.setTextColor(title);
         subtitleTextView.setTextColor(subtitle);
         subtitleTextView.setTag(subtitle);
@@ -885,7 +895,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         }
         titleTextLargerCopyView = new SimpleTextView(getContext());
         this.titleTextLargerCopyView.set(titleTextLargerCopyView);
-        titleTextLargerCopyView.setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
+        ThemeBind.textColor(titleTextLargerCopyView, Theme.key_actionBarDefaultTitle, resourcesProvider);
         titleTextLargerCopyView.setTextSizePx(dp(glassMode ? 17.5f : 18));
         titleTextLargerCopyView.setGravity(isCentered() ? Gravity.CENTER_HORIZONTAL : Gravity.LEFT);
         titleTextLargerCopyView.setTypeface(AndroidUtilities.bold());
@@ -910,7 +920,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         }
         subtitleTextLargerCopyView = new SimpleTextView(getContext());
         this.subtitleTextLargerCopyView.set(subtitleTextLargerCopyView);
-        subtitleTextLargerCopyView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
+        ThemeBind.textColor(subtitleTextLargerCopyView, Theme.key_actionBarDefaultSubtitle, resourcesProvider);
         subtitleTextLargerCopyView.setTag(Theme.key_actionBarDefaultSubtitle);
         subtitleTextLargerCopyView.setTextSizePx(dp(glassMode ? 13.5f : 14));
         subtitleTextLargerCopyView.setGravity(isCentered() ? Gravity.CENTER_HORIZONTAL : Gravity.LEFT);
@@ -1029,10 +1039,13 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         if (starFgItem != null) {
             starFgItem.layout(leftPadding + dp(28), viewTop + dp(24), leftPadding + dp(28) + starFgItem.getMeasuredWidth(), viewTop + dp(24) + starFgItem.getMeasuredHeight());
         }
+        final int titleCenterX = l + titleTextView.getMeasuredWidth() / 2;
         if (subtitleTextView != null) {
-            subtitleTextView.layout(l, subtitleTop, l + subtitleTextView.getMeasuredWidth(), subtitleTop + subtitleTextView.getTextHeight());
+            final int sl = isCentered() ? titleCenterX - subtitleTextView.getMeasuredWidth() / 2 : l;
+            subtitleTextView.layout(sl, subtitleTop, sl + subtitleTextView.getMeasuredWidth(), subtitleTop + subtitleTextView.getTextHeight());
         } else if (animatedSubtitleTextView != null) {
-            animatedSubtitleTextView.layout(l, subtitleTop, l + animatedSubtitleTextView.getMeasuredWidth(), subtitleTop + animatedSubtitleTextView.getTextHeight());
+            final int sl = isCentered() ? titleCenterX - animatedSubtitleTextView.getMeasuredWidth() / 2 : l;
+            animatedSubtitleTextView.layout(sl, subtitleTop, sl + animatedSubtitleTextView.getMeasuredWidth(), subtitleTop + animatedSubtitleTextView.getTextHeight());
         }
         SimpleTextView subtitleTextLargerCopyView = this.subtitleTextLargerCopyView.get();
         if (subtitleTextLargerCopyView != null) {
@@ -1154,6 +1167,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         if (icon == 0) {
             return null;
         }
+        botVerificationCherrygram = cherrygram;
         botVerificationDrawable.set(icon, animated);
         botVerificationDrawable.setColor(getThemedColor(cherrygram ? Theme.key_cgGradient2 : Theme.key_profile_verifiedBackground));
         botVerificationDrawable.offset(0, dp(1));
@@ -1183,9 +1197,9 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             }
         } else if (verified) {
             verifiedBackground = getResources().getDrawable(R.drawable.verified_area).mutate();
-            verifiedBackground.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.drawableColorFilter(this, verifiedBackground, Theme.key_profile_verifiedBackground, resourcesProvider, PorterDuff.Mode.MULTIPLY);
             verifiedCheck = getResources().getDrawable(R.drawable.verified_check).mutate();
-            verifiedCheck.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedCheck), PorterDuff.Mode.MULTIPLY));
+            ThemeBind.drawableColorFilter(this, verifiedCheck, Theme.key_profile_verifiedCheck, resourcesProvider, PorterDuff.Mode.MULTIPLY);
             Drawable verifiedDrawable = new CombinedDrawable(verifiedBackground, verifiedCheck);
             titleTextView.setRightDrawable2(verifiedDrawable);
             rightDrawableIsScamOrVerified = true;
@@ -1195,23 +1209,31 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             rightDrawableIsScamOrVerified = false;
             rightDrawable2ContentDescription = null;
         }
-        if ((premium || DialogObject.getEmojiStatusDocumentId(emojiStatus) != 0) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        boolean statusesDisabled = CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
+        long emojiStatusId = statusesDisabled ? 0 : DialogObject.getEmojiStatusDocumentId(emojiStatus);
+        long cherryStatusId = getCherrygramStatusId();
+        boolean showPremiumStar = premium && !statusesDisabled;
+
+        if (emojiStatusId != 0 || cherryStatusId != 0 || showPremiumStar) {
             if (titleTextView.getRightDrawable() instanceof AnimatedEmojiDrawable.WrapSizeDrawable &&
                     ((AnimatedEmojiDrawable.WrapSizeDrawable) titleTextView.getRightDrawable()).getDrawable() instanceof AnimatedEmojiDrawable) {
                 ((AnimatedEmojiDrawable) ((AnimatedEmojiDrawable.WrapSizeDrawable) titleTextView.getRightDrawable()).getDrawable()).removeView(titleTextView);
             }
-            if (DialogObject.getEmojiStatusDocumentId(emojiStatus) != 0) {
-                emojiStatusDrawable.set(DialogObject.getEmojiStatusDocumentId(emojiStatus), animated);
-            } else if (premium) {
+            final boolean showCherrygramStatus = emojiStatusId == 0 && cherryStatusId != 0;
+            if (emojiStatusId != 0) {
+                emojiStatusDrawable.set(emojiStatusId, animated);
+            } else if (showCherrygramStatus) {
+                cherrygramStatusDrawable.set(cherryStatusId, animated);
+                cherrygramStatusDrawable.setParticles(BadgeHelper.hasCherrygramStatusParticles(parentFragment.getCurrentUser()), animated);
+            } else {
                 int starDrawable = isCentered() ? R.drawable.msg_premium_badge : R.drawable.msg_premium_liststar;
                 emojiStatusDefaultDrawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, starDrawable).mutate();
-                emojiStatusDefaultDrawable.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
+                ThemeBind.drawableColorFilter(this, emojiStatusDefaultDrawable, Theme.key_profile_verifiedBackground, resourcesProvider, PorterDuff.Mode.MULTIPLY);
                 emojiStatusDrawable.set(emojiStatusDefaultDrawable, animated);
-            } else {
-                emojiStatusDrawable.set((Drawable) null, animated);
             }
             emojiStatusDrawable.setColor(getThemedColor(Theme.key_profile_verifiedBackground));
-            titleTextView.setRightDrawable(emojiStatusDrawable);
+            cherrygramStatusDrawable.setColor(getThemedColor(Theme.key_profile_verifiedBackground));
+            titleTextView.setRightDrawable(showCherrygramStatus ? cherrygramStatusDrawable : emojiStatusDrawable);
             rightDrawableIsScamOrVerified = false;
             rightDrawableContentDescription = getString(R.string.AccDescrPremium);
         } else {
@@ -1517,7 +1539,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             if (subtitleTextView != null) {
                 subtitleTextView.setText(newSubtitle);
                 if (overrideSubtitleColor == null) {
-                    subtitleTextView.setTextColor(getThemedColor(lastSubtitleColorKey));
+                    ThemeBind.textColor(subtitleTextView, lastSubtitleColorKey, resourcesProvider);
                     subtitleTextView.setTag(lastSubtitleColorKey);
                 } else {
                     subtitleTextView.setTextColor(overrideSubtitleColor);
@@ -1525,7 +1547,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
             } else {
                 animatedSubtitleTextView.setText(newSubtitle, animated);
                 if (overrideSubtitleColor == null) {
-                    animatedSubtitleTextView.setTextColor(getThemedColor(lastSubtitleColorKey));
+                    ThemeBind.textColor(animatedSubtitleTextView, lastSubtitleColorKey, resourcesProvider);
                     animatedSubtitleTextView.setTag(lastSubtitleColorKey);
                 } else {
                     animatedSubtitleTextView.setTextColor(overrideSubtitleColor);
@@ -1754,16 +1776,19 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (parentFragment != null) {
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.didUpdateConnectionState);
-            NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
+            NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.didUpdateConnectionState);
+            NotificationCenter.getGlobalInstance().addWeakObserver(this, NotificationCenter.emojiLoaded);
             if (parentFragment.getChatMode() == ChatActivity.MODE_SAVED) {
-                NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.savedMessagesDialogsUpdate);
+                NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.savedMessagesDialogsUpdate);
             }
             currentConnectionState = ConnectionsManager.getInstance(currentAccount).getConnectionState();
             updateCurrentConnectionState();
         }
         if (emojiStatusDrawable != null) {
             emojiStatusDrawable.attach();
+        }
+        if (cherrygramStatusDrawable != null) {
+            cherrygramStatusDrawable.attach();
         }
         if (botVerificationDrawable != null) {
             botVerificationDrawable.attach();
@@ -1782,6 +1807,9 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         }
         if (emojiStatusDrawable != null) {
             emojiStatusDrawable.detach();
+        }
+        if (cherrygramStatusDrawable != null) {
+            cherrygramStatusDrawable.detach();
         }
         if (botVerificationDrawable != null) {
             botVerificationDrawable.detach();
@@ -1828,7 +1856,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                     if (overrideSubtitleColor != null) {
                         subtitleTextView.setTextColor(overrideSubtitleColor);
                     } else if (lastSubtitleColorKey >= 0) {
-                        subtitleTextView.setTextColor(getThemedColor(lastSubtitleColorKey));
+                        ThemeBind.textColor(subtitleTextView, lastSubtitleColorKey, resourcesProvider);
                         subtitleTextView.setTag(lastSubtitleColorKey);
                     }
                 } else if (animatedSubtitleTextView != null) {
@@ -1837,7 +1865,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                     if (overrideSubtitleColor != null) {
                         animatedSubtitleTextView.setTextColor(overrideSubtitleColor);
                     } else if (lastSubtitleColorKey >= 0) {
-                        animatedSubtitleTextView.setTextColor(getThemedColor(lastSubtitleColorKey));
+                        ThemeBind.textColor(animatedSubtitleTextView, lastSubtitleColorKey, resourcesProvider);
                         animatedSubtitleTextView.setTag(lastSubtitleColorKey);
                     }
                 }
@@ -1851,7 +1879,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 if (overrideSubtitleColor != null) {
                     subtitleTextView.setTextColor(overrideSubtitleColor);
                 } else {
-                    subtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
+                    ThemeBind.textColor(subtitleTextView, Theme.key_actionBarDefaultSubtitle, resourcesProvider);
                     subtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
                 }
             } else if (animatedSubtitleTextView != null) {
@@ -1862,7 +1890,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 if (overrideSubtitleColor != null) {
                     animatedSubtitleTextView.setTextColor(overrideSubtitleColor);
                 } else {
-                    animatedSubtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
+                    ThemeBind.textColor(animatedSubtitleTextView, Theme.key_actionBarDefaultSubtitle, resourcesProvider);
                     animatedSubtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
                 }
             }
@@ -1907,24 +1935,52 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         return Theme.getColor(key, resourcesProvider);
     }
 
+    // updateColors runs on every theme frame: reuse the filters while their color is unchanged
+    private PorterDuffColorFilter verifiedBackgroundFilter, verifiedCheckFilter;
+    private int verifiedBackgroundFilterColor, verifiedCheckFilterColor;
+
+    private PorterDuffColorFilter verifiedBackgroundFilter() {
+        final int color = getThemedColor(Theme.key_profile_verifiedBackground);
+        if (verifiedBackgroundFilter == null || color != verifiedBackgroundFilterColor) {
+            verifiedBackgroundFilter = new PorterDuffColorFilter(verifiedBackgroundFilterColor = color, PorterDuff.Mode.MULTIPLY);
+        }
+        return verifiedBackgroundFilter;
+    }
+
+    /** also called on every theme update (Theme.Colorable) */
+    @Override
     public void updateColors() {
         if (currentTypingDrawable != null) {
             currentTypingDrawable.setColor(getThemedColor(Theme.key_chat_status));
         }
         if (emojiStatusDefaultDrawable != null) {
-            emojiStatusDefaultDrawable.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
+            emojiStatusDefaultDrawable.setColorFilter(verifiedBackgroundFilter());
         }
         if (botVerificationDrawable != null) {
-            botVerificationDrawable.setColor(getThemedColor(Theme.key_profile_verifiedBackground));
+            botVerificationDrawable.setColor(getThemedColor(botVerificationCherrygram ? Theme.key_cgGradient2 : Theme.key_profile_verifiedBackground));
         }
         if (emojiStatusDrawable != null) {
             emojiStatusDrawable.setColor(getThemedColor(Theme.key_profile_verifiedBackground));
         }
+        if (cherrygramStatusDrawable != null) {
+            cherrygramStatusDrawable.setColor(getThemedColor(Theme.key_profile_verifiedBackground));
+        }
         if (verifiedBackground != null) {
-            verifiedBackground.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
+            verifiedBackground.setColorFilter(verifiedBackgroundFilter());
         }
         if (verifiedCheck != null) {
-            verifiedCheck.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedCheck), PorterDuff.Mode.MULTIPLY));
+            final int checkColor = getThemedColor(Theme.key_profile_verifiedCheck);
+            if (verifiedCheckFilter == null || checkColor != verifiedCheckFilterColor) {
+                verifiedCheckFilter = new PorterDuffColorFilter(verifiedCheckFilterColor = checkColor, PorterDuff.Mode.MULTIPLY);
+            }
+            verifiedCheck.setColorFilter(verifiedCheckFilter);
+        }
+        try {
+            if (titleTextView != null && titleTextView.getRightDrawable2() instanceof ScamDrawable) {
+                ((ScamDrawable) titleTextView.getRightDrawable2()).setColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
         }
         invalidate();
     }
@@ -1969,6 +2025,12 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
     private final int[] avatarOptionsMenuLocation = new int[2];
     private View avatarOptionsSelectedView;
 
+    private int avatarOffsetX, avatarOffsetY;
+    private float avatarNaturalCx, avatarNaturalCy;
+
+    private float cgCommunityItemAlpha = -1, cgTimeItemAlpha = -1;
+
+    private boolean botVerificationCherrygram;
     private boolean moveText = false;
 
     public void setMoveText(boolean moveText) {
@@ -1984,6 +2046,14 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
 
     public boolean isCentered() {
         return false;
+    }
+
+    protected boolean showAvatarWhenCentered() {
+        return true;
+    }
+
+    public boolean isAvatarInMenuPill() {
+        return isCentered() && avatarImageView != null && avatarImageView.getVisibility() != GONE;
     }
 
     protected boolean isPreviewMode() {
@@ -2007,9 +2077,6 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
     private int getCenteredTextGap() {
         return dp(16 + 10);
     }
-
-    private int avatarOffsetX, avatarOffsetY;
-    private float avatarNaturalCx, avatarNaturalCy;
 
     public void alignAvatarCenter(View actionBarView, float targetCx, float targetCy) {
         if (!isCentered() || avatarImageView == null || getParent() != actionBarView
@@ -2048,6 +2115,63 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
         v.offsetLeftAndRight(dx);
         v.offsetTopAndBottom(dy);
     }
+
+    public void setAvatarBadgesHidden(boolean hidden) {
+        if (hidden) {
+            if (communityItem != null && cgCommunityItemAlpha < 0) {
+                cgCommunityItemAlpha = communityItem.getAlpha();
+                communityItem.setAlpha(0f);
+            }
+            if (timeItem != null && cgTimeItemAlpha < 0) {
+                cgTimeItemAlpha = timeItem.getAlpha();
+                timeItem.setAlpha(0f);
+            }
+        } else {
+            if (communityItem != null && cgCommunityItemAlpha >= 0) {
+                communityItem.setAlpha(cgCommunityItemAlpha);
+            }
+            if (timeItem != null && cgTimeItemAlpha >= 0) {
+                timeItem.setAlpha(cgTimeItemAlpha);
+            }
+            cgCommunityItemAlpha = cgTimeItemAlpha = -1;
+        }
+    }
+
+    public void drawAvatarBadges(Canvas canvas, float alpha) {
+        cgDrawAvatarBadge(canvas, communityItem, cgCommunityItemAlpha, alpha);
+        cgDrawAvatarBadge(canvas, timeItem, cgTimeItemAlpha, alpha);
+    }
+
+    private void cgDrawAvatarBadge(Canvas canvas, View badge, float alpha, float fade) {
+        if (badge == null || avatarImageView == null || badge.getVisibility() != VISIBLE) {
+            return;
+        }
+        if (alpha < 0) {
+            alpha = badge.getAlpha();
+        }
+        alpha *= fade;
+        if (alpha <= 0) {
+            return;
+        }
+        final int count = canvas.save();
+        canvas.translate(badge.getX() - avatarImageView.getX(), badge.getY() - avatarImageView.getY());
+        canvas.scale(badge.getScaleX(), badge.getScaleY(), badge.getPivotX(), badge.getPivotY());
+        if (alpha < 1f) {
+            canvas.saveLayerAlpha(0, 0, badge.getWidth(), badge.getHeight(), (int) (255 * alpha));
+        }
+        badge.draw(canvas);
+        canvas.restoreToCount(count);
+    }
+
+    private long getCherrygramStatusId() {
+        if (parentFragment == null || parentFragment.getCurrentChat() != null) return 0;
+        TLRPC.User user = parentFragment.getCurrentUser();
+        if (user == null || UserObject.isUserSelf(user)) return 0;
+        return BadgeHelper.getCherrygramStatusId(user);
+    }
+
+    private static final int CHERRYGRAM_STATUS_SIZE_DP = 20;
+    private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatusDrawable;
     /** Cherrygram finish */
 
 }

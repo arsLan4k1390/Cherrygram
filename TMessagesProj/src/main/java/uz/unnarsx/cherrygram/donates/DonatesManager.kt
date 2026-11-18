@@ -39,7 +39,7 @@ import kotlin.math.round
 
 object DonatesManager {
 
-    private val REFRESH_INTERVAL = if (CherrygramCoreConfig.isDevBuild()) 60 * 60 * 1000L else 6 * 60 * 60 * 1000L // 6 hours
+    private val REFRESH_INTERVAL = if (CherrygramCoreConfig.isDevBuild()) 60 * 60 * 1000L else 3 * 60 * 60 * 1000L // 3 hours
 
     suspend fun startAutoRefresh(context: Context, force: Boolean, fromIntegrityChecker: Boolean) = coroutineScope {
         val lastUpdateTime = CherrygramCoreConfig.lastDonatesCheckTime
@@ -467,9 +467,9 @@ object DonatesManager {
     }
 
     fun getTonAmountForUsd(context: Context, usdPrice: Double, marketplace: Boolean): Double {
-        val rate = getTonUsdtRate(context) * 0.80
+        val rate = getTonUsdtRate(context) * 0.75
         val amount = usdPrice / rate
-        return max(if (marketplace) 4.0 else 2.0, roundTo(amount, 2))
+        return max(if (marketplace) 5.0 else 3.0, roundTo(amount, 2))
     }
 
     fun roundTo(value: Double, decimals: Int): Double {

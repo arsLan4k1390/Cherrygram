@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Splash icon for the icon_background_dark + icon_foreground_cherry launcher icon. Layers are copied from the adaptive icon drawables:
-     background is mapped so its launcher mask circle (center 96, r 64 in 192 viewport) fills the 320 circle,
-     foreground uses the same placement as the cherry in cg_splash_animated. -->
 <animated-vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt">

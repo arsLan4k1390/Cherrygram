@@ -14,9 +14,10 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
 import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
+import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applySpan;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -26,9 +27,10 @@ import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.text.TextUtils;
-import android.util.SparseIntArray;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -38,7 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
-import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,16 +60,12 @@ import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BackDrawable;
-import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.ActionBar.MessageDrawable;
+import org.telegram.ui.ActionBar.EdgeToEdgeSupportMode;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.ChatMessageCell;
-import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ProfileChannelCell;
-import org.telegram.ui.Cells.ShadowSectionCell;
-import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextDetailCell;
 import org.telegram.ui.Cells.ThemePreviewMessagesCell;
 import org.telegram.ui.Components.AnimatedColor;
@@ -79,9 +77,12 @@ import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FilledTabsView;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.PremiumGradient;
-import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.SimpleThemeDescription;
+import org.telegram.ui.Components.UItem;
+import org.telegram.ui.Components.UniversalAdapter;
+import org.telegram.ui.Components.UniversalRecyclerView;
 import org.telegram.ui.Components.ViewPagerFixed;
+import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.Stars.StarGiftPatterns;
 import org.telegram.ui.Stories.StoriesUtilities;
 import org.telegram.ui.Stories.recorder.HintView2;
@@ -94,863 +95,84 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Set;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.Extra;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.firebase.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
+import uz.unnarsx.cherrygram.misc.Constants;
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
-public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
+public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry {
 
-    private FrameLayout contentView;
+    private static final int PAGE_MESSAGE = 0;
+    private static final int PAGE_PROFILE = 1;
+
+    private final int showForwardDateSwitchRow = 1;
+    private final int pencilIconSwitchRow = 2;
+    private final int timeWithSecondsSwitchRow = 3;
+
+    private final int premiumStatusSwitchRow = 4;
+    private final int replyBackgroundSwitchRow = 5;
+    private final int replyColorSwitchRow = 6;
+    private final int replyEmojiSwitchRow = 7;
+
+    private final int channelPreviewRow = 8;
+    private final int hidePhoneSwitchRow = 9;
+    private final int channelPreviewSwitchRow = 10;
+    private final int showDcIdSwitchRow = 11;
+    private final int birthdayPreviewSwitchRow = 12;
+    private final int businessPreviewSwitchRow = 13;
+    private final int profileBackgroundSwitchRow = 14;
+    private final int profileEmojiSwitchRow = 15;
+    private final int newProfileDesignSwitchRow = 16;
+
+    private final int profilePreviewsSectionRow = 17;
+    private boolean expandedProfilePreviewsSection = false;
+
+    private final int premiumSectionRow = 18;
+    private boolean expandedPremiumSection = false;
+
+    private static final Set<String> PREMIUM_SECTION_SLUG = Set.of(
+            "disablePremiumStatuses",
+            "profileBackground",
+            "newProfileDesign",
+            "profileEmoji"
+    );
+
+    private static final Set<String> PROFILE_PREVIEWS_SECTION_SLUG = Set.of(
+            "hidePhoneNumber",
+            "channelPreview",
+            "showIdDc",
+            "birthdayPreview",
+            "businessPreview"
+    );
+
     private ColoredActionBar colorBar;
-
-    private final int PAGE_MESSAGE = 0;
-    private final int PAGE_PROFILE = 1;
+    private ViewPagerFixed viewPager;
+    private ImageView backButton;
+    private FilledTabsView tabsView;
 
     public Page messagePage;
     public Page profilePage;
-
-    public Page getCurrentPage() {
-        return viewPager.getCurrentPosition() == PAGE_PROFILE ? profilePage : messagePage;
-    }
-
-    private class Page extends FrameLayout {
-
-        private ProfilePreview profilePreview;
-
-        private RecyclerListView listView;
-        private RecyclerView.Adapter listAdapter;
-
-        private int selectedColor;
-        private long selectedEmoji;
-        private TLRPC.TL_emojiStatusCollectible selectedEmojiCollectible = null;
-        private TLRPC.TL_peerColorCollectible selectedPeerCollectible = null;
-        private ThemePreviewMessagesCell messagesCellPreview;
-
-        int rowCount;
-
-        int previewRow = -1;
-        int messagePreviewDivisorRow = -1;
-        int headerRow = -1;
-
-        int timeWithSecondsSwitchRow = -1;
-        int premiumStatusSwitchRow = -1;
-        int replyBackgroundSwitchRow = -1;
-        int replyColorSwitchRow = -1;
-        int replyEmojiSwitchRow = -1;
-
-        int infoHeaderRow;
-        int phoneRow;
-        int idDcPreviewRow;
-        int birthdayPreviewRow;
-        int businessHoursPreviewRow;
-        int businessLocationPreviewRow;
-        int channelPreviewRow;
-
-        int hidePhoneSwitchRow = -1;
-        int channelPreviewSwitchRow = -1;
-        int showDcIdSwitchRow = -1;
-        int birthdayPreviewSwitchRow = -1;
-        int businessPreviewSwitchRow = -1;
-        int profilePreviewDivisorRow = -1;
-        int profileBackgroundSwitchRow = -1;
-        int profileEmojiSwitchRow = -1;
-
-        private final int VIEW_TYPE_MESSAGE = 0;
-        private final int VIEW_TYPE_HEADER = 1;
-        private final int VIEW_TYPE_SWITCH = 2;
-//        private final int VIEW_TYPE_TEXT_SETTING = 3;
-        private final int VIEW_TYPE_TEXT_DETAIL = 4;
-        private final int VIEW_TYPE_CHANNEL = 5;
-        private final int VIEW_TYPE_SHADOW = 6;
-
-        private final int type;
-        public Page(Context context, int type) {
-            super(context);
-            this.type = type;
-
-            TLRPC.User user = getUserConfig().getCurrentUser();
-
-            if (type == PAGE_PROFILE) {
-                selectedEmojiCollectible = user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible
-                        ? (TLRPC.TL_emojiStatusCollectible) user.emoji_status : null;
-                selectedPeerCollectible = user != null && user.color instanceof TLRPC.TL_peerColorCollectible
-                        ? (TLRPC.TL_peerColorCollectible) user.color : null;
-
-                if (user.premium && UserObject.getProfileColorId(user) != -1) {
-                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(user) : -1;
-                } else {
-                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
-                }
-
-                if (user.premium && UserObject.getProfileEmojiId(user) != 0) {
-                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(user) : 0;
-                } else {
-                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
-                }
-            } else {
-                selectedEmojiCollectible = null;
-                selectedPeerCollectible = null;
-                if (user.premium && UserObject.getColorId(user) != -1) {
-                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : -1;
-                } else {
-                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
-                }
-
-                if (user.premium && UserObject.getEmojiId(user) != 0) {
-                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
-                } else {
-                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
-                }
-            }
-            if (selectedEmojiCollectible != null || selectedPeerCollectible != null) {
-                selectedColor = -1;
-                selectedEmoji = 0;
-            }
-
-            listView = new RecyclerListView(getContext(), getResourceProvider()) {
-                @Override
-                protected void onLayout(boolean changed, int l, int t, int r, int b) {
-                    super.onLayout(changed, l, t, r, b);
-                }
-            };
-            listView.setClipToPadding(false);
-            listView.setSections(true);
-
-            ((DefaultItemAnimator) listView.getItemAnimator()).setSupportsChangeAnimations(false);
-            listView.setLayoutManager(new LinearLayoutManager(getContext()));
-            listView.setAdapter(listAdapter = new RecyclerListView.SelectionAdapter() {
-                @Override
-                public boolean isEnabled(RecyclerView.ViewHolder holder) {
-                    return holder.getItemViewType() == VIEW_TYPE_SWITCH /*|| holder.getItemViewType() == VIEW_TYPE_TEXT_SETTING*/
-                            || holder.getItemViewType() == VIEW_TYPE_TEXT_DETAIL || holder.getItemViewType() == VIEW_TYPE_CHANNEL;
-                }
-
-                @NonNull
-                @Override
-                public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                    View view;
-                    switch (viewType) {
-                        case VIEW_TYPE_MESSAGE:
-                            ThemePreviewMessagesCell messagesCell = messagesCellPreview = new ThemePreviewMessagesCell(
-                                    getContext(), parentLayout, user.premium
-                                    && UserObject.getEmojiId(getUserConfig().getCurrentUser()) != 0
-                                            ? ThemePreviewMessagesCell.TYPE_PEER_COLOR : ThemePreviewMessagesCell.TYPE_PEER_COLOR_CHERRY
-                            );
-                            messagesCell.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-                            messagesCell.fragment = MessagesAndProfilesPreferencesEntry.this;
-                            view = messagesCell;
-                            break;
-                        case VIEW_TYPE_HEADER:
-                            HeaderCell header = new HeaderCell(getContext());
-                            header.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                            view = header;
-                            break;
-                        case VIEW_TYPE_SWITCH:
-                            TextCheckCell switchCell = new TextCheckCell(getContext());
-                            switchCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                            view = switchCell;
-                            break;
-                        case VIEW_TYPE_TEXT_DETAIL:
-                            TextDetailCell textDetailCell = new TextDetailCell(getContext(), getResourceProvider(), true, true);
-                            textDetailCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                            textDetailCell.setContentDescriptionValueFirst(true);
-                            view = textDetailCell;
-                            break;
-                        case VIEW_TYPE_CHANNEL:
-                            view = new ProfileChannelCell(MessagesAndProfilesPreferencesEntry.this, false, true);
-                            view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-                            break;
-                        case VIEW_TYPE_SHADOW:
-                        default: {
-                            view = new ShadowSectionCell(getContext());
-                            break;
-                        }
-                    }
-                    return new RecyclerListView.Holder(view);
-                }
-
-                @Override
-                public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-                    switch (getItemViewType(position)) {
-                        case VIEW_TYPE_HEADER: {
-                            HeaderCell headerCell = (HeaderCell) holder.itemView;
-                            if (position == infoHeaderRow) {
-                                headerCell.setText(getString(R.string.Info));
-                            } else if (position == headerRow) {
-                                if (type == PAGE_MESSAGE) {
-                                    headerCell.setText(getString(R.string.CP_CustomizeMessage));
-                                } else {
-                                    headerCell.setText(getString(R.string.CP_CustomizeProfile));
-                                }
-                            }
-                            break;
-                        }
-                        case VIEW_TYPE_SWITCH: {
-                            TextCheckCell switchCell = (TextCheckCell) holder.itemView;
-                            switchCell.updateRTL();
-                            if (position == timeWithSecondsSwitchRow) {
-                                switchCell.setTextAndValueAndCheck(getString(R.string.CP_ShowSeconds), getString(R.string.CP_ShowSeconds_Desc), CherrygramAppearanceConfig.INSTANCE.getShowSeconds(), true, true);
-                            } else if (position == premiumStatusSwitchRow) {
-                                switchCell.setTextAndValueAndCheck(getString(R.string.CP_DisablePremiumStatuses), getString(R.string.CP_DisablePremiumStatuses_Desc), CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses(), true, true);
-                            } else if (position == replyBackgroundSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.CP_ReplyBackground), CherrygramAppearanceConfig.INSTANCE.getReplyBackground(), false);
-                            } else if (position == replyColorSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.CP_ReplyCustomColors), CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors(), false);
-                            } else if (position == replyEmojiSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.CP_ReplyBackgroundEmoji), CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji(), false);
-                            } else if (position == hidePhoneSwitchRow) {
-                                switchCell.setTextAndCheck(applyNewSpan(getString(R.string.CP_ProfileHidePhoneNumbers)), CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber(), false);
-                            } else if (position == channelPreviewSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileChannelPreview), CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview(), false);
-                            } else if (position == showDcIdSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.AP_ShowID), CherrygramAppearanceConfig.INSTANCE.getShowIDDC(), false);
-                            } else if (position == birthdayPreviewSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileBirthDatePreview), CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview(), false);
-                            } else if (position == businessPreviewSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileBusinessPreview), CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview(), false);
-                            } else if (position == profileBackgroundSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileBackgroundColor), CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor(), false);
-                            } else if (position == profileEmojiSwitchRow) {
-                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileBackgroundEmoji), CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji(), true);
-                            }
-                            break;
-                        }
-                        case VIEW_TYPE_TEXT_DETAIL: {
-                            TextDetailCell detailCell = (TextDetailCell) holder.itemView;
-                            final TLRPC.User me = getUserConfig().getCurrentUser();
-
-                            if (position == phoneRow) {
-                                CharSequence text;
-                                TLRPC.User user = getUserConfig().getCurrentUser();
-                                boolean isFragmentPhoneNumber;
-                                if (user != null && !TextUtils.isEmpty(user.phone)) {
-                                    String phoneNumber = user.phone;
-
-                                    if (CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber()) {
-                                        text = getChatsPasswordHelper().replaceStringToSpoilers(
-                                                PhoneFormat.getInstance().format("+ " + phoneNumber),
-                                                true
-                                        );
-                                    } else {
-                                        text = PhoneFormat.getInstance().format("+ " + phoneNumber);
-                                    }
-
-                                    isFragmentPhoneNumber = phoneNumber != null && phoneNumber.matches("888\\d{8}");
-                                    if (isFragmentPhoneNumber && !TextUtils.isEmpty(phoneNumber)) {
-                                        text = PhoneFormat.getInstance().format("+ " + phoneNumber);
-                                    }
-                                    detailCell.setTextAndValue(
-                                            text,
-                                            isFragmentPhoneNumber ? getString(R.string.AnonymousNumber) : Extra.INSTANCE.getCountryByPhone(MessagesAndProfilesPreferencesEntry.this, user),
-                                            false
-                                    );
-                                }
-                            } else if (position == idDcPreviewRow) {
-                                StringBuilder sb = new StringBuilder();
-                                if (me.photo != null && me.photo.dc_id > 0) {
-                                    sb = new StringBuilder();
-                                    sb.append("DC: ");
-                                    sb.append(me.photo.dc_id);
-                                    sb.append(", ");
-                                    sb.append(CGResourcesHelper.INSTANCE.getDCName(me.photo.dc_id));
-                                    sb.append(", ");
-                                    sb.append(CGResourcesHelper.INSTANCE.getDCGeo(me.photo.dc_id));
-                                } else {
-                                    sb.append("DC: ");
-                                    sb.append(getString(R.string.NumberUnknown));
-                                }
-                                DecimalFormat df = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US) {{ setGroupingSeparator(' '); }});
-                                detailCell.setTextAndValue("ID: " + df.format(me.id), sb, false);
-
-                                Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_calendar2);
-                                detailCell.setImage(drawable);
-                                if (drawable != null && colorBar != null && colorBar.getActionBarButtonColor() != 0) {
-                                    final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
-                                    drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
-                                }
-                                detailCell.setImageClickListener(v -> {
-                                    showCreationDateHint(detailCell.getImageView(), Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getUserConfig().getClientUserId(), 0));
-                                });
-                            } else if (position == birthdayPreviewRow) {
-                                TLRPC.UserFull meFull = getMessagesController().getUserFull(me.id);
-                                if (meFull != null && meFull.birthday != null) {
-                                    String date = UserInfoActivity.birthdayString(meFull.birthday);
-                                    detailCell.setTextAndValue(date, getString(R.string.ProfileBirthday), false);
-                                } else {
-                                    final int age = Period.between(LocalDate.of(2022, 1, 15), LocalDate.now()).getYears();
-                                    String date = LocaleController.formatPluralString("ProfileBirthdayValueYear", age, birthdayString());
-                                    detailCell.setTextAndValue(date, getString(R.string.ProfileBirthday), false);
-                                }
-                                detailCell.textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, getResourceProvider()));
-
-                                Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.input_calendar_add_solar);
-                                detailCell.setImage(drawable);
-                                if (drawable != null && colorBar != null && colorBar.getActionBarButtonColor() != 0) {
-                                    final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
-                                    drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
-                                }
-                                detailCell.setImageClickListener(v -> Extra.INSTANCE.addBirthdayToCalendar(getParentActivity(), getUserConfig().getCurrentUser().id));
-                            } else if (position == businessHoursPreviewRow) {
-                                detailCell.textView.setTextColor(Theme.getColor(Theme.key_avatar_nameInMessageGreen, getResourceProvider()));
-                                detailCell.setTextAndValue(getString(R.string.BusinessHoursProfileNowOpen), getString(R.string.BusinessHoursProfile), false);
-                            } else if (position == businessLocationPreviewRow) {
-                                detailCell.textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, getResourceProvider()));
-                                detailCell.setTextAndValue("Cherrygram, Abu-Dhabi", getString(R.string.BusinessProfileLocation), false);
-                            }
-                            break;
-                        }
-                        case VIEW_TYPE_CHANNEL:
-                            if (position == channelPreviewRow) {
-                                ((ProfileChannelCell) holder.itemView).setCherry();
-                            }
-                            break;
-                    }
-                }
-
-                @Override
-                public int getItemCount() {
-                    return rowCount;
-                }
-
-                @Override
-                public int getItemViewType(int position) {
-                    if (position == previewRow) {
-                        return VIEW_TYPE_MESSAGE;
-                    }
-                    if (position == infoHeaderRow || position == headerRow) {
-                        return VIEW_TYPE_HEADER;
-                    }
-                    if (position == timeWithSecondsSwitchRow || position == premiumStatusSwitchRow || position == replyBackgroundSwitchRow || position == replyColorSwitchRow || position == replyEmojiSwitchRow
-                            || position == hidePhoneSwitchRow || position == channelPreviewSwitchRow || position == showDcIdSwitchRow || position == birthdayPreviewSwitchRow || position == businessPreviewSwitchRow || position == profileBackgroundSwitchRow || position == profileEmojiSwitchRow) {
-                        return VIEW_TYPE_SWITCH;
-                    }
-                    if (position == phoneRow || position == idDcPreviewRow || position == birthdayPreviewRow
-                            || position == businessHoursPreviewRow || position == businessLocationPreviewRow) {
-                        return VIEW_TYPE_TEXT_DETAIL;
-                    }
-                    if (position == channelPreviewRow) {
-                        return VIEW_TYPE_CHANNEL;
-                    }
-                    return VIEW_TYPE_SHADOW;
-                }
-            });
-            listView.setOnItemClickListener((view, position) -> {
-                final TLRPC.User me = getUserConfig().getCurrentUser();
-
-                if (position == timeWithSecondsSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setShowSeconds(!CherrygramAppearanceConfig.INSTANCE.getShowSeconds());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowSeconds());
-                    }
-                    LocaleController.getInstance().recreateFormatters();
-                    parentLayout.rebuildAllFragmentViews(true, true);
-                } else if (position == premiumStatusSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setDisablePremiumStatuses(!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses());
-                    }
-
-                    if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
-                        profilePage.profilePreview.titleView.setRightDrawable(profilePage.profilePreview.statusEmoji);
-                        profilePage.profilePreview.statusEmoji.play();
-                        profilePage.profilePreview.subtitleView.setText(getString(R.string.Online));
-                    } else {
-                        profilePage.profilePreview.titleView.setRightDrawable(0);
-                        String tgPremium = CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
-                        profilePage.profilePreview.subtitleView.setText(getString(R.string.Online) + tgPremium);
-                    }
-
-                    updateMessages();
-                    if (type == PAGE_PROFILE) {
-                        messagePage.updateMessages();
-                        messagePage.updateRows();
-                    } else {
-                        profilePage.updateRows();
-                    }
-                } else if (position == replyBackgroundSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setReplyBackground(!CherrygramAppearanceConfig.INSTANCE.getReplyBackground());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyBackground());
-                    }
-
-                    updateMessages();
-                } else if (position == replyColorSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setReplyCustomColors(!CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors());
-                    }
-
-                    if (me.premium && UserObject.getColorId(me) != -1) {
-                        if (selectedEmojiCollectible != null) {
-                            selectedColor = -1;
-                        } else {
-                            selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(me) : -1;
-                        }
-                    } else {
-                        selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
-                    }
-
-                    updateMessages();
-                } else if (position == replyEmojiSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setReplyBackgroundEmoji(!CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji());
-                    }
-
-                    if (me.premium && UserObject.getEmojiId(me) != 0) {
-                        selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(me) : 0;
-                    } else {
-                        selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
-                    }
-
-                    updateMessages();
-                } else if (position == channelPreviewRow) {
-                    Browser.openUrl(getParentActivity(), Constants.CG_CHANNEL_URL);
-                } else if (position == hidePhoneSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setProfileHidePhoneNumber(!CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber());
-                    }
-
-                    listAdapter.notifyItemChanged(phoneRow);
-                    profilePage.updateRows();
-                } else if (position == channelPreviewSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setProfileChannelPreview(!CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview());
-                    }
-
-                    listAdapter.notifyItemChanged(channelPreviewSwitchRow);
-                    listAdapter.notifyItemChanged(channelPreviewRow);
-                    listAdapter.notifyItemChanged(profilePreviewDivisorRow);
-                    listAdapter.notifyItemChanged(phoneRow);
-                    listAdapter.notifyItemChanged(idDcPreviewRow);
-                    listAdapter.notifyItemChanged(birthdayPreviewRow);
-                    listAdapter.notifyItemChanged(businessHoursPreviewRow);
-                    listAdapter.notifyItemChanged(businessLocationPreviewRow);
-                    profilePage.updateRows();
-                    parentLayout.rebuildAllFragmentViews(false, false);
-                } else if (position == showDcIdSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setShowIDDC(!CherrygramAppearanceConfig.INSTANCE.getShowIDDC());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowIDDC());
-                    }
-
-                    listAdapter.notifyItemChanged(channelPreviewRow);
-                    listAdapter.notifyItemChanged(showDcIdSwitchRow);
-                    listAdapter.notifyItemChanged(profilePreviewDivisorRow);
-                    listAdapter.notifyItemChanged(phoneRow);
-                    listAdapter.notifyItemChanged(idDcPreviewRow);
-                    listAdapter.notifyItemChanged(birthdayPreviewRow);
-                    listAdapter.notifyItemChanged(businessHoursPreviewRow);
-                    listAdapter.notifyItemChanged(businessLocationPreviewRow);
-                    profilePage.updateRows();
-                    parentLayout.rebuildAllFragmentViews(false, false);
-                } else if (position == birthdayPreviewSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setProfileBirthDatePreview(!CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview());
-                    }
-
-                    listAdapter.notifyItemChanged(channelPreviewRow);
-                    listAdapter.notifyItemChanged(birthdayPreviewSwitchRow);
-                    listAdapter.notifyItemChanged(profilePreviewDivisorRow);
-                    listAdapter.notifyItemChanged(phoneRow);
-                    listAdapter.notifyItemChanged(idDcPreviewRow);
-                    listAdapter.notifyItemChanged(birthdayPreviewRow);
-                    listAdapter.notifyItemChanged(businessHoursPreviewRow);
-                    listAdapter.notifyItemChanged(businessLocationPreviewRow);
-                    profilePage.updateRows();
-                    parentLayout.rebuildAllFragmentViews(false, false);
-                } else if (position == businessPreviewSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setProfileBusinessPreview(!CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview());
-                    }
-
-                    listAdapter.notifyItemChanged(channelPreviewRow);
-                    listAdapter.notifyItemChanged(businessPreviewSwitchRow);
-                    listAdapter.notifyItemChanged(profilePreviewDivisorRow);
-                    listAdapter.notifyItemChanged(phoneRow);
-                    listAdapter.notifyItemChanged(idDcPreviewRow);
-                    listAdapter.notifyItemChanged(birthdayPreviewRow);
-                    listAdapter.notifyItemChanged(businessHoursPreviewRow);
-                    listAdapter.notifyItemChanged(businessLocationPreviewRow);
-                    profilePage.updateRows();
-                    parentLayout.rebuildAllFragmentViews(false, false);
-                } else if (position == profileBackgroundSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setProfileBackgroundColor(!CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor());
-                    }
-
-                    if (me.premium && UserObject.getProfileColorId(me) != -1) {
-                        selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(me) : -1;
-                    } else {
-                        selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
-                    }
-
-                    updateMessages();
-                    if (type == PAGE_PROFILE) {
-                        messagePage.updateMessages();
-                    }
-                    if (type == PAGE_PROFILE && colorBar != null) {
-                        colorBar.setColor(getSelectedProfilePeerColor(), true);
-                    }
-                    updateProfilePreviewColor(true);
-                    if (profilePage != null && profilePage.profilePreview != null && messagePage != null) {
-                        profilePage.profilePreview.overrideAvatarColor(messagePage.selectedColor);
-                    }
-                } else if (position == profileEmojiSwitchRow) {
-                    CherrygramAppearanceConfig.INSTANCE.setProfileBackgroundEmoji(!CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji());
-                    if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji());
-                    }
-
-                    if (me.premium && UserObject.getProfileEmojiId(me) != 0) {
-                        selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(me) : 0;
-                    } else {
-                        selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
-                    }
-
-                    updateMessages();
-                    if (type == PAGE_PROFILE) {
-                        messagePage.updateMessages();
-                    }
-                    if (profilePreview != null) {
-                        if (selectedEmojiCollectible != null) {
-                            profilePreview.setEmoji(
-                                    CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? selectedEmojiCollectible.pattern_document_id : 0,
-                                    true,
-                                    true
-                            );
-                        } else {
-                            profilePreview.setEmoji(selectedEmoji, false, true);
-                        }
-                    }
-                }
-            });
-            addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-
-            DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
-            itemAnimator.setDurations(350);
-            itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
-            itemAnimator.setDelayAnimations(false);
-            itemAnimator.setSupportsChangeAnimations(false);
-            listView.setItemAnimator(itemAnimator);
-
-            if (type == PAGE_PROFILE) {
-                profilePreview = new ProfilePreview(getContext(), currentAccount, resourceProvider);
-                if (selectedEmojiCollectible != null) {
-                    profilePreview.setStatusEmoji(selectedEmojiCollectible.document_id, true, true);
-                    profilePreview.setEmoji(
-                            CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? selectedEmojiCollectible.pattern_document_id : 0,
-                            true,
-                            false
-                    );
-                } else {
-                    profilePreview.setEmoji(selectedEmoji, false, false);
-                }
-                updateProfilePreviewColor(false);
-                addView(profilePreview, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
-            }
-
-            updateColors();
-            updateRows();
-
-            setWillNotDraw(false);
-        }
-
-        private int actionBarHeight;
-
-        @Override
-        protected void dispatchDraw(@NonNull Canvas canvas) {
-            super.dispatchDraw(canvas);
-            if (getParentLayout() != null) {
-                getParentLayout().drawHeaderShadow(canvas, actionBarHeight);
-            }
-        }
-
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            if (type == PAGE_MESSAGE) {
-                actionBarHeight = ActionBar.getCurrentActionBarHeight() + AndroidUtilities.statusBarHeight;
-                ((MarginLayoutParams) listView.getLayoutParams()).topMargin = actionBarHeight;
-            } else {
-                actionBarHeight = dp(230) + AndroidUtilities.statusBarHeight;
-                ((MarginLayoutParams) listView.getLayoutParams()).topMargin = actionBarHeight;
-                profilePreview.getLayoutParams().height = actionBarHeight;
-            }
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
-
-        private void updateRows() {
-            rowCount = 0;
-            if (type == PAGE_MESSAGE) {
-                previewRow = rowCount++;
-                messagePreviewDivisorRow = rowCount++;
-                headerRow = rowCount++;
-                timeWithSecondsSwitchRow = rowCount++;
-
-                premiumStatusSwitchRow = rowCount++;
-                if (listAdapter != null) {
-                    listAdapter.notifyItemRemoved(premiumStatusSwitchRow);
-                    listAdapter.notifyItemInserted(premiumStatusSwitchRow);
-                }
-                replyBackgroundSwitchRow = rowCount++;
-                replyColorSwitchRow = rowCount++;
-                replyEmojiSwitchRow = rowCount++;
-            }
-            if (type == PAGE_PROFILE) {
-                // Channel preview
-                int prevChannelPreviewRow = channelPreviewRow;
-                channelPreviewRow = -1;
-                if (CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview()) {
-                    channelPreviewRow = rowCount++;
-                    profilePreviewDivisorRow = rowCount++;
-                }
-                if (listAdapter != null) {
-                    if (prevChannelPreviewRow == -1 && channelPreviewRow != -1) {
-                        listAdapter.notifyItemInserted(channelPreviewRow);
-                        listAdapter.notifyItemInserted(profilePreviewDivisorRow);
-                    } else if (prevChannelPreviewRow != -1 && channelPreviewRow == -1) {
-                        listAdapter.notifyItemRemoved(prevChannelPreviewRow);
-                        listAdapter.notifyItemRemoved(profilePreviewDivisorRow);
-                    }
-                }
-                // Channel preview
-
-                int prevInfoHeaderRow = infoHeaderRow;
-                infoHeaderRow = -1;
-                if (!CherrygramAppearanceConfig.INSTANCE.getShowIDDC()
-                        || CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview()
-                        || CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()
-                ) {
-                    infoHeaderRow = rowCount++;
-                }
-                if (listAdapter != null) {
-                    if (prevInfoHeaderRow == -1 && infoHeaderRow != -1) {
-                        listAdapter.notifyItemInserted(infoHeaderRow);
-                    } else if (prevInfoHeaderRow != -1 && infoHeaderRow == -1) {
-                        listAdapter.notifyItemRemoved(prevInfoHeaderRow);
-                    }
-                }
-
-                phoneRow = rowCount++;
-
-                // DC ID
-                int prevIdDcPreviewRow = idDcPreviewRow;
-                idDcPreviewRow = -1;
-                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC()) {
-                    idDcPreviewRow = rowCount++;
-                }
-                if (listAdapter != null) {
-                    if (prevIdDcPreviewRow == -1 && idDcPreviewRow != -1) {
-                        listAdapter.notifyItemInserted(idDcPreviewRow);
-                    } else if (prevIdDcPreviewRow != -1 && idDcPreviewRow == -1) {
-                        listAdapter.notifyItemRemoved(prevIdDcPreviewRow);
-                    }
-                }
-                // DC ID
-
-                // Birth date preview
-                int prevBirthdayPreviewRow = birthdayPreviewRow;
-                birthdayPreviewRow = -1;
-                if (CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview()) {
-                    birthdayPreviewRow = rowCount++;
-                }
-                if (listAdapter != null) {
-                    if (prevBirthdayPreviewRow == -1 && birthdayPreviewRow != -1) {
-                        listAdapter.notifyItemInserted(birthdayPreviewRow);
-                    } else if (prevBirthdayPreviewRow != -1 && birthdayPreviewRow == -1) {
-                        listAdapter.notifyItemRemoved(prevBirthdayPreviewRow);
-                    }
-                }
-                // Birth date preview
-
-                // Business preview
-                int prevBusinessHoursPreviewRow = businessHoursPreviewRow;
-                businessHoursPreviewRow = -1;
-                if (CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()) {
-                    businessHoursPreviewRow = rowCount++;
-                }
-                if (listAdapter != null) {
-                    if (prevBusinessHoursPreviewRow == -1 && businessHoursPreviewRow != -1) {
-                        listAdapter.notifyItemInserted(businessHoursPreviewRow);
-                    } else if (prevBusinessHoursPreviewRow != -1 && businessHoursPreviewRow == -1) {
-                        listAdapter.notifyItemRemoved(prevBusinessHoursPreviewRow);
-                    }
-                }
-
-                int prevBusinessLocationPreviewRow = businessLocationPreviewRow;
-                businessLocationPreviewRow = -1;
-                if (CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()) {
-                    businessLocationPreviewRow = rowCount++;
-                }
-                if (listAdapter != null) {
-                    if (prevBusinessLocationPreviewRow == -1 && businessLocationPreviewRow != -1) {
-                        listAdapter.notifyItemInserted(businessLocationPreviewRow);
-                    } else if (prevBusinessLocationPreviewRow != -1 && businessLocationPreviewRow == -1) {
-                        listAdapter.notifyItemRemoved(prevBusinessLocationPreviewRow);
-                    }
-                }
-                // Business preview
-
-                profilePreviewDivisorRow = rowCount++;
-                headerRow = rowCount++;
-                hidePhoneSwitchRow = rowCount++;
-                channelPreviewSwitchRow = rowCount++;
-                showDcIdSwitchRow = rowCount++;
-                birthdayPreviewSwitchRow = rowCount++;
-                businessPreviewSwitchRow = rowCount++;
-                premiumStatusSwitchRow = rowCount++;
-                if (listAdapter != null) {
-                    listAdapter.notifyItemRemoved(premiumStatusSwitchRow);
-                    listAdapter.notifyItemInserted(premiumStatusSwitchRow);
-                }
-                profileBackgroundSwitchRow = rowCount++;
-                profileEmojiSwitchRow = rowCount++;
-            }
-        }
-
-        private MessagesController.PeerColor getSelectedProfilePeerColor() {
-            if (type != PAGE_PROFILE || !CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
-                return null;
-            }
-            if (selectedPeerCollectible != null) {
-                return MessagesController.PeerColor.fromPeerCollectible(selectedPeerCollectible);
-            }
-            if (selectedEmojiCollectible != null) {
-                return MessagesController.PeerColor.fromCollectible(selectedEmojiCollectible);
-            }
-            if (selectedColor >= 0) {
-                MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
-                return peerColors == null ? null : peerColors.getColor(selectedColor);
-            }
-            return null;
-        }
-
-        private void updateProfilePreviewColor(boolean animated) {
-            if (profilePreview == null) {
-                return;
-            }
-            MessagesController.PeerColor peerColor = getSelectedProfilePeerColor();
-            profilePreview.setColor(peerColor, animated);
-        }
-
-        private void updateMessages() {
-            if (messagesCellPreview != null) {
-                TLRPC.TL_peerColorCollectible previewPeerCollectible = selectedPeerCollectible;
-                if (type == PAGE_MESSAGE && profilePage != null) {
-                    previewPeerCollectible = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()
-                            ? profilePage.selectedPeerCollectible : null;
-                }
-
-                ChatMessageCell[] cells = messagesCellPreview.getCells();
-                for (ChatMessageCell cell : cells) {
-                    if (cell != null) {
-                        MessageObject msg = cell.getMessageObject();
-                        if (msg != null) {
-                            msg.overrideLinkEmoji = selectedEmoji;
-                            msg.overrideLinkPeerColor = previewPeerCollectible;
-                            cell.setAvatar(msg);
-
-                            if (cell.currentNameStatusDrawable == null) {
-                                cell.currentNameStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(26));
-                            }
-                            if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
-                                Long emojiStatusId = UserObject.getEmojiStatusDocumentId(getUserConfig().getCurrentUser().emoji_status);
-                                if (emojiStatusId != null) {
-                                    cell.currentNameStatusDrawable.set(emojiStatusId, false);
-                                    cell.currentNameStatusDrawable.play();
-                                } else {
-                                    cell.currentNameStatusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, false);
-                                }
-                            } else {
-                                cell.currentNameStatusDrawable.set((Drawable) null, false);
-                            }
-                            cell.invalidate();
-                        }
-                    }
-                }
-            }
-        }
-
-        public void updateColors() {
-            listView.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
-            if (type == PAGE_PROFILE && colorBar != null) {
-                colorBar.setColor(currentAccount, selectedColor, true);
-            }
-            if (messagesCellPreview != null) {
-                messagesCellPreview.invalidate();
-            }
-            if (profilePreview != null) {
-                updateProfilePreviewColor(false);
-                AndroidUtilities.forEachViews(listView, view -> {
-                    if (view instanceof ProfileChannelCell) {
-                        ((ProfileChannelCell) view).updateColors();
-                    }
-                });
-            }
-        }
-
-    }
-
-    private Theme.ResourcesProvider parentResourcesProvider;
-    private final SparseIntArray currentColors = new SparseIntArray();
-    private final MessageDrawable msgInDrawable, msgInDrawableSelected;
-
-    public MessagesAndProfilesPreferencesEntry() {
-        super();
-
-        resourceProvider = new Theme.ResourcesProvider() {
-            @Override
-            public int getColor(int key) {
-                int index = currentColors.indexOfKey(key);
-                if (index >= 0) {
-                    return currentColors.valueAt(index);
-                }
-                if (parentResourcesProvider != null) {
-                    return parentResourcesProvider.getColor(key);
-                }
-                return Theme.getColor(key);
-            }
-
-            @Override
-            public Drawable getDrawable(String drawableKey) {
-                if (drawableKey.equals(Theme.key_drawable_msgIn)) {
-                    return msgInDrawable;
-                }
-                if (drawableKey.equals(Theme.key_drawable_msgInSelected)) {
-                    return msgInDrawableSelected;
-                }
-                if (parentResourcesProvider != null) {
-                    return parentResourcesProvider.getDrawable(drawableKey);
-                }
-                return Theme.getThemeDrawable(drawableKey);
-            }
-
-            @Override
-            public Paint getPaint(String paintKey) {
-                return Theme.ResourcesProvider.super.getPaint(paintKey);
-            }
-        };
-        msgInDrawable = new MessageDrawable(MessageDrawable.TYPE_TEXT, false, false, resourceProvider);
-        msgInDrawableSelected = new MessageDrawable(MessageDrawable.TYPE_TEXT, false, true, resourceProvider);
-    }
-
-    @Override
-    public void setResourceProvider(Theme.ResourcesProvider resourceProvider) {
-        parentResourcesProvider = resourceProvider;
-    }
 
     private boolean startAtProfile;
     public MessagesAndProfilesPreferencesEntry startOnProfile() {
         this.startAtProfile = true;
         return this;
+    }
+
+    @Override
+    protected CharSequence getTitle() {
+        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("msgs_and_profiles_prefs");
+        return getString(R.string.CP_ProfileReplyBackground);
+    }
+
+    @Override
+    protected String getKey() {
+        return DeeplinkHelper.DeepLinksRepo.CG_Messages_And_Profiles;
     }
 
     @Override
@@ -973,21 +195,19 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         return super.onFragmentCreate();
     }
 
-    private ViewPagerFixed viewPager;
-    private ImageView backButton;
-    private FrameLayout actionBarContainer;
-    private FilledTabsView tabsView;
+    @Override
+    public void onFragmentClosed() {
+        super.onFragmentClosed();
+        Bulletin.removeDelegate(this);
+    }
 
     @Override
     public View createView(Context context) {
-        messagePage = new Page(context, PAGE_MESSAGE);
-        profilePage = new Page(context, PAGE_PROFILE);
-
         actionBar.setCastShadows(false);
         actionBar.setVisibility(View.GONE);
         actionBar.setAllowOverlayTitle(false);
 
-        FrameLayout frameLayout = new FrameLayout(context) {
+        contentView = new FrameLayout(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 if (actionBarContainer != null) {
@@ -997,14 +217,16 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             }
         };
-        frameLayout.setFitsSystemWindows(true);
 
-        colorBar = new ColoredActionBar(context, resourceProvider) {
+        colorBar = new ColoredActionBar(context, getResourceProvider()) {
             @Override
             protected void onUpdateColor() {
                 updateLightStatusBar();
                 updateActionBarButtonsColor();
                 updateTabColors();
+                if (profilePage != null) {
+                    profilePage.invalidate();
+                }
             }
 
             private int lastBtnColor = 0;
@@ -1018,11 +240,12 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 }
             }
         };
-        if (profilePage != null) {
-            colorBar.setColor(profilePage.getSelectedProfilePeerColor(), false);
-        }
         colorBar.newMode = false;
-        frameLayout.addView(colorBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
+        contentView.addView(colorBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
+
+        messagePage = new Page(context, PAGE_MESSAGE);
+        profilePage = new Page(context, PAGE_PROFILE);
+        colorBar.setColor(profilePage.getSelectedProfilePeerColor(), false);
 
         viewPager = new ViewPagerFixed(context) {
             @Override
@@ -1056,10 +279,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
             }
         });
-        frameLayout.addView(viewPager, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
+        contentView.addView(viewPager, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
 
         actionBarContainer = new FrameLayout(context);
-        frameLayout.addView(actionBarContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
+        contentView.addView(actionBarContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
         tabsView = new FilledTabsView(context);
         tabsView.setTabs(
@@ -1075,14 +298,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         actionBarContainer.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 40, Gravity.CENTER));
 
         if (startAtProfile) {
-            viewPager.setPosition(1);
-            if (tabsView != null) {
-                tabsView.setSelected(1);
-            }
-            if (colorBar != null) {
-                colorBar.setProgressToGradient(1f);
-                updateLightStatusBar();
-            }
+            viewPager.setPosition(PAGE_PROFILE);
+            tabsView.setSelected(PAGE_PROFILE);
+            colorBar.setProgressToGradient(1f);
+            updateLightStatusBar();
         }
 
         backButton = new ImageView(context);
@@ -1101,22 +320,821 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
         colorBar.updateColors();
 
-        fragmentView = contentView = frameLayout;
-
-        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("msgs_and_profiles_prefs");
+        fragmentView = contentView;
+        ViewCompat.setOnApplyWindowInsetsListener(fragmentView, this::onInsetsInternal);
 
         return contentView;
     }
 
     @Override
-    public void onFragmentClosed() {
-        super.onFragmentClosed();
-        Bulletin.removeDelegate(this);
+    protected void onClick(UItem item, View view, int position, float x, float y) {
+        if (item.id == showForwardDateSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setMsgForwardDate(!CherrygramAppearanceConfig.INSTANCE.getMsgForwardDate());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getMsgForwardDate());
+
+            messagePage.messagesCellPreview = messagePage.createMessagesPreview(getContext());
+            messagePage.listView.adapter.update(false);
+        } else if (item.id == pencilIconSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setShowPencilIcon(!CherrygramAppearanceConfig.INSTANCE.getShowPencilIcon());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getShowPencilIcon());
+
+            messagePage.messagesCellPreview = messagePage.createMessagesPreview(getContext());
+            messagePage.listView.adapter.update(false);
+        } else if (item.id == timeWithSecondsSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setShowSeconds(!CherrygramAppearanceConfig.INSTANCE.getShowSeconds());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getShowSeconds());
+
+            LocaleController.getInstance().recreateFormatters();
+            messagePage.messagesCellPreview = messagePage.createMessagesPreview(getContext());
+            messagePage.listView.adapter.update(false);
+        } else if (item.id == premiumStatusSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setDisablePremiumStatuses(!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses());
+
+            profilePage.profilePreview.setPremiumStatusVisible(!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses());
+            messagePage.updateMessages();
+            updateRows(true);
+        } else if (item.id == replyBackgroundSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setReplyBackground(!CherrygramAppearanceConfig.INSTANCE.getReplyBackground());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getReplyBackground());
+
+            messagePage.updateMessages();
+        } else if (item.id == replyColorSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setReplyCustomColors(!CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors());
+
+            messagePage.setupValues();
+            messagePage.updateMessages();
+        } else if (item.id == replyEmojiSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setReplyBackgroundEmoji(!CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji());
+
+            messagePage.setupValues();
+            messagePage.updateMessages();
+        } else if (item.id == premiumSectionRow) {
+            expandedPremiumSection = !expandedPremiumSection;
+            item.collapsed = !item.collapsed;
+
+            updateRows(true);
+        } else if (item.id == profilePreviewsSectionRow) {
+            expandedProfilePreviewsSection = !expandedProfilePreviewsSection;
+            item.collapsed = !item.collapsed;
+
+            updateRows(true);
+        } else if (item.id == channelPreviewRow) {
+            Browser.openUrl(getParentActivity(), Constants.CG_CHANNEL_URL);
+        } else if (item.id == hidePhoneSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setProfileHidePhoneNumber(!CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber());
+
+            updateRows(true);
+        } else if (item.id == channelPreviewSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setProfileChannelPreview(!CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview());
+
+            updateRows(true);
+        } else if (item.id == showDcIdSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setShowIDDC(!CherrygramAppearanceConfig.INSTANCE.getShowIDDC());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getShowIDDC());
+
+            updateRows(true);
+        } else if (item.id == birthdayPreviewSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setProfileBirthDatePreview(!CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview());
+
+            updateRows(true);
+        } else if (item.id == businessPreviewSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setProfileBusinessPreview(!CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview());
+
+            updateRows(true);
+        } else if (item.id == profileBackgroundSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setProfileBackgroundColor(!CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor());
+
+            profilePage.setupValues();
+            messagePage.updateMessages();
+            colorBar.setColor(profilePage.getSelectedProfilePeerColor(), true);
+            profilePage.updateProfilePreviewColor(true);
+            profilePage.profilePreview.overrideAvatarColor(messagePage.selectedColor);
+
+            if (CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign()) {
+                profilePage.updatePalette();
+                messagePage.listView.adapter.update(true);
+            } else {
+                updateRows(true);
+            }
+        } else if (item.id == newProfileDesignSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setNewProfileDesign(!CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign());
+
+            colorBar.setColor(profilePage.getSelectedProfilePeerColor(), true);
+            profilePage.updateProfilePreviewColor(true);
+            profilePage.updatePalette();
+        } else if (item.id == profileEmojiSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setProfileBackgroundEmoji(!CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji());
+
+            profilePage.setupValues();
+            messagePage.updateMessages();
+            profilePage.updateProfilePreviewEmoji(true);
+        }
     }
 
     @Override
-    public void onFragmentDestroy() {
-        super.onFragmentDestroy();
+    protected void updateRows(boolean animated) {
+        if (messagePage != null) messagePage.listView.adapter.update(animated);
+        if (profilePage != null) profilePage.listView.adapter.update(animated);
+    }
+
+    @Override
+    public void scrollToRow(String slug, Runnable unknown) {
+        if (PROFILE_PREVIEWS_SECTION_SLUG.contains(slug) && !expandedProfilePreviewsSection) {
+            expandedProfilePreviewsSection = true;
+            updateRows(false);
+        }
+        if (PREMIUM_SECTION_SLUG.contains(slug) && !expandedPremiumSection) {
+            expandedPremiumSection = true;
+            updateRows(false);
+        }
+        for (Page page : new Page[] { messagePage, profilePage }) {
+            if (page == null) continue;
+            final int position = page.listView.findPositionByItemSlug(slug);
+            if (position == -1) continue;
+
+            if (viewPager.getCurrentPosition() != page.type) {
+                viewPager.scrollToPosition(page.type);
+            }
+            page.listView.highlightRow(() -> {
+                ((LinearLayoutManager) page.listView.getLayoutManager()).scrollToPositionWithOffset(position, AndroidUtilities.displaySize.y / 2);
+                return position;
+            });
+            return;
+        }
+        if (unknown != null) unknown.run();
+    }
+
+    private class Page extends FrameLayout {
+
+        private final int type;
+
+        private UniversalRecyclerView listView;
+        private ProfilePreview profilePreview;
+
+        private int selectedColor;
+        private long selectedEmoji;
+        private TLRPC.TL_emojiStatusCollectible selectedEmojiCollectible;
+        private TLRPC.TL_peerColorCollectible selectedPeerCollectible;
+
+        private ThemePreviewMessagesCell messagesCellPreview;
+        private ProfileChannelCell channelCell;
+        private TextDetailCell phoneCell, idDcCell, birthdayCell, businessHoursCell, businessLocationCell;
+
+        private int actionBarHeight;
+        private float headerCollapse;
+
+        private Theme.ResourcesProvider pageResourcesProvider;
+
+        public Page(Context context, int type) {
+            super(context);
+            this.type = type;
+            setupValues();
+
+            pageResourcesProvider = createPageResourcesProvider();
+            if (type == PAGE_MESSAGE) {
+                messagesCellPreview = createMessagesPreview(context);
+            } else {
+                createProfileCells(context);
+            }
+
+            listView = createListView(context);
+            addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            if (type == PAGE_PROFILE) {
+                profilePreview = new ProfilePreview(context, currentAccount, getResourceProvider());
+                if (selectedEmojiCollectible != null) {
+                    profilePreview.setStatusEmoji(selectedEmojiCollectible.document_id, true, true);
+                }
+                updateProfilePreviewEmoji(false);
+                updateProfilePreviewColor(false);
+                addView(profilePreview, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
+            }
+
+            updateColors();
+            setWillNotDraw(false);
+        }
+
+        private Theme.ResourcesProvider createPageResourcesProvider() {
+            final MessagesController.PeerColor tintColor = CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign() ? getSelectedProfilePeerColor() : null;
+            if (tintColor == null) {
+                return getResourceProvider();
+            }
+            final ProfileActivity.PeerColorResourcesProvider peerResourcesProvider = new ProfileActivity.PeerColorResourcesProvider(null);
+            peerResourcesProvider.setParent(getResourceProvider());
+            peerResourcesProvider.setPeerColor(tintColor);
+            final ProfileActivity.PeerColorResourcesProvider lightThemeResourcesProvider = new ProfileActivity.PeerColorResourcesProvider(peerResourcesProvider);
+            return new Theme.ResourcesProvider() {
+                @Override
+                public int getColor(int key) {
+                    if (key == Theme.key_alwaysGrayDarkTheme) {
+                        return 0;
+                    }
+                    if (isSwitchColorKey(key)) {
+                        return lightThemeResourcesProvider.getColor(key);
+                    }
+                    return peerResourcesProvider.getColor(key);
+                }
+
+                @Override
+                public Drawable getDrawable(String drawableKey) {
+                    return peerResourcesProvider.getDrawable(drawableKey);
+                }
+
+                @Override
+                public Paint getPaint(String paintKey) {
+                    return peerResourcesProvider.getPaint(paintKey);
+                }
+
+                @Override
+                public boolean hasGradientService() {
+                    return peerResourcesProvider.hasGradientService();
+                }
+
+                @Override
+                public void applyServiceShaderMatrix(int w, int h, float translationX, float translationY) {
+                    peerResourcesProvider.applyServiceShaderMatrix(w, h, translationX, translationY);
+                }
+
+                @Override
+                public boolean isDark() {
+                    return peerResourcesProvider.isDark();
+                }
+            };
+        }
+
+        private boolean isSwitchColorKey(int key) {
+            return key == Theme.key_switchTrack || key == Theme.key_switchTrackChecked
+                    || key == Theme.key_switch2Track || key == Theme.key_switch2TrackChecked
+                    || key == Theme.key_switchTrackBlue || key == Theme.key_switchTrackBlueChecked
+                    || key == Theme.key_switchTrackBlueThumb || key == Theme.key_switchTrackBlueThumbChecked
+                    || key == Theme.key_switchTrackBlueSelector || key == Theme.key_switchTrackBlueSelectorChecked
+                    || key == Theme.key_alwaysGray || key == Theme.key_alwaysWhite;
+        }
+
+        private boolean isPeerTinted() {
+            return pageResourcesProvider != getResourceProvider();
+        }
+
+        private void createProfileCells(Context context) {
+            channelCell = new ProfileChannelCell(MessagesAndProfilesPreferencesEntry.this, false, true, pageResourcesProvider);
+            phoneCell = createDetailCell(context);
+            idDcCell = createDetailCell(context);
+            birthdayCell = createDetailCell(context);
+            businessHoursCell = createDetailCell(context);
+            businessLocationCell = createDetailCell(context);
+        }
+
+        private UniversalRecyclerView createListView(Context context) {
+            final UniversalRecyclerView listView;
+            if (!isPeerTinted()) {
+                listView = new UniversalRecyclerView(
+                        MessagesAndProfilesPreferencesEntry.this,
+                        this::fillPageItems,
+                        MessagesAndProfilesPreferencesEntry.this::onClick,
+                        (item, view, position, x, y) -> handleItemLongClick(this.listView, item, view, position, x, y)
+                );
+            } else {
+                listView = new UniversalRecyclerView(
+                        context, currentAccount, getClassGuid(),
+                        this::fillPageItems,
+                        MessagesAndProfilesPreferencesEntry.this::onClick,
+                        (item, view, position, x, y) -> handleItemLongClick(this.listView, item, view, position, x, y),
+                        pageResourcesProvider
+                );
+            }
+            listView.adapter.setApplyBackground(false);
+            listView.setClipToPadding(false);
+            listView.setSections();
+            if (type == PAGE_PROFILE) {
+                listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                        updateHeaderCollapse();
+                    }
+                });
+                listView.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> updateHeaderCollapse());
+            }
+            return listView;
+        }
+
+        public void updatePalette() {
+            if (type != PAGE_PROFILE) {
+                return;
+            }
+            Bitmap snapshot = null;
+            if (getWidth() > 0 && getHeight() > 0) {
+                snapshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+                draw(new Canvas(snapshot));
+            }
+
+            final UniversalRecyclerView oldListView = listView;
+            final Parcelable scrollState = oldListView.getLayoutManager() != null ? oldListView.getLayoutManager().onSaveInstanceState() : null;
+
+            pageResourcesProvider = createPageResourcesProvider();
+            createProfileCells(getContext());
+            listView = createListView(getContext());
+            listView.setPadding(oldListView.getPaddingLeft(), oldListView.getPaddingTop(), oldListView.getPaddingRight(), oldListView.getPaddingBottom());
+            if (scrollState != null && listView.getLayoutManager() != null) {
+                listView.getLayoutManager().onRestoreInstanceState(scrollState);
+            }
+            final int index = indexOfChild(oldListView);
+            removeView(oldListView);
+            addView(listView, index, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            updateColors();
+            invalidate();
+
+            if (snapshot != null) {
+                final Bitmap finalSnapshot = snapshot;
+                final ImageView snapshotView = new ImageView(getContext());
+                snapshotView.setImageBitmap(snapshot);
+                addView(snapshotView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+                snapshotView.animate()
+                        .alpha(0f)
+                        .setDuration(320)
+                        .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
+                        .withEndAction(() -> {
+                            removeView(snapshotView);
+                            finalSnapshot.recycle();
+                        })
+                        .start();
+            }
+        }
+
+        private final Paint defaultBackgroundPaint = new Paint();
+
+        @Override
+        protected void onDraw(@NonNull Canvas canvas) {
+            super.onDraw(canvas);
+            if (type == PAGE_PROFILE && isPeerTinted() && colorBar != null && colorBar.backgroundGradient != null && viewPager != null) {
+                final float dx = colorBar.getLeft() - viewPager.getLeft() - getLeft();
+                final float dy = colorBar.getY() - viewPager.getTop() - getTop();
+                canvas.save();
+                canvas.translate(dx, dy);
+                if (colorBar.progressToGradient < 1 && !colorBar.newMode) {
+                    defaultBackgroundPaint.setColor(colorBar.defaultColor);
+                    canvas.drawRect(-dx, -dy, -dx + getWidth(), -dy + getHeight(), defaultBackgroundPaint);
+                }
+                canvas.drawRect(-dx, -dy, -dx + getWidth(), -dy + getHeight(), colorBar.backgroundPaint);
+                canvas.restore();
+            }
+        }
+
+        private ThemePreviewMessagesCell createMessagesPreview(Context context) {
+            final TLRPC.User user = getUserConfig().getCurrentUser();
+            ThemePreviewMessagesCell cell = new ThemePreviewMessagesCell(
+                    context, parentLayout, user.premium && UserObject.getEmojiId(user) != 0
+                            ? ThemePreviewMessagesCell.TYPE_PEER_COLOR : ThemePreviewMessagesCell.TYPE_PEER_COLOR_CHERRY
+            );
+            cell.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+            cell.fragment = MessagesAndProfilesPreferencesEntry.this;
+            // the preview message is shown as edited and forwarded, so the pencil / "edited" and forward date settings are visible on it
+            for (ChatMessageCell messageCell : cell.getCells()) {
+                final MessageObject msg = messageCell.getMessageObject();
+                if (msg == null) continue;
+                msg.messageOwner.flags |= TLRPC.MESSAGE_FLAG_EDITED;
+                msg.messageOwner.edit_date = msg.messageOwner.date;
+
+                msg.messageOwner.flags |= TLRPC.MESSAGE_FLAG_FWD;
+                msg.messageOwner.fwd_from = new TLRPC.TL_messageFwdHeader();
+                msg.messageOwner.fwd_from.flags |= 1;
+                msg.messageOwner.fwd_from.from_id = new TLRPC.TL_peerUser();
+                msg.messageOwner.fwd_from.from_id.user_id = getUserConfig().getClientUserId();
+                msg.messageOwner.fwd_from.date = msg.messageOwner.date - 60 * 60 * 24;
+                msg.forceUpdate = true;
+                messageCell.setMessageObject(msg, null, false, false, false);
+            }
+            return cell;
+        }
+
+        private TextDetailCell createDetailCell(Context context) {
+            TextDetailCell cell = new TextDetailCell(context, pageResourcesProvider, true, true);
+            cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, pageResourcesProvider));
+            cell.setContentDescriptionValueFirst(true);
+            return cell;
+        }
+
+        private void setupValues() {
+            final TLRPC.User user = getUserConfig().getCurrentUser();
+
+            if (type == PAGE_PROFILE) {
+                selectedEmojiCollectible = user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible
+                        ? (TLRPC.TL_emojiStatusCollectible) user.emoji_status : null;
+                selectedPeerCollectible = user != null && user.color instanceof TLRPC.TL_peerColorCollectible
+                        ? (TLRPC.TL_peerColorCollectible) user.color : null;
+
+                if (user.premium && UserObject.getProfileColorId(user) != -1) {
+                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(user) : -1;
+                } else {
+                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
+                }
+
+                if (user.premium && UserObject.getProfileEmojiId(user) != 0) {
+                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(user) : 0;
+                } else {
+                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
+                }
+            } else {
+                selectedEmojiCollectible = null;
+                selectedPeerCollectible = null;
+
+                if (user.premium && UserObject.getColorId(user) != -1) {
+                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : -1;
+                } else {
+                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
+                }
+
+                if (user.premium && UserObject.getEmojiId(user) != 0) {
+                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                } else {
+                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
+                }
+            }
+            if (selectedEmojiCollectible != null || selectedPeerCollectible != null) {
+                selectedColor = -1;
+                selectedEmoji = 0;
+            }
+        }
+
+        private void fillPageItems(ArrayList<UItem> items, UniversalAdapter adapter) {
+            if (type == PAGE_MESSAGE) {
+                fillMessageItems(items);
+            } else {
+                fillProfileItems(items);
+            }
+        }
+
+        private void fillMessageItems(ArrayList<UItem> items) {
+            items.add(SettingsHelper.asCustomWithBackground(messagesCellPreview));
+            items.add(UItem.asShadow(null));
+
+            items.add(UItem.asHeader(getString(R.string.CP_CustomizeMessage)));
+            items.add(SettingsHelper.asSwitchCG(showForwardDateSwitchRow, getString(R.string.CP_ForwardMsgDate))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getMsgForwardDate())
+                    .slug("showForwardDate")
+            );
+            items.add(SettingsHelper.asSwitchCG(pencilIconSwitchRow, getString(R.string.AP_ShowPencilIcon))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getShowPencilIcon())
+                    .slug("showPencilIcon")
+            );
+            items.add(SettingsHelper.asSwitchCG(timeWithSecondsSwitchRow, getString(R.string.CP_ShowSeconds), getString(R.string.CP_ShowSeconds_Desc))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getShowSeconds())
+                    .slug("showSeconds")
+            );
+            items.add(UItem.asShadow(null));
+
+            items.add(SettingsHelper.asSwitchCG(premiumStatusSwitchRow, getString(R.string.CP_DisablePremiumStatuses), getString(R.string.CP_DisablePremiumStatuses_Desc))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses())
+                    .slug("disablePremiumStatuses")
+            );
+            items.add(SettingsHelper.asSwitchCG(replyBackgroundSwitchRow, getString(R.string.CP_ReplyBackground))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyBackground())
+                    .slug("replyBackground")
+            );
+            items.add(SettingsHelper.asSwitchCG(replyColorSwitchRow, getString(R.string.CP_ReplyCustomColors))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors())
+                    .slug("replyColors")
+            );
+            items.add(SettingsHelper.asSwitchCG(replyEmojiSwitchRow, getString(R.string.CP_ReplyBackgroundEmoji))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji())
+                    .slug("replyEmoji")
+            );
+            items.add(UItem.asShadow(null));
+        }
+
+        private void fillProfileItems(ArrayList<UItem> items) {
+            final TLRPC.User me = getUserConfig().getCurrentUser();
+
+            items.add(UItem.asShadow(null));
+            if (CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview()) {
+                channelCell.setCherry();
+                items.add(UItem.asCustom(channelPreviewRow, channelCell));
+                items.add(UItem.asShadow(null));
+            }
+
+            if (!CherrygramAppearanceConfig.INSTANCE.getShowIDDC()
+                    || CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview()
+                    || CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()
+            ) {
+                items.add(UItem.asHeader(getString(R.string.Info)));
+            }
+
+            if (me != null && !TextUtils.isEmpty(me.phone)) {
+                final String formattedPhone = PhoneFormat.getInstance().format("+ " + me.phone);
+                final boolean isFragmentPhoneNumber = me.phone.matches("888\\d{8}");
+                final CharSequence text = CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber() && !isFragmentPhoneNumber
+                        ? getChatsPasswordHelper().replaceStringToSpoilers(formattedPhone, true)
+                        : formattedPhone;
+                phoneCell.setTextAndValue(
+                        text,
+                        isFragmentPhoneNumber ? getString(R.string.AnonymousNumber) : getString(R.string.PhoneMobile) + Extra.INSTANCE.getCountryByPhone(MessagesAndProfilesPreferencesEntry.this, me),
+                        false
+                );
+            }
+            items.add(SettingsHelper.asCustomWithBackground(phoneCell));
+
+            if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("DC: ");
+                if (me.photo != null && me.photo.dc_id > 0) {
+                    sb.append(me.photo.dc_id);
+                    sb.append(", ");
+                    sb.append(CGResourcesHelper.INSTANCE.getDCName(me.photo.dc_id));
+                    sb.append(", ");
+                    sb.append(CGResourcesHelper.INSTANCE.getDCGeo(me.photo.dc_id));
+                } else {
+                    sb.append(getString(R.string.NumberUnknown));
+                }
+                DecimalFormat df = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US) {{ setGroupingSeparator(' '); }});
+                idDcCell.setTextAndValue("ID: " + df.format(me.id), sb, false);
+
+                setTintedImage(idDcCell, R.drawable.msg_calendar2);
+                idDcCell.setImageClickListener(v -> showCreationDateHint(
+                        idDcCell.getImageView(),
+                        Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getUserConfig().getClientUserId(), 0)
+                ));
+                items.add(SettingsHelper.asCustomWithBackground(idDcCell));
+            }
+
+            if (CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview()) {
+                final TLRPC.UserFull meFull = getMessagesController().getUserFull(me.id);
+                final String date;
+                if (meFull != null && meFull.birthday != null) {
+                    date = UserInfoActivity.birthdayString(meFull.birthday);
+                } else {
+                    final int age = Period.between(LocalDate.of(2022, 1, 15), LocalDate.now()).getYears();
+                    date = LocaleController.formatPluralString("ProfileBirthdayValueYear", age, birthdayString());
+                }
+                birthdayCell.setTextAndValue(date, getString(R.string.ProfileBirthday), false);
+                birthdayCell.textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, pageResourcesProvider));
+
+                setTintedImage(birthdayCell, R.drawable.input_calendar_add_solar);
+                birthdayCell.setImageClickListener(v -> Extra.INSTANCE.addBirthdayToCalendar(getParentActivity(), getUserConfig().getCurrentUser().id));
+                items.add(SettingsHelper.asCustomWithBackground(birthdayCell));
+            }
+
+            if (CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()) {
+                businessHoursCell.textView.setTextColor(Theme.getColor(Theme.key_avatar_nameInMessageGreen, pageResourcesProvider));
+                businessHoursCell.setTextAndValue(getString(R.string.BusinessHoursProfileNowOpen), getString(R.string.BusinessHoursProfile), false);
+                items.add(SettingsHelper.asCustomWithBackground(businessHoursCell));
+
+                businessLocationCell.textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, pageResourcesProvider));
+                businessLocationCell.setTextAndValue("Cherrygram, Abu-Dhabi", getString(R.string.BusinessProfileLocation), false);
+                items.add(SettingsHelper.asCustomWithBackground(businessLocationCell));
+            }
+            items.add(UItem.asShadow(null));
+
+            items.add(UItem.asHeader(getString(R.string.CP_CustomizeProfile)));
+            items.add(
+                    SettingsHelper.asExpandableSwitch(
+                            profilePreviewsSectionRow,
+                            R.drawable.msg_info,
+                            getString(R.string.Info),
+                            " "
+                    )
+                    .setCollapsed(!expandedProfilePreviewsSection)
+                    .setClickCallback(v -> {
+                        expandedProfilePreviewsSection = !expandedProfilePreviewsSection;
+                        updateRows(true);
+                    })
+                    .hideCheckbox(true)
+                    .slug("profilePreviews")
+            );
+            if (expandedProfilePreviewsSection) {
+                items.add(SettingsHelper.asSwitchCG(hidePhoneSwitchRow, applyNewSpan(getString(R.string.CP_ProfileHidePhoneNumbers)))
+                        .setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber())
+                        .slug("hidePhoneNumber")
+                );
+                items.add(SettingsHelper.asSwitchCG(channelPreviewSwitchRow, getString(R.string.CP_ProfileChannelPreview))
+                        .setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview())
+                        .slug("channelPreview")
+                );
+                items.add(SettingsHelper.asSwitchCG(showDcIdSwitchRow, getString(R.string.AP_ShowID))
+                        .setChecked(CherrygramAppearanceConfig.INSTANCE.getShowIDDC())
+                        .slug("showIdDc")
+                );
+                items.add(SettingsHelper.asSwitchCG(birthdayPreviewSwitchRow, getString(R.string.CP_ProfileBirthDatePreview))
+                        .setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview())
+                        .slug("birthdayPreview")
+                );
+                items.add(SettingsHelper.asSwitchCG(businessPreviewSwitchRow, getString(R.string.CP_ProfileBusinessPreview))
+                        .setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview())
+                        .slug("businessPreview")
+                );
+            }
+            items.add(UItem.asShadow(null));
+
+            items.add(
+                    SettingsHelper.asExpandableSwitch(
+                            premiumSectionRow,
+                            R.drawable.menu_feature_premium,
+                            getString(R.string.TelegramPremium),
+                            " "
+                    )
+                    .setCollapsed(!expandedPremiumSection)
+                    .setClickCallback(v -> {
+                        expandedPremiumSection = !expandedPremiumSection;
+                        updateRows(true);
+                    })
+                    .hideCheckbox(true)
+                    .slug("premiumSection")
+            );
+            if (expandedPremiumSection) {
+                items.add(SettingsHelper.asSwitchCG(premiumStatusSwitchRow, getString(R.string.CP_DisablePremiumStatuses), getString(R.string.CP_DisablePremiumStatuses_Desc))
+                        .setChecked(CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses())
+                        .slug("disablePremiumStatuses")
+                );
+                items.add(SettingsHelper.asSwitchCG(profileBackgroundSwitchRow, getString(R.string.CP_ProfileBackgroundColor))
+                        .setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor())
+                        .slug("profileBackground")
+                );
+                if (CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
+                    items.add(
+                            SettingsHelper.asSwitchCG(
+                                    newProfileDesignSwitchRow,
+                                    applySpan(
+                                            getString(R.string.CG_NewProfileDesign),
+                                            "BETA",
+                                            Theme.key_cgGradient2,
+                                            getResourceProvider()
+                                    ),
+                                    getString(R.string.CG_NewProfileDesign_Desc)
+                            )
+                            .setChecked(CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign())
+                            .slug("newProfileDesign")
+                    );
+                }
+                items.add(SettingsHelper.asSwitchCG(profileEmojiSwitchRow, getString(R.string.CP_ProfileBackgroundEmoji))
+                        .setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji())
+                        .slug("profileEmoji")
+                );
+            }
+            items.add(UItem.asShadow(null));
+        }
+
+        private void setTintedImage(TextDetailCell cell, int resId) {
+            Drawable drawable = ContextCompat.getDrawable(cell.getContext(), resId);
+            cell.setImage(drawable);
+            if (drawable != null && colorBar != null && colorBar.getActionBarButtonColor() != 0) {
+                drawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(pageResourcesProvider != getResourceProvider() ? Theme.key_actionBarDefaultIcon : Theme.key_windowBackgroundWhiteBlueHeader, pageResourcesProvider), PorterDuff.Mode.MULTIPLY));
+            }
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            if (type == PAGE_MESSAGE) {
+                actionBarHeight = ActionBar.getCurrentActionBarHeight() + AndroidUtilities.statusBarHeight;
+                ((MarginLayoutParams) listView.getLayoutParams()).topMargin = actionBarHeight;
+            } else {
+                actionBarHeight = dp(230) + AndroidUtilities.statusBarHeight;
+                profilePreview.getLayoutParams().height = actionBarHeight;
+                if (listView.getPaddingTop() != actionBarHeight) {
+                    listView.setPadding(listView.getPaddingLeft(), actionBarHeight, listView.getPaddingRight(), listView.getPaddingBottom());
+                }
+            }
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+
+        @Override
+        protected boolean drawChild(@NonNull Canvas canvas, View child, long drawingTime) {
+            if (child == listView && type == PAGE_PROFILE) {
+                canvas.save();
+                canvas.clipRect(0, actionBarHeight - headerCollapse, getWidth(), getHeight());
+                final boolean result = super.drawChild(canvas, child, drawingTime);
+                canvas.restore();
+                return result;
+            }
+            return super.drawChild(canvas, child, drawingTime);
+        }
+
+        @Override
+        public boolean dispatchTouchEvent(MotionEvent ev) {
+            if (type == PAGE_PROFILE && ev.getAction() == MotionEvent.ACTION_DOWN
+                    && headerCollapse > 0 && headerCollapse >= getHeaderCollapseRange()
+                    && ev.getY() < actionBarHeight - headerCollapse) {
+                return true;
+            }
+            return super.dispatchTouchEvent(ev);
+        }
+
+        private int getHeaderCollapseRange() {
+            return actionBarHeight - ActionBar.getCurrentActionBarHeight() - AndroidUtilities.statusBarHeight;
+        }
+
+        private void updateHeaderCollapse() {
+            final int range = getHeaderCollapseRange();
+            if (range <= 0 || profilePreview == null) return;
+
+            final View first = listView.layoutManager.findViewByPosition(0);
+            final int offset = first != null ? listView.getPaddingTop() - listView.layoutManager.getDecoratedTop(first) : range;
+            final float collapse = MathUtils.clamp(offset, 0, range);
+            if (collapse == headerCollapse) return;
+
+            headerCollapse = collapse;
+            profilePreview.setTranslationY(-collapse);
+            profilePreview.setAlpha(1f - collapse / range);
+            if (colorBar != null) {
+                colorBar.setTranslationY(-collapse);
+            }
+            invalidate();
+        }
+
+        private MessagesController.PeerColor getSelectedProfilePeerColor() {
+            if (type != PAGE_PROFILE || !CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
+                return null;
+            }
+            if (selectedPeerCollectible != null) {
+                return MessagesController.PeerColor.fromPeerCollectible(selectedPeerCollectible);
+            }
+            if (selectedEmojiCollectible != null) {
+                return MessagesController.PeerColor.fromCollectible(selectedEmojiCollectible);
+            }
+            if (selectedColor >= 0) {
+                MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
+                return peerColors == null ? null : peerColors.getColor(selectedColor);
+            }
+            return null;
+        }
+
+        private void updateProfilePreviewColor(boolean animated) {
+            if (profilePreview == null) {
+                return;
+            }
+            profilePreview.setColor(getSelectedProfilePeerColor(), animated);
+        }
+
+        private void updateProfilePreviewEmoji(boolean animated) {
+            if (profilePreview == null) {
+                return;
+            }
+            if (selectedEmojiCollectible != null) {
+                profilePreview.setEmoji(
+                        CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? selectedEmojiCollectible.pattern_document_id : 0,
+                        true,
+                        animated
+                );
+            } else {
+                profilePreview.setEmoji(selectedEmoji, false, animated);
+            }
+        }
+
+        private void updateMessages() {
+            if (messagesCellPreview == null) {
+                return;
+            }
+            final TLRPC.TL_peerColorCollectible previewPeerCollectible = profilePage != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()
+                    ? profilePage.selectedPeerCollectible : null;
+
+            for (ChatMessageCell cell : messagesCellPreview.getCells()) {
+                if (cell == null) continue;
+                MessageObject msg = cell.getMessageObject();
+                if (msg == null) continue;
+
+                msg.overrideLinkEmoji = selectedEmoji;
+                msg.overrideLinkPeerColor = previewPeerCollectible;
+                cell.setAvatar(msg);
+
+                if (cell.currentNameStatusDrawable == null) {
+                    cell.currentNameStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(26));
+                }
+                if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+                    Long emojiStatusId = UserObject.getEmojiStatusDocumentId(getUserConfig().getCurrentUser().emoji_status);
+                    if (emojiStatusId != null) {
+                        cell.currentNameStatusDrawable.set(emojiStatusId, false);
+                        cell.currentNameStatusDrawable.play();
+                    } else {
+                        cell.currentNameStatusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, false);
+                    }
+                } else {
+                    cell.currentNameStatusDrawable.set((Drawable) null, false);
+                }
+                cell.invalidate();
+            }
+        }
+
+        private void updateColors() {
+            listView.setBackgroundColor(isPeerTinted() ? 0 : Theme.getColor(Theme.key_windowBackgroundGray, pageResourcesProvider));
+            if (messagesCellPreview != null) {
+                messagesCellPreview.invalidate();
+            }
+            if (type == PAGE_PROFILE) {
+                if (colorBar != null) {
+                    colorBar.setColor(getSelectedProfilePeerColor(), true);
+                }
+                updateProfilePreviewColor(false);
+                channelCell.updateColors();
+            }
+        }
+
     }
 
     @Override
@@ -1138,11 +1156,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         );
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private void updateColors() {
         contentView.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
         messagePage.updateColors();
         profilePage.updateColors();
+        updateRows(true);
         if (colorBar != null) {
             colorBar.updateColors();
         }
@@ -1151,20 +1169,18 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
     }
 
     private void updateTabColors() {
-        if (colorBar == null) {
+        if (colorBar == null || tabsView == null) {
             return;
         }
         final int profileBackgroundColor = colorBar.getTabsViewBackgroundColor();
-        if (tabsView != null) {
-            final float progressP = viewPager == null ? 0f : viewPager.getPositionAnimated();
-            final float progress = 1 - getTabProgressFromPageProgress(progressP);
-            tabsView.setColors(
-                    ColorUtils.blendARGB(profileBackgroundColor, getThemedColor(Theme.key_windowBackgroundWhite), progress),
-                    ColorUtils.blendARGB(Color.WHITE, getThemedColor(Theme.key_windowBackgroundGray), progress),
-                    ColorUtils.blendARGB(Color.WHITE, getThemedColor(Theme.key_windowBackgroundWhiteGrayText2), progress),
-                    ColorUtils.blendARGB(profileBackgroundColor, getThemedColor(Theme.key_windowBackgroundWhiteBlackText), progress)
-            );
-        }
+        final float progressP = viewPager == null ? 0f : viewPager.getPositionAnimated();
+        final float progress = 1 - getTabProgressFromPageProgress(progressP);
+        tabsView.setColors(
+                ColorUtils.blendARGB(profileBackgroundColor, getThemedColor(Theme.key_windowBackgroundWhite), progress),
+                ColorUtils.blendARGB(Color.WHITE, getThemedColor(Theme.key_windowBackgroundGray), progress),
+                ColorUtils.blendARGB(Color.WHITE, getThemedColor(Theme.key_windowBackgroundWhiteGrayText2), progress),
+                ColorUtils.blendARGB(profileBackgroundColor, getThemedColor(Theme.key_windowBackgroundWhiteBlackText), progress)
+        );
     }
 
     private float getTabProgressFromPageProgress(float progress) {
@@ -1180,32 +1196,18 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             super(context);
             this.resourcesProvider = resourcesProvider;
             defaultColor = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
-            setColor(-1, -1, false);
-        }
-
-        public void setColor(int currentAccount, int colorId, boolean animated) {
-            MessagesController.PeerColor peerColor = null;
-            if (colorId >= 0 && currentAccount >= 0) {
-                MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
-                peerColor = peerColors == null ? null : peerColors.getColor(colorId);
-            }
-            setColor(peerColor, animated);
+            setColor(null, false);
         }
 
         public void setColor(MessagesController.PeerColor peerColor, boolean animated) {
-            isDefault = false;
             if (peerColor == null) {
                 isDefault = true;
                 color1 = color2 = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
             } else {
-                if (peerColor != null) {
-                    final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
-                    color1 = peerColor.getBgColor1(isDark);
-                    color2 = peerColor.getBgColor2(isDark);
-                } else {
-                    isDefault = true;
-                    color1 = color2 = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
-                }
+                isDefault = false;
+                final boolean isDark = isPeerColorDark(resourcesProvider);
+                color1 = peerColor.getBgColor1(isDark);
+                color2 = peerColor.getBgColor2(isDark);
             }
             if (!animated) {
                 color1Animated.set(color1, true);
@@ -1333,7 +1335,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             statusEmoji = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(titleView, dp(24));
             titleView.setLeftDrawableOutside(true);
             titleView.setRightDrawableOutside(true);
-            if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) titleView.setRightDrawable(statusEmoji);
             titleView.setRightDrawableOnClick(v -> statusEmoji.play());
             titleView.setTextColor(0xFFFFFFFF);
             titleView.setTextSize(20);
@@ -1348,15 +1349,13 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 16, 0, 16, 20.66f));
 
             imageReceiver.setRoundRadius(dp(96));
-            long emojiStatusId = 0;
-            CharSequence title;
             TLRPC.User user = UserConfig.getInstance(currentAccount).getCurrentUser();
-            title = UserObject.getUserName(user);
+            CharSequence title = UserObject.getUserName(user);
 
             avatarDrawable.setInfo(currentAccount, user);
             imageReceiver.setForUserOrChat(user, avatarDrawable);
 
-            emojiStatusId = user != null ? DialogObject.getEmojiStatusDocumentId(user.emoji_status) : 0;
+            final long emojiStatusId = user != null ? DialogObject.getEmojiStatusDocumentId(user.emoji_status) : 0;
             try {
                 title = Emoji.replaceEmoji(title, null, false);
             } catch (Exception ignore) {
@@ -1370,6 +1369,42 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             subtitleView.setText(getString(R.string.Online) + tgPremium);
 
             setWillNotDraw(false);
+        }
+
+        public void setPremiumStatusVisible(boolean visible) {
+            titleView.animate().cancel();
+            subtitleView.animate().cancel();
+            final float titleX = titleView.getX();
+            final float subtitleX = subtitleView.getX();
+
+            if (visible) {
+                titleView.setRightDrawable(statusEmoji);
+                statusEmoji.play();
+                subtitleView.setText(getString(R.string.Online));
+            } else {
+                titleView.setRightDrawable(0);
+                subtitleView.setText(getString(R.string.Online) + " | TG Premium");
+            }
+
+            addOnLayoutChangeListener(new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    removeOnLayoutChangeListener(this);
+                    animateFromX(titleView, titleX);
+                    animateFromX(subtitleView, subtitleX);
+                }
+            });
+            titleView.requestLayout();
+            subtitleView.requestLayout();
+        }
+
+        private void animateFromX(View view, float oldX) {
+            view.setTranslationX(oldX - view.getLeft());
+            view.animate()
+                    .translationX(0)
+                    .setDuration(320)
+                    .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
+                    .start();
         }
 
         public void overrideAvatarColor(int colorId) {
@@ -1413,22 +1448,17 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         }
 
         private MessagesController.PeerColor peerColor;
-        public void setColor(int colorId, boolean animated) {
-            MessagesController.PeerColors peerColors = MessagesController.getInstance(UserConfig.selectedAccount).profilePeerColors;
-            MessagesController.PeerColor peerColor = peerColors == null ? null : peerColors.getColor(colorId);
-            setColor(peerColor, animated);
-        }
 
         public void setColor(MessagesController.PeerColor peerColor, boolean animated) {
             this.peerColor = peerColor;
-            final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
+            final boolean isDark = isPeerColorDark(resourcesProvider);
             if (peerColor != null) {
                 if (peerColor.patternColor != 0) {
                     emoji.setColor(peerColor.patternColor);
                 } else {
                     emoji.setColor(adaptProfileEmojiColor(peerColor.getBgColor1(isDark)));
                 }
-                statusEmoji.setColor(ColorUtils.blendARGB(peerColor.getStoryColor1(Theme.isCurrentThemeDark()), 0xFFFFFFFF, 0.25f));
+                statusEmoji.setColor(ColorUtils.blendARGB(peerColor.getStoryColor1(isDark), 0xFFFFFFFF, 0.25f));
                 final int accentColor = ColorUtils.blendARGB(peerColor.getStoryColor1(isDark), peerColor.getStoryColor2(isDark), .5f);
                 if (!Theme.hasHue(getThemedColor(Theme.key_actionBarDefault))) {
                     subtitleView.setTextColor(accentColor);
@@ -1459,7 +1489,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             } else {
                 emoji.set(docId, animated);
             }
-            final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
+            final boolean isDark = isPeerColorDark(resourcesProvider);
             if (peerColor != null) {
                 if (peerColor.patternColor != 0) {
                     emoji.setColor(peerColor.patternColor);
@@ -1488,7 +1518,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         public void setStatusEmoji(long docId, boolean isCollectible, boolean animated) {
             statusEmoji.set(docId, animated);
             statusEmoji.setParticles(isCollectible, animated);
-            final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
+            final boolean isDark = isPeerColorDark(resourcesProvider);
             if (peerColor != null) {
                 statusEmoji.setColor(ColorUtils.blendARGB(peerColor.getColor2(isDark), peerColor.hasColor6(isDark) ? peerColor.getColor5(isDark) : peerColor.getColor3(isDark), .5f));
             } else {
@@ -1548,10 +1578,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         return LocaleController.getInstance().getFormatterBoostExpired().format(calendar.getTimeInMillis());
     }
 
-    public int processColor(int color) {
-        return color;
-    }
-
     @Override
     public boolean isLightStatusBar() {
         if (colorBar == null) {
@@ -1575,6 +1601,23 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         return false; // Breaks status bar
     }
 
+    @Override
+    public EdgeToEdgeSupportMode getEdgeToEdgeSupportMode() {
+        return EdgeToEdgeSupportMode.FULL;
+    }
+
+    @Override
+    public boolean drawEdgeNavigationBar() {
+        return true;
+    }
+
+    @Override
+    public void onInsets(int left, int top, int right, int bottom) {
+        if (messagePage == null || profilePage == null) return;
+        messagePage.listView.setPadding(left, messagePage.listView.getPaddingTop(), right, bottom);
+        profilePage.listView.setPadding(left, profilePage.listView.getPaddingTop(), right, bottom);
+    }
+
     public HintView2 creationDateHint;
     public void showCreationDateHint(View view, CharSequence text) {
         if (TextUtils.isEmpty(text) || getContext() == null || view == null || contentView == null) {
@@ -1593,8 +1636,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         final HintView2 hint = new HintView2(getContext(), HintView2.DIRECTION_TOP)
                 .setMultilineText(true)
                 .setDuration(5000L)
-                .setBgColor(getThemedColor(Theme.key_undo_background))
-                .setTextColor(getThemedColor(Theme.key_undo_infoColor))
+                .setBgColor(Theme.getColor(Theme.key_undo_background, profilePage.pageResourcesProvider))
+                .setTextColor(Theme.getColor(Theme.key_undo_infoColor, profilePage.pageResourcesProvider))
                 .setRounding(12f);
         creationDateHint = hint;
         hint.setText(text);
@@ -1615,6 +1658,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             hint.setJointPx(0f, -dp(16) + x + view.getWidth() / 2f);
             hint.show();
         });
+    }
+
+    private static boolean isPeerColorDark(Theme.ResourcesProvider resourcesProvider) {
+        return CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign() || (resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark());
     }
 
 }

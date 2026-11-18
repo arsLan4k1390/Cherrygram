@@ -23,6 +23,7 @@ import org.telegram.messenger.ChatObject
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
+import org.telegram.messenger.browser.Browser
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.ActionBarMenu
 import org.telegram.ui.ActionBar.ActionBarMenuItem
@@ -42,6 +43,7 @@ import org.telegram.ui.DialogsActivity
 import org.telegram.ui.Gifts.GiftSheet
 import org.telegram.ui.LaunchActivity
 import org.telegram.ui.ProxyListActivity
+import org.telegram.ui.Wallet.GramWallet
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
 import uz.unnarsx.cherrygram.core.CherrygramLogger
@@ -276,6 +278,19 @@ object CGChatMenuInjector {
             }
             fragment.presentFragment(CallLogActivity(args))
         }
+    }
+
+    fun injectWalt(io: ItemOptions, fragment: BaseFragment) {
+        val wallet = GramWallet.getInstance(fragment.currentAccount)
+        val waltAvailable = wallet != null && wallet.hasWaltBalance()
+        io.addIf(
+            waltAvailable,
+            R.drawable.wallet_money_solar,
+            "Walt (ex. Wallet)"
+        ) {
+            Browser.openUrl(fragment.context, wallet.waltUrl)
+        }
+        io.addGapIf(waltAvailable)
     }
 
     fun injectGifts(io: ItemOptions, currentAccount: Int, context: Context) {

@@ -266,8 +266,7 @@ object ChatsHelper2 {
     /** JSON menu start */
     fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
         ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
-            .addIf(
-                messageObject.messageOwner !is TLRPC.TL_messageService,
+            .add(
                 R.drawable.msg_info,
                 if (sa.isJacksonSupportedAndEnabled) "Switch to GSON" else "Switch to Jackson"
             ) {

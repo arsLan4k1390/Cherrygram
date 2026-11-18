@@ -18,6 +18,9 @@
 
     <string name="CG_HiddenGifts">Скрытые</string>
     <!--Sign in screen-->
+    <string name="CG_PrivacyAccept">Я принимаю **Политику конфиденциальности Cherrygram**</string>
+    <string name="CG_PrivacyNotAccepted">Примите Политику конфиденциальности Cherrygram, чтобы продолжить</string>
+
     <string name="CG_QRLoginTitle">Вход по QR</string>
     <string name="CG_QRLoginMessage">Отсканируйте QR-код с помощью другого устройства для входа в систему.</string>
 
@@ -268,6 +271,8 @@
     <string name="CP_ReplyBackground">Фон в ответах</string>
     <string name="CP_ReplyCustomColors">Кастомные цвета в ответах и превью ссылок</string>
     <string name="CP_ReplyBackgroundEmoji">Эмодзи в ответах и превью ссылок</string>
+    <string name="CG_NewProfileDesign">Новый дизайн профиля</string>
+    <string name="CG_NewProfileDesign_Desc">Цвет профиля заполняет весь экран, а карточки, текст и иконки подстраиваются под него.</string>
     <string name="CP_HideStories">Скрыть Истории (локально)</string>
     <string name="CP_HideStories_Desc">Истории исчезнут из списка чатов и из профилей.</string>
     <string name="CP_ArchiveStories">Архивация историй</string>
@@ -326,6 +331,8 @@
     <string name="CP_BlurMessageMenu_Desc">Добавляет размытие фона в меню сообщений и размещает панель реакций над сообщением, как в Telegram на iOS. Не поддерживается на планшетах.</string>
     <string name="CP_MessageMenuNativeBlur">Системный блюр</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Для размытия фона меню сообщений будет использоваться встроенная в Android система размытия: плавная, живая и с минимальной нагрузкой на устройство.</string>
+    <string name="CG_MsgMenuOpenByLongPress">Меню по долгому нажатию</string>
+    <string name="CG_MsgMenuOpenByLongPress_Desc">Как в iOS: удерживайте сообщение, чтобы открыть меню</string>
     <string name="CG_MsgMenuShowWholeAlbum">Показывать альбом целиком</string>
     <string name="CG_MsgMenuShowWholeAlbum_Desc">При нажатии на фото, видео или файл из альбома в меню открывается весь альбом, а не одно сообщение.</string>
     <string name="CP_RememberKeyboardState">Запоминать состояние клавиатуры</string>
@@ -398,6 +405,11 @@
     <string name="CP_Message_Filtering_EntitiesDesc">При включении эта опция расширяет фильтрацию и на ссылки (entities) внутри сообщений. Система проверяет адреса URL на наличие заданных ключевых слов. Если совпадение найдено в ссылке, под спойлер будет скрыто всё сообщение, даже если само слово отсутствует в тексте.\n\nЭто позволяет защититься от замаскированной рекламы, скрытых спам-ссылок и фишинговых доменов, которые могли бы обойти обычный фильтр по тексту.</string>
     <string name="CP_Message_Filtering_FilterBlocked">Фильтровать сообщения от заблокированных пользователей</string>
     <string name="CP_Message_Filtering_FilterBlockedDesc">Если включено, все сообщения и пересланные сообщения от заблокированных пользователей будут автоматически фильтроваться.</string>
+    <string name="CP_Message_Filtering_Shadowban">Теневой бан</string>
+    <string name="CP_Message_Filtering_Shadowban_Add">В теневой бан</string>
+    <string name="CP_Message_Filtering_Shadowban_Remove">Убрать из теневого бана</string>
+    <string name="CP_Message_Filtering_Shadowban_Added">**%1$s** добавлен в теневой бан</string>
+    <string name="CP_Message_Filtering_Shadowban_Removed">**%1$s** убран из теневого бана</string>
     <string name="CP_Message_Filtering_FullyHide">Скрывать сообщения</string>
     <string name="CP_Message_Filtering_FullyHide_Desc">Полностью скрывать сообщения вместо того, чтобы покрывать часть текста эффектом спойлера.</string>
     <string name="CP_Message_Filtering_HideAll">Спойлер на все сообщение</string>
@@ -499,6 +511,8 @@
     <string name="SP_LockedChats_Lock_Destination_Sure">будет заблокирован(о)</string>
     <string name="SP_HideArchive">Скрыть архив из списка чатов</string>
     <string name="SP_HideArchive_Desc">Архив будет замаскирован под канал Cherrygram. \nВы сможете открыть архив из бокового меню или долгим нажатием на кнопку поиска.</string>
+    <string name="CG_AccSwipeForArchive">Потяните вниз, чтобы открыть канал</string>
+    <string name="CG_AccReleaseForArchive">Отпустите, чтобы открыть канал</string>
 
     <string name="SP_AskPin">Запрашивать пароль</string>
     <string name="SP_DoNotAskPin">Не запрашивать пароль</string>
@@ -539,7 +553,7 @@
     <string name="DP_DonatesThanks">Спасибо за поддержку! Вишенка счастлива благодаря вам ❤️️</string>
 
     <string name="DP_DonateBadge">Поддержите проект и получите бонусы</string>
-    <string name="DP_Donate_Desc">При поддержке от 2$ вы также получите небольшие бонусы:</string>
+    <string name="DP_Donate_Desc">При поддержке от 3$ вы также получите небольшие бонусы:</string>
 
     <string name="DP_Donate_Badge_desc">1. **Значок Cherrygram** рядом с вашим ником.</string>
     <string name="DP_Donate_MsgMenuCompactView_Desc">2. Компактный вид элементов **меню сообщения**.</string>

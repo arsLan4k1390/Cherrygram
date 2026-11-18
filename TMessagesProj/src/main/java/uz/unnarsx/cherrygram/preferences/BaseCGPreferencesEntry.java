@@ -16,42 +16,35 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
-import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.INavigationLayout;
+import org.telegram.ui.ActionBar.SimpleActionBar;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
 import org.telegram.ui.Components.UniversalRecyclerView;
-import org.telegram.ui.Components.blur3.DownscaleScrollableNoiseSuppressor;
-import org.telegram.ui.Components.blur3.RenderNodeWithHash;
-import org.telegram.ui.Components.blur3.ViewGroupPartRenderer;
-import org.telegram.ui.Components.blur3.capture.IBlur3Capture;
-import org.telegram.ui.Components.blur3.capture.IBlur3Hash;
-import org.telegram.ui.Components.blur3.source.BlurredBackgroundSourceRenderNode;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -68,130 +61,73 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
     protected UniversalRecyclerView listView;
     protected LinearLayoutManager layoutManager;
     protected Theme.ResourcesProvider resourcesProvider;
-    protected View actionBarBackground;
+    protected View actionBarFadeView;
     protected FrameLayout actionBarContainer;
     protected ActionBarMenuItem searchItem;
-
-    public BaseCGPreferencesEntry() {
-        super();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            scrollableViewNoiseSuppressor = new DownscaleScrollableNoiseSuppressor();
-            iBlur3SourceGlassFrosted = new BlurredBackgroundSourceRenderNode(null);
-            iBlur3SourceGlassFrosted.setupRenderer(new RenderNodeWithHash.Renderer() {
-                @Override
-                public void renderNodeCalculateHash(IBlur3Hash hash) {
-                    hash.add(getThemedColor(Theme.key_windowBackgroundWhite));
-                    hash.add(SharedConfig.chatBlurEnabled());
-                }
-
-                @Override
-                public void renderNodeUpdateDisplayList(Canvas canvas) {
-                    canvas.drawColor(getThemedColor(Theme.key_windowBackgroundWhite));
-                    if (SharedConfig.chatBlurEnabled()) {
-                        scrollableViewNoiseSuppressor.draw(canvas, DownscaleScrollableNoiseSuppressor.DRAW_FROSTED_GLASS);
-                    }
-                }
-            });
-        } else {
-            scrollableViewNoiseSuppressor = null;
-            iBlur3SourceGlassFrosted = null;
-        }
-    }
 
     @Override
     public View createView(Context context) {
         contentView = new FrameLayout(context) {
             @Override
             protected void dispatchDraw(@NonNull Canvas canvas) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    blur3_InvalidateBlur();
-                    if (iBlur3SourceGlassFrosted != null) {
-                        iBlur3SourceGlassFrosted.setSize(getMeasuredWidth(), getMeasuredHeight());
-                        iBlur3SourceGlassFrosted.updateDisplayListIfNeeded();
-                    }
-                }
                 super.dispatchDraw(canvas);
+                glassEngine.invalidate();
             }
         };
         contentView.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
 
-        listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, (item, view, position, x, y) -> {
-            if (onLongClick(item, view, position, x, y)) {
-                return true;
-            }
-            var slug = item.slug;
-            var key = getKey();
-            if (key != null && item.enabled && !TextUtils.isEmpty(slug)) {
-                ItemOptions.makeOptions(this, view)
-                        .setScrimViewBackground(listView.getClipBackground(view))
-                        .add(R.drawable.msg_copy, getString(R.string.CopyLink), () -> {
-                            if (isDeepLinkSectionSlug(slug)) {
-                                AndroidUtilities.addToClipboard(String.format(Locale.getDefault(), "https://%s/cgSettings/%s", getMessagesController().linkPrefix, slug));
-                            } else {
-                                AndroidUtilities.addToClipboard(String.format(Locale.getDefault(), "https://%s/cgSettings/%s?r=%s", getMessagesController().linkPrefix, key, slug));
-                            }
-                            BulletinFactory.of(this).createCopyLinkBulletin().show();
-                        })
-                        .setMinWidth(190)
-                        .show();
-                return true;
-            }
-            return false;
-        });
+        listView = new UniversalRecyclerView(this, this::fillItems, this::onClick, (item, view, position, x, y) -> handleItemLongClick(listView, item, view, position, x, y));
+        listView.setCaptureSectionsDecoratorAllowed(true);
         listView.adapter.setApplyBackground(false);
-        listView.setClipToPadding(false);
-        listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && scrollableViewNoiseSuppressor != null) {
-                    scrollableViewNoiseSuppressor.onScrolled(dx, dy);
-                    blur3_InvalidateBlur();
-                }
-            }
-        });
-        iBlur3Capture = new ViewGroupPartRenderer(listView, contentView, listView::drawChild);
-        listView.addEdgeEffectListener(() -> listView.postOnAnimation(this::blur3_InvalidateBlur));
         listView.setSections();
-        listView.setPadding(0, needActionBarPadding() ? ActionBar.getCurrentActionBarHeight() : dp(16), 0, 0);
-        contentView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
-
-        actionBarBackground = new View(context) {
-            private final Paint blurScrimPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            private final RectF rect = new RectF();
-
-            @Override
-            protected void onDraw(@NonNull Canvas canvas) {
-                var actionBarHeight = actionBarContainer.getMeasuredHeight();
-                rect.set(0, 0, getMeasuredWidth(), actionBarHeight);
-                blurScrimPaint.setColor(Theme.getColor(Theme.key_actionBarDefault, resourcesProvider));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && iBlur3SourceGlassFrosted != null) {
-                    iBlur3SourceGlassFrosted.draw(canvas, rect.left, rect.top, rect.right, rect.bottom);
-                    canvas.saveLayerAlpha(rect, ChatActivity.ACTION_BAR_BLUR_ALPHA);
-                    canvas.drawRect(rect, blurScrimPaint);
-                    canvas.restore();
-                } else {
-                    canvas.drawRect(rect, blurScrimPaint);
-                }
-                if (parentLayout != null) {
-                    parentLayout.drawHeaderShadow(canvas, actionBarHeight);
-                }
-            }
-        };
-        contentView.addView(actionBarBackground, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 200, Gravity.TOP));
-        actionBarContainer = new FrameLayout(context);
-        actionBarContainer.addView(actionBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.BOTTOM));
-        contentView.addView(actionBarContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.TOP));
-
+        listView.setSectionsDrawBackground(true);
+        listView.setClipToPadding(false);
         listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 updateActionBarVisible();
             }
         });
+        contentView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
 
+        actionBarFadeView = new View(context);
+        actionBarFadeView.setBackground(getBaseSimpleGlass().createActionBarFadeDrawable(actionBarFadeView));
+        contentView.addView(actionBarFadeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 0, Gravity.TOP));
+
+        actionBarContainer = new FrameLayout(context);
+        actionBarContainer.addView(getHeader(), LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.BOTTOM));
+        contentView.addView(actionBarContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.TOP));
+
+        updateActionBarFadeHeight(Math.max(mSystemInsets.top, AndroidUtilities.statusBarHeight));
         updateActionBarVisible(true, false);
 
-        return fragmentView = contentView;
+        fragmentView = contentView;
+        ViewCompat.setOnApplyWindowInsetsListener(fragmentView, this::onInsetsInternal);
+        return contentView;
+    }
+
+    protected boolean handleItemLongClick(UniversalRecyclerView list, UItem item, View view, int position, float x, float y) {
+        if (onLongClick(item, view, position, x, y)) {
+            return true;
+        }
+        var slug = item.slug;
+        var key = getKey();
+        if (key != null && item.enabled && !TextUtils.isEmpty(slug)) {
+            ItemOptions.makeOptions(this, view)
+                    .setScrimViewBackground(list.getClipBackground(view))
+                    .add(R.drawable.msg_copy, getString(R.string.CopyLink), () -> {
+                        if (isDeepLinkSectionSlug(slug)) {
+                            AndroidUtilities.addToClipboard(String.format(Locale.getDefault(), "https://%s/cgSettings/%s", getMessagesController().linkPrefix, slug));
+                        } else {
+                            AndroidUtilities.addToClipboard(String.format(Locale.getDefault(), "https://%s/cgSettings/%s?r=%s", getMessagesController().linkPrefix, key, slug));
+                        }
+                        BulletinFactory.of(this).createCopyLinkBulletin().show();
+                    })
+                    .setMinWidth(190)
+                    .show();
+            return true;
+        }
+        return false;
     }
 
     protected boolean isSearchFieldVisible() {
@@ -201,7 +137,7 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
     @Override
     public boolean onBackPressed(boolean invoked) {
         if (isSearchFieldVisible()) {
-            if (invoked) actionBar.closeSearchField();
+            if (invoked && actionBar != null) actionBar.closeSearchField();
             return false;
         }
         return super.onBackPressed(invoked);
@@ -222,7 +158,7 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
             var firstChild = listView.getChildAt(0);
             visible = needActionBarPadding() ? listView.canScrollVertically(-1) : (
                     listView.getChildAdapterPosition(firstChild) > 0 ||
-                    firstChild.getY() + firstChild.getHeight() < actionBar.getHeight()
+                    firstChild.getY() + firstChild.getHeight() < getHeader().getHeight()
             );
         } else {
             visible = false;
@@ -235,19 +171,34 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
             actionBarVisibleAnimator = null;
         }
         if (!animated) {
-            if (!needActionBarPadding())
-                actionBar.getTitlesContainer().setAlpha(visible ? 1.0f : 0.0f);
-            actionBarBackground.setAlpha(visible ? 1.0f : 0.0f);
+            setActionBarVisibilityFactor(visible ? 1.0f : 0.0f);
         } else {
-            actionBarVisibleAnimator = ValueAnimator.ofFloat(actionBarBackground.getAlpha(), visible ? 1.0f : 0.0f);
-            actionBarVisibleAnimator.addUpdateListener(a -> {
-                final float t = (float) a.getAnimatedValue();
-                if (!needActionBarPadding()) actionBar.getTitlesContainer().setAlpha(t);
-                actionBarBackground.setAlpha(t);
-            });
+            actionBarVisibleAnimator = ValueAnimator.ofFloat(actionBarFadeView.getAlpha(), visible ? 1.0f : 0.0f);
+            actionBarVisibleAnimator.addUpdateListener(a -> setActionBarVisibilityFactor((float) a.getAnimatedValue()));
             actionBarVisibleAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             actionBarVisibleAnimator.setDuration(420);
             actionBarVisibleAnimator.start();
+        }
+    }
+
+    private void setActionBarVisibilityFactor(float factor) {
+        if (!needActionBarPadding()) {
+            if (simpleActionBar != null) {
+                simpleActionBar.setTitlesAlpha(factor);
+            } else {
+                actionBar.getTitlesContainer().setAlpha(factor);
+            }
+        }
+        actionBarFadeView.setAlpha(factor);
+    }
+
+    private void updateActionBarFadeHeight(int safeTop) {
+        if (actionBarFadeView == null) return;
+        final int height = safeTop + ActionBar.getCurrentActionBarHeight();
+        ViewGroup.LayoutParams params = actionBarFadeView.getLayoutParams();
+        if (params.height != height) {
+            params.height = height;
+            actionBarFadeView.setLayoutParams(params);
         }
     }
 
@@ -288,7 +239,7 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
         actionBar.setBackgroundColor(Color.TRANSPARENT);
         actionBar.setAddToContainer(false);
         actionBar.setUseContainerForTitles();
-        actionBar.setOccupyStatusBar(false);
+        actionBar.setOccupyStatusBar(true);
         actionBar.setTitle(getTitle(), null, true);
         actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
         actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
@@ -304,6 +255,26 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
         backDrawable.setShowStick(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
         actionBar.setBackButtonDrawable(backDrawable);
         return actionBar;
+    }
+
+    protected View getHeader() {
+        return simpleActionBar != null ? simpleActionBar : actionBar;
+    }
+
+    @Override
+    public SimpleActionBar createSimpleActionBar(Context context) {
+        final SimpleActionBar simpleActionBar = super.createSimpleActionBar(context);
+        simpleActionBar.setTitle(getTitle(), null, true);
+        simpleActionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        simpleActionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
+            @Override
+            public void onItemClick(int id) {
+                if (id == -1) {
+                    finishFragment();
+                }
+            }
+        });
+        return simpleActionBar;
     }
 
     protected boolean needActionBarPadding() {
@@ -388,36 +359,22 @@ public class BaseCGPreferencesEntry extends UniversalFragment {
     public void onInsets(int left, int top, int right, int bottom) {
         final int safeTop = Math.max(top, AndroidUtilities.statusBarHeight);
 
-        var topPadding = needActionBarPadding() ? ActionBar.getCurrentActionBarHeight() : dp(16);
-        listView.setPadding(0, safeTop + topPadding, 0, bottom);
-        actionBarContainer.setPadding(0, safeTop, 0, 0);
+        if (listView != null && !needActionBarPadding()) {
+            listView.setPadding(listView.getPaddingLeft(), safeTop + dp(16), listView.getPaddingRight(), listView.getPaddingBottom());
+        }
+        updateActionBarFadeHeight(safeTop);
         super.onInsets(left, safeTop, right, bottom);
     }
 
-    /* Blur */
-
-    private final @Nullable DownscaleScrollableNoiseSuppressor scrollableViewNoiseSuppressor;
-    private final @Nullable BlurredBackgroundSourceRenderNode iBlur3SourceGlassFrosted;
-
-    private IBlur3Capture iBlur3Capture;
-
-    private final ArrayList<RectF> iBlur3Positions = new ArrayList<>();
-    private final RectF iBlur3PositionActionBar = new RectF();
-
-    {
-        iBlur3Positions.add(iBlur3PositionActionBar);
+    @Override
+    protected boolean useFadeDrawableForActionBar() {
+        return false;
     }
 
-    private void blur3_InvalidateBlur() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || scrollableViewNoiseSuppressor == null) {
-            return;
-        }
-
-        final int additionalList = dp(48);
-        iBlur3PositionActionBar.set(0, -additionalList, fragmentView.getMeasuredWidth(), actionBarContainer.getMeasuredHeight() + additionalList);
-
-        scrollableViewNoiseSuppressor.setupRenderNodes(iBlur3Positions, 1);
-        scrollableViewNoiseSuppressor.invalidateResultRenderNodes(iBlur3Capture, fragmentView.getMeasuredWidth(), fragmentView.getMeasuredHeight());
+    @Nullable
+    @Override
+    protected RecyclerListView getListViewForSimpleGlass() {
+        return listView;
     }
 
 }

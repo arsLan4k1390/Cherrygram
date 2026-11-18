@@ -82,14 +82,15 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.CherrygramLogger;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
@@ -128,10 +129,10 @@ public class ChatsHelper extends BaseController {
     public static SpannableStringBuilder editedSpan;
     public static Drawable editedDrawable;
 
-    private static final Set<Long> TRUSTED_ADMINS = Set.of(Constants.Cherrygram_Owner, Constants.Yuki, Constants.Alina, Constants.Samir);
+    private static final Set<Long> TRUSTED_ADMINS = new HashSet<>(Arrays.asList(Constants.Cherrygram_Owner, Constants.Yuki, Constants.Alina, Constants.Samir));
 
     public boolean checkDeepLink(String url, long userID) {
-        if (url == null || !TRUSTED_ADMINS.contains(userID)) {
+        if (url == null || userID == 0 || !TRUSTED_ADMINS.contains(userID)) {
             return false;
         }
 
@@ -190,9 +191,6 @@ public class ChatsHelper extends BaseController {
             forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable, true), 0, 1, 0);
         }
 
-        boolean primaryEditedDate = AppGlobalConfig.getInstance(messageObject.currentAccount)
-                .messagePrimaryEditedDate.get();
-
         spannableStringBuilder
                 .append(isMusic ? "" : " ")
                 .append(hasForwards && !isMusic ? forwardsSpan : "")
@@ -201,11 +199,16 @@ public class ChatsHelper extends BaseController {
                 .append(isMusic ? "" : " ")
                 .append(hasForwards && !isMusic ? "• " : "");
 
-        if (primaryEditedDate) {
+        if (CherrygramAppearanceConfig.INSTANCE.getShowPencilIcon()) {
+            spannableStringBuilder
+                    .append(editedSpan)
+                    .append(hasForwards && !isMusic ? " • " : " ")
+                    .append(LocaleController.getInstance().getFormatterDay().format((long) messageObject.messageOwner.date * 1000));
+        } else if (AppGlobalConfig.getInstance(messageObject.currentAccount).messagePrimaryEditedDate.get()) {
             spannableStringBuilder.append(LocaleController.formatPmEditedDate(editDate));
         } else {
             spannableStringBuilder
-                    .append(CherrygramMessagesConfig.INSTANCE.getShowPencilIcon() ? editedSpan : getString(R.string.EditedMessage))
+                    .append(getString(R.string.EditedMessage))
                     .append(hasForwards && !isMusic ? " • " : " ")
                     .append(LocaleController.getInstance().getFormatterDay().format((long) messageObject.messageOwner.date * 1000));
         }
@@ -390,17 +393,7 @@ public class ChatsHelper extends BaseController {
         );
 
         if (buttonAvailable && getCustomReactionsCount(selectedObject) > 0) {
-            if (chatActivity.getMessageMenuHelper().allowNewMessageMenu() && chatActivity.getMessageMenuHelper().showCustomDivider(false)) {
-                popupLayout.addView(new ActionBarPopupWindow.GapView(
-                        chatActivity.getContext(),
-                        MessageMenuHelper.getMessageMenuGapColor(chatActivity.getResourceProvider()),
-                        Theme.getColor(Theme.key_windowBackgroundGrayShadow, chatActivity.getResourceProvider())
-                ), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
-            } else {
-                View gap = new FrameLayout(chatActivity.getContext());
-                gap.setBackgroundColor(chatActivity.getThemedColor(Theme.key_actionBarDefaultSubmenuSeparator));
-                popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
-            }
+            popupLayout.addView(chatActivity.getMessageMenuHelper().createGap(chatActivity.getContext(), chatActivity.getResourceProvider()), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
 
             FrameLayout button = new FrameLayout(chatActivity.getParentActivity());
 

@@ -16,6 +16,7 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -65,7 +66,6 @@ import uz.unnarsx.cherrygram.core.CherrygramLogger;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.donates.BadgeHelper;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
-import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class ProfileActivityHelper extends BaseController {
@@ -312,37 +312,21 @@ public class ProfileActivityHelper extends BaseController {
 
     public void checkCherrygramBadges(
             ProfileActivity profileActivity,
-            SimpleTextView[] nameTextView,
-            int a,
+            SimpleTextView nameTextView,
             MessagesController.PeerColor peerColor,
             FrameLayout avatarContainer2,
             float extraHeight,
-            float currentExpandAnimatorValue,
             float currentExpanAnimatorFracture,
             float[] expandAnimatorValues,
             TLRPC.User user
     ) {
-        if (user == null) return;
-
-        long emojiDocumentId;
-        boolean isCGPremium = false; // cgPremium
-        boolean isDonated = DonatesManager.INSTANCE.didUserDonate(user.id);
-        boolean forceBra = user.id == Constants.Cherrygram_Owner;
-        boolean showParticles = isCGPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(user.id);
-
-        if (isCGPremium && isDonated) {
-            emojiDocumentId = Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
-        } else if (isCGPremium || isDonated || forceBra) {
-            emojiDocumentId = isCGPremium || forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
-        } else {
-            emojiDocumentId = 0;
-        }
+        final long emojiDocumentId = BadgeHelper.getCherrygramStatusId(user);
 
         if (emojiDocumentId != 0) {
-            nameTextView[a].setRightDrawable2(profileActivity.getEmojiStatusDrawable(emojiDocumentId, false, showParticles, 22, a));
-            nameTextView[a].setRightDrawableInside(true);
+            nameTextView.setRightDrawable2(profileActivity.getEmojiStatusDrawable(emojiDocumentId, false, BadgeHelper.hasCherrygramStatusParticles(user), 22));
+            nameTextView.setRightDrawableInside(true);
 
-            nameTextView[a].setRightDrawable2OnClick(v -> {
+            nameTextView.setRightDrawable2OnClick(v -> {
                 TLRPC.Document document = AnimatedEmojiDrawable.findDocument(currentAccount, emojiDocumentId);
                 SpannableStringBuilder stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))));
 
@@ -359,7 +343,6 @@ public class ProfileActivityHelper extends BaseController {
                         peerColor,
                         avatarContainer2,
                         extraHeight,
-                        currentExpandAnimatorValue,
                         currentExpanAnimatorFracture,
                         expandAnimatorValues,
                         user
@@ -370,11 +353,10 @@ public class ProfileActivityHelper extends BaseController {
 
     private void showDonatorHint(
             BaseFragment fragment,
-            SimpleTextView[] nameTextView,
+            SimpleTextView nameTextView,
             MessagesController.PeerColor peerColor,
             FrameLayout avatarContainer2,
             float extraHeight,
-            float currentExpandAnimatorValue,
             float currentExpanAnimatorFracture,
             float[] expandAnimatorValues,
             TLRPC.User user
@@ -415,7 +397,6 @@ public class ProfileActivityHelper extends BaseController {
         updateDonatorHint(
                 nameTextView,
                 extraHeight,
-                currentExpandAnimatorValue,
                 currentExpanAnimatorFracture,
                 expandAnimatorValues
         );
@@ -423,46 +404,30 @@ public class ProfileActivityHelper extends BaseController {
     }
 
     public void updateDonatorHint(
-            SimpleTextView[] nameTextView,
+            SimpleTextView nameTextView,
             float extraHeight,
-            float currentExpandAnimatorValue,
             float currentExpanAnimatorFracture,
             float[] expandAnimatorValues
     ) {
         if (donatorHint == null) return;
 
-        float emojiRight;
-        int extra;
-        if (nameTextView[1].getRightDrawableWidth() != 0) {
-            emojiRight = (nameTextView[1].getRightDrawableX()
-                    - nameTextView[1].getRightDrawableWidth() * lerp(0.45f, 0.25f, currentExpandAnimatorValue))
-                    * nameTextView[1].getScaleX();
-
-            extra = dp(30);
+        final Drawable cherrygramStatus = nameTextView.getRightDrawable2();
+        final float statusCenterX;
+        if (cherrygramStatus != null && !cherrygramStatus.getBounds().isEmpty()) {
+            statusCenterX = cherrygramStatus.getBounds().exactCenterX();
         } else {
-            float textWidth;
-
-            if (nameTextView[1].getLayout() != null) {
-                textWidth = nameTextView[1].getLayout().getLineWidth(0);
-            } else {
-                textWidth = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString());
-            }
-
-            emojiRight = textWidth * nameTextView[1].getScaleX();
-
-            extra = dp(2);
+            statusCenterX = nameTextView.getTextWidth() + dp(12);
         }
 
         donatorHint.setJointPx(
                 0,
                 -donatorHint.getPaddingLeft()
-                        + nameTextView[1].getX()
-                        + emojiRight
-                        + extra
+                        + nameTextView.getX()
+                        + statusCenterX * nameTextView.getScaleX()
         );
 
         final float expanded = AndroidUtilities.lerp(expandAnimatorValues, currentExpanAnimatorFracture);
-        donatorHint.setTranslationY(-donatorHint.getPaddingBottom() + nameTextView[1].getY() - dp(24) + lerp(dp(6), -dp(12), expanded));
+        donatorHint.setTranslationY(-donatorHint.getPaddingBottom() + nameTextView.getY() - dp(24) + lerp(dp(6), -dp(12), expanded));
         donatorHint.setBgColor(ColorUtils.blendARGB(donatorHintBackgroundColor, 0x50000000, expanded));
         final boolean visible = extraHeight >= dp(82);
         if (donatorHintVisible == null || donatorHintVisible != visible) {

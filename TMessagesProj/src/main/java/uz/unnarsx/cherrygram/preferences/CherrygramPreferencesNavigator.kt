@@ -73,7 +73,10 @@ object CherrygramPreferencesNavigator {
     fun createAbout(fragment: BaseFragment): BaseFragment =
         AboutPreferencesEntry().also(fragment::presentFragment)
 
+    /*fun createDebug(fragment: BaseFragment): BaseFragment =
+        DebugPreferencesEntry().also(fragment::presentFragment)*/
+
     fun createDebug(fragment: BaseFragment): BaseFragment =
-        DebugPreferencesEntry().also(fragment::presentFragment)
+        ExperimentalPreferencesEntry().also(fragment::presentFragment)
 
 }

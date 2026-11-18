@@ -119,7 +119,6 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_JUMP_TO_BEGINNING = 2000;
     public final static int OPTION_DELETE_ALL_FROM_SELF = 2001;
     public final static int OPTION_UPGRADE_GROUP = 2002;
-    public final static int OPTION_TEXT_MENTION = 2003;
     public final static int OPTION_SELECT_BETWEEN = 2004;
     public final static int OPTION_SAVE_MESSAGE_CHAT = 2005;
     public final static int OPTION_FOR_ADMINS_REACTIONS = 2006;
@@ -140,7 +139,6 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_OPEN_IN = 2021;
     public final static int OPTION_DETAILS = 2022;
     public final static int OPTION_TRANSLATE_DOUBLE_TAP = 2023;
-    public final static int OPTION_TEXT_CODE = 2024;
     public final static int OPTION_GO_TO_SAVED = 2025;
     public final static int OPTION_ASK_PASSCODE = 2026;
     public final static int OPTION_DO_NOT_ASK_PASSCODE = 2027;
@@ -151,6 +149,7 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_EXPLANATION_GEMINI = 2032;
     public final static int OPTION_SUMMARIZE_GEMINI = 2033;
     public final static int OPTION_ADVANCED_SEARCH = 2034;
+    public final static int OPTION_SELECT_MESSAGE = 2035;
     /** Cherrygram chat options constant id's finish */
 
     /** ActionBar options start */
@@ -159,7 +158,7 @@ public class ChatActivityHelper extends BaseController {
             ChatActivity chatActivity, ActionBarMenuItem headerItem,
             ArrayList<MessageObject> messages,
             SparseArray<MessageObject>[] selectedMessagesIds,
-            long mergeDialogId, int editTextStart, int editTextEnd,
+            long mergeDialogId,
             TLRPC.TL_forumTopic forumTopic, TLRPC.Chat currentChat
     ) {
         if (id == OPTION_ADVANCED_SEARCH) {
@@ -179,11 +178,6 @@ public class ChatActivityHelper extends BaseController {
             }));
             builder.setNegativeButton(getString(R.string.Cancel), null);
             chatActivity.showDialog(builder.create());
-        } else if (id == OPTION_TEXT_MENTION) {
-            if (chatActivity.getChatActivityEnterView() != null && chatActivity.getChatActivityEnterView().getEditField() != null) {
-                chatActivity.getChatActivityEnterView().getEditField().setSelectionOverride(editTextStart, editTextEnd);
-                chatActivity.getChatActivityEnterView().getEditField().makeSelectedMention();
-            }
         } else if (id == OPTION_SELECT_BETWEEN) {
             ArrayList<Integer> ids = new ArrayList<>();
             for (int a = 1; a >= 0; a--) {
@@ -245,11 +239,6 @@ public class ChatActivityHelper extends BaseController {
             chatActivity.presentFragment(StatisticActivity.create(currentChat, false));
         } else if (id == OPTION_FOR_ADMINS_RECENT_ACTIONS) {
             chatActivity.presentFragment(new ChannelAdminLogActivity(currentChat));
-        } else if (id == OPTION_TEXT_CODE) {
-            if (chatActivity.getChatActivityEnterView() != null && chatActivity.getChatActivityEnterView().getEditField() != null) {
-                chatActivity.getChatActivityEnterView().getEditField().setSelectionOverride(editTextStart, editTextEnd);
-                chatActivity.getChatActivityEnterView().getEditField().makeSelectedCode();
-            }
         } else if (id == OPTION_GO_TO_SAVED) {
             chatActivity.presentFragment(ChatActivity.of(ChatsHelper2.INSTANCE.getCustomChatID()));
         } else if (id == OPTION_ASK_PASSCODE) {
@@ -502,10 +491,8 @@ public class ChatActivityHelper extends BaseController {
                 break;
             }
             case OPTION_DETAILS: {
-                if (selectedObject != null) {
-                    JsonBottomSheet.getMessageId(selectedObject);
-                    JsonBottomSheet.showAlert(chatActivity.getContext(), chatActivity.getResourceProvider(), chatActivity, selectedObject, currentChat);
-                }
+                if (selectedObject == null) return;
+                JsonBottomSheet.showAlert(chatActivity.getContext(), chatActivity.getResourceProvider(), chatActivity, selectedObject, currentChat);
                 break;
             }
             case OPTION_GET_CUSTOM_REACTIONS: {
@@ -622,6 +609,21 @@ public class ChatActivityHelper extends BaseController {
                 chatActivity.dimBehindView(true);
                 break;
             }
+            case OPTION_SELECT_MESSAGE: {
+                final int messageId = selectedObject.getId();
+                final Runnable select = () -> {
+                    final View cell = chatActivity.findMessageCell(messageId, true);
+                    if (cell != null) {
+                        chatActivity.createMenu(cell, false, false, 0, 0, false);
+                    }
+                };
+                if (chatActivity.scrimPopupWindow != null && chatActivity.getMessageMenuHelper().allowNewMessageMenu()) {
+                    chatActivity.getMessageMenuHelper().runAfterMenuClosed(select);
+                } else {
+                    AndroidUtilities.runOnUIThread(select);
+                }
+                break;
+            }
         }
 
     }
@@ -716,6 +718,8 @@ public class ChatActivityHelper extends BaseController {
     }
 
     private void createSearchWithIDAlert(ChatActivity chatActivity) {
+        if (chatActivity == null || chatActivity.getContext() == null) return;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(chatActivity.getContext());
         builder.setTitle(getString(R.string.AvatarPreviewSearchMessages));
 

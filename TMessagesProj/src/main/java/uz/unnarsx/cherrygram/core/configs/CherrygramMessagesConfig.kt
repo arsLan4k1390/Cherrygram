@@ -44,6 +44,7 @@ object CherrygramMessagesConfig {
     var blurMessageMenuBackground by sharedPreferences.boolean("CP_BlurMessageMenuBackground", false)
     var msgMenuShowWholeAlbum by sharedPreferences.boolean("CP_MsgMenuShowWholeAlbum", false)
     var msgMenuNativeBlur by sharedPreferences.boolean("CP_MsgMenuNativeBlur1", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    var msgMenuOpenByLongPress by sharedPreferences.boolean("CP_MsgMenuOpenByLongPress", false)
     var rememberKeyboardState by sharedPreferences.boolean("CP_RememberKeyboardState", true)
     var fixMsgMenuAnimation by sharedPreferences.boolean("CP_FixMsgMenuAnim", Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
     /** Message menu items start */
@@ -88,8 +89,6 @@ object CherrygramMessagesConfig {
 
     var wideMessagesLayout by sharedPreferences.boolean("CP_WideMessagesLayout", false)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
-    var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", true)
-    var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", true)
     /** Appearance finish */
 
     /** Actions start */

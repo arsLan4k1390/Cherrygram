@@ -174,10 +174,6 @@ public class UpdateLayout extends IUpdateLayout {
         }
     }
 
-    // ----------------------------------------------------------------------------------------
-    // Google Play In-App Update
-    // ----------------------------------------------------------------------------------------
-
     private void registerGooglePlayUpdateListener() {
         if (appUpdateManager != null) {
             return;
@@ -270,7 +266,6 @@ public class UpdateLayout extends IUpdateLayout {
         }
     }
 
-    /** Вызвать при уничтожении drawer'а/side-меню, чтобы не держать listener живым дольше нужного. */
     public void destroy() {
         unregisterGooglePlayUpdateListener();
         appUpdateManager = null;

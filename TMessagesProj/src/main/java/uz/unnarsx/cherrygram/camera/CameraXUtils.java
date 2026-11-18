@@ -16,6 +16,9 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.os.Build;
 import android.util.Range;
 import android.util.Size;
+import android.util.SizeF;
+
+import androidx.annotation.Nullable;
 
 import androidx.camera.camera2.interop.Camera2CameraInfo;
 import androidx.camera.core.CameraInfo;
@@ -180,6 +183,97 @@ public class CameraXUtils {
         return best == null ? CameraSelector.DEFAULT_BACK_CAMERA : best.getCameraSelector();
     }
 
+    public static final class UltraWideInfo {
+        public final String cameraId;
+        public final float factor;
+        public final String mainCameraId;
+        public final boolean mainHasFlash;
+        public final int mainMaxTorchStrength;
+
+        UltraWideInfo(String cameraId, float factor, String mainCameraId, boolean mainHasFlash, int mainMaxTorchStrength) {
+            this.cameraId = cameraId;
+            this.factor = factor;
+            this.mainCameraId = mainCameraId;
+            this.mainHasFlash = mainHasFlash;
+            this.mainMaxTorchStrength = mainMaxTorchStrength;
+        }
+    }
+
+    @Nullable
+    @SuppressLint("UnsafeOptInUsageError")
+    public static UltraWideInfo findSeparateUltraWide(ProcessCameraProvider provider, CameraInfo main) {
+        if (provider == null || main == null) return null;
+        try {
+            Range<Float> range = CameraXController.getZoomRatioRange(main);
+            if (range != null && range.getLower() < 0.99f) return null;
+            float mainFov = fovFactor(main);
+            if (mainFov <= 0f) return null;
+            String mainId = Camera2CameraInfo.from(main).getCameraId();
+
+            String bestId = null;
+            float bestFov = mainFov * 1.2f;
+            for (CameraInfo info : provider.getAvailableCameraInfos()) {
+                if (info.getLensFacing() != CameraSelector.LENS_FACING_BACK) continue;
+                String id = Camera2CameraInfo.from(info).getCameraId();
+                if (id.equals(mainId)) continue;
+                float fov = fovFactor(info);
+                if (fov > bestFov) {
+                    bestFov = fov;
+                    bestId = id;
+                }
+            }
+            if (bestId == null) return null;
+            final String foundId = bestId;
+            final float factor = mainFov / bestFov;
+            CherrygramLogger.d("CherryCam", () -> "Separate ultra-wide camera: id=" + foundId + ", factor=" + factor);
+            int mainMaxTorch = 1;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Integer level = Camera2CameraInfo.from(main).getCameraCharacteristic(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL);
+                if (level != null) mainMaxTorch = level;
+            }
+            return new UltraWideInfo(bestId, factor, mainId, main.hasFlashUnit(), mainMaxTorch);
+        } catch (Exception e) {
+            CherrygramLogger.e(e);
+            return null;
+        }
+    }
+
+    @SuppressLint("UnsafeOptInUsageError")
+    private static float fovFactor(CameraInfo info) {
+        Camera2CameraInfo c = Camera2CameraInfo.from(info);
+        float[] focals = c.getCameraCharacteristic(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+        SizeF sensor = c.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE);
+        if (focals == null || focals.length == 0 || focals[0] <= 0f || sensor == null) return 0f;
+        return sensor.getWidth() / focals[0];
+    }
+
+    @SuppressLint("UnsafeOptInUsageError")
+    public static float getMaxZoomRatio(CameraInfo info) {
+        if (info == null) return 1f;
+        try {
+            Range<Float> range = CameraXController.getZoomRatioRange(info);
+            if (range != null) return range.getUpper();
+            Float digital = Camera2CameraInfo.from(info).getCameraCharacteristic(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+            if (digital != null) return digital;
+            ZoomState state = info.getZoomState().getValue();
+            if (state != null) return state.getMaxZoomRatio();
+        } catch (Exception e) {
+            CherrygramLogger.e(e);
+        }
+        return 1f;
+    }
+
+    @SuppressLint("UnsafeOptInUsageError")
+    public static CameraSelector selectorForId(String cameraId) {
+        return new CameraSelector.Builder().addCameraFilter(infos -> {
+            List<CameraInfo> out = new ArrayList<>();
+            for (CameraInfo c : infos) {
+                if (Camera2CameraInfo.from(c).getCameraId().equals(cameraId)) out.add(c);
+            }
+            return out;
+        }).build();
+    }
+
     public static boolean isWideAngleAvailable(ProcessCameraProvider provider) {
         return getWideCameraId(provider) != null;
     }
@@ -188,17 +282,7 @@ public class CameraXUtils {
     public static CameraSelector getDefaultWideAngleCamera(ProcessCameraProvider provider) {
         String wideCamera = getWideCameraId(provider);
         if (wideCamera != null) {
-            return new CameraSelector.Builder().addCameraFilter(cameraInfo -> {
-                List<CameraInfo> cameraFiltered = new ArrayList<>();
-                for (int i = 0; i < cameraInfo.size(); i++) {
-                    CameraInfo c = cameraInfo.get(i);
-                    String id = Camera2CameraInfo.from(c).getCameraId();
-                    if (id.equals(wideCamera)) {
-                        cameraFiltered.add(c);
-                    }
-                }
-                return cameraFiltered;
-            }).build();
+            return selectorForId(wideCamera);
         }
         throw new IllegalArgumentException("This device doesn't support wide camera! "
                 + "isWideAngleAvailable should be checked first before calling "

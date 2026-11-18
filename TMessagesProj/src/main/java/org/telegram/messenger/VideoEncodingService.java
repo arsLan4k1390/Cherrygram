@@ -226,30 +226,13 @@ public class VideoEncodingService extends Service implements NotificationCenter.
         return instance != null;
     }
 
-    /** Cherrygram start */
     @Override
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE) // API 34
     public void onTimeout(int startId, int fgsType) {
-        super.onTimeout(startId, fgsType);
-        if (BuildVars.LOGS_ENABLED) {
-            FileLog.d("VideoEncodingService: onTimeout fired (fgsType=" + fgsType + "), forcing stop");
-        }
-        try {
-            FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(
-                    new RuntimeException("VideoEncodingService onTimeout, fgsType=" + fgsType)
-            );
-        } catch (Throwable ignore) {}
-        stopForegroundAndSelf();
-    }
-
-    private void stopForegroundAndSelf() {
+        // dataSync time limit is exhausted (6 hours a day in background since Android 15), the service must stop now
+        FileLog.d("VideoEncodingService timeout, type = " + fgsType);
         try {
             stopForeground(true);
-        } catch (Throwable e) {
-            FirebaseCrashlyticsHelper.INSTANCE.logAsNonFatal(e);
-        }
+        } catch (Throwable ignore) {}
         stopSelf();
     }
-    /** Cherrygram finish */
-
 }

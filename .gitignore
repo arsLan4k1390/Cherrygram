@@ -17,8 +17,11 @@ TMessagesProj/jni/security
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/AnimUtils.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuAlbumView.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuCompactView.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuGlassDrawable.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuGlassLayout.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuHelper.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuMessageCells.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuReactionsGlass.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuRoundVideoPlayer.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuScrollView.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/folders/FoldersHelper.kt

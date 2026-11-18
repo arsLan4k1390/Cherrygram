@@ -37,12 +37,13 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int enableNewMessageMenuRow = 1;
     private final int useNativeBlurRow = 2;
-    private final int fixAnimationDurationRow = 3;
-    private final int showWholeAlbumRow = 4;
-    private final int rememberKeyboardStateRow = 5;
+    private final int openByLongPressRow = 3;
+    private final int fixAnimationDurationRow = 4;
+    private final int showWholeAlbumRow = 5;
+    private final int rememberKeyboardStateRow = 6;
 
-    private final int messageMenuItemsRow = 6;
-    private final int messageMenuItemsCompactViewRow = 7;
+    private final int messageMenuItemsRow = 7;
+    private final int messageMenuItemsCompactViewRow = 8;
 
     @Override
     protected CharSequence getTitle() {
@@ -80,6 +81,18 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
                         .slug("nativeBlur")
                 );
             }
+            items.add(UItem.asShadow(null));
+            items.add(
+                    SettingsHelper.asSwitchCG
+                            (
+                                    openByLongPressRow,
+                                    applyNewSpan(getString(R.string.CG_MsgMenuOpenByLongPress)),
+                                    getString(R.string.CG_MsgMenuOpenByLongPress_Desc)
+                            )
+                    .setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuOpenByLongPress())
+                    .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
+                    .slug("openByLongPress")
+            );
             items.add(
                     SettingsHelper.asSwitchCG
                             (
@@ -96,12 +109,12 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
                     .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
                     .slug("rememberKbdState")
             );
-            if (CherrygramCoreConfig.isDevBuild()) {
+            /*if (CherrygramCoreConfig.isDevBuild()) {
                 items.add(SettingsHelper.asSwitchCG(fixAnimationDurationRow, "Fix animation duration")
                         .setChecked(CherrygramMessagesConfig.INSTANCE.getFixMsgMenuAnimation())
                         .setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground())
                 );
-            }
+            }*/
             items.add(UItem.asShadow(null));
         }
 
@@ -152,6 +165,9 @@ public class MessageMenuPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == useNativeBlurRow) {
             CherrygramMessagesConfig.INSTANCE.setMsgMenuNativeBlur(!CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur());
+        } else if (item.id == openByLongPressRow) {
+            CherrygramMessagesConfig.INSTANCE.setMsgMenuOpenByLongPress(!CherrygramMessagesConfig.INSTANCE.getMsgMenuOpenByLongPress());
+            SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgMenuOpenByLongPress());
         } else if (item.id == showWholeAlbumRow) {
             CherrygramMessagesConfig.INSTANCE.setMsgMenuShowWholeAlbum(!CherrygramMessagesConfig.INSTANCE.getMsgMenuShowWholeAlbum());
             SettingsHelper.updateCheckState(view, CherrygramMessagesConfig.INSTANCE.getMsgMenuShowWholeAlbum());

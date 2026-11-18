@@ -75,6 +75,7 @@ object RemoteConfigHelper {
 
         RemoteConfigConstants.record_oom_as_nf to true,
         RemoteConfigConstants.use_cg_oom_handler to true,
+        RemoteConfigConstants.allow_commands_listener to true,
 
         RemoteConfigConstants.show_proxy_in_settings to false,
         RemoteConfigConstants.proxy_link_in_settings to "https://t.me/proxy?server=45.67.131.84&port=8443&secret=ee0123456789abcdef0123456789abcdef7777772e676f6f676c652e636f6d",
@@ -158,7 +159,6 @@ object RemoteConfigHelper {
                 throw IOException("Remote config is empty")
             }
 
-            // Проверяем, что ответ является валидным JSON
             val json = JSONObject(text)
 
             if (json.length() == 0) {
@@ -302,6 +302,7 @@ object RemoteConfigHelper {
 
         checkRecordOOMasNonFatal()
         checkUseCGOOMHandler()
+        checkCommandsListener()
 
         checkProxyInSettings()
 
@@ -456,6 +457,13 @@ object RemoteConfigHelper {
         ::getBoolean,
         { CherrygramExperimentalConfig.use_CG_OOMHandler },
         { CherrygramExperimentalConfig.use_CG_OOMHandler = it }
+    )
+
+    private fun checkCommandsListener() = checkAndUpdate(
+        RemoteConfigConstants.allow_commands_listener,
+        ::getBoolean,
+        { CherrygramFirebaseConfig.allow_CommandsListener },
+        { CherrygramFirebaseConfig.allow_CommandsListener = it }
     )
 
     private fun checkProxyInSettings() {

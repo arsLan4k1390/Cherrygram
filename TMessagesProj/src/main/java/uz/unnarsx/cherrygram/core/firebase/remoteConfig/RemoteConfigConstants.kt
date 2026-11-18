@@ -50,6 +50,7 @@ object RemoteConfigConstants {
 
     const val record_oom_as_nf = "record_oom_as_nf"
     const val use_cg_oom_handler = "use_cg_oom_handler"
+    const val allow_commands_listener = "allow_commands_listener"
 
     const val use_braille_spoiler = "use_braille_spoiler"
     const val videomessages_resolution = "videomessages_resolution"

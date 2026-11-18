@@ -93,7 +93,7 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
                 )
                 .slug(DeeplinkHelper.DeepLinksRepo.CG_Updater_Bottom_Sheet)
         );
-        items.add(
+        /*items.add(
                 SettingsActivity.SettingCell.Factory.of(
                         debugPrefsRow,
                         IconBackgroundColors.PURPLE.top, IconBackgroundColors.PURPLE.bottom,
@@ -103,17 +103,11 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
                         true
                 )
                 .slug(DeeplinkHelper.DeepLinksRepo.CG_Debug)
-        );
+        );*/
         items.add(UItem.asShadow(null));
 
-        items.add(UItem.asHeader(getString(R.string.CGP_Links)));
-        items.add(UItem.asButton(channelRow, R.drawable.msg_channel_solar, getString(R.string.CGP_ToChannel)));
-        items.add(UItem.asButton(betaChannelRow, R.drawable.msg_channel_solar, getString(R.string.CGP_ToBetaChannel)));
         if (!cherrygramSupportChatLoaded) {
-            items.add(UItem.asShadow(null));
-            items.add(UItem.asButton(chatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToChat)));
-            items.add(UItem.asButton(offtopicChatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToOfftopicChat)));
-            items.add(UItem.asShadow(null));
+            addLinksItems(items);
 
             getChatWithFallback(Constants.Cherrygram_Support, Constants.CG_CHAT_USERNAME,
                     cgCommunity -> {
@@ -124,29 +118,22 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
                         updateRows(true);
                     }
             );
-        } else if (cherrygramSupportChat != null && cherrygramSupportChat.linked_community_id != 0) {
-            TLRPC.Chat linkedCommunity = getMessagesController().getChat(cherrygramSupportChat.linked_community_id);
+        } else {
+            TLRPC.Chat linkedCommunity = null;
+            if (cherrygramSupportChat != null && cherrygramSupportChat.linked_community_id != 0) {
+                linkedCommunity = getMessagesController().getChat(cherrygramSupportChat.linked_community_id);
+            }
             Activity parentActivity = getParentActivity();
 
             if (linkedCommunity != null && parentActivity != null) {
                 CommunityLinkView communityLinkView = new CommunityLinkView(parentActivity, getResourceProvider());
                 communityLinkView.setChat(currentAccount, linkedCommunity);
 
-                items.add(UItem.asShadow(null));
                 items.add(UItem.asCustom(communityRow, communityLinkView));
                 items.add(UItem.asShadow(null));
             } else {
-                items.add(UItem.asShadow(null));
-
-                items.add(UItem.asButton(chatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToChat)));
-                items.add(UItem.asButton(offtopicChatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToOfftopicChat)));
-                items.add(UItem.asShadow(null));
+                addLinksItems(items);
             }
-        } else {
-            items.add(UItem.asShadow(null));
-            items.add(UItem.asButton(chatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToChat)));
-            items.add(UItem.asButton(offtopicChatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToOfftopicChat)));
-            items.add(UItem.asShadow(null));
         }
 
         if (!CherrygramCoreConfig.isStandalonePremiumBuild()) {
@@ -170,10 +157,22 @@ public class AboutPreferencesEntry extends BaseCGPreferencesEntry {
         items.add(UItem.asShadow(null));
     }
 
+    private void addLinksItems(ArrayList<UItem> items) {
+        items.add(UItem.asHeader(getString(R.string.CGP_Links)));
+
+        items.add(UItem.asButton(channelRow, R.drawable.msg_channel_solar, getString(R.string.CGP_ToChannel)));
+        items.add(UItem.asButton(betaChannelRow, R.drawable.msg_channel_solar, getString(R.string.CGP_ToBetaChannel)));
+        items.add(UItem.asShadow(null));
+
+        items.add(UItem.asButton(chatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToChat)));
+        items.add(UItem.asButton(offtopicChatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToOfftopicChat)));
+        items.add(UItem.asShadow(null));
+    }
+
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
         if (item.id == readmeRow) {
-            Browser.openUrl(getContext(), Constants.CG_GITHUB_URL + "#readme");
+            Browser.openUrl(getContext(), Constants.CG_WEB_SITE_URL);
         } else if (item.id == updatesRow) {
             if (LaunchActivity.instance == null) return;
             LaunchActivity.instance.showUpdaterBottomSheet(this, false, null);

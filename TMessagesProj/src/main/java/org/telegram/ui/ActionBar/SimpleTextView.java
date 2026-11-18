@@ -399,8 +399,9 @@ public class SimpleTextView extends View implements Drawable.Callback {
                         width -= drawablePadding;
                     }
                     if (rightDrawable2 != null && !rightDrawableOutside) {
-                        rightDrawableWidth += (int) (rightDrawable2.getIntrinsicWidth() * rightDrawableScale);
-                        width -= rightDrawableWidth;
+                        final int rightDrawable2Width = (int) (rightDrawable2.getIntrinsicWidth() * rightDrawableScale);
+                        rightDrawableWidth += rightDrawable2Width;
+                        width -= rightDrawable2Width;
                         width -= drawablePadding;
                     }
                 }

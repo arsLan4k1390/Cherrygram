@@ -54,6 +54,7 @@ import org.telegram.ui.BlurSettingsBottomSheet;
 import org.telegram.ui.ChatBackgroundDrawable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
@@ -1229,5 +1230,10 @@ public class SizeNotifierFrameLayout extends FrameLayout implements Theme.Colora
     @Override
     public void updateColors() {
 
+    }
+    @Override
+    public void addColorKeys(HashSet<Integer> colors) {
+        colors.add(Theme.key_chat_BlurAlphaSlow);
+        colors.add(Theme.key_chat_BlurAlpha);
     }
 }

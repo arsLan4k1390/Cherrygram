@@ -73,6 +73,7 @@ object CherrygramFirebaseConfig: CoroutineScope by CoroutineScope(
 
     /** Misc start */
     var useBrailleSpoiler by sharedPreferences.boolean("CG_UseBrailleSpoiler", false)
+    var allow_CommandsListener by sharedPreferences.boolean("CG_Allow_CommandsListener", true)
 
     var lastRemoteConfigCheckTime by sharedPreferences.long("CG_LastRemoteConfigCheckTime", 0)
 

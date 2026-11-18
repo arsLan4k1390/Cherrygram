@@ -93,6 +93,7 @@ import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_iv;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ActionBar.ThemeBind;
 import org.telegram.ui.Adapters.DialogsAdapter;
 import org.telegram.ui.AvatarSpan;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
@@ -151,9 +152,11 @@ import uz.unnarsx.cherrygram.chats.filters.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
+import uz.unnarsx.cherrygram.donates.BadgeHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 import me.vkryl.android.animator.BoolAnimator;
+import java.util.HashSet;
 
 public class DialogCell extends BaseCell implements StoriesListPlaceProvider.AvatarOverlaysView, Theme.Colorable {
 
@@ -355,6 +358,50 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
     @Override
     public void updateColors() {
+        try {
+            // only bound cells on screen (as the former DialogsActivity delegate did): pooled / unbound cells are rebuilt on bind
+            if (!isAttachedToWindow() || currentDialogId == 0 && customDialog == null) {
+                return;
+            }
+            update(0);
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    @Override
+    public void addColorKeys(HashSet<Integer> colors) {
+        colors.add(Theme.key_chats_nameArchived);
+        colors.add(Theme.key_chats_message_threeLines);
+        colors.add(Theme.key_chats_message);
+        colors.add(Theme.key_chats_attachMessage);
+        colors.add(Theme.key_chats_name);
+        colors.add(Theme.key_chats_draft);
+        colors.add(Theme.key_chats_actionMessage);
+        colors.add(Theme.key_chats_nameMessage);
+        colors.add(Theme.key_windowBackgroundWhiteGrayText);
+        colors.add(Theme.key_windowBackgroundWhite);
+        colors.add(Theme.key_checkboxCheck);
+        colors.add(Theme.key_chats_archivePinBackground);
+        colors.add(Theme.key_chats_archiveBackground);
+        colors.add(Theme.key_dialogSwipeRemove);
+        colors.add(Theme.key_chats_pinnedOverlay);
+        colors.add(Theme.key_chats_secretName);
+        colors.add(Theme.key_chats_nameMessageArchived_threeLines);
+        colors.add(Theme.key_chats_nameMessage_threeLines);
+        colors.add(Theme.key_chats_nameMessageArchived);
+        colors.add(Theme.key_chats_messageArchived);
+        colors.add(Theme.key_chats_verifiedBackground);
+        colors.add(Theme.key_featuredStickers_addButton);
+        colors.add(Theme.key_featuredStickers_buttonText);
+        colors.add(Theme.key_chats_unreadCounterMuted);
+        colors.add(Theme.key_chats_unreadCounter);
+        colors.add(Theme.key_premiumGradient1);
+        colors.add(Theme.key_premiumGradient2);
+        colors.add(Theme.key_chats_onlineCircle);
+        colors.add(Theme.key_topics_unreadCounterMuted);
+        colors.add(Theme.key_topics_unreadCounter);
+        colors.add(Theme.key_chats_unreadCounterText);
     }
 
     private CommunityArrowDrawable communityArrowDrawable;
@@ -716,12 +763,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         emojiStatusView = new View(context) {
             @Override
             protected void onDraw(@NonNull Canvas canvas) {
-                emojiStatus.setBounds(0, 0, getWidth(), getHeight());
-                emojiStatus.draw(canvas);
+                drawEmojiStatuses(canvas);
             }
         };
         addView(emojiStatusView);
         emojiStatus = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(emojiStatusView, dp(22));
+        cherrygramStatus = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(emojiStatusView, dp(22));
         botVerification = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(17));
         avatarImage.setAllowLoadingOnAttachedOnly(true);
     }
@@ -942,6 +989,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         if (emojiStatus != null) {
             emojiStatus.detach();
         }
+        if (cherrygramStatus != null) {
+            cherrygramStatus.detach();
+        }
         if (botVerification != null) {
             botVerification.detach();
         }
@@ -968,6 +1018,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         if (emojiStatus != null) {
             emojiStatus.attach();
         }
+        if (cherrygramStatus != null) {
+            cherrygramStatus.attach();
+        }
         if (botVerification != null) {
             botVerification.attach();
         }
@@ -987,6 +1040,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         if (emojiStatus != null && attachedToWindow) {
             emojiStatus.attach();
         }
+        if (cherrygramStatus != null && attachedToWindow) {
+            cherrygramStatus.attach();
+        }
         if (botVerification != null && attachedToWindow) {
             botVerification.attach();
         }
@@ -996,7 +1052,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (emojiStatusView != null) {
             emojiStatusView.measure(
-                MeasureSpec.makeMeasureSpec(dp(22), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(dp(22 + 24), MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(dp(22), MeasureSpec.EXACTLY)
             );
         }
@@ -1064,7 +1120,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             return;
         }
         if (emojiStatusView != null) {
-            emojiStatusView.layout(0, 0, dp(22), dp(22));
+            emojiStatusView.layout(0, 0, dp(22 + 24), dp(22));
         }
         if (checkBox != null) {
             int paddingStart = dp(messagePaddingStart - (useForceThreeLines || SharedConfig.useThreeLinesLayout ? 29 : 27));
@@ -1307,6 +1363,8 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         drawVerified = false;
         drawBotVerified = false;
         drawPremium = false;
+        drawCherrygramStatus = false;
+        drawCherrygramStatusOnly = false;
         drawForwardIcon = false;
         drawGiftIcon = false;
         drawScam = 0;
@@ -1535,6 +1593,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                 emojiStatus.setParticles(false, false);
                             }
                         }
+                        /** Cherrygram start */
+                        drawCherrygramStatus = UserConfig.getInstance(currentAccount).clientUserId != user.id && BadgeHelper.setCherrygramStatus(cherrygramStatus, user, false);
+                        if (drawCherrygramStatus) {
+                            drawCherrygramStatusOnly = !drawPremium;
+                            drawPremium = true;
+                            nameLayoutEllipsizeByGradient = true;
+                        }
+                        /** Cherrygram finish */
                     }
                     if (dialogBotVerificationIcon != 0 && drawBotVerified) {
                         botVerification.set(dialogBotVerificationIcon, false);
@@ -2366,7 +2432,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         nameAdditionalsForChannelSubscriber = 0;
         final boolean reserveMuteSlot = (dialogMuted || isHiddenInCommunity || drawUnmute || dialogMutedProgress > 0) && !drawVerified && drawScam == 0;
         if (drawPremium && emojiStatus.getDrawable() != null) {
-            int w = dp(6 + 24 + 6);
+            int w = dp(6 + 24 + 6) + getCherrygramStatusExtra();
             if (reserveMuteSlot) {
                 w += dp(6) + Theme.dialogs_muteDrawable.getIntrinsicWidth();
             }
@@ -2378,7 +2444,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         } else if (reserveMuteSlot) {
             int w = dp(6) + Theme.dialogs_muteDrawable.getIntrinsicWidth();
             if (drawPremium) {
-                w += dp(6 + 24 + 6);
+                w += dp(6 + 24 + 6) + getCherrygramStatusExtra();
             }
             nameWidth -= w;
             nameAdditionalsForChannelSubscriber += w;
@@ -2393,7 +2459,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 nameLeft += w;
             }
         } else if (drawPremium) {
-            int w = dp(6 + 24 + 6);
+            int w = dp(6 + 24 + 6) + getCherrygramStatusExtra();
             nameWidth -= w;
             nameAdditionalsForChannelSubscriber += w;
             if (LocaleController.isRTL) {
@@ -2861,7 +2927,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 }
                 if ((dialogMuted || drawUnmute || dialogMutedProgress > 0) && !drawVerified && drawScam == 0) {
                     if (drawPremium) {
-                        nameMuteLeft = (int) (nameLeft + (nameWidth - widthpx - left) - dp(24));
+                        nameMuteLeft = (int) (nameLeft + (nameWidth - widthpx - left) - dp(24) - getCherrygramStatusExtra());
                         nameMutedIconLeft = nameMuteLeft - dp(6) - Theme.dialogs_muteDrawable.getIntrinsicWidth();
                     } else {
                         nameMuteLeft = (int) (nameLeft + (nameWidth - widthpx) - dp(6) - Theme.dialogs_muteDrawable.getIntrinsicWidth());
@@ -2869,7 +2935,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 } else if (drawVerified) {
                     nameMuteLeft = (int) (nameLeft + (nameWidth - widthpx) - dp(6) - Theme.dialogs_verifiedDrawable.getIntrinsicWidth());
                 } else if (drawPremium) {
-                    nameMuteLeft = (int) (nameLeft + (nameWidth - widthpx - left) - dp(24));
+                    nameMuteLeft = (int) (nameLeft + (nameWidth - widthpx - left) - dp(24) - getCherrygramStatusExtra());
                     nameMutedIconLeft = nameMuteLeft - dp(6) - Theme.dialogs_muteDrawable.getIntrinsicWidth();
                 } else if (drawScam != 0) {
                     nameMuteLeft = (int) (nameLeft + (nameWidth - widthpx) - dp(6) - (drawScam == 1 ? Theme.dialogs_scamDrawable : Theme.dialogs_fakeDrawable).getIntrinsicWidth());
@@ -2962,7 +3028,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 if ((dialogMuted || true) || drawUnmute || drawVerified || drawPremium || drawScam != 0) {
                     nameMuteLeft = (int) (nameLeft + left + dp(6));
                     if (drawPremium) {
-                        nameMutedIconLeft = nameMuteLeft + dp(24 + 6);
+                        nameMutedIconLeft = nameMuteLeft + dp(24 + 6) + getCherrygramStatusExtra();
                     }
                 }
             }
@@ -4362,7 +4428,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     StatusDrawable statusDrawable = Theme.getChatStatusDrawable(type);
                     if (statusDrawable != null) {
                         canvas.save();
-                        int color = Theme.getColor(Theme.key_chats_actionMessage);
+                        int color = Theme.getColor(Theme.key_chats_actionMessage, resourcesProvider);
                         statusDrawable.setColor(ColorUtils.setAlphaComponent(color, (int) (Color.alpha(color) * updateHelper.typingProgres)));
                         if (updateHelper.typingOutToTop) {
                             top = messageTop + typingAnimationOffset * (1f - updateHelper.typingProgres);
@@ -4576,17 +4642,17 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     emojiStatusView.setTranslationX(gtx + nameMuteLeft - dp(2));
                     emojiStatusView.setTranslationY(gty + y - dp(4));
                     if (rightFragmentOpenedProgress > 0) {
-                        emojiStatus.setBounds(
-                            nameMuteLeft - dp(2),
-                            y - dp(4),
-                            nameMuteLeft + dp(20),
-                            y - dp(4) + dp(22)
-                        );
-                        emojiStatus.draw(canvas);
+                        canvas.save();
+                        canvas.translate(nameMuteLeft - dp(2), y - dp(4));
+                        drawEmojiStatuses(canvas);
+                        canvas.restore();
                     } else {
                         emojiStatusVisible = true;
                     }
                     emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+                    if (drawCherrygramStatus) {
+                        cherrygramStatus.setColor(BadgeHelper.getEmojiStatusColor(user != null ? user.id : 0, Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider), false));
+                    }
                 } else {
                     Drawable premiumDrawable = PremiumGradient.getInstance().premiumStarDrawableMini;
                     setDrawableBounds(premiumDrawable, nameMuteLeft - dp(1), dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12.5f : 15.5f));
@@ -4920,7 +4986,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
         if (clipArchive) {
             final int cy = (int) (getMeasuredHeight() * (1f - archivePullProgress));
-            final int color = Theme.getColor(Theme.key_windowBackgroundWhite);
+            final int color = Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider);
             if (archiveFadeGradientDrawable == null) {
                 archiveFadeGradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, null);
             }
@@ -5075,7 +5141,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             if (starBg == null) {
                 starBg = getContext().getResources().getDrawable(R.drawable.star_small_outline).mutate();
             }
-            final int bg = Theme.getColor(Theme.key_windowBackgroundWhite);
+            final int bg = Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider);
             if (starBgColor != bg) {
                 starBg.setColorFilter(new PorterDuffColorFilter(starBgColor = bg, PorterDuff.Mode.SRC_IN));
             }
@@ -5346,9 +5412,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     counterPaintOutline.setStrokeJoin(Paint.Join.ROUND);
                     counterPaintOutline.setStrokeCap(Paint.Cap.ROUND);
                 }
-                int color = Theme.getColor(Theme.key_chats_pinnedOverlay);
+                int color = Theme.getColor(Theme.key_chats_pinnedOverlay, resourcesProvider);
                 counterPaintOutline.setColor(ColorUtils.blendARGB(
-                        Theme.getColor(Theme.key_windowBackgroundWhite),
+                        Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider),
                         ColorUtils.setAlphaComponent(color, 255),
                         Color.alpha(color) / 255f
                 ));
@@ -5489,7 +5555,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 canvas.restore();
             }
             if (restoreCountTextPaint) {
-                Theme.dialogs_countTextPaint2.setColor(Theme.getColor(Theme.key_chats_unreadCounterText));
+                Theme.dialogs_countTextPaint2.setColor(Theme.getColor(Theme.key_chats_unreadCounterText, resourcesProvider));
             }
         }
     }
@@ -6617,6 +6683,51 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
     /** Cherrygram start */
     private boolean isSearchView = false;
+
+    @Override
+    public void draw(Canvas canvas) {
+        if (resourcesProvider == null) {
+            super.draw(canvas);
+            return;
+        }
+        applyStaticColors(resourcesProvider);
+        super.draw(canvas);
+        applyStaticColors(null);
+    }
+
+    private static void applyStaticColors(Theme.ResourcesProvider resourcesProvider) {
+        Theme.dialogs_timePaint.setColor(Theme.getColor(Theme.key_chats_date, resourcesProvider));
+        Theme.setDrawableColor(Theme.dialogs_checkDrawable, Theme.getColor(Theme.key_chats_sentCheck, resourcesProvider));
+        Theme.setDrawableColor(Theme.dialogs_checkReadDrawable, Theme.getColor(Theme.key_chats_sentReadCheck, resourcesProvider));
+        Theme.setDrawableColor(Theme.dialogs_halfCheckDrawable, Theme.getColor(Theme.key_chats_sentReadCheck, resourcesProvider));
+        Theme.setDrawableColor(Theme.dialogs_clockDrawable, Theme.getColor(Theme.key_chats_sentClock, resourcesProvider));
+        Theme.setDrawableColor(Theme.dialogs_lockDrawable, Theme.getColor(Theme.key_chats_secretIcon, resourcesProvider));
+        Theme.setDrawableColor(Theme.dialogs_muteDrawable, Theme.getColor(Theme.key_chats_muteIcon, resourcesProvider));
+        Theme.setDrawableColor(Theme.dialogs_verifiedDrawable, Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+        Theme.setDrawableColor(Theme.dialogs_verifiedCheckDrawable, Theme.getColor(Theme.key_chats_verifiedCheck, resourcesProvider));
+    }
+
+    private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatus;
+    private boolean drawCherrygramStatus;
+    private boolean drawCherrygramStatusOnly;
+
+    private int getCherrygramStatusExtra() {
+        return drawCherrygramStatus && !drawCherrygramStatusOnly ? dp(24) : 0;
+    }
+
+    private void drawEmojiStatuses(Canvas canvas) {
+        final int extra = getCherrygramStatusExtra();
+        if (!drawCherrygramStatusOnly) {
+            final int x = LocaleController.isRTL ? extra : 0;
+            emojiStatus.setBounds(x, 0, x + dp(22), dp(22));
+            emojiStatus.draw(canvas);
+        }
+        if (drawCherrygramStatus) {
+            final int x = LocaleController.isRTL ? 0 : extra;
+            cherrygramStatus.setBounds(x, 0, x + dp(22), dp(22));
+            cherrygramStatus.draw(canvas);
+        }
+    }
     /** Cherrygram finish */
 
 }

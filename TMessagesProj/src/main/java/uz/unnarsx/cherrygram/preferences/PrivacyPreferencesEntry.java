@@ -180,6 +180,11 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == hideArchiveFromChatsListRow) {
             CherrygramPrivacyConfig.INSTANCE.setHideArchiveFromChatsList(!CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
             SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
+
+            CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(true);
+            updateRows(true);
+
+            showRestartBulletin();
         } else if (item.id == askBiometricsToOpenDialogsRow) {
             expandedBiometricSection = !expandedBiometricSection;
             item.collapsed = !item.collapsed;

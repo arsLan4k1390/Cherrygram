@@ -26,8 +26,8 @@ import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
-import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.SimpleActionBarDoneButton;
 import org.telegram.ui.Components.OutlineEditText;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
@@ -70,7 +70,7 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
     private OutlineEditText outlineEditText;
 
     private static final int done_button = 1;
-    private ActionBarMenuItem doneButton;
+    private SimpleActionBarDoneButton doneButton;
 
     private boolean expandedExclusionsSettings = false;
 
@@ -90,8 +90,13 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
     }
 
     @Override
+    protected boolean useSimpleActionBar() {
+        return true;
+    }
+
+    @Override
     public View createView(Context context) {
-        actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
+        simpleActionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
@@ -101,9 +106,11 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
                 }
             }
         });
-        doneButton = actionBar.createMenu().addItemWithWidth(done_button, R.drawable.ic_ab_done, dp(56), getString(R.string.Done));
+        doneButton = simpleActionBar.createDoneButton(done_button, getString(R.string.Done));
 
-        return super.createView(context);
+        final View view = super.createView(context);
+        checkDone(false); // the button starts active: hidden until the words are changed
+        return view;
     }
 
     @Override
@@ -340,16 +347,7 @@ public class MessageFiltersPreferencesEntry extends BaseCGPreferencesEntry {
             doOnDone(this);
         }
 
-        boolean changed = hasChanges();
-
-        doneButton.setEnabled(changed);
-
-        doneButton.animate()
-                .alpha(changed ? 1.0f : 0.0f)
-                .scaleX(changed ? 1.0f : 0.0f)
-                .scaleY(changed ? 1.0f : 0.0f)
-                .setDuration(180)
-                .start();
+        doneButton.setActive(hasChanges(), true);
     }
 
     private void doOnDone(BaseFragment fragment) {

@@ -78,6 +78,7 @@ import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageReceiver;
+import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
@@ -127,7 +128,6 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
 import kotlin.random.Random;
-import uz.unnarsx.cherrygram.camera.CameraXController;
 import uz.unnarsx.cherrygram.camera.roundvideo.InstantCameraSwitchTransition;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
@@ -425,7 +425,7 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
 
         switchCameraButton = new FlashViews.ImageViewInvertable(context);
         switchCameraButton.setScaleType(ImageView.ScaleType.CENTER);
-        switchCameraButton.setContentDescription(getString(R.string.AccDescrSwitchCamera));
+        switchCameraButton.setContentDescription(LocaleController.getString(R.string.AccDescrSwitchCamera));
         buttonsLayout.addView(switchCameraButton, LayoutHelper.createLinear(iconSize, iconSize, iconMargin, 0, 0, 0));
         switchCameraButton.setOnClickListener(v -> {
             if (CameraXUtils.isCurrentCameraNotCameraX()) {
@@ -681,7 +681,7 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (updateTextureViewSize) {
+        if (updateTextureViewSize && !isCircleSizeFrozen()) {
             int newSize;
             if ((MeasureSpec.getSize(heightMeasureSpec) - getPaddingBottom()) > MeasureSpec.getSize(widthMeasureSpec) * 1.3f) {
                 newSize = AndroidUtilities.roundPlayingMessageSize;
@@ -702,6 +702,15 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        if (cameraContainer.getMeasuredWidth() != 0 && !isCircleSizeFrozen()) {
+            cameraContainer.setPivotX(cameraContainer.getMeasuredWidth() / 2f);
+            cameraContainer.setPivotY(cameraContainer.getMeasuredHeight() / 2f);
+            textureOverlayView.setPivotX(textureOverlayView.getMeasuredWidth() / 2f);
+            textureOverlayView.setPivotY(textureOverlayView.getMeasuredHeight() / 2f);
+            progressView.setPivotX(progressView.getMeasuredWidth() / 2f);
+            progressView.setPivotY(progressView.getMeasuredHeight() / 2f);
+        }
 
         final int flashWidthSpec = MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.EXACTLY);
         final int flashHeightSpec = MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.EXACTLY);
@@ -740,7 +749,7 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileUploaded);
+        NotificationCenter.getInstance(currentAccount).addWeakObserver(this, NotificationCenter.fileUploaded);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.cgDestroyCameraX);
     }
 
@@ -911,6 +920,8 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
         if (textureView != null) {
             return;
         }
+        circleSizeFrozen = false;
+        if (delegate != null) updateSizeTranslationY();
 
         if (switchCameraDrawable == null) {
             switchCameraDrawable = new RLottieDrawable(R.raw.roundcamera_flip, buttonsSizePx, buttonsSizePx);
@@ -1190,6 +1201,9 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
     public void send(int state, boolean notify, int scheduleDate, int scheduleRepeatPeriod, int ttl, long effectId, long stars) {
         if (textureView == null) {
             return;
+        }
+        if (state != 3) {
+            circleSizeFrozen = true;
         }
         stopProgressTimer();
         if (videoPlayer != null) {
@@ -2053,13 +2067,6 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
             }
         }
 
-        public void setOrientation() {
-            Handler handler = getHandler();
-            if (handler != null) {
-                sendMessage(handler.obtainMessage(DO_SETORIENTATION_MESSAGE), 0);
-            }
-        }
-
         public void setCurrentSession(Camera2Session session) {
             Handler handler = getHandler();
             if (handler != null) {
@@ -2107,7 +2114,7 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
                 if (videoEncoder.started) {
                     if (!cameraReady) {
                         cameraReady = true;
-                        AndroidUtilities.runOnUIThread(() -> textureOverlayView.animate().setDuration(120).alpha(0.0f).setInterpolator(new DecelerateInterpolator()).start());
+                        hideTextureOverlay();
                     }
                 } else {
                     captureFirstFrameThumb = true;
@@ -2283,7 +2290,7 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
                         if (currentSession instanceof CameraSession) {
                             rotationAngle = ((CameraSession) currentSession).getWorldAngle();
                         } else if (currentSession instanceof Camera2Session) {
-                            rotationAngle = ((Camera2Session) currentSession).getWorldAngle();
+                            rotationAngle = ((Camera2Session) currentSession).getRoundVideoRotationAngle();
                         } else {
                             rotationAngle = 0;
                         }
@@ -2366,6 +2373,13 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
             Handler handler = getHandler();
             if (handler != null) {
                 sendMessage(handler.obtainMessage(DO_REINIT_MESSAGE, 1, toFront ? 1 : 0), 0);
+            }
+        }
+
+        public void setOrientation() {
+            Handler handler = getHandler();
+            if (handler != null) {
+                sendMessage(handler.obtainMessage(DO_SETORIENTATION_MESSAGE), 0);
             }
         }
         /** Cherrygram finish */
@@ -3073,12 +3087,17 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
 
             boolean switchFinished = false;
             if (switching) {
-                if (switchTransition.onCameraFrame(overlayHelper.getFrameTexture())) {
+                if (lensSwitchHold) {
                     handler.removeCallbacks(switchFrameRunnable);
-                    releaseOldCameraTexture();
-                    AndroidUtilities.runOnUIThread(() -> textureOverlayView.animate().setDuration(120).alpha(0.0f).setInterpolator(new DecelerateInterpolator()).start());
+                    switchTransition.render(overlayHelper.getFrameTexture());
+                } else {
+                    if (switchTransition.onCameraFrame(overlayHelper.getFrameTexture())) {
+                        handler.removeCallbacks(switchFrameRunnable);
+                        releaseOldCameraTexture();
+                        hideTextureOverlay();
+                    }
+                    switchFinished = switchTransition.render(overlayHelper.getFrameTexture());
                 }
-                switchFinished = switchTransition.render(overlayHelper.getFrameTexture());
                 overlayHelper.bind();
             }
 
@@ -3110,12 +3129,12 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
                     oldCameraTexture[0] = 0;
                     if (!cameraReady) {
                         cameraReady = true;
-                        AndroidUtilities.runOnUIThread(() -> textureOverlayView.animate().setDuration(120).alpha(0.0f).setInterpolator(new DecelerateInterpolator()).start());
+                        hideTextureOverlay();
                     }
                 }
             } else if (!cameraReady) {
                 cameraReady = true;
-                AndroidUtilities.runOnUIThread(() -> textureOverlayView.animate().setDuration(120).alpha(0.0f).setInterpolator(new DecelerateInterpolator()).start());
+                hideTextureOverlay();
             }
         }
 
@@ -4429,6 +4448,9 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
     }
 
     /** Cherrygram start */
+    private volatile boolean lensSwitchHold;
+
+    private boolean circleSizeFrozen;
     private float sizeTranslationY;
 
     private RoundVideoProgressView progressView;
@@ -4504,7 +4526,12 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
         }
     }
 
+    private boolean isCircleSizeFrozen() {
+        return circleSizeFrozen || isMessageTransition;
+    }
+
     private void updateSizeTranslationY() {
+        if (isCircleSizeFrozen()) return;
         int smallerSize = Math.min(AndroidUtilities.roundPlayingMessageSize, AndroidUtilities.roundMessageSize);
         float baseOffset = textureViewSize == smallerSize ? -dp(10) : 0f;
         sizeTranslationY = baseOffset - (delegate.hasReplyMessage() ? dp(25) : 0f);
@@ -4513,6 +4540,25 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
 
     public void updateReplyOffset() {
         updateSizeTranslationY();
+    }
+
+    private void hideTextureOverlay() {
+        AndroidUtilities.runOnUIThread(() -> {
+            if (lensSwitchHold) return;
+            textureOverlayView.animate().setDuration(120).alpha(0.0f).setInterpolator(new DecelerateInterpolator()).start();
+        });
+    }
+
+    public void setLensSwitchHold(boolean hold) {
+        if (lensSwitchHold == hold) return;
+        lensSwitchHold = hold;
+        if (!hold && cameraReady) {
+            hideTextureOverlay();
+        }
+    }
+
+    public boolean isLensSwitchHold() {
+        return lensSwitchHold;
     }
     /** Cherrygram finish */
 
