@@ -248,6 +248,9 @@
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
+    <string name="AP_IconReplacement_Material">Material Symbols by Google</string>
+    <string name="AP_IconReplacement_Fluent">Fluent UI by Microsoft</string>
+    <string name="AP_IconReplacement_Vkui">VKUI Icons</string>
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">System emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>

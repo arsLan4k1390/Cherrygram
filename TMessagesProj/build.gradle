@@ -171,11 +171,12 @@ android {
     ndkVersion "27.2.12479018"
 
 
-    externalNativeBuild {
-        cmake {
-            path 'jni/CMakeLists.txt'
-        }
-    }
+    // DEBUG LOCAL BUILD: use prebuilt .so from jniLibs instead of compiling NDK
+    // externalNativeBuild {
+    //     cmake {
+    //         path 'jni/CMakeLists.txt'
+    //     }
+    // }
 
     // IWidgetEngine: the widget engine's isolated process (WidgetEngineService).
     buildFeatures {
@@ -192,6 +193,9 @@ android {
         res.srcDirs = [
                 'src/main/res',
                 'src/main/res-solar',
+                'src/main/res-material',
+                'src/main/res-fluent',
+                'src/main/res-vkui',
                 'src/main/res-tabs',
                 'src/main/res-payments',
                 'src/main/res-cherrygram'
@@ -213,13 +217,14 @@ android {
 
         multiDexEnabled true
 
-        externalNativeBuild {
-            cmake {
-                version '3.22.1'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-24' //, '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
-                targets 'tmessages.49', 'twidget'
-            }
-        }
+        // DEBUG LOCAL BUILD: native libs come from jniLibs
+        // externalNativeBuild {
+        //     cmake {
+        //         version '3.22.1'
+        //         arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-24'
+        //         targets 'tmessages.49', 'twidget'
+        //     }
+        // }
 
         def cherryVersion = project.getProperty("APP_VERSION_NAME_CHERRY")
         def sourceCodeVersion = project.getProperty("APP_VERSION_CODE_SOURCE")
