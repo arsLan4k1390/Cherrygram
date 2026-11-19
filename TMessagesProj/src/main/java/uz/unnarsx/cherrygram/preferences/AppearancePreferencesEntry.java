@@ -48,6 +48,7 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
     private final int snowflakesRow = 3;
 
     private final int iconPackRow = 4;
+    private final int iconPreviewRow = 30;
     private final int oneUISwitchesRow = 5;
     private final int disableDividersRow = 6;
     private final int iconBasedSplashRow = 7;
@@ -104,6 +105,7 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
             );
         }
         items.add(UItem.asButton(iconPackRow, getString(R.string.AP_IconReplacements), getIconPackValueText()));
+        items.add(SettingsHelper.asCustomWithBackground(iconPreviewRow, createIconPreviewView(), 96));
         items.add(SettingsHelper.asSwitchCG(oneUISwitchesRow, getString(R.string.AP_OneUI_Switch_Style))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle())
                 .slug("oneUI_Switches")
@@ -243,6 +245,15 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
             configStringKeys.add(getString(R.string.AP_IconReplacement_Solar));
             configValues.add(CherrygramAppearanceConfig.ICON_REPLACE_SOLAR);
 
+            configStringKeys.add(getString(R.string.AP_IconReplacement_Material));
+            configValues.add(CherrygramAppearanceConfig.ICON_REPLACE_MATERIAL);
+
+            configStringKeys.add(getString(R.string.AP_IconReplacement_Fluent));
+            configValues.add(CherrygramAppearanceConfig.ICON_REPLACE_FLUENT);
+
+            configStringKeys.add(getString(R.string.AP_IconReplacement_Vkui));
+            configValues.add(CherrygramAppearanceConfig.ICON_REPLACE_VKUI);
+
             PopupHelper.show(configStringKeys, getString(R.string.AP_IconReplacements), configValues.indexOf(CherrygramAppearanceConfig.INSTANCE.getIconReplacement()), getContext(), i -> {
                 CherrygramAppearanceConfig.INSTANCE.setIconReplacement(configValues.get(i));
                 SettingsHelper.updateButtonValue(view, getIconPackValueText());
@@ -252,6 +263,8 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
                 }
                 Theme.reloadAllResources(getContext() != null ? getContext() : ApplicationLoader.applicationContext);
 
+                // rebuild rows immediately so the icon preview under this row shows the new pack
+                updateRows(true);
                 getParentLayout().rebuildAllFragmentViews(false, false);
             });
         } else if (item.id == oneUISwitchesRow) {
@@ -287,9 +300,62 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
         super.scrollToRow(slug, unknown);
     }
 
+    private View createIconPreviewView() {
+        android.widget.HorizontalScrollView scroll = new android.widget.HorizontalScrollView(getContext());
+        scroll.setHorizontalScrollBarEnabled(false);
+        android.widget.LinearLayout row = new android.widget.LinearLayout(getContext());
+        row.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+
+        int[] icons = {
+                R.drawable.msg_edit, R.drawable.msg_delete, R.drawable.msg_fave,
+                R.drawable.msg_pin, R.drawable.msg_notifications, R.drawable.msg_camera,
+                R.drawable.msg_gif, R.drawable.msg_sticker, R.drawable.msg_link,
+                R.drawable.msg_block, R.drawable.msg_info, R.drawable.msg_share,
+                R.drawable.ic_send, R.drawable.msg_addcontact, R.drawable.msg_calendar,
+                R.drawable.msg_reactions, R.drawable.msg_autodelete
+        };
+        for (int id : icons) {
+            android.widget.LinearLayout cell = new android.widget.LinearLayout(getContext());
+            cell.setOrientation(android.widget.LinearLayout.VERTICAL);
+            cell.setGravity(android.view.Gravity.CENTER);
+            cell.setPadding((int) org.telegram.messenger.AndroidUtilities.dp(7f), (int) org.telegram.messenger.AndroidUtilities.dp(6f), (int) org.telegram.messenger.AndroidUtilities.dp(7f), (int) org.telegram.messenger.AndroidUtilities.dp(6f));
+
+            android.widget.ImageView img = new android.widget.ImageView(getContext());
+            try {
+                img.setImageResource(id);
+            } catch (Throwable ignore) {
+            }
+            cell.addView(img, new android.widget.LinearLayout.LayoutParams((int) org.telegram.messenger.AndroidUtilities.dp(30f), (int) org.telegram.messenger.AndroidUtilities.dp(30f)));
+
+            android.widget.TextView label = new android.widget.TextView(getContext());
+            label.setTextColor(0xFFAAAAAA);
+            label.setTextSize(9);
+            label.setGravity(android.view.Gravity.CENTER);
+            label.setMaxWidth((int) org.telegram.messenger.AndroidUtilities.dp(76f));
+            label.setSingleLine(true);
+            label.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            try {
+                label.setText(getParentActivity().getResources().getResourceEntryName(id));
+            } catch (Throwable e) {
+                label.setText("");
+            }
+            cell.addView(label, new android.widget.LinearLayout.LayoutParams(
+                    (int) org.telegram.messenger.AndroidUtilities.dp(76f), android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
+            row.addView(cell);
+        }
+        scroll.addView(row, new android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT,
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT));
+        return scroll;
+    }
+
     private String getIconPackValueText()  {
         return switch (CherrygramAppearanceConfig.INSTANCE.getIconReplacement()) {
             case CherrygramAppearanceConfig.ICON_REPLACE_SOLAR -> getString(R.string.AP_IconReplacement_Solar);
+            case CherrygramAppearanceConfig.ICON_REPLACE_MATERIAL -> getString(R.string.AP_IconReplacement_Material);
+            case CherrygramAppearanceConfig.ICON_REPLACE_FLUENT -> getString(R.string.AP_IconReplacement_Fluent);
+            case CherrygramAppearanceConfig.ICON_REPLACE_VKUI -> getString(R.string.AP_IconReplacement_Vkui);
             default -> getString(R.string.Default);
         };
     }

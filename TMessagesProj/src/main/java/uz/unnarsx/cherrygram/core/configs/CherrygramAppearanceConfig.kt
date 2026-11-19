@@ -17,8 +17,11 @@ import org.telegram.messenger.SharedConfig
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.Extra.VERIF_LOG
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
+import uz.unnarsx.cherrygram.core.icons.icon_replaces.FluentIconReplace
+import uz.unnarsx.cherrygram.core.icons.icon_replaces.MaterialIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.SolarIconReplace
+import uz.unnarsx.cherrygram.core.icons.icon_replaces.VkuiIconReplace
 import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.donates.DonatesManager.verifiedUserIds
 import uz.unnarsx.cherrygram.preferences.boolean
@@ -40,11 +43,17 @@ object CherrygramAppearanceConfig {
 
     const val ICON_REPLACE_NONE = 0
     const val ICON_REPLACE_SOLAR = 1
+    const val ICON_REPLACE_MATERIAL = 2
+    const val ICON_REPLACE_FLUENT = 3
+    const val ICON_REPLACE_VKUI = 5
 
     var iconReplacement by sharedPreferences.int("AP_Icon_Replacements1", ICON_REPLACE_SOLAR)
     fun getCurrentIconPack(): BaseIconReplace {
         return when (iconReplacement) {
             ICON_REPLACE_SOLAR -> SolarIconReplace()
+            ICON_REPLACE_MATERIAL -> MaterialIconReplace()
+            ICON_REPLACE_FLUENT -> FluentIconReplace()
+            ICON_REPLACE_VKUI -> VkuiIconReplace()
             else -> NoIconReplace()
         }
     }
