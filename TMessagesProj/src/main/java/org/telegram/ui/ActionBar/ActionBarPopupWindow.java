@@ -1198,4 +1198,29 @@ public class ActionBarPopupWindow extends PopupWindow {
             }
         }
     }
+
+    /** Cherrygram start */
+    public static class SpaceGapView extends GapView {
+        public SpaceGapView(Context context, Theme.ResourcesProvider resourcesProvider) {
+            super(context, resourcesProvider);
+        }
+
+        @Override
+        public void draw(@NonNull Canvas canvas) {
+            if (!isOnGlass()) {
+                super.draw(canvas);
+            }
+        }
+
+        private boolean isOnGlass() {
+            for (android.view.ViewParent p = getParent(); p instanceof View; p = p.getParent()) {
+                if (p instanceof ActionBarPopupWindowLayout) {
+                    return ((ActionBarPopupWindowLayout) p).getBackgroundDrawable() == null;
+                }
+            }
+            return false;
+        }
+    }
+    /** Cherrygram finish */
+
 }

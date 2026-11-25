@@ -140,7 +140,9 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
             items.add(UItem.asShadow(getString(R.string.SP_AskBioToOpenChats_Desc)));
 
             if (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
-                items.add(UItem.asButton(lockedChatsRow, R.drawable.msg_discussion, getString(R.string.SP_LockedChats), String.valueOf(getChatsPasswordHelper().getLockedChatsCount())));
+                items.add(UItem.asButton(lockedChatsRow, R.drawable.msg_discussion, getString(R.string.SP_LockedChats), String.valueOf(getChatsPasswordHelper().getLockedChatsCount()))
+                        .slug("lockedChats")
+                );
             }
             items.add(SettingsHelper.asSwitchCG(requireBiometricsToDeleteChatsRow, getString(R.string.SP_AskPinBeforeDelete), getString(R.string.SP_AskPinBeforeDelete_Desc))
                     .setChecked(CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete())
@@ -151,7 +153,9 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
                     .slug("useSystemPin")
             );
         }
-        items.add(UItem.asButton(testFingerprintRow, R.drawable.fingerprint, getString(R.string.SP_TestFingerprint)));
+        items.add(UItem.asButton(testFingerprintRow, R.drawable.fingerprint, getString(R.string.SP_TestFingerprint))
+                .slug("testFingerprint")
+        );
         items.add(UItem.asShadow(getString(R.string.SP_TestFingerprint_Desc)));
 
         items.add(UItem.asHeader(getString(R.string.LocalMiscellaneousCache)));
@@ -181,7 +185,7 @@ public class PrivacyPreferencesEntry extends BaseCGPreferencesEntry {
             CherrygramPrivacyConfig.INSTANCE.setHideArchiveFromChatsList(!CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
             SettingsHelper.updateCheckState(view, CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList());
 
-            CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(true);
+            CherrygramPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(getChatsPasswordHelper().checkBiometricAvailable());
             updateRows(true);
 
             showRestartBulletin();

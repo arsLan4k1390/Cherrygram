@@ -13,9 +13,16 @@
     <string name="CG_RegistrationDateOlder">早於%s</string>
     <string name="CG_RegistrationDateApproximately">大約在%s</string>
     <string name="CG_RegistrationDateFailed">無法取得註冊日期。</string>
+    <string name="CG_HiddenGifts">隱藏的禮物</string>
     <!--Sign in screen-->
+    <string name="CG_PrivacyAccept">我接受 **Cherrygram 隱私權政策**</string>
+    <string name="CG_PrivacyNotAccepted">請同意「Cherrygram 隱私權政策」以繼續</string>
     <string name="CG_QRLoginTitle">掃描QR碼登入</string>
     <string name="CG_QRLoginMessage">使用另一台裝置掃描QR碼登入。</string>
+    <string name="CG_OpenOfficialApp">開啟官方應用程式</string>
+    <string name="CG_DidNotGetTheCode">如果您沒有在另一台裝置上收到驗證碼，或者您沒有在其他裝置上登入 Telegram，請使用官方 Telegram 應用程式接收驗證碼。\n\nTelegram **已停用在第三方應用程式使用簡訊登入**的能力。登入第三方應用程式的使用者只能透過 Telegram 接收驗證碼。\n\n我們無法協助您，如果登入有任何問題，請聯絡 Telegram 支援。</string>
+    <string name="CG_ChangePhoneNumber">Telegram 已 **停用第三方應用程式中變更電話號碼的功能**。使用者只能透過官方 Telegram 應用程式變更電話號碼。</string>
+    <string name="CG_AddAccountWarning">同時使用5個或更多帳號可能會導致系統不穩定，特別是在低階裝置上（包括可能發生啟動時當機的情況）。\n\n請自行承擔風險。**Cherrygram 對您帳號的任何存取權限損失概不負責**。</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">最后上线于刚才</string>
@@ -38,6 +45,7 @@
     <string name="CG_FoldersTypeIconsTitles">帶有文本的圖示</string>
     <string name="CG_ChooseFolderIcon">選擇圖示</string>
     <string name="CP_NewTabs_NoCounter">隱藏Tab列數字</string>
+    <string name="CP_IncludeMutedIn_FolderCounters">將已靜音的對話納入計數器</string>
     <string name="CG_SwipeToUnarchive">向左滑動以取消封存</string>
     <!--Telegram Folders Settings-->
     <!--Telegram Passkeys Settings-->
@@ -91,6 +99,7 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_Edify_Desc">Reels 的自動影片編輯功能</string>
     <string name="CG_SafeStars_buy">透過 SafeStars 購買</string>
     <string name="CG_SafeStars_Desc">多鏈及無 KYC（實名認證）</string>
     <string name="CG_SafeStars_BuyPremiumButton">請查閱網站</string>
@@ -103,7 +112,7 @@
     <string name="CG_Restart">重新啟動應用程式</string>
     <string name="CG_RestartToApply">重啟應用程式以套用變更</string>
     <string name="CG_PushService">Cherrygram 推播服務</string>
-    <string name="CG_Kaboom">無需 Cherrygram 密碼即可透過系統設定取用此功能。此功能會完全清除您所有的本地 (Cherrygram) 資料，您可以在緊急情況下使用此功能。</string>
+    <string name="CG_Kaboom">無需輸入 Cherrygram 密碼，即可透過系統設定存取此功能。 \n\n此功能會 **徹底刪除您所有的本地（Cherrygram）資料**。此功能僅適用於緊急情況。</string>
     <string name="CG_AppCrashed">出現錯誤</string>
     <string name="CG_AppCrashedDesc">Cherrygram 已停止執行。請將日誌傳送至開發者，以便他們盡快修復這個問題。</string>
     <string name="CG_CopyReportDetails">複製崩潰錯誤訊息</string>
@@ -121,6 +130,8 @@
     <string name="CG_ExportSettings">匯出設定</string>
     <string name="CG_ImportSettings">匯入設定</string>
     <string name="CG_ImportSettingsAlert">是否複寫設定？匯入未知來源的設定檔可能導致應用程式無法正常執行。</string>
+    <string name="CG_ResetSettings">重設設定</string>
+    <string name="CG_ResetSettingsAlert">所有 Cherrygram 設定都將重設為預設值，此操作無法撤銷。</string>
     <string name="CG_OpenStickerPack">按一下以取得貼圖</string>
     <string name="CG_OpenEmojiPack">按一下以取得 Emoji</string>
     <string name="CG_ReplyContainsEmojiPack">此回復包含 **%s** 表情符號</string>
@@ -139,20 +150,21 @@
     <string name="CG_WifiDisabled">Wi-Fi 已關閉。</string>
     <string name="CG_AreYouSureToLogin">您確定要在另一台裝置上登入此帳號嗎？</string>
     <string name="CG_CreateQR">建立 QR 碼</string>
+    <string name="CG_LowMemoryWarning">記憶體不足警告</string>
+    <string name="CG_LowMemoryWarning_Desc">此應用程式記憶體不足。請重新啟動以確保運作穩定。</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">偏好設定</string>
-    <string name="CGP_About_Desc">此應用程式是對 Telegram 新增實驗性功能。按一下這裡以閱讀新功能清單。</string>
     <string name="CGP_Header_About">關於 Cherrygram</string>
     <string name="CGP_Header_About_Desc">更新、原始碼和更多</string>
-    <string name="CGP_Links">連結</string>
-    <string name="CGP_ToChannel">官方頻道</string>
-    <string name="CGP_ToChat">官方群組</string>
+    <string name="CGP_ToChannel">最新資訊與更新</string>
+    <string name="CGP_ToBetaChannel">測試版</string>
+    <string name="CGP_ToChat">一般對話</string>
+    <string name="CGP_ToOfftopicChat">離題對話</string>
     <string name="CGP_Source">開放原始碼</string>
     <string name="CGP_Crowdin">協助翻譯</string>
-    <string name="CGP_Header_Categories">偏好</string>
     <string name="CGP_General_Desc">與特定部分無關的主要應用程式設定和功能</string>
     <string name="CGP_Appearance_Desc">應用程式外觀與介面自訂</string>
     <string name="CGP_Folders_Desc">資料夾外觀設定、佈局自訂，以及將資料夾列移至底部</string>
@@ -170,11 +182,19 @@
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">一般</string>
+    <string name="CG_IgnoreMentions">忽略提及我的訊息</string>
+    <string name="CG_IgnoreMentionsDesc">停用選定聊天室中的提及與回覆通知，並在對話清單及對話內隱藏提及標記。</string>
+    <string name="CG_IgnoreMentionsIgnoredChats">已忽略對話</string>
+    <string name="CG_IgnoreMentionsAutoRead">開啟時自動讀取</string>
+    <string name="CG_IgnoreMentionsAutoReadDesc">進入對話時，自動將提及的訊息標示為已讀。</string>
+    <string name="CG_IgnoreMentions_Destination_Sure">會被忽略</string>
     <string name="CG_ResidentNotification">顯示永久通知</string>
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">主題</string>
     <string name="AP_Header">標題</string>
+    <string name="AP_IconBasedSplash">與圖示相符的啟動畫面</string>
+    <string name="AP_IconBasedSplash_Desc">啟動畫面將與所選的應用程式圖示相符，變更將於下次啟動應用程式時生效。此功能適用於 Android 13 及以上版本。</string>
     <string name="AP_IconReplacements">圖示包</string>
     <string name="AP_Old_Notification_Icon">預設通知圖示 (Telegram)</string>
     <string name="AP_Tablet_Mode">平板模式</string>
@@ -190,6 +210,9 @@
     <string name="AP_OneUI_Switch_Style">OneUI 開關風格</string>
     <string name="AP_SystemEmoji">系統表情符號</string>
     <string name="AP_ShowPencilIcon">將訊息底部的「已編輯」替換為鉛筆圖示</string>
+    <string name="CP_StrokeOnViews">眩光效果</string>
+    <string name="AP_StrokeOnViews_Type">類型</string>
+    <string name="AP_StrokeOnViews_Stroke">實線邊框</string>
     <string name="AP_CenterTitle">置中標題文字</string>
     <string name="AP_CenterTitle_AdaptiveWidth">自適應氣泡寬度</string>
     <string name="AP_HideSearchBar">隱藏對話中的搜尋列</string>
@@ -198,6 +221,7 @@
     <string name="CP_Snowflakes_Header">雪花效果</string>
     <string name="CP_ProfileReplyBackground">訊息和個人檔案</string>
     <string name="CP_CustomizeProfile">自訂個人檔案</string>
+    <string name="CP_ProfileHidePhoneNumbers">隱藏電話號碼</string>
     <string name="CP_ProfileChannelPreview">個人頻道</string>
     <string name="CP_ProfileBirthDatePreview">出生日期</string>
     <string name="CP_ProfileBusinessPreview">營業時間及地點</string>
@@ -207,6 +231,8 @@
     <string name="CP_ReplyBackground">回覆中的背景</string>
     <string name="CP_ReplyCustomColors">自訂回覆和連結預覽的顏色</string>
     <string name="CP_ReplyBackgroundEmoji">回覆和連結預覽中的表情</string>
+    <string name="CG_NewProfileDesign">全新個人檔案設計</string>
+    <string name="CG_NewProfileDesign_Desc">個人檔案顏色會填滿整個螢幕，而卡片、文字和圖示都會隨之調整。</string>
     <string name="CP_HideStories">隱藏限時動態（僅在本機）</string>
     <string name="CP_HideStories_Desc">限時動態將從您的對話清單和個人資料中消失。</string>
     <string name="CP_ArchiveStories">封存限時動態</string>
@@ -248,20 +274,28 @@
     <!--Chats Preferences-->
     <string name="CP_AutoQuoteReplies">引用回覆</string>
     <string name="CP_AutoQuoteReplies_Desc">發送包括整則訊息內容的引用，而不是普通的回覆。此功能不適用於主題討論。</string>
+    <string name="CP_WideMessagesLayout">更寬訊息佈局</string>
+    <string name="CP_WideMessagesLayout_Desc">在頻道中展開訊息氣泡。啟用此選項時，「直接分享」按鈕將在加寬版訊息附近被隱藏。</string>
     <string name="CP_TimeOnStick">隱藏貼圖時間</string>
     <string name="CP_ChatMenuShortcuts">對話功能表捷徑</string>
     <string name="CP_AdminActions">管理員捷徑</string>
     <string name="CP_MessageMenu">訊息選單自訂</string>
     <string name="CP_MessageMenuItems">訊息選單項目</string>
     <string name="CP_BlurMessageMenu">模糊訊息選單背景</string>
-    <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS. Not supported on tablets.</string>
+    <string name="CP_BlurMessageMenu_Desc">為訊息選單套用模糊背景，並將回應面板顯示於訊息上方，類似 iOS 版 Telegram 的設計。平板電腦不支援此功能。</string>
     <string name="CP_MessageMenuNativeBlur">原生模糊</string>
     <string name="CP_MessageMenuNativeBlur_Desc">訊息選單背景使用 Android 內建高斯模糊，更流暢、動態效果更佳，且對效能影響極小。</string>
+    <string name="CG_MsgMenuOpenByLongPress">Open menu by long press</string>
+    <string name="CG_MsgMenuOpenByLongPress_Desc">Like on iOS: hold a message to open its menu</string>
+    <string name="CG_MsgMenuShowWholeAlbum">顯示整個相簿</string>
+    <string name="CG_MsgMenuShowWholeAlbum_Desc">從相簿中點選照片、影片或檔案時，會直接在選單中開啟整個相簿，而非只開啟單則訊息。</string>
+    <string name="CP_RememberKeyboardState">記住鍵盤狀態</string>
     <string name="CP_MessageMenuCompactLayout">緊湊型訊息選單</string>
     <string name="CP_MessageMenuCompactLayout_Desc">在訊息選單底部以更緊湊的佈局顯示主要的訊息操作。</string>
     <string name="CP_MessageMenuCompactLayout_Dot">對於具有長按功能的按鈕在其旁邊顯示圓點標記。</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
+    <string name="CP_UnreadBadgeOnBackButton_IOS">iOS 風格的計數器</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近使用的表情符號和貼圖計數器</string>
     <string name="CP_DeleteForAll">預設選擇「全部刪除」</string>
     <string name="CP_DeleteForAll_Desc">刪除訊息時預設選擇全部刪除</string>
@@ -272,6 +306,9 @@
     <string name="CG_MsgSlideAction">訊息滑動操作</string>
     <string name="CP_DisableSwipeToNext">停用頻道切換</string>
     <string name="CP_DisableSwipeToNext_Desc">瀏覽頻道訊息時禁止切換至下一個頻道</string>
+    <string name="CP_BottomBar">底部列</string>
+    <string name="CP_iOSMessageInputField">iOS 風格的訊息輸入欄位</string>
+    <string name="CP_iOSMessageInputField_Desc">將附件圖示向左移動，並將按鈕拆分為獨立的氣泡。</string>
     <string name="CP_HideMuteUnmuteButton">隱藏頻道底部工具列</string>
     <string name="CP_HideKbdOnScroll">滾動強度以隱藏鍵盤</string>
     <string name="CP_HideSendAsChannel">隱藏頻道身份傳送按鈕</string>
@@ -301,26 +338,28 @@
     <string name="CP_Message_Filtering_Filter">啟用過濾器</string>
     <string name="CP_Message_Filtering_Filter_Desc">當過濾器功能啟用時，收到的訊息中選定的字詞將自動以劇透效果隱藏，需手動點選字詞後才能顯示。</string>
     <string name="CP_Message_Filtering_Field">輸入要過濾的字詞</string>
-    <string name="CP_Message_Filtering_Field_Desc">用逗號、空格或換行符分隔單詞，不區分大小寫。</string>
+    <string name="CP_Message_Filtering_Field_Desc">用逗號、空格或換行符號分隔單詞。使用括號將多個單字組合成一個短語。不區分大小寫。\n範例：word, another, (這裡為多個單字)。</string>
     <string name="CP_Message_Filtering_Translit">轉寫檢測</string>
-    <string name="CP_Message_Filtering_Translit_Desc">啟用後，此過濾器亦會偵測音譯書寫的單詞（例如「test」將被識別為「тест」）。
-        即使西里爾字母被拉丁字母替換，這也有助於捕捉並隱藏劇透下的訊息。這可能會略微增加設備的 CPU 負載。
-    </string>
+    <string name="CP_Message_Filtering_Translit_Desc">啟用後，此過濾器亦會偵測音譯書寫的單詞（例如「test」將被識別為「тест」）。即使西里爾字母被拉丁字母替換，這也有助於捕捉並隱藏劇透下的訊息。這可能會略微增加設備的 CPU 負載。</string>
     <string name="CP_Message_Filtering_Exact_Words">精確字詞匹配</string>
-    <string name="CP_Message_Filtering_Exact_Words_Desc">啟用此功能後，僅完全符合過濾清單中詞彙的字詞才會被隱藏。
-
-        若某個詞彙以不同形式出現（例如帶有前綴、後綴，或嵌套於其他詞彙中），則不會被隱藏。
-    </string>
+    <string name="CP_Message_Filtering_Exact_Words_Desc">啟用此功能後，僅完全符合過濾清單中詞彙的字詞才會被隱藏。若某個詞彙以不同形式出現（例如帶有前綴、後綴，或嵌套於其他詞彙中），則不會被隱藏。</string>
     <string name="CP_Message_Filtering_Exclusions">排除清單</string>
     <string name="CP_Message_Filtering_Exclude_Destination">更新排除項</string>
     <string name="CP_Message_Filtering_Exclude_Sure">將被排除</string>
+    <string name="CP_Message_Filtering_Exclusions_Users">排除使用者</string>
+    <string name="CP_Message_Filtering_Exclusions_Bots">排除機器人</string>
+    <string name="CP_Message_Filtering_Exclusions_Groups">排除群組</string>
+    <string name="CP_Message_Filtering_Exclusions_Channels">排除頻道</string>
+    <string name="CP_Message_Filtering_Exclusions_Desc">Cherrygram **不會過濾** 選定對話中的訊息。</string>
     <string name="CP_Message_Filtering_Entities">連結實體過濾器</string>
-    <string name="CP_Message_Filtering_EntitiesDesc">啟用此選項後，系統將把過濾範圍擴展至訊息內含的連結（實體）。系統會掃描網址中是否包含您設定的過濾關鍵字。
-        如在連結內發現匹配內容，整則訊息將自動隱藏於劇透標籤下，無論關鍵字是否出現在可見文字中。
-        \n\n此機制有助防範偽裝垃圾訊息、隱藏廣告或釣魚網域，避免其繞過一般文字過濾機制。
-    </string>
+    <string name="CP_Message_Filtering_EntitiesDesc">啟用此選項後，系統將把過濾範圍擴展至訊息內含的連結（實體）。系統會掃描網址中是否包含您設定的過濾關鍵字。如在連結內發現匹配內容，整則訊息將自動隱藏於劇透標籤下，無論關鍵字是否出現在可見文字中。\n\n此機制有助防範偽裝垃圾訊息、隱藏廣告或釣魚網域，避免其繞過一般文字過濾機制。</string>
     <string name="CP_Message_Filtering_FilterBlocked">篩選來自被封鎖使用者的訊息</string>
     <string name="CP_Message_Filtering_FilterBlockedDesc">啟用功能後，所有來自被封鎖用戶的訊息和轉寄的訊息將自動過濾。</string>
+    <string name="CP_Message_Filtering_Shadowban">Shadowban</string>
+    <string name="CP_Message_Filtering_Shadowban_Add">Shadowban</string>
+    <string name="CP_Message_Filtering_Shadowban_Remove">Remove from shadowban</string>
+    <string name="CP_Message_Filtering_Shadowban_Added">**%1$s** has been shadowbanned</string>
+    <string name="CP_Message_Filtering_Shadowban_Removed">**%1$s** has been removed from shadowban</string>
     <string name="CP_Message_Filtering_FullyHide">隱藏訊息</string>
     <string name="CP_Message_Filtering_FullyHide_Desc">完全隱藏已篩選的訊息，而非將文字隱藏在「劇透」效果之下。</string>
     <string name="CP_Message_Filtering_HideAll">完整訊息劇透隱藏</string>
@@ -333,6 +372,13 @@
     <string name="CP_Slider_MediaAmplifier_Hint">放大功能對於相簿（分組媒體）無效</string>
     <string name="CP_LargeVoiceMessages">自適應語音訊息長度</string>
     <string name="CP_LargeVoiceMessages_Desc">語音訊息氣泡的長度將取決於錄音時長，並會自動調整以適應螢幕寬度。</string>
+    <string name="CP_RecordMultiMic">多個麥克風錄音</string>
+    <string name="CP_RecordMultiMic_Desc">同時從所有裝置的麥克風錄製音訊，以捕捉更具空間感且更細膩的聲音</string>
+    <string name="CP_RecordInStereo">立體聲錄音</string>
+    <string name="CP_MuteSystemSounds">將系統聲音靜音</string>
+    <string name="CP_MuteSystemSounds_Desc">錄製時將通知音和來電鈴聲靜音</string>
+    <string name="CP_RecordInStereo_Desc">以立體聲格式傳輸您的聲音。 \n\n**注意：**如收聽者僅使用單耳耳機或免持聽筒，對方可能會聽見您的聲音較小，或出現音訊中斷的情況。</string>
+    <string name="CP_VoiceMessagesAutoPlay">自動播放語音訊息</string>
     <string name="CP_PlayVideo">按下音量鍵播放影片</string>
     <string name="CP_PlayVideo_Desc">按下音量鍵時，播放當前介面任意影片</string>
     <string name="CP_AutoPauseVideo">自動暫停影片</string>
@@ -348,6 +394,7 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">相機</string>
     <string name="CP_CameraType">相機類型</string>
+    <string name="CP_NewEncoder">全新相機引擎</string>
     <string name="CP_CameraUW">由超廣角鏡頭開始</string>
     <string name="CP_CameraUW_Desc">影片訊息的錄製將由超廣角鏡頭開始 (如果您的裝置的 API 支援的話)</string>
     <string name="CP_CameraDualCamera">雙鏡頭</string>
@@ -359,6 +406,7 @@
     <string name="CP_ContinuousAutofocus">連續對焦錄製</string>
     <string name="CP_NoiseReduction">減少雜訊</string>
     <string name="CP_FaceDetection">人臉偵測</string>
+    <string name="CP_BokehEffect">散景效果</string>
     <string name="CP_CameraQuality">相機品質</string>
     <string name="CP_CameraTypeSystem">系統相機</string>
     <string name="CP_CameraAspectRatio">相機縱橫比</string>
@@ -377,6 +425,7 @@
     <string name="CP_Brightness">亮度</string>
     <string name="CP_Flash_Hint">長按閃光燈按鈕可調整閃光燈的顏色與亮度。</string>
     <string name="CP_Flash_Hint_Rear">長按閃光燈按鈕可調整閃光燈的亮度。</string>
+    <string name="CP_Zoom_Hint">沿著刻度拖動手指，即可展開完整的縮放滑桿。</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
@@ -402,6 +451,8 @@
     <string name="SP_LockedChats_Lock_Destination_Sure">將被鎖定</string>
     <string name="SP_HideArchive">從對話清單中隱藏已封存記錄</string>
     <string name="SP_HideArchive_Desc">已封存記錄將偽裝為 Cherrygram 頻道。 \n您可以從側邊欄或長按搜尋按鈕以開啟已封存記錄。</string>
+    <string name="CG_AccSwipeForArchive">向下滑動以檢視頻道</string>
+    <string name="CG_AccReleaseForArchive">鬆開手指以檢視頻道</string>
     <string name="SP_AskPin">需要密碼</string>
     <string name="SP_DoNotAskPin">無需密碼</string>
     <string name="SP_AskPinBeforeDelete">需要生物辨識才能刪除對話</string>
@@ -434,14 +485,14 @@
     <string name="DP_DonatesMoreInfo">想協助 Cherrygram 發展嗎？歡迎加入 **Cherrygram Support** 聊天室。</string>
     <string name="DP_DonatesThanks">感謝您的支持！正是您讓 Cherrygram 茁壯成長❤️</string>
     <string name="DP_DonateBadge">捐款並解鎖額外功能</string>
-    <string name="DP_Donate_Desc">當您捐款達2美元或以上時，您還將獲得額外贈品：</string>
+    <string name="DP_Donate_Desc">When you donate $3 or more, you\'ll also get some bonus gifts:</string>
     <string name="DP_Donate_Badge_desc">1. 在使用者名稱旁顯示 **Cherrygram 徽章**。</string>
     <string name="DP_Donate_MsgMenuCompactView_Desc">2. **訊息選單** 使用緊湊型風格。</string>
     <string name="DP_Donate_FoldersAtBottom_Desc">3. 螢幕底部的**資料夾面板**。</string>
     <string name="DP_Donate_EpicBadge_desc">1. **史詩級 Cherrygram 徽章** 顯示於您的姓名旁。</string>
     <string name="DP_Donate_GiftMarket_Desc">2. 側邊選單中的「**禮物市集**」按鈕。</string>
     <string name="DP_Donate_MessageFilter_Desc">3. 「**訊息過濾器**」功能。</string>
-    <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS-styled**\" message menu. Not supported on tablets.</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. 「**iOS 風格**」的訊息選單。平板電腦不支援此功能。</string>
     <string name="DP_Donate_Cheque">將付款確認書傳送至 **@arsLan** 以獲取獎勵。</string>
     <string name="DP_Donate_Terms">在捐贈前，請閱讀 **捐贈條款**。所有捐贈行為均為自願執行且不可退款。</string>
     <string name="DP_Donate_Counter_one">已有**%1$d**人支持此專案並獲得獎勵</string>
@@ -463,5 +514,11 @@
     <string name="DP_Donate_Exclusive">支持者專屬功能</string>
     <string name="DP_Donate_ExclusiveDesc">支持本專案以解鎖所有功能。</string>
     <!--Donations-->
+    <!--Alternative Support-->
+    <string name="AS_Header">替代支援</string>
+    <string name="AS_ZeroCost">零成本支援</string>
+    <string name="AS_UsefulServices">實用服務</string>
+    <string name="AS_DigitalGoods">數位商品</string>
+    <!--Alternative Support-->
     <!--Cherrygram screens-->
 </resources>

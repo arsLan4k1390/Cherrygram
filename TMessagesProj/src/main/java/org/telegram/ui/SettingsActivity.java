@@ -284,6 +284,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         simpleActionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
+                if (telegramSettingsHelper.handleMenuClick(id)) return;
                 if (id == -1) {
                     if (hasMainTabs) {
                         // no back on the main tab: the left button opens the QR code (with the search open, the action bar closes it instead)
@@ -328,8 +329,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
         otherItem = menu.addItem(1, R.drawable.ic_ab_other);
         otherItem.setContentDescription(getString(R.string.AccDescrMoreOptions));
-        otherItem.setOnClickListener(view -> telegramSettingsHelper.showItemOptions(otherItem));
-        otherItem.addSubItem(2, R.drawable.msg_leave, getString(R.string.LogOut));
+//        otherItem.addSubItem(2, R.drawable.msg_leave, getString(R.string.LogOut));
+        telegramSettingsHelper.setupOtherItem(otherItem);
 
         search = new ProfileActivity.SearchAdapter(this, context) {
             @Override
@@ -676,6 +677,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         if (listView.adapter != null) {
             listView.adapter.update(false);
         }
+        telegramSettingsHelper.updateOtherItem();
     }
 
     private void setActionBarVisibilityFactor(float factor) {
@@ -836,6 +838,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 "", null,
                 getString(R.string.Understood), v -> {
                     getMessagesController().removeSuggestion(0, "VALIDATE_PHONE_NUMBER");
+                    listView.adapter.update(true);
                 }
             ));
             items.add(UItem.asShadow(null));
@@ -2058,11 +2061,15 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         final TLRPC.VideoSize videoSize = photos_photo.photo.video_sizes.isEmpty() ? null : FileLoader.getClosestVideoSizeWithSize(photos_photo.photo.video_sizes, 1000);
                         user.photo = new TLRPC.TL_userProfilePhoto();
                         user.photo.photo_id = photos_photo.photo.id;
-                        if (user.photo.photo_small != null && small != null && small.location != null) {
+                        user.photo.dc_id = photos_photo.photo.dc_id;
+                        if (small != null && small.location != null) {
                             user.photo.photo_small = small.location;
                         }
-                        if (user.photo.photo_big != null && big != null && big.location != null) {
+                        if (big != null && big.location != null) {
                             user.photo.photo_big = big.location;
+                        }
+                        if (videoSize != null) {
+                            user.photo.has_video = true;
                         }
 
                         if (small != null && small.location != null && avatar != null) {

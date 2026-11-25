@@ -2828,4 +2828,5 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
         getConnectionsManager().bindRequestToGuid(reqId, classGuid);
     }
     /** Cherrygram finish */
+
 }

@@ -179,6 +179,7 @@ object CGResourcesHelper {
         return (LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA)
                 || LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.WHITE_CHERRY_BRA)
                 || LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.VIOLET_SUNSET_CHERRY_BRA)
+                || LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.PALMS_CHERRY_BRA)
         )
     }
 

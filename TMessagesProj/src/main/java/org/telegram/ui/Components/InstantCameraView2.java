@@ -740,9 +740,6 @@ public final class InstantCameraView2 extends InstantCameraViewBase {
             int baseSize = AndroidUtilities.roundPlayingMessageSize;
             cameraContainer.getLayoutParams().width = baseSize + dp(28);
             cameraContainer.getLayoutParams().height = baseSize + dp(28);
-            float scale = newSize / (float) baseSize;
-            progressView.setScaleX(scale);
-            progressView.setScaleY(scale);
             ((LayoutParams) muteImageView.getLayoutParams()).topMargin = newSize / 2 - dp(24);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -1881,7 +1878,41 @@ public final class InstantCameraView2 extends InstantCameraViewBase {
         if (isCircleSizeFrozen()) return;
         int smallerSize = Math.min(AndroidUtilities.roundPlayingMessageSize, AndroidUtilities.roundMessageSize);
         float baseOffset = textureViewSize == smallerSize ? -dp(10) : 0f;
-        sizeTranslationY = baseOffset - (delegate != null && delegate.hasReplyMessage() ? dp(25) : CameraXUtils.isCurrentCameraCameraX() ? dp(5) : 0f);
+        float offset = baseOffset - (delegate != null && delegate.hasReplyMessage() ? dp(25) : CameraXUtils.isCurrentCameraCameraX() ? dp(5) : 0f);
+        if (textureViewSize <= 0) {
+            sizeTranslationY = offset;
+            updateTranslationY();
+            return;
+        }
+        int baseSize = AndroidUtilities.roundPlayingMessageSize;
+        float scale = textureViewSize / (float) baseSize;
+        float fitScale = 1f;
+
+        if (isZoomSliderActive() && getMeasuredHeight() > 0) {
+            LayoutParams sliderParams = (LayoutParams) zoomControlView.getLayoutParams();
+            float contentTop = getPaddingTop() + dp(VideoMessagesHelper.CIRCLE_MIN_TOP_MARGIN_DP);
+            float contentCenterY = (getPaddingTop() + getMeasuredHeight() - getPaddingBottom()) / 2f;
+            float sliderTop = getMeasuredHeight() - getPaddingBottom()
+                    - sliderParams.bottomMargin - sliderParams.height;
+            float limitBottom = sliderTop - dp(VideoMessagesHelper.ZOOM_SLIDER_MIN_GAP_DP);
+            float halfSize = (baseSize + dp(28)) * scale / 2f;
+            float centerY = contentCenterY + offset;
+            float overlap = centerY + halfSize - limitBottom;
+            if (overlap > 0f) {
+                float roomAbove = Math.max(0f, centerY - halfSize - contentTop);
+                if (overlap <= roomAbove) {
+                    offset -= overlap;
+                } else {
+                    float available = limitBottom - contentTop;
+                    fitScale = clamp(available / (halfSize * 2f), VideoMessagesHelper.CIRCLE_MIN_FIT_SCALE, 1f);
+                    offset = (contentTop + limitBottom) / 2f - contentCenterY;
+                }
+            }
+        }
+
+        progressView.setScaleX(scale * fitScale);
+        progressView.setScaleY(scale * fitScale);
+        sizeTranslationY = offset;
         updateTranslationY();
     }
 

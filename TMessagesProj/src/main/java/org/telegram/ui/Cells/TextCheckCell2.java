@@ -58,14 +58,14 @@ public class TextCheckCell2 extends FrameLayout {
             animatedTextView = new AnimatedTextView(getContext(), false, true, true);
             animatedTextView.setTextSize(dp(14));
             animatedTextView.getDrawable().setAllowCancel(true);
-            ThemeBind.textColor(animatedTextView, Theme.key_windowBackgroundWhiteBlackText);
+            ThemeBind.textColor(animatedTextView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
             animatedTextView.setTypeface(AndroidUtilities.bold());
             animatedTextView.setAnimationProperties(.4f, 0, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
             collapseViewContainer.addView(animatedTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 20));
 
             collapsedArrow = new View(getContext());
             Drawable drawable = getContext().getResources().getDrawable(R.drawable.arrow_more).mutate();
-            ThemeBind.drawableColorFilter(this, drawable, Theme.key_windowBackgroundWhiteBlackText, PorterDuff.Mode.MULTIPLY);
+            ThemeBind.drawableColorFilter(this, drawable, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider, PorterDuff.Mode.MULTIPLY);
             collapsedArrow.setBackground(drawable);
             collapseViewContainer.addView(collapsedArrow, LayoutHelper.createLinear(16, 16, Gravity.CENTER_VERTICAL));
             collapseViewContainer.setClipChildren(false);
@@ -80,7 +80,7 @@ public class TextCheckCell2 extends FrameLayout {
                     canvas.drawLine(0, dp(14), 2, getMeasuredHeight() - dp(14), Theme.dividerPaint);
                 }
             };
-            checkBoxClickArea.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 2));
+            checkBoxClickArea.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 2));
             addView(checkBoxClickArea, LayoutHelper.createFrame(76, LayoutHelper.MATCH_PARENT, LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT));
         }
         collapseViewContainer.setVisibility(View.VISIBLE);
@@ -107,9 +107,10 @@ public class TextCheckCell2 extends FrameLayout {
 
     public TextCheckCell2(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
+        this.resourcesProvider = resourcesProvider;
 
         imageView = new ImageView(getContext());
-        imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
+        ThemeBind.colorFilter(imageView, Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider, PorterDuff.Mode.MULTIPLY);
         imageView.setVisibility(View.GONE);
         addView(imageView, LayoutHelper.createFrame(24, 24, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT), 20, 0, 20, 0));
 
@@ -320,6 +321,7 @@ public class TextCheckCell2 extends FrameLayout {
     }
 
     /** Cherrygram start */
+    private final Theme.ResourcesProvider resourcesProvider;
     private final ImageView imageView;
     private boolean checkBoxHidden;
 

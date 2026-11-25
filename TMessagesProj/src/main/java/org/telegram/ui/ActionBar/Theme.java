@@ -1695,7 +1695,7 @@ public class Theme {
         }
 
         public boolean isAmoled() {
-            return "AMOLED".contains(name);
+            return "AMOLED".equals(name);
         }
 
         public boolean isDark() {

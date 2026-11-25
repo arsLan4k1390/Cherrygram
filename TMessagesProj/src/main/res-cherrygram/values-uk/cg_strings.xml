@@ -15,6 +15,8 @@
     <string name="CG_RegistrationDateFailed">Помилка отримання дати реєстрації.</string>
     <string name="CG_HiddenGifts">Приховані подарунки</string>
     <!--Sign in screen-->
+    <string name="CG_PrivacyAccept">Я погоджуюся з **Політикою конфіденційності Cherrygram**</string>
+    <string name="CG_PrivacyNotAccepted">Будь ласка, прийміть Політику конфіденційності Cherrygram, щоб продовжити</string>
     <string name="CG_QRLoginTitle">Увійти за QR</string>
     <string name="CG_QRLoginMessage">Відскануйте QR-код іншим пристроєм, аби увійти.</string>
     <string name="CG_OpenOfficialApp">Відкрити офіційний додаток</string>
@@ -155,17 +157,18 @@
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Налаштування Cherrygram</string>
-    <string name="CGP_About_Desc">Експериментальна модифікація додатка Telegram. Торкніться тут, щоб прочитати список функцій додатка.</string>
-    <string name="CGP_Header_About">Про Cherrygram</string>
+    <string name="CGP_Header_About">Про застосунок</string>
     <string name="CGP_Header_About_Desc">Оновлення, вихідний код та більше</string>
-    <string name="CGP_Links">Посилання</string>
     <string name="CGP_ToChannel">Новини &amp; Оновлення</string>
     <string name="CGP_ToBetaChannel">Бета Версії</string>
     <string name="CGP_ToChat">Загальний Чат</string>
     <string name="CGP_ToOfftopicChat">Чат не по темі</string>
+    <string name="CGP_About_Project">Проєкт</string>
+    <string name="CGP_About_Website">Вебсайт</string>
+    <string name="CGP_About_Credits">Заснований на Telegram для Android. Дякую авторам форків, код яких використовується в Cherrygram.</string>
+    <string name="CGP_About_Community">Спільнота</string>
     <string name="CGP_Source">Вихідний код</string>
     <string name="CGP_Crowdin">Допомогти з перекладом</string>
-    <string name="CGP_Header_Categories">Категорії</string>
     <string name="CGP_General_Desc">Основні налаштування та функції додатку, що не стосуються певних розділів</string>
     <string name="CGP_Appearance_Desc">Зовнішній вигляд програми та налаштування інтерфейсу</string>
     <string name="CGP_Folders_Desc">Налаштування зовнішнього вигляду тек, налаштування макета та переміщення панелі тек униз</string>
@@ -207,6 +210,9 @@
     <string name="AP_ChangeIcon_Lavanda">Лаванда</string>
     <string name="AP_ChangeIcon_Sunset">Вечiрня</string>
     <string name="AP_ChangeIcon_Sunrise">Світанок</string>
+    <string name="AP_ChangeIcon_Palms">Пальми</string>
+    <string name="AP_AppIcon_Hint">Торкніться іконки, щоб попередньо переглянути її. Іконка змінюється лише після натискання кнопки \"Застосувати\".</string>
+    <string name="AP_AppIcon_Current_Desc">Ця іконка вже використовується.</string>
     <string name="AP_IconReplacement_Solar">Solar Icons від @Design480</string>
     <string name="AP_OneUI_Switch_Style">Вигляд інтерфейсу OneUI</string>
     <string name="AP_SystemEmoji">Системні емодзі</string>
@@ -232,6 +238,8 @@
     <string name="CP_ReplyBackground">Задній план у відповідях</string>
     <string name="CP_ReplyCustomColors">Користувацькі кольори у відповідях, і попередньому перегляді посилань</string>
     <string name="CP_ReplyBackgroundEmoji">Емодзі у відповідях і попередньому перегляді посилань</string>
+    <string name="CG_NewProfileDesign">Новий дизайн профілю</string>
+    <string name="CG_NewProfileDesign_Desc">Колір профілю заповнює весь екран, а картки, текст і значки адаптуються до нього.</string>
     <string name="CP_HideStories">Приховати історії (локально)</string>
     <string name="CP_HideStories_Desc">Історії зникнуть з вашого списку чатів та з профілів.</string>
     <string name="CP_ArchiveStories">Архівувати історії</string>
@@ -285,6 +293,8 @@
     <string name="CP_BlurMessageMenu_Desc">Застосовує розмитий фон до меню повідомлень та показує панель реакцій над повідомленням, подібно до Telegram на iOS. Не підтримується на планшетах.</string>
     <string name="CP_MessageMenuNativeBlur">Нативне розмиття</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Для фону меню повідомлень буде використана вбудована в Android система розмиття (blur): плавна, динамічна і з мінімальним впливом на продуктивність.</string>
+    <string name="CG_MsgMenuOpenByLongPress">Відкрити меню довгим натисканням</string>
+    <string name="CG_MsgMenuOpenByLongPress_Desc">Як на iOS: утримуйте повідомлення, щоб відкрити його меню</string>
     <string name="CG_MsgMenuShowWholeAlbum">Показати весь альбом</string>
     <string name="CG_MsgMenuShowWholeAlbum_Desc">Натискання на фотографію, відео чи файл з альбому відкриває весь альбом у меню, а не окреме повідомлення.</string>
     <string name="CP_RememberKeyboardState">Запам\'ятовувати стан клавіатури</string>
@@ -353,6 +363,11 @@
     <string name="CP_Message_Filtering_EntitiesDesc">Якщо цю опцію увімкнути, фільтрування поширюватиметься на посилання (об’єкти), що містяться у повідомленнях. Система перевірятиме URL-адреси на наявність будь-яких налаштованих вами ключових слів для фільтрації. Якщо в посиланні буде виявлено збіг, усе повідомлення автоматично буде приховано під спойлером, незалежно від того, чи з’являється це ключове слово у видимому тексті, чи ні.\n\nЦе допомагає захиститися від замаскованого спаму, прихованої реклами або фішингових доменів, які в іншому випадку могли б обійти звичайну текстову фільтрацію.</string>
     <string name="CP_Message_Filtering_FilterBlocked">Фільтрувати повідомлення від заблокованих користувачів</string>
     <string name="CP_Message_Filtering_FilterBlockedDesc">Коли увімкнено, всі повідомлення та надіслані повідомлення від заблокованих користувачів будуть автоматично фільтруватися.</string>
+    <string name="CP_Message_Filtering_Shadowban">Тіньовий бан</string>
+    <string name="CP_Message_Filtering_Shadowban_Add">Тіньовий бан</string>
+    <string name="CP_Message_Filtering_Shadowban_Remove">Видалити з тіньового блокування</string>
+    <string name="CP_Message_Filtering_Shadowban_Added">**%1$s** був підданий тіньовому блокуванню</string>
+    <string name="CP_Message_Filtering_Shadowban_Removed">**%1$s** був видалений з тіньового блокування</string>
     <string name="CP_Message_Filtering_FullyHide">Приховати повідомлення</string>
     <string name="CP_Message_Filtering_FullyHide_Desc">Повністю приховувати відфільтровані повідомлення замість приховування тексту за допомогою ефекту спойлера.</string>
     <string name="CP_Message_Filtering_HideAll">Спойлер усього повідомлення</string>
@@ -446,6 +461,8 @@
     <string name="SP_LockedChats_Lock_Destination_Sure">буде заблоковано</string>
     <string name="SP_HideArchive">Приховати архів зі списку чатів</string>
     <string name="SP_HideArchive_Desc">Архів буде замасковано під канал Cherrygram. \nВи зможете відкрити архів з бічного меню або довгим натисканням на кнопку пошуку.</string>
+    <string name="CG_AccSwipeForArchive">Проведіть униз до каналу</string>
+    <string name="CG_AccReleaseForArchive">Реліз для каналу</string>
     <string name="SP_AskPin">Запит пароля</string>
     <string name="SP_DoNotAskPin">Не запитувати пароль</string>
     <string name="SP_AskPinBeforeDelete">Запит біометричного підтвердження для видалення чатів</string>
@@ -478,7 +495,7 @@
     <string name="DP_DonatesMoreInfo">Хочете допомогти Cherrygram розвиватися? Перейдіть до **Cherrygram Support** чату.</string>
     <string name="DP_DonatesThanks">Дякую за вашу підтримку! Ви зробили Вишню щасливою ❤️</string>
     <string name="DP_DonateBadge">Пожертвуйте і розблоковуйте бонуси</string>
-    <string name="DP_Donate_Desc">При пожертвуванні від $2 ви також отримаєте бонусні подарунки:</string>
+    <string name="DP_Donate_Desc">Коли ви робите пожертву $3 або більше, ви також отримаєте кілька бонусних подарунків:</string>
     <string name="DP_Donate_Badge_desc">**Значок Cherrygram** поруч з вашим ім\'ям.</string>
     <string name="DP_Donate_MsgMenuCompactView_Desc">Компактний вигляд елементів **меню повідомлення**.</string>
     <string name="DP_Donate_FoldersAtBottom_Desc">3. **Панель тек** в нижній частині екрана.</string>

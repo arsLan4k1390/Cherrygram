@@ -77,6 +77,9 @@ public class DeeplinkHelper {
             case DeepLinksRepo.CG_Appearance -> {
                 fragment = CherrygramPreferencesNavigator.INSTANCE.createAppearance(hostFragment);
             }
+            case DeepLinksRepo.CG_App_Icon -> {
+                fragment = CherrygramPreferencesNavigator.INSTANCE.createAppIcons(hostFragment);
+            }
             case DeepLinksRepo.CG_Camera -> {
                 fragment = CherrygramPreferencesNavigator.INSTANCE.createCamera(hostFragment);
             }
@@ -182,6 +185,7 @@ public class DeeplinkHelper {
         public static final String CG_General = "general";
 
         public static final String CG_Appearance = "appearance";
+        public static final String CG_App_Icon = "app_icon";
         public static final String CG_Folders = "folders";
         public static final String CG_Luck = "luck";
         public static final String CG_Tabs = "tabs";

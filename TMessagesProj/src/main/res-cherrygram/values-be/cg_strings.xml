@@ -97,15 +97,12 @@
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Налады Cherrygram</string>
-    <string name="CGP_About_Desc">Эксперыментальная мадыфікацыя дадатку Telegram. Націсніце тут, каб прачытаць спіс функцый.</string>
     <string name="CGP_Header_About">Аб Cherrygram</string>
     <string name="CGP_Header_About_Desc">Абнаўлення, зыходны код і многае іншае</string>
-    <string name="CGP_Links">Спасылкі</string>
     <string name="CGP_ToChannel">Афіцыйны канал</string>
     <string name="CGP_ToChat">Афіцыйны чат</string>
     <string name="CGP_Source">Зыходны код</string>
     <string name="CGP_Crowdin">Дапамажы нам з перакладам</string>
-    <string name="CGP_Header_Categories">Катэгорыі</string>
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">Асноўныя</string>

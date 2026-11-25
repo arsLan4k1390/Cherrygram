@@ -128,6 +128,22 @@
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_nox_cherry</item>
     </style>
 
+    <style name="Theme.CG.Splash.Palms.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_palms</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Palms.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_palms</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Palms_Bra.Light" parent="Theme.CG.Splash.Base.Light">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_palms_bra</item>
+    </style>
+
+    <style name="Theme.CG.Splash.Palms_Bra.Night" parent="Theme.CG.Splash.Base.Night">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_palms_bra</item>
+    </style>
+
     <!-- Telegram icons, animation follows the Telegram splash -->
     <style name="Theme.CG.Splash.Premium.Light" parent="Theme.CG.Splash.Base.Light">
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/cg_splash_animated_premium</item>

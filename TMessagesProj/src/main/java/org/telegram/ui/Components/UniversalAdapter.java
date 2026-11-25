@@ -609,7 +609,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
                 break;
             case VIEW_TYPE_SWITCH:
             case VIEW_TYPE_EXPANDABLE_SWITCH:
-                view = new TextCheckCell2(context);
+                view = new TextCheckCell2(context, resourcesProvider);
                 break;
             case VIEW_TYPE_TEXT_DETAIL_SETTINGS: {
                 view = new TextDetailSettingsCell(context);

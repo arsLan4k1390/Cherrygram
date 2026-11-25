@@ -921,6 +921,7 @@ public class ChatActivity extends BaseFragment implements
     private int cantSaveMessagesCount;
     private int canSaveMusicCount;
     private int canSaveDocumentsCount;
+    private int canSaveGalleryCount;
     private ArrayList<Integer> waitingForLoad = new ArrayList<>();
     private boolean needRemovePreviousSameChatActivity = true;
 
@@ -3826,6 +3827,7 @@ public class ChatActivity extends BaseFragment implements
         cantSaveMessagesCount = 0;
         canSaveMusicCount = 0;
         canSaveDocumentsCount = 0;
+        canSaveGalleryCount = 0;
 
         hasOwnBackground = true;
         if (chatAttachAlert != null) {
@@ -3986,6 +3988,55 @@ public class ChatActivity extends BaseFragment implements
                         hideTagSelector();
                     }
                 } else if (id == save_to) {
+                    if (canSaveGalleryCount > 0) {
+                        if (getParentActivity() == null) {
+                            return;
+                        }
+                        if (Build.VERSION.SDK_INT >= 23 && (Build.VERSION.SDK_INT <= 28 || BuildVars.NO_SCOPED_STORAGE) && getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            getParentActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
+                            return;
+                        }
+                        ArrayList<MessageObject> mediaObjects = new ArrayList<>();
+                        for (int a = 1; a >= 0; a--) {
+                            for (int b = 0; b < selectedMessagesIds[a].size(); b++) {
+                                mediaObjects.add(selectedMessagesIds[a].valueAt(b));
+                            }
+                            selectedMessagesIds[a].clear();
+                            selectedMessagesCanCopyIds[a].clear();
+                            selectedMessagesCanStarIds[a].clear();
+                        }
+                        hideActionMode();
+                        updatePinnedMessageView(true);
+                        updateVisibleRows();
+
+                        boolean allPhotos = true, allVideos = true, allLive = true;
+                        for (MessageObject mo : mediaObjects) {
+                            saveMessageToGallery(mo);
+                            allLive &= mo.isLivePhoto();
+                            allPhotos &= mo.isPhoto() && !mo.isLivePhoto();
+                            allVideos &= mo.isVideo() && !mo.isLivePhoto();
+                        }
+                        if (getParentActivity() != null && !mediaObjects.isEmpty()) {
+                            int count = mediaObjects.size();
+                            if (count == 1) {
+                                MessageObject mo = mediaObjects.get(0);
+                                BulletinFactory.of(ChatActivity.this).createDownloadBulletin(mo.isLivePhoto() ? BulletinFactory.FileType.LIVEPHOTO : (mo.isVideo() ? BulletinFactory.FileType.VIDEO : BulletinFactory.FileType.PHOTO), themeDelegate).show();
+                            } else {
+                                final BulletinFactory.FileType fileType;
+                                if (allLive) {
+                                    fileType = BulletinFactory.FileType.LIVEPHOTO;
+                                } else if (allPhotos) {
+                                    fileType = BulletinFactory.FileType.PHOTOS;
+                                } else if (allVideos) {
+                                    fileType = BulletinFactory.FileType.VIDEOS;
+                                } else {
+                                    fileType = BulletinFactory.FileType.MEDIA;
+                                }
+                                BulletinFactory.of(ChatActivity.this).createDownloadBulletin(fileType, count, themeDelegate).show();
+                            }
+                        }
+                        return;
+                    }
                     ArrayList<MessageObject> messageObjects = new ArrayList<>();
                     for (int a = 1; a >= 0; a--) {
                         for (int b = 0; b < selectedMessagesIds[a].size(); b++) {
@@ -6781,6 +6832,17 @@ public class ChatActivity extends BaseFragment implements
             public boolean dispatchTouchEvent(MotionEvent ev) {
                 final int action = ev.getActionMasked();
                 cgTouchDown = action != MotionEvent.ACTION_UP && action != MotionEvent.ACTION_CANCEL;
+                final MessageMenuHelper menuHelper = getMessageMenuHelper();
+                if (menuHelper.onChatListTouchEvent(ev)) {
+                    if (menuHelper.takeChatListCancel()) {
+                        final MotionEvent cancel = MotionEvent.obtain(ev);
+                        cancel.setAction(MotionEvent.ACTION_CANCEL);
+                        cgTouchDown = false;
+                        super.dispatchTouchEvent(cancel);
+                        cancel.recycle();
+                    }
+                    return true;
+                }
                 return super.dispatchTouchEvent(ev);
             }
 
@@ -8641,7 +8703,7 @@ public class ChatActivity extends BaseFragment implements
         replyCloseImageView.setImageResource(R.drawable.input_clear);
         replyCloseImageView.setScaleType(ImageView.ScaleType.CENTER);
         if (chatActivityEnterView != null && chatActivityEnterView.iOSMessageInputFieldAvailable()) {
-            ThemeBind.colorFilter(replyCloseImageView, Theme.key_actionBarActionModeDefaultIcon, getResourceProvider(), PorterDuff.Mode.MULTIPLY); // Cherrygram
+            ThemeBind.colorFilter(replyCloseImageView, Theme.key_actionBarActionModeDefaultIcon, getResourceProvider(), PorterDuff.Mode.MULTIPLY);
 
             BlurredBackgroundDrawable replyBackground = glassBackgroundDrawableFactory.create(replyCloseImageView, blurredBackgroundColorProvider);
             replyBackground.setRadius(dp(18));
@@ -10445,6 +10507,7 @@ public class ChatActivity extends BaseFragment implements
         if (topicsPanelItem == null) return;
         final boolean visible = isTopicsSidebarEnabled() && !searchItemVisible && (actionBar == null || !actionBar.isActionModeShowed());
         topicsPanelItem.setVisibility(visible ? View.VISIBLE : View.GONE);
+        cgUpdateCenteredSidebarMode();
         updateHeaderItemCollapsed(visible);
         updateSideButtonsForAttach();
     }
@@ -13144,21 +13207,7 @@ public class ChatActivity extends BaseFragment implements
     }
 
     private boolean canSaveSelectedMessage(MessageObject messageObject) {
-        // 1. Проверяем, что это поддерживаемый тип медиа (фото, видео, документ)
-        boolean isSupportedType = messageObject.isPhoto()
-                || messageObject.isLivePhoto()
-                || messageObject.isVideo()
-                || messageObject.isDocument();
-
-        // 2. Проверяем отсутствие запретов на пересылку / сохранение
-        boolean isAllowedByForwards = !isPeerNoForwards()
-                && !(messageObject.messageOwner != null && messageObject.messageOwner.noforwards);
-
-        // 3. Проверяем, что это не кружочек / голосовое с просмотром/прослушиванием один раз
-        boolean isNotOnce = !messageObject.isRoundOnce()
-                && !messageObject.isVoiceOnce();
-
-        return isSupportedType && isAllowedByForwards && isNotOnce;
+        return !isPeerNoForwards() && !(messageObject.messageOwner != null && messageObject.messageOwner.noforwards) && !messageObject.isRoundOnce() && !messageObject.isVoiceOnce();
     }
 
     private boolean hasSelectedNoforwardsMessage() {
@@ -20415,7 +20464,9 @@ public class ChatActivity extends BaseFragment implements
                     }
                     if (messageObject.isMusic() && canSaveSelectedMessage(messageObject)) {
                         canSaveMusicCount--;
-                    } else if ((messageObject.isPhoto() || messageObject.isLivePhoto() || messageObject.isVideo() || messageObject.isDocument()) && canSaveSelectedMessage(messageObject)) {
+                    } else if ((messageObject.isLivePhoto() || messageObject.isPhoto() || messageObject.isVideo()) && canSaveSelectedMessage(messageObject)) {
+                        canSaveGalleryCount--;
+                    } else if (messageObject.isDocument() && canSaveSelectedMessage(messageObject)) {
                         canSaveDocumentsCount--;
                     } else {
                         cantSaveMessagesCount--;
@@ -20452,6 +20503,8 @@ public class ChatActivity extends BaseFragment implements
                     }
                     if (messageObject.isMusic() && canSaveSelectedMessage(messageObject)) {
                         canSaveMusicCount++;
+                    } else if ((messageObject.isLivePhoto() || messageObject.isPhoto() || messageObject.isVideo()) && canSaveSelectedMessage(messageObject)) {
+                        canSaveGalleryCount++;
                     } else if (messageObject.isDocument() && canSaveSelectedMessage(messageObject)) {
                         canSaveDocumentsCount++;
                     } else {
@@ -20519,8 +20572,11 @@ public class ChatActivity extends BaseFragment implements
                     }
                 }
                 if (saveItem != null) {
-                    saveItem.setVisibility(((canSaveMusicCount > 0 && canSaveDocumentsCount == 0) || (canSaveMusicCount == 0 && canSaveDocumentsCount > 0)) && cantSaveMessagesCount == 0 ? View.VISIBLE : View.GONE);
-                    saveItem.setContentDescription(canSaveMusicCount > 0 ? LocaleController.getString(R.string.SaveToMusic) : LocaleController.getString(R.string.SaveToDownloads));
+                    int saveCategories = (canSaveMusicCount > 0 ? 1 : 0) + (canSaveDocumentsCount > 0 ? 1 : 0) + (canSaveGalleryCount > 0 ? 1 : 0);
+                    saveItem.setVisibility(saveCategories == 1 && cantSaveMessagesCount == 0 ? View.VISIBLE : View.GONE);
+                    saveItem.setContentDescription(LocaleController.getString(
+                            canSaveMusicCount > 0 ? R.string.SaveToMusic :
+                            canSaveGalleryCount > 0 ? R.string.SaveToGallery : R.string.SaveToDownloads));
                 }
 
                 int copyVisible = View.GONE, starVisible = View.GONE, newCopyVisible = View.GONE, newStarVisible = View.GONE;
@@ -20850,13 +20906,13 @@ public class ChatActivity extends BaseFragment implements
 
     public void updateTopicTitleIcon() {
         if (UserObject.isBotForum(currentUser) && avatarContainer != null) {
-            avatarContainer.getAvatarImageView().setVisibility(View.VISIBLE);
+            avatarContainer.showAvatarIfAllowed();
             avatarContainer.checkAndUpdateAvatar();
             return;
         }
 
         if (forumTopic != null && avatarContainer != null) {
-            avatarContainer.getAvatarImageView().setVisibility(View.VISIBLE);
+            avatarContainer.showAvatarIfAllowed();
             ForumUtilities.setTopicIcon(avatarContainer.getAvatarImageView(), forumTopic, true, true, themeDelegate);
         }
     }
@@ -32156,6 +32212,7 @@ public class ChatActivity extends BaseFragment implements
         cantForwardMessagesCount = 0;
         canSaveMusicCount = 0;
         canSaveDocumentsCount = 0;
+        canSaveGalleryCount = 0;
         cantSaveMessagesCount = 0;
         if (chatActivityEnterView != null) {
             EditTextCaption editTextCaption = chatActivityEnterView.getEditField();
@@ -32265,7 +32322,7 @@ public class ChatActivity extends BaseFragment implements
 
     @SuppressLint("ClickableViewAccessibility")
     private boolean createMenu(View v, boolean single, boolean listView, float x, float y, boolean searchGroup, boolean longpress, boolean suggestEdit) {
-        if (actionBar.isActionModeShowed() || isReport()) {
+        if (actionBar.isActionModeShowed() || isReport() || inPreviewMode) {
             return false;
         }
         if (chatActivityEnterView != null) {
@@ -41587,6 +41644,7 @@ public class ChatActivity extends BaseFragment implements
 
         @Override
         public boolean didLongPressUserAvatar(ChatMessageCell cell, TLRPC.User user, float touchX, float touchY) {
+            if (inPreviewMode) return false;
             if (isAvatarPreviewerEnabled()) {
                 final boolean enableMention = currentChat != null && (bottomChannelButtonsLayout == null || bottomChannelButtonsLayout.getVisibility() != View.VISIBLE) && (bottomOverlay == null || bottomOverlay.getVisibility() != View.VISIBLE);
                 final boolean enableSearchMessages = currentChat != null && (threadMessageId == 0 || isTopic) && (!ChatObject.isChannel(currentChat) || currentChat.megagroup);
@@ -41717,6 +41775,7 @@ public class ChatActivity extends BaseFragment implements
 
         @Override
         public boolean didLongPressChannelAvatar(ChatMessageCell cell, TLRPC.Chat chat, int postId, float touchX, float touchY) {
+            if (inPreviewMode) return false;
             if (isAvatarPreviewerEnabled()) {
                 final boolean enableMention = !TextUtils.isEmpty(ChatObject.getPublicUsername(chat)) && currentChat != null && (bottomChannelButtonsLayout == null || bottomChannelButtonsLayout.getVisibility() != View.VISIBLE) && (bottomOverlay == null || bottomOverlay.getVisibility() != View.VISIBLE);
                 final boolean enableSearchMessages = currentChat != null && (threadMessageId == 0 || isTopic) && (!ChatObject.isChannel(currentChat) || currentChat.megagroup);
@@ -42568,6 +42627,9 @@ public class ChatActivity extends BaseFragment implements
 
         @Override
         public void didLongPress(ChatMessageCell cell, float x, float y) {
+            if (inPreviewMode) {
+                return;
+            }
             if (getMessageMenuHelper().openMenuByLongPress()) {
                 getMessageMenuHelper().activatePress(cell);
                 if (!createMenu(cell, true, false, x, y, true)) {
@@ -49492,6 +49554,8 @@ public class ChatActivity extends BaseFragment implements
     private final Stack<Integer> returnToMessageIdStack = new Stack<>();
     private Boolean useAdsGramForCurrentChat;
 
+    private boolean cgSidebarButtonShown;
+
     public ImageView searchFilterButton;
 
     public TLRPC.TL_forumTopic getCurrentForumTopic() {
@@ -49586,11 +49650,30 @@ public class ChatActivity extends BaseFragment implements
         return ((chatMode == 0 && (threadMessageId == 0 || isTopic)) || chatMode == MODE_SUGGESTIONS)
                 && !UserObject.isReplyUser(currentUser) && !isReport()
                 && !UserObject.isUserSelf(currentUser)
+                && !UserObject.isBotForum(currentUser)
                 || chatMode == MODE_PINNED;
     }
 
     private boolean isAvatarMenuCentered() {
         return isTitleCentered() && hasCenteredAvatarMenu();
+    }
+
+    private void cgUpdateCenteredSidebarMode() {
+        final boolean shown = isAvatarMenuCentered() && chatMode != MODE_PINNED
+                && topicsPanelItem != null && isTopicsSidebarEnabled();
+        if (cgSidebarButtonShown == shown) {
+            return;
+        }
+        cgSidebarButtonShown = shown;
+        if (searchItem != null) {
+            searchItem.setIcon(shown ? R.drawable.outline_header_search : android.R.color.transparent);
+        }
+        if (avatarContainer != null) {
+            avatarContainer.setAvatarHiddenInMenuPill(shown);
+        }
+        if (actionBar != null) {
+            actionBar.requestLayout();
+        }
     }
 
     private boolean isCenteredSearchPill() {

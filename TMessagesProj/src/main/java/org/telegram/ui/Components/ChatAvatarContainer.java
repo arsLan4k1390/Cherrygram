@@ -361,8 +361,8 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 avatarImageView.setVisibility(GONE);
             }
         }
-        if (!avatarImageIsHidden && isCentered() && !showAvatarWhenCentered()) {
-            avatarImageIsHidden = true;
+        if (isCentered() && !showAvatarWhenCentered()) {
+            avatarHiddenByCentering = true;
             avatarImageView.setVisibility(GONE);
         }
         avatarImageView.setContentDescription(getString(R.string.AccDescrProfilePicture));
@@ -1066,8 +1066,9 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
     }
 
     public void setCommunityItemVisible(boolean visible) {
+        communityItemWanted = visible;
         if (communityItem != null) {
-            communityItem.setVisibility(visible && !avatarImageIsHidden ? VISIBLE : GONE);
+            communityItem.setVisibility(visible && !avatarImageIsHidden && !isAvatarSuppressedByCentering() ? VISIBLE : GONE);
         }
     }
 
@@ -1079,7 +1080,7 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
                 timeItem.setAlpha(factor);
                 timeItem.setScaleX(factor * 0.85f);
                 timeItem.setScaleY(factor * 0.85f);
-                timeItem.setVisibility(factor > 0 ? VISIBLE : GONE);
+                timeItem.setVisibility(factor > 0 && !isAvatarSuppressedByCentering() ? VISIBLE : GONE);
             }
         }
     }
@@ -2030,6 +2031,11 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
 
     private float cgCommunityItemAlpha = -1, cgTimeItemAlpha = -1;
 
+    private boolean avatarHiddenByCentering;
+    private boolean avatarHiddenInMenuPill;
+    private boolean avatarShownExplicitly;
+    private boolean communityItemWanted;
+
     private boolean botVerificationCherrygram;
     private boolean moveText = false;
 
@@ -2050,6 +2056,39 @@ public class ChatAvatarContainer extends FrameLayout implements FactorAnimator.T
 
     protected boolean showAvatarWhenCentered() {
         return true;
+    }
+
+    private boolean isAvatarSuppressedByCentering() {
+        return isCentered() && (avatarHiddenByCentering || avatarHiddenInMenuPill);
+    }
+
+    public void showAvatarIfAllowed() {
+        if (avatarImageView == null) {
+            return;
+        }
+        avatarShownExplicitly = true;
+        avatarImageView.setVisibility(isAvatarSuppressedByCentering() ? GONE : VISIBLE);
+    }
+
+    public void setAvatarHiddenInMenuPill(boolean hidden) {
+        if (avatarHiddenInMenuPill == hidden || avatarImageView == null) {
+            return;
+        }
+        avatarHiddenInMenuPill = hidden;
+        final boolean wanted = (!avatarImageIsHidden || avatarShownExplicitly) && !isAvatarSuppressedByCentering();
+        avatarImageView.setVisibility(wanted ? VISIBLE : GONE);
+        if (communityItem != null) {
+            communityItem.setVisibility(communityItemWanted && wanted ? VISIBLE : GONE);
+        }
+        if (timeItem != null) {
+            timeItem.setVisibility(animatorTimeVisible.getValue() && wanted ? VISIBLE : GONE);
+        }
+        if (!wanted) {
+            resetAvatarAlignment();
+        }
+        requestLayout();
+        invalidate();
+        checkActionBar(false);
     }
 
     public boolean isAvatarInMenuPill() {

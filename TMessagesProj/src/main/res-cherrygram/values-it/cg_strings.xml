@@ -144,15 +144,12 @@
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Preferenze Cherrygram</string>
-    <string name="CGP_About_Desc">Una versione modificata sperimentale dell\'app Telegram. Tocca qui per scoprire le funzionalità.</string>
     <string name="CGP_Header_About">Informazioni Su Cherrygram</string>
     <string name="CGP_Header_About_Desc">Aggiornamenti, codice sorgente e altro</string>
-    <string name="CGP_Links">Link</string>
     <string name="CGP_ToChannel">Canale ufficiale</string>
     <string name="CGP_ToChat">Chat ufficiale</string>
     <string name="CGP_Source">Codice sorgente</string>
     <string name="CGP_Crowdin">Contribuisci alla traduzione</string>
-    <string name="CGP_Header_Categories">Categorie</string>
     <string name="CGP_General_Desc">Impostazioni principali e funzionalità non correlate a sezioni specifiche</string>
     <string name="CGP_Appearance_Desc">Aspetto dell\'app e personalizzazione dell\'interfaccia</string>
     <string name="CGP_Folders_Desc">Aspetto delle cartelle, layout, barra delle cartelle in basso</string>

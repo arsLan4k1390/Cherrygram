@@ -141,15 +141,12 @@
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">自定义偏好</string>
-    <string name="CGP_About_Desc">实验性的 Telegram 应用程序修改。点击此处阅读应用程序的特性列表。</string>
     <string name="CGP_Header_About">关于 Cherrygram</string>
     <string name="CGP_Header_About_Desc">更新、源代码及更多</string>
-    <string name="CGP_Links">链接</string>
     <string name="CGP_ToChannel">官方频道</string>
     <string name="CGP_ToChat">官方群组</string>
     <string name="CGP_Source">开源代码</string>
     <string name="CGP_Crowdin">帮助翻译</string>
-    <string name="CGP_Header_Categories">自定义偏好</string>
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">通用</string>

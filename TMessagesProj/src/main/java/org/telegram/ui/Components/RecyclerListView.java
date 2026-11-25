@@ -97,7 +97,7 @@ import java.util.List;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class RecyclerListView extends RecyclerView implements IBlur3Capture {
@@ -3580,7 +3580,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
     }
 
     int getSectionColorForDecoration() {
-        return Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider);
+        return MonetHelper.getSectionBackgroundColor(resourcesProvider);
     }
 
     int getSectionsBackgroundColorForDecoration() {
@@ -3832,11 +3832,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
     private final static float[] radii = new float[8];
     public static void drawBackgroundRect(Canvas canvas, RectF rect, float topRadius, float bottomRadius, float alpha, Theme.ResourcesProvider resourcesProvider) {
         sectionBackgroundPaint.setShadowLayer(0, 0, 0, 0);
-        if (MD3ListAdapter.shouldUseCustomColors()) {
-            sectionBackgroundPaint.setColor(MD3ListAdapter.getBackgroundColor(resourcesProvider));
-        } else {
-            sectionBackgroundPaint.setColor(multAlpha(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider), alpha));
-        }
+        sectionBackgroundPaint.setColor(multAlpha(MonetHelper.getSectionBackgroundColor(resourcesProvider), alpha));
         if (topRadius <= 0 && bottomRadius <= 0) {
             canvas.drawRect(rect, sectionBackgroundPaint);
         } else if (topRadius == bottomRadius) {
@@ -3944,7 +3940,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
         if (prev && next && !forceRound) {
             prev = top(child) >= rect.top;
             next = bottom(child) <= rect.bottom;
-            if (prev && next) return Theme.createRoundRectDrawable(0, Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
+            if (prev && next) return Theme.createRoundRectDrawable(0, MonetHelper.getSectionBackgroundColor(resourcesProvider));
         }
         final Path clipPath = new Path();
         if (!prev && !next || forceRound) {
@@ -3965,11 +3961,7 @@ public class RecyclerListView extends RecyclerView implements IBlur3Capture {
                 canvas.save();
                 canvas.translate(-child.getX(), -child.getY());
                 canvas.clipPath(clipPath);
-                if (MD3ListAdapter.shouldUseCustomColors()) {
-                    paint.setColor(MD3ListAdapter.getBackgroundColor(resourcesProvider));
-                } else {
-                    paint.setColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider), paint.getAlpha()));
-                }
+                paint.setColor(ColorUtils.setAlphaComponent(MonetHelper.getSectionBackgroundColor(resourcesProvider), paint.getAlpha()));
                 canvas.drawRect(rect, paint);
                 canvas.restore();
             }

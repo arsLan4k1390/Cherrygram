@@ -187,17 +187,18 @@
 
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Cherrygram Preferences</string>
-    <string name="CGP_About_Desc">An experimental Telegram app modification. Tap here to read the list of features.</string>
-    <string name="CGP_Header_About">About Cherrygram</string>
+    <string name="CGP_Header_About">About</string>
     <string name="CGP_Header_About_Desc">Updates, source code and more</string>
-    <string name="CGP_Links">Links</string>
     <string name="CGP_ToChannel">News &amp; Updates</string>
     <string name="CGP_ToBetaChannel">Beta Versions</string>
     <string name="CGP_ToChat">General Chat</string>
     <string name="CGP_ToOfftopicChat">Off-topic Chat</string>
+    <string name="CGP_About_Project">Project</string>
+    <string name="CGP_About_Website">Website</string>
+    <string name="CGP_About_Credits">Based on Telegram for Android. Thanks to the authors of the forks whose code is used in Cherrygram.</string>
+    <string name="CGP_About_Community">Community</string>
     <string name="CGP_Source">Source code</string>
     <string name="CGP_Crowdin">Help with translation</string>
-    <string name="CGP_Header_Categories">Categories</string>
 
     <string name="CGP_General_Desc">Main app settings and features not related to specific sections</string>
     <string name="CGP_Appearance_Desc">App appearance and interface customization</string>
@@ -247,6 +248,9 @@
     <string name="AP_ChangeIcon_Violet_Sunset" translatable="false">Violet Sunset</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
+    <string name="AP_ChangeIcon_Palms">Palms</string>
+    <string name="AP_AppIcon_Hint">Tap an icon to preview it. The icon changes only after you tap Apply.</string>
+    <string name="AP_AppIcon_Current_Desc">This icon is already in use.</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">System emoji</string>
@@ -276,6 +280,8 @@
     <string name="CP_ReplyBackgroundEmoji">Emoji in replies and links preview</string>
     <string name="CG_NewProfileDesign">New profile design</string>
     <string name="CG_NewProfileDesign_Desc">The profile color fills the whole screen, and cards, text and icons adapt to it.</string>
+    <string name="CP_RoundProfileActions">Round profile buttons</string>
+    <string name="CP_RoundProfileActions_Desc">Show the buttons under the name as circles with a label below, like on iOS.</string>
     <string name="CP_HideStories">Hide Stories (locally)</string>
     <string name="CP_HideStories_Desc">Stories will disappear from your chats list and from profiles.</string>
     <string name="CP_ArchiveStories">Archive stories</string>

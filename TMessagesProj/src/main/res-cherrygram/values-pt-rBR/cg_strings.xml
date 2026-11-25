@@ -146,15 +146,12 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Preferências do Cherrygram</string>
-    <string name="CGP_About_Desc">Uma ‘app’ Telegram experimental modificado. Toque aqui para ler a lista de funções.</string>
     <string name="CGP_Header_About">Sobre Cherrygram</string>
     <string name="CGP_Header_About_Desc">Atualizações, código-fonte e muito mais</string>
-    <string name="CGP_Links">Ligações</string>
     <string name="CGP_ToChannel">Canal oficial</string>
     <string name="CGP_ToChat">Chat oficial</string>
     <string name="CGP_Source">Código-fonte</string>
     <string name="CGP_Crowdin">Ajudar com a tradução</string>
-    <string name="CGP_Header_Categories">Categorias</string>
     <string name="CGP_General_Desc">Configurações e recursos principais do aplicativo não relacionados a seções específicas sections</string>
     <string name="CGP_Appearance_Desc">Personalização da aparência e da interface do aplicativo</string>
     <string name="CGP_Folders_Desc">Configurações de aparência da pasta, personalização do layout e movimentação da barra de pastas para a parte inferior</string>

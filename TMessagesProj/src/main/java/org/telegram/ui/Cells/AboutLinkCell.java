@@ -67,7 +67,7 @@ import org.telegram.ui.Components.URLSpanNoUnderline;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
 
 public class AboutLinkCell extends FrameLayout implements Theme.Colorable {
 
@@ -138,7 +138,7 @@ public class AboutLinkCell extends FrameLayout implements Theme.Colorable {
         Drawable shadowDrawable = context.getResources().getDrawable(R.drawable.gradient_bottom).mutate();
         ThemeBind.drawableColorFilter(this, shadowDrawable, Theme.key_windowBackgroundWhite, resourcesProvider, PorterDuff.Mode.SRC_ATOP);
         bottomShadow.setBackground(shadowDrawable);
-        addView(bottomShadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, MD3ListAdapter.shouldUseCustomColors() ? 0 : 12, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 0, 16, 0));
+        addView(bottomShadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, MonetHelper.getSectionBackgroundColor(resourcesProvider) != Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider) ? 0 : 12, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 0, 16, 0));
 
         addView(container, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
@@ -865,7 +865,7 @@ public class AboutLinkCell extends FrameLayout implements Theme.Colorable {
         if (bottomShadow.getBackground() != null) {
             bottomShadow.getBackground().setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider), PorterDuff.Mode.SRC_ATOP));
         }
-        showMoreBackgroundDrawable.setColorFilter(new PorterDuffColorFilter(MD3ListAdapter.getBackgroundColor(resourcesProvider), PorterDuff.Mode.MULTIPLY));
+        showMoreBackgroundDrawable.setColorFilter(new PorterDuffColorFilter(MonetHelper.getSectionBackgroundColor(resourcesProvider), PorterDuff.Mode.MULTIPLY));
         backgroundPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
         final Drawable newRippleBackground = Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 0, 0);
         if (container.getBackground() == rippleBackground) {

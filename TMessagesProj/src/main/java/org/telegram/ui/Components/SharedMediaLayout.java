@@ -10333,7 +10333,7 @@ public class SharedMediaLayout extends FrameLayout implements Theme.Colorable, N
                     view = createProfileSearchCell(mContext);
                     break;
                 case VIEW_TYPE_GROUP_CREATE:
-                    ManageChatTextCell createCell = new ManageChatTextCell(mContext);
+                    ManageChatTextCell createCell = new ManageChatTextCell(mContext, resourcesProvider);
                     createCell.setColors(Theme.key_windowBackgroundWhiteBlueIcon, Theme.key_windowBackgroundWhiteBlueButton);
                     createCell.setTextLeft(AndroidUtilities.leftBaseline);
                     view = createCell;

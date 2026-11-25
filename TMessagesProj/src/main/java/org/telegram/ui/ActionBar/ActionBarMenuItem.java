@@ -2903,7 +2903,7 @@ public class ActionBarMenuItem extends FrameLayout {
     /** Cherrygram start */
     private boolean forceHidden;
 
-    public void setForceHidden(boolean value) { // Used to get bounce and avatarOptionsMenuItem get worked
+    public void setForceHidden(boolean value) {
         if (forceHidden != value) {
             forceHidden = value;
             if (forceHidden) {
@@ -2919,6 +2919,15 @@ public class ActionBarMenuItem extends FrameLayout {
     @Override
     public void setVisibility(int visibility) {
         super.setVisibility(forceHidden ? GONE : visibility);
+    }
+
+    public ActionBarPopupWindow.SpaceGapView addSpaceGap() {
+        createPopupLayout();
+        final ActionBarPopupWindow.SpaceGapView gap = new ActionBarPopupWindow.SpaceGapView(getContext(), resourcesProvider);
+        gap.setTag(R.id.object_tag, 1);
+        gap.setTag(R.id.fit_width_tag, 1);
+        popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+        return gap;
     }
     /** Cherrygram finish */
 

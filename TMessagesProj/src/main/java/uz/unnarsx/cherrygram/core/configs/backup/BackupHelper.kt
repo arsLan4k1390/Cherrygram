@@ -53,7 +53,7 @@ object BackupHelper {
 
         // Appearance
         "AP_Icon_Replacements1", "AP_OneUI_SwitchStyle", "AP_DisableDividers", "AP_GlareEffect", "AP_CenterTitle",
-        "AP_HideSearchField", "AP_IconBasedSplash", "AP_NewProfileDesign",
+        "AP_HideSearchField", "AP_IconBasedSplash", "AP_NewProfileDesign", "AP_RoundProfileActions",
         "CP_ForwardMsgDate", "AP_PencilIcon", "CP_ShowSeconds", "CP_DisablePremiumStatuses",
         "CP_ReplyBackground", "CP_ReplyCustomColors", "CP_ReplyBackgroundEmoji", "CP_ProfileHidePhoneNumber", "CP_ProfileChannelPreview",
         "AP_ShowID_DC_new", "CP_ProfileBirthDatePreview", "CP_ProfileBusinessPreview", "CP_ProfileBackgroundColor",

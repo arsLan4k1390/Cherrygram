@@ -149,7 +149,7 @@ public class ColoredImageSpan extends ReplacementSpan {
                 drawableColorIsPaintColor = true;
                 color = paint.getColor();
             } else {
-                color = Theme.getColor(colorKey);
+                color = Theme.getColor(colorKey, drawResourcesProvider);
             }
             if (drawableColor != color) {
                 drawableColor = color;
@@ -219,4 +219,9 @@ public class ColoredImageSpan extends ReplacementSpan {
     public void setAlpha(float v) {
         this.alpha = v;
     }
+
+    /** Cherrygram start */
+    public static Theme.ResourcesProvider drawResourcesProvider;
+    /** Cherrygram finish */
+
 }

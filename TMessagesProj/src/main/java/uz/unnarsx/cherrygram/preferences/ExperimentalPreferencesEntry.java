@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Set;
 
+import uz.unnarsx.cherrygram.camera.CameraXUtils;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
@@ -61,10 +63,12 @@ public class ExperimentalPreferencesEntry extends BaseCGPreferencesEntry {
     private final int replacePunctuationRow = 11;
     private final int editTextFixRow = 12;
     private final int fixChineseKeyboardsRow = 13;
-    private final int audioSourceRow = 14;
-    private final int sendMaxQualityRow = 15;
-    private final int playGifAsVideoRow = 16;
-    private final int hideTimestampRow = 17;
+    private final int fixZoomSlider = 14;
+
+    private final int audioSourceRow = 15;
+    private final int sendMaxQualityRow = 16;
+    private final int playGifAsVideoRow = 17;
+    private final int hideTimestampRow = 18;
 
     private static final Set<String> OOM_SECTION_SLUG = Set.of(
             "cleanupHeap",
@@ -232,6 +236,12 @@ public class ExperimentalPreferencesEntry extends BaseCGPreferencesEntry {
                 .setChecked(CherrygramDebugConfig.INSTANCE.getFixChineseKeyboards())
                 .slug("fixChineseKeyboards")
         );
+        if (CameraXUtils.isCurrentCameraCameraX()) {
+            items.add(SettingsHelper.asSwitchCG(fixZoomSlider, "Fix Zoom Presets *", "Fix zoom slider & presets on some devices")
+                    .setChecked(CherrygramCameraConfig.INSTANCE.getFixZoomSlider())
+                    .slug("fixZoomSlider")
+            );
+        }
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Record)));
@@ -317,6 +327,9 @@ public class ExperimentalPreferencesEntry extends BaseCGPreferencesEntry {
             SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getFixChineseKeyboards());
 
             showRestartBulletin();
+        } else if (item.id == fixZoomSlider) {
+            CherrygramCameraConfig.INSTANCE.setFixZoomSlider(!CherrygramCameraConfig.INSTANCE.getFixZoomSlider());
+            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getFixZoomSlider());
         } else if (item.id == audioSourceRow) {
             showAudioSourceDialog(() -> SettingsHelper.updateButtonValue(view, getAudioSourceValue()));
         } else if (item.id == sendMaxQualityRow) {

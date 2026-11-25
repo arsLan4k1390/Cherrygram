@@ -15,11 +15,14 @@ import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewS
 
 import android.os.Build;
 import android.view.View;
+import android.widget.ImageView;
 
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Components.IconBackgroundColors;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
@@ -38,6 +41,7 @@ import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.cells.ChatHeaderPreviewView;
 import uz.unnarsx.cherrygram.preferences.cells.ChatInputPreviewView;
+import uz.unnarsx.cherrygram.preferences.cells.LauncherIconDrawable;
 import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.TelegramSettingsHelper;
 
@@ -58,6 +62,7 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
 
     private final int glareEffectsSectionRow = 11;
     private final int glareEffectsStyleRow = 12;
+    private final int appIconRow = 13;
     private boolean expandedGlareEffectsSectionRow = false;
 
     private static final Set<String> GLARE_EFFECTS_SECTION_SLUG = Set.of(
@@ -93,17 +98,9 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.AP_Header_Appearance)));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            items.add(SettingsHelper.asSwitchCG(
-                    iconBasedSplashRow,
-                            applyNewSpan(getString(R.string.AP_IconBasedSplash)),
-                            getString(R.string.AP_IconBasedSplash_Desc)
-                    )
-                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getIconBasedSplash())
-                    .slug("iconBasedSplash")
-            );
-        }
-        items.add(UItem.asButton(iconPackRow, getString(R.string.AP_IconReplacements), getIconPackValueText()));
+        items.add(UItem.asButton(iconPackRow, getString(R.string.AP_IconReplacements), getIconPackValueText())
+                .slug("iconPack")
+        );
         items.add(SettingsHelper.asSwitchCG(oneUISwitchesRow, getString(R.string.AP_OneUI_Switch_Style))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle())
                 .slug("oneUI_Switches")
@@ -112,6 +109,28 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getDisableDividers())
                 .slug("dividers")
         );
+        items.add(UItem.asShadow(null));
+
+        LauncherIconDrawable appIconDrawable = new LauncherIconDrawable(getContext(), LauncherIconController.getCurrentIcon(), AndroidUtilities.dp(30));
+        items.add(UItem.asButton(appIconRow, applyNewSpan(getString(R.string.AppIcon)))
+                .onBind(view -> {
+                    ImageView valueImageView = ((TextCell) view).getValueImageView();
+                    valueImageView.setImageDrawable(appIconDrawable);
+                    valueImageView.setVisibility(View.VISIBLE);
+                })
+                .slug(DeeplinkHelper.DeepLinksRepo.CG_App_Icon)
+        );
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            items.add(
+                    SettingsHelper.asSwitchCG(
+                            iconBasedSplashRow,
+                            applyNewSpan(getString(R.string.AP_IconBasedSplash)),
+                            getString(R.string.AP_IconBasedSplash_Desc)
+                    )
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getIconBasedSplash())
+                    .slug("iconBasedSplash")
+            );
+        }
         items.add(UItem.asShadow(null));
 
         items.add(
@@ -217,7 +236,7 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
             CherrygramAppearanceConfig.INSTANCE.setCenterTitle(!CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getCenterTitle());
 
-            getParentLayout().rebuildAllFragmentViews(true, true);
+            getParentLayout().rebuildAllFragmentViews(false, false);
         } else  if (item.id == hideSearchBar) {
             CherrygramAppearanceConfig.INSTANCE.setHideSearchFiled(!CherrygramAppearanceConfig.INSTANCE.getHideSearchFiled());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getHideSearchFiled());
@@ -265,6 +284,8 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
 
             Theme.applyCommonTheme();
             updateRows(true);
+        } else if (item.id == appIconRow) {
+            CherrygramPreferencesNavigator.INSTANCE.createAppIcons(this);
         } else if (item.id == foldersRow) {
             CherrygramPreferencesNavigator.INSTANCE.createFoldersPrefs(this);
         } else if (item.id == bottomTabsRow) {
@@ -272,6 +293,12 @@ public class AppearancePreferencesEntry extends BaseCGPreferencesEntry {
         } else if (item.id == messagesAndProfilesRow) {
             CherrygramPreferencesNavigator.INSTANCE.createMessagesAndProfiles(this);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateRows(false);
     }
 
     @Override

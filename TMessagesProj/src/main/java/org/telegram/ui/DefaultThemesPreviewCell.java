@@ -41,8 +41,6 @@ import org.telegram.ui.Components.ThemeSmallPreviewView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
-
 @SuppressLint("ViewConstructor")
 public class DefaultThemesPreviewCell extends LinearLayout implements Theme.Colorable {
 

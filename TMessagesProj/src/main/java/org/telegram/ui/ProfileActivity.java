@@ -361,6 +361,8 @@ import me.vkryl.core.reference.ReferenceList;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.profile.CGProfileAvatarEffectsLayout;
+import uz.unnarsx.cherrygram.profile.CGProfileGiftsView;
 import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
@@ -412,7 +414,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private HintView2 fwdRestrictedHint;
 //    private ProfileMetaballView metaball;
     private FrameLayout avatarContainer;
-    private FrameLayout avatarContainer2;
+    private CGProfileAvatarEffectsLayout avatarContainer2;
     private ProfileActionsView actionsView;
     private MessagesController.SavedMusicList savedMusicList;
     private ProfileMusicView musicView;
@@ -1289,6 +1291,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     btnColor = Theme.multAlpha(PeerColorActivity.adaptProfileEmojiColor(color1), .15f);
                 }
                 btnColor = darkenProfileButtonColor(peerColor, btnColor);
+                if (cgMusicDim > 0) {
+                    color1 = PeerColorResourcesProvider.dimColor(color1, cgMusicDim);
+                    color2 = PeerColorResourcesProvider.dimColor(color2, cgMusicDim);
+                    actionBarBackgroundColor = PeerColorResourcesProvider.dimColor(actionBarBackgroundColor, cgMusicDim);
+                    emojiColor = PeerColorResourcesProvider.dimColor(emojiColor, cgMusicDim);
+                    btnColor = PeerColorResourcesProvider.dimColor(btnColor, cgMusicDim);
+                }
+                emoji.setColor(emojiColor);
             } else {
                 actionBarBackgroundColor = currentColor;
                 hasColorById = false;
@@ -1419,6 +1429,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         canvas.clipRect(0, 0, getMeasuredWidth(), y1);
                         float atop = actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0;
                         float maxExpand = getHeaderOnlyExtraHeight() + atop + (actionBar.getHeight() - atop) / 2f;
+                        if (avatarContainer2 != null) avatarContainer2.applyPatternPulse(canvas, this);
                         StarGiftPatterns.drawProfileAnimatedPattern(canvas, emoji, getMeasuredWidth(), maxExpand, calculateHeaderExtraDiff(), avatarContainer, 1.0f);
                         canvas.restore();
                     }
@@ -3065,6 +3076,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (sharedMediaLayout != null && sharedMediaLayout.checkPinchToZoom(ev)) {
                     return true;
                 }
+                if (avatarContainer2 != null && avatarContainer2.dispatchGiftTouch(ev)) {
+                    return true;
+                }
                 return super.dispatchTouchEvent(ev);
             }
 
@@ -3907,11 +3921,22 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     MediaController.getInstance().getPlaylist().clear();
                     MediaController.getInstance().getPlaylist().addAll(savedMusicList.list);
                     if (!sameList) MediaController.getInstance().playMessage(savedMusicList.list.get(0));
+                    if (CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign()) {
+                        if (sameList) {
+                            final MessageObject playing = MediaController.getInstance().getPlayingMessageObject();
+                            if (MediaController.getInstance().isMessagePaused()) {
+                                MediaController.getInstance().playMessage(playing);
+                            } else {
+                                MediaController.getInstance().pauseMessage(playing);
+                            }
+                        }
+                        return;
+                    }
                     showDialog(new AudioPlayerAlert(getContext(), getResourceProvider()));
                 }
             });
 
-            actionsView = new ProfileActionsView(context, dp(74));
+            actionsView = new ProfileActionsView(context, cgActionsHeight());
             setActionsMode();
             updateNotifications(false);
 
@@ -5318,7 +5343,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 updateGooey();
             }
         };
-        avatarContainer2 = new FrameLayout(context) {
+        avatarContainer2 = new CGProfileAvatarEffectsLayout(context) {
 
             CanvasButton canvasButton;
 
@@ -5740,7 +5765,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             avatarImage.setHasStories(needInsetForStories());
         }
         avatarContainer2.addView(storyView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-        giftsView = new ProfileGiftsView(context, currentAccount, getDialogId(), avatarContainer, avatarImage, resourcesProvider);
+        if (CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign()) {
+            CGProfileGiftsView cgGiftsView = new CGProfileGiftsView(context, currentAccount, getDialogId(), avatarContainer, avatarImage, resourcesProvider);
+            avatarContainer2.setGiftsView(currentAccount, cgGiftsView, avatarGooey, avatarContainer, storyView, topView, this::cgOnMusicPlaying);
+            giftsView = cgGiftsView;
+        } else {
+            giftsView = new ProfileGiftsView(context, currentAccount, getDialogId(), avatarContainer, avatarImage, resourcesProvider);
+        }
         avatarContainer2.addView(giftsView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         updateProfileData(true);
 
@@ -6305,7 +6336,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int getActionsExtraHeight(boolean withPills) {
         if (userId != 0 && imageUpdater != null && !myProfile)
             return 0;
-        return dp(74 + (withPills && (hasMusic || hasBalance) ? 25 : 0));
+        return cgActionsHeight() + dp(withPills && (hasMusic || hasBalance) ? 25 : 0);
     }
 
     private int getHeaderExtraHeight() {
@@ -10060,6 +10091,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     @Override
     public boolean isSwipeBackEnabled(MotionEvent event) {
+        if (event != null && giftsView instanceof CGProfileGiftsView && ((CGProfileGiftsView) giftsView).isInCarouselZoneOnScreen(event.getRawX(), event.getRawY())) {
+            return false;
+        }
         if (avatarsViewPager != null && avatarsViewPager.getVisibility() == View.VISIBLE && avatarsViewPager.getRealCount() > 1) {
             avatarsViewPager.getHitRect(rect);
             if (event != null && rect.contains((int) event.getX(), (int) event.getY() - actionBar.getMeasuredHeight())) {
@@ -11827,11 +11861,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             float vh = avatarContainer.getHeight() * avatarContainer.getScaleY();
             actionsView.clipHeight = avatarContainer.getY() + vh;
             actionsView.setAlpha(avatarAnimationProgress);
-            actionsView.updatePosition(listView.getMeasuredWidth(), dp(74));
+            actionsView.updatePosition(listView.getMeasuredWidth(), cgActionsHeight());
         } else {
             actionsView.clipHeight = -1;
             float bottom = extraHeight + newTop - dp(hasMusic || hasBalance ? 25 : 0);
-            float height = Math.min(dp(74), bottom - newTop);
+            float height = Math.min(cgActionsHeight(), bottom - newTop);
             actionsView.updatePosition(bottom - height, height);
         }
 
@@ -11857,16 +11891,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 //            float vh = avatarContainer.getHeight() * avatarContainer.getScaleY();
 //            musicView.clipHeight = avatarContainer.getY() + vh;
             musicView.setAlpha(avatarAnimationProgress);
-            musicView.updatePosition(listView.getMeasuredWidth() + dp(74), getActionsExtraHeight() - dp(74));
+            musicView.updatePosition(listView.getMeasuredWidth() + cgActionsHeight(), getActionsExtraHeight() - cgActionsHeight());
         } else {
             if (openAnimationInProgress) {
                 musicView.setAlpha(avatarAnimationProgress);
             }
 
 //            musicView.clipHeight = -1;
-            float bottom = extraHeight + newTop + dp(74);
+            float bottom = extraHeight + newTop + cgActionsHeight();
             float height = Math.min(getActionsExtraHeight(), bottom - newTop);
-            musicView.updatePosition(bottom - height, height - dp(74));
+            musicView.updatePosition(bottom - height, height - cgActionsHeight());
         }
     }
 
@@ -12555,7 +12589,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (giftsView != null) {
             giftsView.update();
         }
-        updateNewProfileDesignColors();
+        updateNewProfileDesignColors(true);
     }
 
     private int dontApplyPeerColor(int color) {
@@ -17772,6 +17806,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         private static final SparseBooleanArray keptKeys = new SparseBooleanArray();
         private static final SparseBooleanArray onAccentKeys = new SparseBooleanArray();
+        private static final SparseBooleanArray lightThemeKeys = new SparseBooleanArray();
         static {
             for (int key : Theme.keys_avatar_background) keptKeys.put(key, true);
             for (int key : Theme.keys_avatar_background2) keptKeys.put(key, true);
@@ -17802,6 +17837,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 Theme.key_checkboxCheck,
             };
             for (int key : onAccent) onAccentKeys.put(key, true);
+            final int[] lightTheme = {
+                Theme.key_chats_verifiedBackground,
+                Theme.key_chats_verifiedCheck,
+            };
+            for (int key : lightTheme) lightThemeKeys.put(key, true);
         }
 
         private final PeerColorResourcesProvider lightThemeOf;
@@ -17847,6 +17887,20 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
         }
 
+        private float musicDim;
+
+        public void setMusicDim(float musicDim) {
+            this.musicDim = musicDim;
+        }
+
+        private float getMusicDim() {
+            return lightThemeOf != null ? lightThemeOf.musicDim : musicDim;
+        }
+
+        static int dimColor(int color, float amount) {
+            return amount <= 0 ? color : ColorUtils.blendARGB(color, color & 0xFF000000, amount);
+        }
+
         @Override
         public int getColor(int key) {
             final MessagesController.PeerColor peerColor = getPeerColor();
@@ -17854,7 +17908,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return Theme.getColor(key, getParent());
             }
             final int color = getBaseColor(key);
-            final int background = peerColor.getBgColor1(true);
+            final int background = dimColor(peerColor.getBgColor1(true), getMusicDim());
             if (key == Theme.key_windowBackgroundGray) {
                 return background;
             }
@@ -17879,6 +17933,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
             if (onAccentKeys.get(key)) {
                 return ColorUtils.setAlphaComponent(background, Color.alpha(color));
+            }
+            if (lightThemeKeys.get(key)) {
+                return mapColor(Theme.getDefaultColor(key), background,
+                        Theme.getDefaultColor(Theme.key_windowBackgroundGray),
+                        Theme.getDefaultColor(Theme.key_windowBackgroundWhiteBlackText),
+                        Theme.getDefaultColor(Theme.key_windowBackgroundWhiteBlueHeader));
             }
 
             final int themeBackground = getBaseColor(Theme.key_windowBackgroundGray);
@@ -17964,13 +18024,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         private int getCardColor(int background) {
             final MessagesController.PeerColor peerColor = getPeerColor();
             final int buttonColor = peerColor.patternColor != 0
-                    ? Theme.multAlpha(peerColor.patternColor, .45f)
+                    ? Theme.multAlpha(dimColor(peerColor.patternColor, getMusicDim()), .45f)
                     : Theme.multAlpha(PeerColorActivity.adaptProfileEmojiColor(background), .15f);
             final int card = ColorUtils.compositeColors(buttonColor, ColorUtils.compositeColors(Color.argb(4, 0, 0, 0), background));
             return ColorUtils.blendARGB(card, Color.BLACK, getCardDarkenAmount());
         }
 
-        static float getCardDarkenAmount() {
+        public static float getCardDarkenAmount() {
             return CARD_DARKEN;
         }
 
@@ -18059,13 +18119,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         return null;
     }
 
-    private void updateNewProfileDesignColors() {
+    private void updateNewProfileDesignColors(boolean rebind) {
         if (!CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign()) {
             return;
         }
         if (listView != null) {
             listView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray, peerResourcesProvider));
-            listView.getRecycledViewPool().clear();
+            if (rebind) {
+                listView.getRecycledViewPool().clear();
+            }
         }
         if (topView != null) {
             topView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray, peerResourcesProvider));
@@ -18092,10 +18154,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             });
             listView.invalidate();
         }
-        if (listAdapter != null) {
-            final int count = sharedMediaRow >= 0 ? sharedMediaRow : listAdapter.getItemCount();
-            if (count > 0) {
-                listAdapter.notifyItemRangeChanged(0, count, Boolean.TRUE);
+        if (rebind && listAdapter != null) {
+            final Runnable rebindRows = () -> {
+                final int count = sharedMediaRow >= 0 ? sharedMediaRow : listAdapter.getItemCount();
+                if (count > 0) {
+                    listAdapter.notifyItemRangeChanged(0, count, Boolean.TRUE);
+                }
+            };
+            if (listView != null && listView.isComputingLayout()) {
+                listView.post(rebindRows);
+            } else {
+                rebindRows.run();
             }
         }
     }
@@ -18135,6 +18204,45 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (topView.backgroundGradientColor1 != topView.color1 || topView.backgroundGradientColor2 != topView.color2 || hasColor != (topView.hasColorById ? 1f : 0f)) {
             list.invalidate();
         }
+    }
+
+    private static int cgActionsHeight() {
+        return ProfileActionsView.getRowHeight();
+    }
+
+    private static final float CG_MUSIC_DIM = .42f;
+    private float cgMusicDim;
+    private ValueAnimator cgMusicDimAnimator;
+
+    private void cgOnMusicPlaying(boolean playing) {
+        final float target = playing ? CG_MUSIC_DIM : 0f;
+        if (cgMusicDimAnimator != null) {
+            cgMusicDimAnimator.cancel();
+        }
+        if (cgMusicDim == target) {
+            return;
+        }
+        if (openAnimationInProgress || fragmentView == null || !fragmentView.isLaidOut()) {
+            cgApplyMusicDim(target, true);
+            return;
+        }
+        cgMusicDimAnimator = ValueAnimator.ofFloat(cgMusicDim, target);
+        cgMusicDimAnimator.addUpdateListener(animation -> cgApplyMusicDim((float) animation.getAnimatedValue(), animation.getAnimatedFraction() >= 1f));
+        cgMusicDimAnimator.setDuration(400);
+        cgMusicDimAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT);
+        cgMusicDimAnimator.start();
+    }
+
+    private void cgApplyMusicDim(float dim, boolean rebind) {
+        cgMusicDim = dim;
+        peerResourcesProvider.setMusicDim(dim);
+        if (topView != null) {
+            topView.setBackgroundColorId(peerColor, false);
+        }
+        if (avatarContainer2 != null) {
+            avatarContainer2.setStoryRingDim(dim);
+        }
+        updateNewProfileDesignColors(rebind);
     }
 
     private int darkenProfileButtonColor(MessagesController.PeerColor peerColor, int btnColor) {

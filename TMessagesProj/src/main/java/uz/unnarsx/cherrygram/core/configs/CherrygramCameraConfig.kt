@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
+import android.os.Build
 import org.telegram.messenger.ApplicationLoader
 import uz.unnarsx.cherrygram.camera.CameraXUtils
 import uz.unnarsx.cherrygram.preferences.boolean
@@ -75,6 +76,7 @@ object CherrygramCameraConfig {
     var videoMessagesRearFlashIntensity by sharedPreferences.float("CG_Round_Rear_Flash_Intensity", 1f)
     var videoMessagesHintCount by sharedPreferences.int("CG_Round_Flash_Hint_Count", 0)
     var zoomHintCount by sharedPreferences.int("CG_Round_Zoom_Hint_Count", 0)
+    var fixZoomSlider by sharedPreferences.boolean("CP_FixZoomSlider", /*isOnePlus()*/ false)
 
     fun checkVideoMessagesHint() {
         try {
@@ -87,6 +89,9 @@ object CherrygramCameraConfig {
             }
         } catch (_: Exception) {}
     }
+
+    private fun isOnePlus(): Boolean =
+        Build.MANUFACTURER.equals("OnePlus", ignoreCase = true) || Build.BRAND.equals("OnePlus", ignoreCase = true)
     /** Videomessages finish */
 
 }

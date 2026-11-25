@@ -899,4 +899,5 @@ public class TranscribeButton {
         return GeminiButtonsLayout.geminiButtonsVisible() && CherrygramMessagesConfig.INSTANCE.getVoiceTranscriptionProvider() == CherrygramMessagesConfig.TRANSCRIPTION_PROVIDER_GEMINI;
     }
     /** Cherrygram finish */
+
 }

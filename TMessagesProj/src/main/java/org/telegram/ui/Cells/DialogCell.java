@@ -6705,6 +6705,13 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         Theme.setDrawableColor(Theme.dialogs_muteDrawable, Theme.getColor(Theme.key_chats_muteIcon, resourcesProvider));
         Theme.setDrawableColor(Theme.dialogs_verifiedDrawable, Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
         Theme.setDrawableColor(Theme.dialogs_verifiedCheckDrawable, Theme.getColor(Theme.key_chats_verifiedCheck, resourcesProvider));
+        ColoredImageSpan.drawResourcesProvider = resourcesProvider;
+        final int printingColor = Theme.getColor(Theme.key_chats_actionMessage, resourcesProvider);
+        for (int i = 0; i < Theme.dialogs_messagePrintingPaint.length; i++) {
+            if (Theme.dialogs_messagePrintingPaint[i] != null) {
+                Theme.dialogs_messagePrintingPaint[i].setColor(printingColor);
+            }
+        }
     }
 
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatus;

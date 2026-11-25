@@ -62,7 +62,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     const val ANIMATION_CLASSIC = 0
     const val ANIMATION_SPRING = 1
     const val ANIMATION_PIXEL = 2
-    var navigationAnimation by sharedPreferences.int("CG_NavigationAnimation", ANIMATION_SPRING)
+    var navigationAnimation by sharedPreferences.int("CG_NavigationAnimation", ANIMATION_PIXEL)
 
     var actionbarCrossfade by sharedPreferences.boolean("CG_ActionbarCrossfade", false)
     var predictiveBack by sharedPreferences.boolean("CG_PredictiveBack", true)
@@ -191,7 +191,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     /** Cherrygram build types start */
     @JvmStatic
     fun isStandaloneStableBuild(): Boolean {
-        return ApplicationLoader.isStandaloneBuild() && !isDevBuild() && !isStandalonePremiumBuild() && !isStandaloneBetaBuild()
+        return !isPlayStoreBuild() && !isDevBuild() && !isStandalonePremiumBuild() && !isStandaloneBetaBuild()
     }
 
     @JvmStatic

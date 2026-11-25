@@ -751,11 +751,6 @@ public class ContentPreviewViewer {
                         icons.add(R.drawable.msg_delete);
                         actions.add(5);
                     }
-                    if (currentStickerSet != null && !MessageObject.isAnimatedStickerDocument(currentDocument, true)) {
-                        items.add(LocaleController.getString(R.string.CG_SaveSticker));
-                        icons.add(R.drawable.msg_download);
-                        actions.add(1390);
-                    }
                 }
                 if (!MessageObject.isMaskDocument(currentDocument) && (inFavs || MediaDataController.getInstance(currentAccount).canAddStickerToFavorites() && MessageObject.isStickerHasSet(currentDocument))) {
                     items.add(inFavs ? LocaleController.getString(R.string.DeleteFromFavorites) : LocaleController.getString(R.string.AddToFavorites));
@@ -793,6 +788,7 @@ public class ContentPreviewViewer {
                         }
                     }
                 }
+                addCherrygramItems(items, icons, actions, currentStickerSet != null && !MessageObject.isAnimatedStickerDocument(currentDocument, true));
 
                 if (items.isEmpty()) {
                     return;
@@ -850,18 +846,8 @@ public class ContentPreviewViewer {
                             if (delegate != null && currentDocument != null) {
                                 delegate.deleteSticker(currentDocument);
                             }
-                        } else if (action == 1390) {
-                            if (currentDocument != null) {
-                                ChatsHelper.getInstance(currentAccount).saveStickerToGallery(parentActivity, currentDocument, (uri) -> {
-                                    if (parentActivity instanceof LaunchActivity activity && !activity.isFinishing() && !activity.isDestroyed()) {
-                                        if (activity.getActionBarLayout() != null && activity.getActionBarLayout().getLastFragment() != null) {
-                                            if (BulletinFactory.canShowBulletin(activity.getActionBarLayout().getLastFragment())) {
-                                                BulletinFactory.of(activity.getActionBarLayout().getLastFragment()).createDownloadBulletin(BulletinFactory.FileType.STICKER, resourcesProvider).show();
-                                            }
-                                        }
-                                    }
-                                });
-                            }
+                        } else {
+                            onCherrygramItemClick(action);
                         }
 
                         dismissPopupWindow();
@@ -870,6 +856,7 @@ public class ContentPreviewViewer {
 
                 addVoteOptions(previewMenu);
                 for (int i = 0; i < items.size(); i++) {
+                    addCherrygramGapIfNeeded(previewMenu, actions, i);
                     ActionBarMenuSubItem item = ActionBarMenuItem.addItem(previewMenu, icons.get(i), items.get(i), false, resourcesProvider);
                     item.setTag(i);
                     item.setOnClickListener(onItemClickListener);
@@ -973,11 +960,7 @@ public class ContentPreviewViewer {
                     icons.add(inFavs ? R.drawable.msg_unfave : R.drawable.msg_fave);
                     actions.add(5);
                 }
-                if (currentDocument != null) {
-                    items.add(LocaleController.getString(R.string.CG_SaveSticker));
-                    icons.add(R.drawable.msg_download);
-                    actions.add(1390);
-                }
+                addCherrygramItems(items, icons, actions, false);
                 if (items.isEmpty()) {
                     return;
                 }
@@ -1007,22 +990,15 @@ public class ContentPreviewViewer {
                         delegate.removeFromRecent(currentDocument);
                     } else if (action == 5) {
                         MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_FAVE, parentObject, currentDocument, (int) (System.currentTimeMillis() / 1000), inFavs);
-                    } else if (actions.get(which) == 1390) {
-                        ChatsHelper.getInstance(currentAccount).saveStickerToGallery(parentActivity, currentDocument, (uri) -> {
-                            if (parentActivity instanceof LaunchActivity activity) {
-                                if (activity.getActionBarLayout() != null && activity.getActionBarLayout().getLastFragment() != null) {
-                                    if (BulletinFactory.canShowBulletin(activity.getActionBarLayout().getLastFragment())) {
-                                        BulletinFactory.of(activity.getActionBarLayout().getLastFragment()).createDownloadBulletin(BulletinFactory.FileType.STICKER, resourcesProvider).show();
-                                    }
-                                }
-                            }
-                        });
+                    } else {
+                        onCherrygramItemClick(action);
                     }
                     dismissPopupWindow();
                 };
 
                 final boolean hasVoteOptions = addVoteOptions(previewMenu);
                 for (int i = 0; i < items.size(); i++) {
+                    addCherrygramGapIfNeeded(previewMenu, actions, i);
                     ActionBarMenuSubItem item = ActionBarMenuItem.addItem(!hasVoteOptions && i == 0, i == items.size() - 1, previewMenu, icons.get(i), items.get(i), false, resourcesProvider);
                     if (actions.get(i) == 4) {
                         item.setColorKeys(Theme.key_text_RedBold, Theme.key_text_RedRegular);
@@ -1098,7 +1074,7 @@ public class ContentPreviewViewer {
                 if (delegate.needSend(currentContentType) && !delegate.isInScheduleMode()) {
                     items.add(LocaleController.getString(R.string.EnablePhotoSpoiler));
                     icons.add(R.drawable.msg_spoiler);
-                    actions.add(1391);
+                    actions.add(OPTION_CG_GIF_SPOILER);
                 }
                 if (delegate.canSchedule()) {
                     items.add(LocaleController.getString(R.string.Schedule));
@@ -1160,7 +1136,7 @@ public class ContentPreviewViewer {
                         AlertsCreator.createScheduleDatePickerDialog(parentActivity, stickerPreviewViewerDelegate.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> stickerPreviewViewerDelegate.sendGif(document != null ? document : result, parent, notify, scheduleDate, scheduleRepeatPeriod), resourcesProvider);
                     } else if (actions.get(which) == 11) {
                         delegate.addCaptionToGif(currentDocument != null ? currentDocument : inlineResult, parentObject, true, 0, 0);
-                    } else if (actions.get(which) == 1391) {
+                    } else if (actions.get(which) == OPTION_CG_GIF_SPOILER) {
                         CherrygramMessagesConfig.INSTANCE.setGifSpoilers(true);
                         delegate.sendGif(currentDocument != null ? currentDocument : inlineResult, parentObject, true, 0, 0);
                     }
@@ -2484,4 +2460,58 @@ public class ContentPreviewViewer {
             }
         }
     }
+
+    /** Cherrygram start */
+    private static final int OPTION_CG_SAVE_STICKER = 1390;
+    private static final int OPTION_CG_GIF_SPOILER = 1391;
+    private static final int OPTION_CG_COPY_ID = 1392;
+
+    private void addCherrygramItems(ArrayList<CharSequence> items, ArrayList<Integer> icons, ArrayList<Integer> actions, boolean canSave) {
+        if (currentDocument == null) {
+            return;
+        }
+        if (canSave) {
+            items.add(getString(R.string.CG_SaveSticker));
+            icons.add(R.drawable.msg_download);
+            actions.add(OPTION_CG_SAVE_STICKER);
+        }
+        if (currentDocument.id != 0) {
+            items.add(getString(R.string.Copy) + " ID");
+            icons.add(R.drawable.msg_copy);
+            actions.add(OPTION_CG_COPY_ID);
+        }
+    }
+
+    private void addCherrygramGapIfNeeded(ActionBarPopupWindow.ActionBarPopupWindowLayout previewMenu, ArrayList<Integer> actions, int index) {
+        if (index == 0 || actions.get(index) < OPTION_CG_SAVE_STICKER || actions.get(index - 1) >= OPTION_CG_SAVE_STICKER) {
+            return;
+        }
+        ActionBarPopupWindow.GapView gap = new ActionBarPopupWindow.GapView(previewMenu.getContext(), resourcesProvider);
+        gap.setTag(R.id.fit_width_tag, 1);
+        ThemeBind.backgroundColor(gap, ThemeBind.multAlpha(Theme.key_actionBarDefaultSubmenuItem, 0.06f), resourcesProvider);
+        gap.setLayoutParams(LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+        previewMenu.addView(gap);
+    }
+
+    private void onCherrygramItemClick(int action) {
+        if (currentDocument == null) {
+            return;
+        }
+        if (action == OPTION_CG_SAVE_STICKER) {
+            final Theme.ResourcesProvider resourcesProvider = this.resourcesProvider;
+            ChatsHelper.getInstance(currentAccount).saveStickerToGallery(parentActivity, currentDocument, uri -> {
+                if (!(parentActivity instanceof LaunchActivity activity) || activity.isFinishing() || activity.isDestroyed() || activity.getActionBarLayout() == null) {
+                    return;
+                }
+                BaseFragment fragment = activity.getActionBarLayout().getLastFragment();
+                if (fragment != null && BulletinFactory.canShowBulletin(fragment)) {
+                    BulletinFactory.of(fragment).createDownloadBulletin(BulletinFactory.FileType.STICKER, resourcesProvider).show();
+                }
+            });
+        } else if (action == OPTION_CG_COPY_ID) {
+            AndroidUtilities.addToClipboard(String.valueOf(currentDocument.id));
+        }
+    }
+    /** Cherrygram finish */
+
 }

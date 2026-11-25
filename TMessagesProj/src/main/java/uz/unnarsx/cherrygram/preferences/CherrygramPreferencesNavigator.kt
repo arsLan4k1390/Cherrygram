@@ -25,6 +25,9 @@ object CherrygramPreferencesNavigator {
     fun createAppearance(fragment: BaseFragment): BaseFragment =
         AppearancePreferencesEntry().also(fragment::presentFragment)
 
+    fun createAppIcons(fragment: BaseFragment): BaseFragment =
+        AppIconsPreferencesEntry().also(fragment::presentFragment)
+
     fun createFoldersPrefs(fragment: BaseFragment): BaseFragment =
         FoldersPreferencesEntry().also(fragment::presentFragment)
 

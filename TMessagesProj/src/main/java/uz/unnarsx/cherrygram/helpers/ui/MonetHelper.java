@@ -130,16 +130,22 @@ public class MonetHelper {
             }
         }
         var group = rawColor.charAt(0) == 'a' ? 1 : 2;
-        var palette = Integer.parseInt(rawColor.substring(1, 2));
         var alphaStart = rawColor.indexOf("_", 3);
+        int palette;
         int shade;
         int alpha;
-        if (alphaStart > 0) {
-            shade = Integer.parseInt(rawColor.substring(3, alphaStart));
-            alpha = Integer.parseInt(rawColor.substring(alphaStart + 1));
-        } else {
-            shade = Integer.parseInt(rawColor.substring(3));
-            alpha = -1;
+        try {
+            palette = Integer.parseInt(rawColor.substring(1, 2));
+            if (alphaStart > 0) {
+                shade = Integer.parseInt(rawColor.substring(3, alphaStart));
+                alpha = Integer.parseInt(rawColor.substring(alphaStart + 1));
+            } else {
+                shade = Integer.parseInt(rawColor.substring(3));
+                alpha = -1;
+            }
+        } catch (NumberFormatException e) {
+            CherrygramLogger.e(() -> "Malformed monet color: " + rawColor, e);
+            return 0;
         }
         if (amoled && group == 2 && palette == 1 && shade == 900) {
             shade = 1000;
@@ -159,6 +165,18 @@ public class MonetHelper {
             CherrygramLogger.e(() -> "Color resource not found. key=" + key + ", id=" + id + ", rawColor=" + rawColor, e);
             return 0;
         }
+    }
+
+    public static int getSectionBackgroundColor(Theme.ResourcesProvider resourcesProvider) {
+        if (resourcesProvider == null) {
+            var theme = Theme.getActiveTheme();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && theme.isMonetAmoled()) {
+                return getColor("n1_900");
+            } else if (theme.isAmoled()) {
+                return ColorUtils.blendARGB(Theme.getColor(Theme.key_actionBarDefaultSubmenuItemIcon), Theme.getColor(Theme.key_dialogBackground), 0.9f);
+            }
+        }
+        return Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider);
     }
 
     @SuppressLint("NewApi")

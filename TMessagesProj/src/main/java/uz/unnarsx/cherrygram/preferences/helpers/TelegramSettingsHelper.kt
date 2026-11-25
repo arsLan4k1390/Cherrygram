@@ -23,13 +23,14 @@ import org.telegram.messenger.UserObject
 import org.telegram.messenger.browser.Browser
 import org.telegram.tgnet.TLRPC
 import org.telegram.tgnet.TLRPC.TL_peerColorCollectible
+import org.telegram.ui.ActionBar.ActionBarMenuItem
+import org.telegram.ui.ActionBar.ActionBarMenuSubItem
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.BackupImageView
 import org.telegram.ui.Components.IconBackgroundColors
 import org.telegram.ui.Components.ImageUpdater
-import org.telegram.ui.Components.ItemOptions
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS
 import org.telegram.ui.Components.UItem
@@ -37,7 +38,6 @@ import org.telegram.ui.Components.UniversalAdapter
 import org.telegram.ui.Components.UniversalRecyclerView
 import org.telegram.ui.Gifts.GiftSheet
 import org.telegram.ui.LoginActivity
-import org.telegram.ui.LogoutActivity
 import org.telegram.ui.PhotoViewer
 import org.telegram.ui.SettingsActivity
 import org.telegram.ui.UserInfoActivity
@@ -83,57 +83,59 @@ class TelegramSettingsHelper(
         this.listView = listView
     }
 
-    fun showItemOptions(button: View) {
-        val o = ItemOptions.makeOptions(fragment, button)
+    /** Menu start */
+    private var otherItemGiftGap: View? = null
+    private var otherItemGift: ActionBarMenuSubItem? = null
 
-        o.add(
-            R.drawable.msg_edit,
-            getString(R.string.EditInfo)
-        ) {
-            fragment.presentFragment(UserInfoActivity())
-        }
+    fun setupOtherItem(otherItem: ActionBarMenuItem) {
+        otherItem.addSubItem(MENU_EDIT_INFO, R.drawable.msg_edit, getString(R.string.EditInfo))
+        otherItem.addColoredGap()
+        otherItem.addSubItem(MENU_LOG_OUT, R.drawable.msg_leave, getString(R.string.LogOut))
+        otherItem.addSpaceGap()
+        otherItem.addSubItem(MENU_RESTART, R.drawable.msg_retry, getString(R.string.CG_Restart))
+        otherItemGiftGap = otherItem.addColoredGap()
+        otherItemGift = otherItem.addSubItem(MENU_GIFT, R.drawable.menu_gift, "")
+        updateOtherItem()
+    }
 
-        o.addGap()
-
-        o.add(
-            R.drawable.msg_leave,
-            getString(R.string.LogOut)
-        ) {
-            fragment.presentFragment(LogoutActivity())
-        }
-
-        o.add(
-            R.drawable.msg_retry,
-            getString(R.string.CG_Restart)
-        ) {
-            AppRestartHelper.restartApp(fragment.context)
-        }
-
-        o.addGapIf(
-            DonatesManager.checkAllDonatedAccountsForMarketplace() && fragment.messageMenuHelper.showGap()
-        )
-
-        o.addIf(
-            DonatesManager.checkAllDonatedAccountsForMarketplace(),
-            R.drawable.menu_gift,
+    fun updateOtherItem() {
+        val gift = otherItemGift ?: return
+        val show = DonatesManager.checkAllDonatedAccountsForMarketplace()
+        gift.visibility = if (show) View.VISIBLE else View.GONE
+        otherItemGiftGap?.visibility = if (show && fragment.messageMenuHelper.showGap()) View.VISIBLE else View.GONE
+        gift.setText(
             getString(
                 if (CherrygramAppearanceConfig.marketPlaceDrawerButton)
                     R.string.Gift2HideGift
                 else
                     R.string.Gift2ShowGift
             )
-        ) {
-            CherrygramAppearanceConfig.marketPlaceDrawerButton = !CherrygramAppearanceConfig.marketPlaceDrawerButton
-            if (::listView.isInitialized) {
-                listView.adapter.update(true)
-            }
-        }
-
-        o.setBlur(false)
-        o.setDrawScrim(false)
-        o.translate(0F, -dp(48F).toFloat())
-        o.show()
+        )
     }
+
+    fun handleMenuClick(id: Int): Boolean {
+        when (id) {
+            MENU_EDIT_INFO -> fragment.presentFragment(UserInfoActivity())
+            MENU_RESTART -> AppRestartHelper.restartApp(fragment.context)
+            MENU_GIFT -> {
+                CherrygramAppearanceConfig.marketPlaceDrawerButton = !CherrygramAppearanceConfig.marketPlaceDrawerButton
+                updateOtherItem()
+                if (::listView.isInitialized) {
+                    listView.adapter.update(true)
+                }
+            }
+            else -> return false
+        }
+        return true
+    }
+
+    private companion object {
+        const val MENU_LOG_OUT = 2
+        const val MENU_EDIT_INFO = 3
+        const val MENU_RESTART = 4
+        const val MENU_GIFT = 5
+    }
+    /** Menu finish */
 
     /** Avatar start */
     private val provider = object : PhotoViewer.EmptyPhotoViewerProvider() {

@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
@@ -239,7 +240,7 @@ public class ProfileActionsView extends View {
     private float getItemWidth() {
         int w = getMeasuredWidth();
         float betweenPadding = xpadding / 2f;
-        return (w - betweenPadding * (activeCount - 1) - xpadding * 2f) / activeCount;
+        return cgItemWidth((w - betweenPadding * (activeCount - 1) - xpadding * 2f) / activeCount);
     }
 
     @Override
@@ -264,6 +265,7 @@ public class ProfileActionsView extends View {
         final float betweenPadding = xpadding / 2f;
         final float width = getItemWidth();
         float left = xpadding;
+        if (cgRound) left = (getMeasuredWidth() - width * activeCount - betweenPadding * (activeCount - 1)) / 2f;
         float r = getRoundRadius();
 
         Action newFirstAction = null, newLastAction = null;
@@ -297,6 +299,10 @@ public class ProfileActionsView extends View {
         for (int i = 0; i < c; i++) {
             Action action = actions.get(i);
             if (action.isDeleted) {
+                continue;
+            }
+            if (cgRound) {
+                cgDrawActionBackground(canvas, action, fraction, alphaFraction1);
                 continue;
             }
             AndroidUtilities.rectTmp.set(action.rect);
@@ -380,6 +386,10 @@ public class ProfileActionsView extends View {
             lastColorFilterColor = textColor;
             lastColorFilter = new PorterDuffColorFilter(textColor, PorterDuff.Mode.SRC_IN);
         }
+        if (cgRound) {
+            cgDrawAction(canvas, action, fraction, alpha, textColor, useFilledWhiteIcon);
+            return;
+        }
 
         canvas.save();
         alpha *= action.getAlpha();
@@ -462,7 +472,7 @@ public class ProfileActionsView extends View {
         }
 
         if (action.loadingDrawable != null) {
-            action.loadingDrawable.setBounds(action.rect);
+            action.loadingDrawable.setBounds(cgRound ? cgCircleRect(action, 1f, cgCircle) : action.rect);
             action.loadingDrawable.setRadii(getRoundRadius());
             action.loadingDrawable.setAlpha((int) (0xFF * alpha));
             action.loadingDrawable.draw(canvas);
@@ -470,7 +480,7 @@ public class ProfileActionsView extends View {
     }
 
     public float getRoundRadius() {
-        return dp(CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign() ? 50 : 16);
+        return dp(cgRound ? 50 : 16);
     }
 
     private Action hit = null;
@@ -1330,10 +1340,111 @@ public class ProfileActionsView extends View {
     public static final int KEY_OPEN_CHANNEL = 1390;
     public static final int KEY_QR_BUTTON = 1391;
 
+    private final boolean cgRound = isRoundStyle();
+
+    public static boolean isRoundStyle() {
+        return CherrygramAppearanceConfig.INSTANCE.getRoundProfileActions();
+    }
+
+    public static int getRowHeight() {
+        return dp(isRoundStyle() ? 100 : 74);
+    }
+
     public void addQRButton() {
         final Action action = new Action(ActionButton.QR_BUTTON);
         action.key = KEY_QR_BUTTON;
         actions.add(action);
+    }
+
+    private static final float CG_CIRCLE_SIZE_DP = 60;
+    private static final float CG_SLOT_PADDING_DP = 16;
+    private static final float CG_LABEL_GAP_DP = 6;
+
+    private float cgItemWidth(float width) {
+        return cgRound ? Math.min(width, dp(CG_CIRCLE_SIZE_DP + CG_SLOT_PADDING_DP)) : width;
+    }
+    private final RectF cgCircle = new RectF();
+    private final WeakHashMap<Action, Text[]> cgLabels = new WeakHashMap<>();
+
+    private RectF cgCircleRect(Action action, float scale, RectF out) {
+        final float cx = action.rect.centerX();
+        final float size = Math.max(0, Math.min(action.rect.width() - dp(CG_SLOT_PADDING_DP), dp(CG_CIRCLE_SIZE_DP))) * scale;
+        out.set(cx - size / 2f, top, cx + size / 2f, top + size);
+        return out;
+    }
+
+    private void cgDrawActionBackground(Canvas canvas, Action action, float fraction, float alphaFraction) {
+        final RectF circle = cgCircleRect(action, fraction * action.getScale(), cgCircle);
+        if (circle.width() <= 0) return;
+        final float alpha = action.getAlpha() * alphaFraction;
+        if (glassFactory != null) {
+            drawGlass(canvas, circle, getRoundRadius(), alpha);
+            return;
+        }
+        final float radius = circle.width() / 2f;
+        final int wasAlpha = paint.getAlpha();
+        paint.setAlpha((int) (alpha * wasAlpha * (radialGradient != null ? 0.1f : 1f)));
+        paint.setShadowLayer(0, 0, 0, 0);
+        canvas.drawCircle(circle.centerX(), circle.centerY(), radius, paint);
+        paint.setAlpha(wasAlpha);
+        if (radialGradient != null) {
+            final float shaderWidth = (getMeasuredWidth() - xpadding / 2f * Math.max(0, activeCount - 1) - xpadding * 2f) / Math.max(1, activeCount);
+            final int wasAlpha2 = shaderPaint.getAlpha();
+            shaderPaint.setAlpha((int) (alpha * wasAlpha2));
+            matrix.setTranslate(circle.centerX() - shaderWidth / 2f, circle.centerY() - targetHeight / 2f);
+            radialGradient.setLocalMatrix(matrix);
+            canvas.drawCircle(circle.centerX(), circle.centerY(), radius, shaderPaint);
+            shaderPaint.setAlpha(wasAlpha2);
+        }
+    }
+
+    private void cgDrawAction(Canvas canvas, Action action, float fraction, float alpha, int textColor, float useFilledWhiteIcon) {
+        alpha *= action.getAlpha();
+        final RectF circle = cgCircleRect(action, 1f, cgCircle);
+        if (circle.width() <= 0 || action.text == null) return;
+        final float cx = circle.centerX();
+        final float cy = circle.centerY();
+
+        canvas.save();
+        final float scale = fraction * action.getScale();
+        canvas.scale(scale, scale, cx, top);
+
+        Text[] label = cgLabels.get(action);
+        if (label == null || label[0] != action.text) {
+            label = new Text[]{action.text, new Text(action.text.getText(), 12, AndroidUtilities.bold())};
+            cgLabels.put(action, label);
+        }
+        label[1].ellipsize(action.rect.width() - dp(2));
+        label[1].draw(canvas, cx - label[1].getWidth() / 2f, circle.bottom + dp(CG_LABEL_GAP_DP) + label[1].getHeight() / 2f, textColor, alpha);
+
+        final int iconHalf = dp(12);
+        action.setBounds((int) (cx - iconHalf), (int) (cy - iconHalf), (int) (cx + iconHalf), (int) (cy + iconHalf));
+        canvas.save();
+        if (action.iconTranslationY != 0) {
+            canvas.translate(0, action.iconTranslationY);
+        }
+        if (action.iconScale != 1f) {
+            canvas.scale(action.iconScale, action.iconScale, cx, cy);
+        }
+        if (!isAnimatingCallAction || action.key != KEY_CALL) {
+            final float outlineAlpha = (1f - useFilledWhiteIcon) * alpha;
+            final float filledAlpha = useFilledWhiteIcon * alpha;
+            if (action.drawableAnimated != null) {
+                if (action.key == KEY_NOTIFICATION) {
+                    drawActionDrawable(canvas, action.drawableOutline, outlineAlpha);
+                    drawActionDrawable(canvas, action.drawableAnimated, filledAlpha);
+                } else {
+                    drawActionDrawable(canvas, action.drawableAnimated, alpha);
+                }
+            } else {
+                drawActionDrawable(canvas, action.drawableOutline, outlineAlpha);
+                drawActionDrawable(canvas, action.drawableFilled, filledAlpha);
+            }
+        }
+        canvas.restore();
+
+        drawLoading(canvas, action, alpha);
+        canvas.restore();
     }
     /** Cherrygram finish */
 

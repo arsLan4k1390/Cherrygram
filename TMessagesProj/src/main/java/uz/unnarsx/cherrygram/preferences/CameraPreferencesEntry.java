@@ -119,9 +119,7 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
             items.add(UItem.asShadow(null));
         }
 
-        if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2 || CherrygramCoreConfig.isDevBuild()) {
-            items.add(UItem.asHeader(getString(R.string.CP_Category_Camera)));
-        }
+        items.add(UItem.asHeader(getString(R.string.CP_Category_Camera)));
         items.add(SettingsHelper.asSwitchCG(disableAttachCameraRow, getString(R.string.CP_DisableCam), getString(R.string.CP_DisableCam_Desc))
                 .setChecked(CherrygramCameraConfig.INSTANCE.getDisableAttachCamera())
         );
@@ -130,9 +128,7 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
                     .slug("aspectRatio")
             );
         }
-        if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2 || CherrygramCoreConfig.isDevBuild()) {
-            items.add(UItem.asShadow(null));
-        }
+        items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Videomessages)));
         if (CameraXUtils.isCurrentCameraCameraX() || CameraXUtils.isCurrentCameraCamera2()) {
@@ -187,9 +183,13 @@ public class CameraPreferencesEntry extends BaseCGPreferencesEntry {
         if (CameraXUtils.isCurrentCameraCameraX() || CameraXUtils.isCurrentCameraCamera2()) {
             items.add(UItem.asShadow(null));
             if (CameraXUtils.isCurrentCameraCameraX()) {
-                items.add(UItem.asButton(cameraXQualityRow, getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p"));
+                items.add(UItem.asButton(cameraXQualityRow, getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p")
+                        .slug("cameraQuality")
+                );
                 if (CherrygramCameraConfig.INSTANCE.getUseNewEncoder()) {
-                    items.add(UItem.asButton(newEncoderBitrateRow, getString(R.string.RoundVideoBitrate), formatBitrate(SharedSettings.roundVideoVideoBitrate.get())));
+                    items.add(UItem.asButton(newEncoderBitrateRow, getString(R.string.RoundVideoBitrate), formatBitrate(SharedSettings.roundVideoVideoBitrate.get()))
+                            .slug("bitrate")
+                    );
                 }
             }
             if (CherrygramCameraConfig.INSTANCE.getUseNewEncoder()) {

@@ -121,15 +121,12 @@
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Cherrygramの設定</string>
-    <string name="CGP_About_Desc">Telegramアプリの試験的な改良版です。機能の一覧を読むにはここをタップしてください。</string>
     <string name="CGP_Header_About">Cherrygramについて</string>
     <string name="CGP_Header_About_Desc">更新とソースコード、その他</string>
-    <string name="CGP_Links">リンク</string>
     <string name="CGP_ToChannel">公式チャンネル</string>
     <string name="CGP_ToChat">公式チャット</string>
     <string name="CGP_Source">ソースコード</string>
     <string name="CGP_Crowdin">翻訳を手伝う</string>
-    <string name="CGP_Header_Categories">カテゴリー</string>
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">一般</string>

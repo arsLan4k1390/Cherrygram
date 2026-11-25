@@ -131,7 +131,9 @@ public class GeneralPreferencesEntry extends BaseCGPreferencesEntry {
         );
 
         if (CherrygramCoreConfig.INSTANCE.getIgnoreMentions()) {
-            items.add(UItem.asButton(ignoreMentionsExclusionsRow, R.drawable.msg_mention, getString(R.string.CG_IgnoreMentionsIgnoredChats), String.valueOf(getChatsNotificationHelper().getIgnoredChatsCount())));
+            items.add(UItem.asButton(ignoreMentionsExclusionsRow, R.drawable.msg_mention, getString(R.string.CG_IgnoreMentionsIgnoredChats), String.valueOf(getChatsNotificationHelper().getIgnoredChatsCount()))
+                    .slug("ignoreMentionsExclusions")
+            );
 
             items.add(
                     SettingsHelper.asSwitchCG(

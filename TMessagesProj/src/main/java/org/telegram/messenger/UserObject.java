@@ -393,4 +393,5 @@ public class UserObject {
         return user != null && user.bot;
     }
     /** Cherrygram finish */
+
 }

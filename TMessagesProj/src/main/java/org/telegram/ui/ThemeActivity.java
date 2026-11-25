@@ -127,6 +127,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
+import uz.unnarsx.cherrygram.preferences.cells.LauncherIconDrawable;
+
 public class ThemeActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public final static int THEME_TYPE_BASIC = 0;
@@ -779,8 +782,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             chatListInfoRow = rowCount++;
 
 //            appIconHeaderRow = rowCount++;
-//            appIconSelectorRow = rowCount++;
-//            appIconShadowRow = rowCount++;
+            appIconSelectorRow = rowCount++;
+            appIconShadowRow = rowCount++;
 
             swipeGestureHeaderRow = rowCount++;
             swipeGestureRow = rowCount++;
@@ -812,10 +815,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             sendByEnterRow = rowCount++;
             distanceRow = rowCount++;
             otherSectionRow = rowCount++;
-
-            appIconHeaderRow = rowCount++;
-            appIconSelectorRow = rowCount++;
-            appIconShadowRow = rowCount++;
         } else {
             nightDisabledRow = rowCount++;  // TYPE_THEME_TYPE
             nightScheduledRow = rowCount++; // TYPE_THEME_TYPE
@@ -1603,6 +1602,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 presentFragment(new StickersActivity(MediaDataController.TYPE_IMAGE, null));
             } else if (position == liteModeRow) {
                 presentFragment(new LiteModeSettingsActivity());
+            } else if (position == appIconSelectorRow) {
+                CherrygramPreferencesNavigator.INSTANCE.createAppIcons(this);
             }
         });
         if (currentType == THEME_TYPE_BASIC) {
@@ -2562,7 +2563,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     view = new RadioButtonCell(mContext);
                     break;
                 case TYPE_APP_ICON:
-                    view = new AppIconsSelectorCell(mContext, ThemeActivity.this, currentAccount);
+//                    view = new AppIconsSelectorCell(mContext, ThemeActivity.this, currentAccount);
+                    view = new TextCell(mContext);
                     break;
                 case TYPE_CHOOSE_COLOR:
                     view = new PeerColorActivity.ChangeNameColorCell(currentAccount, 0, mContext, getResourceProvider());
@@ -2799,6 +2801,12 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         cell.heightDp = 60;
                         cell.imageLeft = 20;
                     }
+                    break;
+                }
+                case TYPE_APP_ICON: {
+                    TextCell cell = (TextCell) holder.itemView;
+                    cell.heightDp = 48;
+                    cell.setTextAndValueDrawable(getString(R.string.AppIcon), new LauncherIconDrawable(mContext, LauncherIconController.getCurrentIcon(), dp(30)), false);
                     break;
                 }
                 case TYPE_DEFAULT_THEMES_PREVIEW: {

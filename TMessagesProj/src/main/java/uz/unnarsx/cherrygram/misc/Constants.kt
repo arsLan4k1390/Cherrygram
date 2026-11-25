@@ -54,6 +54,9 @@ object Constants {
     var CG_CROWDIN_URL = "https://crowdin.com/project/cherrygram"
     @JvmField
     var CG_GITHUB_URL = "https://github.com/arsLan4k1390/Cherrygram"
+
+    @JvmField
+    var TIKTOK_URL = "https://www.tiktok.com/@cherrygram_official"
     /** CG Links finish */
 
     const val PACKAGE_NAME = "uz.unnarsx.cherrygram"

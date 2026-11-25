@@ -402,4 +402,5 @@ public class ProfileStoriesCollectionTabs extends FrameLayout implements Notific
         setVisibility(!collections.collections.isEmpty(), false, true);
     }
     /** Cherrygram finish */
+
 }

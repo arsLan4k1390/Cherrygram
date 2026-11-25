@@ -108,9 +108,9 @@ public class ManageChatTextCell extends FrameLayout {
     }
 
     public void setColors(int iconColorKey, int text) {
-        ThemeBind.textColor(textView, text);
+        ThemeBind.textColor(textView, text, resourcesProvider);
         textView.setTag(text);
-        ThemeBind.colorFilter(imageView, iconColorKey, PorterDuff.Mode.MULTIPLY);
+        ThemeBind.colorFilter(imageView, iconColorKey, resourcesProvider, PorterDuff.Mode.MULTIPLY);
         imageView.setTag(iconColorKey);
     }
 
@@ -141,4 +141,17 @@ public class ManageChatTextCell extends FrameLayout {
             canvas.drawLine(AndroidUtilities.dp(textLeft), getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, dividerColor != 0 ? Theme.dividerExtraPaint : Theme.dividerPaint);
         }
     }
+
+    /** Cherrygram start */
+    private Theme.ResourcesProvider resourcesProvider;
+
+    public ManageChatTextCell(Context context, Theme.ResourcesProvider resourcesProvider) {
+        this(context);
+        this.resourcesProvider = resourcesProvider;
+        ThemeBind.textColor(textView, Theme.key_windowBackgroundWhiteBlackText, resourcesProvider);
+        ThemeBind.textColor(valueTextView, Theme.key_windowBackgroundWhiteValueText, resourcesProvider);
+        ThemeBind.colorFilter(imageView, Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider, PorterDuff.Mode.MULTIPLY);
+    }
+    /** Cherrygram finish */
+
 }

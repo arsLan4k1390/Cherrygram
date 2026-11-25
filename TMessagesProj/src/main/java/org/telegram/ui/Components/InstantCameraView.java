@@ -688,6 +688,7 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
             } else {
                 newSize = AndroidUtilities.roundMessageSize;
             }
+            newSize = fitCircleSizeAboveZoomSlider(newSize, MeasureSpec.getSize(heightMeasureSpec));
             if (newSize != textureViewSize) {
                 textureViewSize = newSize;
                 textureOverlayView.getLayoutParams().width = textureOverlayView.getLayoutParams().height = textureViewSize;
@@ -702,6 +703,7 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        updateSizeTranslationY();
 
         if (cameraContainer.getMeasuredWidth() != 0 && !isCircleSizeFrozen()) {
             cameraContainer.setPivotX(cameraContainer.getMeasuredWidth() / 2f);
@@ -4534,12 +4536,45 @@ public class InstantCameraView extends InstantCameraViewBase implements Notifica
         if (isCircleSizeFrozen()) return;
         int smallerSize = Math.min(AndroidUtilities.roundPlayingMessageSize, AndroidUtilities.roundMessageSize);
         float baseOffset = textureViewSize == smallerSize ? -dp(10) : 0f;
-        sizeTranslationY = baseOffset - (delegate.hasReplyMessage() ? dp(25) : 0f);
+        float offset = baseOffset - (delegate.hasReplyMessage() ? dp(25) : 0f);
+
+        int height = getMeasuredHeight();
+        if (isZoomSliderShown() && textureViewSize > 0 && height > 0) {
+            float contentTop = getPaddingTop() + dp(VideoMessagesHelper.CIRCLE_MIN_TOP_MARGIN_DP);
+            float contentCenterY = (getPaddingTop() + height - getPaddingBottom()) / 2f;
+            float limitBottom = getZoomSliderLimitBottom(height);
+            float halfSize = (textureViewSize + dp(28)) / 2f;
+            float centerY = contentCenterY + offset;
+            float overlap = centerY + halfSize - limitBottom;
+            if (overlap > 0f) {
+                float roomAbove = Math.max(0f, centerY - halfSize - contentTop);
+                offset -= Math.min(overlap, roomAbove);
+            }
+        }
+        sizeTranslationY = offset;
         updateTranslationY();
     }
 
     public void updateReplyOffset() {
         updateSizeTranslationY();
+    }
+
+    private boolean isZoomSliderShown() {
+        return zoomControlView != null && zoomControlView.getParent() == this;
+    }
+
+    private float getZoomSliderLimitBottom(int height) {
+        LayoutParams sliderParams = (LayoutParams) zoomControlView.getLayoutParams();
+        float sliderTop = height - getPaddingBottom() - sliderParams.bottomMargin - sliderParams.height;
+        return sliderTop - dp(VideoMessagesHelper.ZOOM_SLIDER_MIN_GAP_DP);
+    }
+
+    private int fitCircleSizeAboveZoomSlider(int size, int height) {
+        if (!isZoomSliderShown() || height <= 0) return size;
+        float contentTop = getPaddingTop() + dp(VideoMessagesHelper.CIRCLE_MIN_TOP_MARGIN_DP);
+        int maxSize = (int) (getZoomSliderLimitBottom(height) - contentTop) - dp(28);
+        if (size <= maxSize) return size;
+        return Math.max(maxSize, (int) (size * VideoMessagesHelper.CIRCLE_MIN_FIT_SCALE));
     }
 
     private void hideTextureOverlay() {

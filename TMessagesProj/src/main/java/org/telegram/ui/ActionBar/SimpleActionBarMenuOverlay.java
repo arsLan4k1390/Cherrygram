@@ -284,6 +284,7 @@ public class SimpleActionBarMenuOverlay extends FrameLayout {
         if (glass != null) {
             glass.clearReservedBounds();
         }
+        cgClearPieceGlasses();
         setAnimating(false);
         opened = false;
         menuW = menuH = wobble = 0;
@@ -621,6 +622,7 @@ public class SimpleActionBarMenuOverlay extends FrameLayout {
         final int p = dp(6);
         // an action mode button (or a bare icon) has no glass of its own: the menu's glass appears over its pill
         final float glassAlpha = startFromPill && bar.hasButtonGlass() ? 1f : Utilities.clamp01(m / 0.25f);
+        final int cgPieceCount = cgComputePieces(m, pillBelow ? 1f : Math.max(0.3f, shapeRect.width() / Math.max(1f, endRect.width())), radius, topRadius);
         if (glass != null) {
             // from the color of the button's glass (a tinted header) to the menu's
             glassColorsFactor = startFromPill ? Utilities.clamp01(m) : 1f;
@@ -631,27 +633,39 @@ public class SimpleActionBarMenuOverlay extends FrameLayout {
             glass.setStrokeWidth(
                 lerp(strokeWidth(bar.getButtonsGlassColorProvider(), true), strokeWidth(glassColors, true), glassColorsFactor),
                 lerp(strokeWidth(bar.getButtonsGlassColorProvider(), false), strokeWidth(glassColors, false), glassColorsFactor));
-            if (bulge > 0) {
+            if (cgPieceCount > 1) {
+                cgDrawPieceGlasses(canvas, cgPieceCount, glassAlpha);
+            } else if (bulge > 0) {
                 glass.setRadius(topRadius, topRadius, radius, radius, false);
             } else {
                 glass.setRadius(radius);
             }
             // rounded, not truncated: at the start and the end the shape is the button's, it must not move by a pixel
-            glass.setBounds(Math.round(bulgedRect.left) - p, Math.round(bulgedRect.top) - p, Math.round(bulgedRect.right) + p, Math.round(bulgedRect.bottom) + p);
-            reserveGlass();
-            glass.setAlpha((int) (255 * glassAlpha));
-            glass.draw(canvas);
+            if (cgPieceCount <= 1) {
+                glass.setBounds(Math.round(bulgedRect.left) - p, Math.round(bulgedRect.top) - p, Math.round(bulgedRect.right) + p, Math.round(bulgedRect.bottom) + p);
+                reserveGlass();
+                glass.setAlpha((int) (255 * glassAlpha));
+                glass.draw(canvas);
+            }
         } else {
             fallbackPaint.setColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuBackground, bar.getMenuResourcesProvider()));
             fallbackPaint.setAlpha((int) (fallbackPaint.getAlpha() * glassAlpha));
             clipPath.rewind();
-            clipPath.addRoundRect(bulgedRect, shapeRadii, Path.Direction.CW);
+            if (cgPieceCount > 1) {
+                cgAddPiecesToPath(clipPath, cgPieceCount);
+            } else {
+                clipPath.addRoundRect(bulgedRect, shapeRadii, Path.Direction.CW);
+            }
             canvas.drawPath(clipPath, fallbackPaint);
         }
 
         canvas.save();
         clipPath.rewind();
-        clipPath.addRoundRect(bulgedRect, shapeRadii, Path.Direction.CW);
+        if (cgPieceCount > 1) {
+            cgAddPiecesToPath(clipPath, cgPieceCount);
+        } else {
+            clipPath.addRoundRect(bulgedRect, shapeRadii, Path.Direction.CW);
+        }
         canvas.clipPath(clipPath);
 
         // the buttons (the whole pill, or just this button) fade and shrink away inside the shape (the first ~30%),
@@ -800,4 +814,142 @@ public class SimpleActionBarMenuOverlay extends FrameLayout {
     public ActionBarMenuItem getItem() {
         return item;
     }
+
+    /** Cherrygram start */
+    private final ArrayList<RectF> cgPieces = new ArrayList<>();
+    private final ArrayList<float[]> cgPieceRadii = new ArrayList<>();
+    private final ArrayList<BlurredBackgroundDrawable> cgPieceGlasses = new ArrayList<>();
+    private MenuOverlayHost cgPieceGlassesBar;
+    private final float[] cgGapOffset = new float[1];
+
+    private int cgComputePieces(float m, float contentScale, float radius, float topRadius) {
+        if (content == null) {
+            return 0;
+        }
+        final PopupSwipeBackLayout swipeBack = content.getSwipeBack();
+        if (swipeBack != null && swipeBack.transitionProgress > 0) {
+            return 0;
+        }
+        final float g = opened ? smooth(0.3f, 0.8f, m) : smooth(0.45f, 0.9f, m);
+        if (g <= 0) {
+            return 0;
+        }
+        int count = 0;
+        float top = bulgedRect.top;
+        for (int i = 0, n = content.getItemsCount(); i < n; i++) {
+            final View child = content.getItemAt(i);
+            if (!(child instanceof ActionBarPopupWindow.SpaceGapView) || child.getVisibility() != VISIBLE) {
+                continue;
+            }
+            if (!cgComputeGapTop(child)) {
+                continue;
+            }
+            final float gapTop = content.getTop() + cgGapOffset[0];
+            final float y0 = shapeRect.top + (gapTop - endRect.top) * contentScale;
+            final float y1 = y0 + child.getHeight() * contentScale;
+            final float c = (y0 + y1) / 2f, half = (y1 - y0) / 2f * g;
+            if (c - half <= top || c + half >= bulgedRect.bottom) {
+                continue;
+            }
+            count = cgSetPiece(count, top, c - half, radius, count == 0 ? topRadius : radius);
+            top = c + half;
+        }
+        if (count == 0) {
+            return 0;
+        }
+        return cgSetPiece(count, top, bulgedRect.bottom, radius, radius);
+    }
+
+    private int cgSetPiece(int index, float top, float bottom, float radius, float topRadius) {
+        while (cgPieces.size() <= index) {
+            cgPieces.add(new RectF());
+            cgPieceRadii.add(new float[8]);
+        }
+        cgPieces.get(index).set(bulgedRect.left, top, bulgedRect.right, bottom);
+        final float h = (bottom - top) / 2f;
+        final float[] radii = cgPieceRadii.get(index);
+        radii[0] = radii[1] = radii[2] = radii[3] = Math.min(topRadius, h);
+        radii[4] = radii[5] = radii[6] = radii[7] = Math.min(radius, h);
+        return index + 1;
+    }
+
+    private boolean cgComputeGapTop(View gap) {
+        float y = 0;
+        View v = gap;
+        while (v != content) {
+            y += v.getY();
+            if (!(v.getParent() instanceof View)) {
+                return false;
+            }
+            v = (View) v.getParent();
+            if (v != content) {
+                y -= v.getScrollY();
+            }
+        }
+        cgGapOffset[0] = y;
+        return true;
+    }
+
+    private void cgDrawPieceGlasses(Canvas canvas, int count, float glassAlpha) {
+        if (cgPieceGlassesBar != bar) {
+            cgClearPieceGlasses();
+            cgPieceGlasses.clear();
+            cgPieceGlassesBar = bar;
+        }
+        final int p = dp(6);
+        for (int i = 0; i < count; i++) {
+            final BlurredBackgroundDrawable d;
+            if (i == 0) {
+                d = glass;
+            } else {
+                while (cgPieceGlasses.size() < i) {
+                    final BlurredBackgroundDrawable piece = bar.createMenuGlass(this);
+                    if (piece == null) {
+                        return;
+                    }
+                    piece.setColorProvider(glassColors);
+                    cgPieceGlasses.add(piece);
+                }
+                d = cgPieceGlasses.get(i - 1);
+                d.updateColors();
+                d.setStrokeWidth(
+                    lerp(strokeWidth(bar.getButtonsGlassColorProvider(), true), strokeWidth(glassColors, true), glassColorsFactor),
+                    lerp(strokeWidth(bar.getButtonsGlassColorProvider(), false), strokeWidth(glassColors, false), glassColorsFactor));
+            }
+            final RectF r = cgPieces.get(i);
+            final float[] radii = cgPieceRadii.get(i);
+            d.setRadius(radii[0], radii[2], radii[4], radii[6], false);
+            d.setBounds(Math.round(r.left) - p, Math.round(r.top) - p, Math.round(r.right) + p, Math.round(r.bottom) + p);
+            cgReserveGlass(d);
+            d.setAlpha((int) (255 * glassAlpha));
+            d.draw(canvas);
+        }
+        for (int i = count - 1; i < cgPieceGlasses.size(); i++) {
+            cgPieceGlasses.get(i).setBounds(0, 0, 0, 0);
+        }
+    }
+
+    private void cgAddPiecesToPath(Path path, int count) {
+        for (int i = 0; i < count; i++) {
+            path.addRoundRect(cgPieces.get(i), cgPieceRadii.get(i), Path.Direction.CW);
+        }
+    }
+
+    private void cgReserveGlass(BlurredBackgroundDrawable d) {
+        tmpRect.set(content.getLeft(), content.getTop(), content.getRight(), content.getBottom());
+        tmpRect.union(startRect);
+        final float over = dp(4) + 0.04f * Math.max(tmpRect.width(), tmpRect.height());
+        d.setReservedBounds(
+            (int) Math.floor(tmpRect.left - over), (int) Math.floor(tmpRect.top - over),
+            (int) Math.ceil(tmpRect.right + over), (int) Math.ceil(tmpRect.bottom + over));
+    }
+
+    private void cgClearPieceGlasses() {
+        for (int i = 0; i < cgPieceGlasses.size(); i++) {
+            cgPieceGlasses.get(i).clearReservedBounds();
+            cgPieceGlasses.get(i).setBounds(0, 0, 0, 0);
+        }
+    }
+    /** Cherrygram finish */
+
 }

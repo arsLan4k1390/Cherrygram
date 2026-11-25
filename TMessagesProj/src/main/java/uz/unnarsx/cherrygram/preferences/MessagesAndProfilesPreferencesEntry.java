@@ -14,8 +14,8 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
 import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applyNewSpan;
-import static uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper.applySpan;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -76,6 +76,7 @@ import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FilledTabsView;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.ProfileActionsView;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.Components.SimpleThemeDescription;
 import org.telegram.ui.Components.UItem;
@@ -110,6 +111,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
     private static final int PAGE_MESSAGE = 0;
     private static final int PAGE_PROFILE = 1;
 
+    // Message page
     private final int showForwardDateSwitchRow = 1;
     private final int pencilIconSwitchRow = 2;
     private final int timeWithSecondsSwitchRow = 3;
@@ -119,21 +121,23 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
     private final int replyColorSwitchRow = 6;
     private final int replyEmojiSwitchRow = 7;
 
+    // Profile page
     private final int channelPreviewRow = 8;
-    private final int hidePhoneSwitchRow = 9;
-    private final int channelPreviewSwitchRow = 10;
-    private final int showDcIdSwitchRow = 11;
-    private final int birthdayPreviewSwitchRow = 12;
-    private final int businessPreviewSwitchRow = 13;
-    private final int profileBackgroundSwitchRow = 14;
-    private final int profileEmojiSwitchRow = 15;
-    private final int newProfileDesignSwitchRow = 16;
+    private final int roundActionsSwitchRow = 9;
 
-    private final int profilePreviewsSectionRow = 17;
+    private final int profilePreviewsSectionRow = 10;
     private boolean expandedProfilePreviewsSection = false;
+    private final int hidePhoneSwitchRow = 11;
+    private final int channelPreviewSwitchRow = 12;
+    private final int showDcIdSwitchRow = 13;
+    private final int birthdayPreviewSwitchRow = 14;
+    private final int businessPreviewSwitchRow = 15;
 
-    private final int premiumSectionRow = 18;
+    private final int premiumSectionRow = 16;
     private boolean expandedPremiumSection = false;
+    private final int profileBackgroundSwitchRow = 17;
+    private final int newProfileDesignSwitchRow = 18;
+    private final int profileEmojiSwitchRow = 19;
 
     private static final Set<String> PREMIUM_SECTION_SLUG = Set.of(
             "disablePremiumStatuses",
@@ -151,6 +155,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
     );
 
     private ColoredActionBar colorBar;
+
+    private float actionsRowHeight = ProfileActionsView.getRowHeight();
+    private ValueAnimator actionsRowAnimator;
     private ViewPagerFixed viewPager;
     private ImageView backButton;
     private FilledTabsView tabsView;
@@ -219,6 +226,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
         };
 
         colorBar = new ColoredActionBar(context, getResourceProvider()) {
+            @Override
+            protected int getHeaderHeight() {
+                return getProfileHeaderHeight();
+            }
+
             @Override
             protected void onUpdateColor() {
                 updateLightStatusBar();
@@ -371,18 +383,18 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
 
             messagePage.setupValues();
             messagePage.updateMessages();
-        } else if (item.id == premiumSectionRow) {
-            expandedPremiumSection = !expandedPremiumSection;
-            item.collapsed = !item.collapsed;
+        } else if (item.id == channelPreviewRow) {
+            Browser.openUrl(getParentActivity(), Constants.CG_CHANNEL_URL);
+        } else if (item.id == roundActionsSwitchRow) {
+            CherrygramAppearanceConfig.INSTANCE.setRoundProfileActions(!CherrygramAppearanceConfig.INSTANCE.getRoundProfileActions());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getRoundProfileActions());
 
-            updateRows(true);
+            profilePage.updateActionsStyle();
         } else if (item.id == profilePreviewsSectionRow) {
             expandedProfilePreviewsSection = !expandedProfilePreviewsSection;
             item.collapsed = !item.collapsed;
 
             updateRows(true);
-        } else if (item.id == channelPreviewRow) {
-            Browser.openUrl(getParentActivity(), Constants.CG_CHANNEL_URL);
         } else if (item.id == hidePhoneSwitchRow) {
             CherrygramAppearanceConfig.INSTANCE.setProfileHidePhoneNumber(!CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber());
@@ -408,6 +420,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview());
 
             updateRows(true);
+        } else if (item.id == premiumSectionRow) {
+            expandedPremiumSection = !expandedPremiumSection;
+            item.collapsed = !item.collapsed;
+
+            updateRows(true);
         } else if (item.id == profileBackgroundSwitchRow) {
             CherrygramAppearanceConfig.INSTANCE.setProfileBackgroundColor(!CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor());
@@ -427,6 +444,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
         } else if (item.id == newProfileDesignSwitchRow) {
             CherrygramAppearanceConfig.INSTANCE.setNewProfileDesign(!CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign());
             SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign());
+
+            if (CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign()) {
+                CherrygramAppearanceConfig.INSTANCE.setRoundProfileActions(true);
+            }
 
             colorBar.setColor(profilePage.getSelectedProfilePeerColor(), true);
             profilePage.updateProfilePreviewColor(true);
@@ -631,11 +652,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
             if (type != PAGE_PROFILE) {
                 return;
             }
-            Bitmap snapshot = null;
-            if (getWidth() > 0 && getHeight() > 0) {
-                snapshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-                draw(new Canvas(snapshot));
-            }
+            final Bitmap snapshot = takeSnapshot();
 
             final UniversalRecyclerView oldListView = listView;
             final Parcelable scrollState = oldListView.getLayoutManager() != null ? oldListView.getLayoutManager().onSaveInstanceState() : null;
@@ -653,21 +670,58 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
             updateColors();
             invalidate();
 
-            if (snapshot != null) {
-                final Bitmap finalSnapshot = snapshot;
-                final ImageView snapshotView = new ImageView(getContext());
-                snapshotView.setImageBitmap(snapshot);
-                addView(snapshotView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-                snapshotView.animate()
-                        .alpha(0f)
-                        .setDuration(320)
-                        .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
-                        .withEndAction(() -> {
-                            removeView(snapshotView);
-                            finalSnapshot.recycle();
-                        })
-                        .start();
+            fadeOutSnapshot(snapshot);
+        }
+
+        public void updateActionsStyle() {
+            if (type != PAGE_PROFILE || profilePreview == null) {
+                return;
             }
+            profilePreview.updateActionsStyle();
+
+            if (actionsRowAnimator != null) {
+                actionsRowAnimator.cancel();
+            }
+            actionsRowAnimator = ValueAnimator.ofFloat(actionsRowHeight, ProfileActionsView.getRowHeight());
+            actionsRowAnimator.addUpdateListener(a -> {
+                actionsRowHeight = (float) a.getAnimatedValue();
+                requestLayout();
+                profilePreview.requestLayout();
+                profilePreview.invalidate();
+                if (colorBar != null) {
+                    colorBar.requestLayout();
+                }
+            });
+            actionsRowAnimator.setDuration(320);
+            actionsRowAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+            actionsRowAnimator.start();
+        }
+
+        private Bitmap takeSnapshot() {
+            if (getWidth() <= 0 || getHeight() <= 0) {
+                return null;
+            }
+            final Bitmap snapshot = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+            draw(new Canvas(snapshot));
+            return snapshot;
+        }
+
+        private void fadeOutSnapshot(Bitmap snapshot) {
+            if (snapshot == null) {
+                return;
+            }
+            final ImageView snapshotView = new ImageView(getContext());
+            snapshotView.setImageBitmap(snapshot);
+            addView(snapshotView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            snapshotView.animate()
+                    .alpha(0f)
+                    .setDuration(320)
+                    .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
+                    .withEndAction(() -> {
+                        removeView(snapshotView);
+                        snapshot.recycle();
+                    })
+                    .start();
         }
 
         private final Paint defaultBackgroundPaint = new Paint();
@@ -697,7 +751,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
             );
             cell.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
             cell.fragment = MessagesAndProfilesPreferencesEntry.this;
-            // the preview message is shown as edited and forwarded, so the pencil / "edited" and forward date settings are visible on it
             for (ChatMessageCell messageCell : cell.getCells()) {
                 final MessageObject msg = messageCell.getMessageObject();
                 if (msg == null) continue;
@@ -895,6 +948,16 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
 
             items.add(UItem.asHeader(getString(R.string.CP_CustomizeProfile)));
             items.add(
+                    SettingsHelper.asSwitchCG(
+                            roundActionsSwitchRow,
+                            applyNewSpan(getString(R.string.CP_RoundProfileActions)),
+                            getString(R.string.CP_RoundProfileActions_Desc)
+                    )
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getRoundProfileActions())
+                    .slug("roundProfileActions")
+            );
+            items.add(UItem.asShadow(null));
+            items.add(
                     SettingsHelper.asExpandableSwitch(
                             profilePreviewsSectionRow,
                             R.drawable.msg_info,
@@ -910,7 +973,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
                     .slug("profilePreviews")
             );
             if (expandedProfilePreviewsSection) {
-                items.add(SettingsHelper.asSwitchCG(hidePhoneSwitchRow, applyNewSpan(getString(R.string.CP_ProfileHidePhoneNumbers)))
+                items.add(SettingsHelper.asSwitchCG(hidePhoneSwitchRow, getString(R.string.CP_ProfileHidePhoneNumbers))
                         .setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileHidePhoneNumber())
                         .slug("hidePhoneNumber")
                 );
@@ -961,12 +1024,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
                     items.add(
                             SettingsHelper.asSwitchCG(
                                     newProfileDesignSwitchRow,
-                                    applySpan(
-                                            getString(R.string.CG_NewProfileDesign),
-                                            "BETA",
-                                            Theme.key_cgGradient2,
-                                            getResourceProvider()
-                                    ),
+                                    applyNewSpan(getString(R.string.CG_NewProfileDesign)),
                                     getString(R.string.CG_NewProfileDesign_Desc)
                             )
                             .setChecked(CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign())
@@ -995,7 +1053,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
                 actionBarHeight = ActionBar.getCurrentActionBarHeight() + AndroidUtilities.statusBarHeight;
                 ((MarginLayoutParams) listView.getLayoutParams()).topMargin = actionBarHeight;
             } else {
-                actionBarHeight = dp(230) + AndroidUtilities.statusBarHeight;
+                actionBarHeight = getProfileHeaderHeight() + AndroidUtilities.statusBarHeight;
                 profilePreview.getLayoutParams().height = actionBarHeight;
                 if (listView.getPaddingTop() != actionBarHeight) {
                     listView.setPadding(listView.getPaddingLeft(), actionBarHeight, listView.getPaddingRight(), listView.getPaddingBottom());
@@ -1265,9 +1323,13 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
         protected boolean newMode;
         protected boolean ignoreMeasure;
 
+        protected int getHeaderHeight() {
+            return dp(230);
+        }
+
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(widthMeasureSpec, ignoreMeasure ? heightMeasureSpec : MeasureSpec.makeMeasureSpec(AndroidUtilities.statusBarHeight + dp(230), MeasureSpec.EXACTLY));
+            super.onMeasure(widthMeasureSpec, ignoreMeasure ? heightMeasureSpec : MeasureSpec.makeMeasureSpec(AndroidUtilities.statusBarHeight + getHeaderHeight(), MeasureSpec.EXACTLY));
         }
 
         public void updateColors() {
@@ -1313,6 +1375,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
 
         private boolean isEmojiCollectible;
         private final AnimatedFloat emojiCollectible = new AnimatedFloat(this, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
+
+        private ProfileActionsView actionsView;
 
         public ProfilePreview(Context context, int currentAccount, Theme.ResourcesProvider resourcesProvider) {
             super(context);
@@ -1368,7 +1432,91 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
             String tgPremium = CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
             subtitleView.setText(getString(R.string.Online) + tgPremium);
 
+            actionsView = createActionsView(context);
+            addView(actionsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
+
             setWillNotDraw(false);
+        }
+
+        private ProfileActionsView createActionsView(Context context) {
+            final ProfileActionsView view = new ProfileActionsView(context, ProfileActionsView.getRowHeight());
+            view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+            view.mode = ProfileActionsView.MODE_MY_PROFILE;
+            view.beginApplyingActions();
+            view.addCameraAction();
+            view.addQRButton();
+            view.addEditInfo();
+            view.addSettings();
+            view.commitActions();
+            view.setParentExpanded(0f);
+            view.updatePosition(0, ProfileActionsView.getRowHeight());
+            return view;
+        }
+
+        @Override
+        protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+            super.onLayout(changed, left, top, right, bottom);
+            updateActionsColor();
+        }
+
+        private int getActionsOffset() {
+            return (int) actionsRowHeight - dp(10);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            ((LayoutParams) titleView.getLayoutParams()).bottomMargin = dp(40.33f) + getActionsOffset();
+            ((LayoutParams) subtitleView.getLayoutParams()).bottomMargin = dp(20.66f) + getActionsOffset();
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+
+        public void updateActionsStyle() {
+            final ProfileActionsView oldView = actionsView;
+            oldView.animate().cancel();
+            oldView.animate()
+                    .alpha(0f)
+                    .setDuration(320)
+                    .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
+                    .withEndAction(() -> removeView(oldView))
+                    .start();
+
+            actionsView = createActionsView(getContext());
+            actionsView.setAlpha(0f);
+            addView(actionsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
+            updateActionsColor();
+            actionsView.animate()
+                    .alpha(1f)
+                    .setDuration(320)
+                    .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
+                    .start();
+        }
+
+        private void updateActionsColor() {
+            final boolean isDark = isPeerColorDark(resourcesProvider);
+            int btnColor;
+            if (peerColor != null) {
+                if (peerColor.patternColor != 0) {
+                    btnColor = Theme.multAlpha(peerColor.patternColor, .45f);
+                } else {
+                    btnColor = Theme.multAlpha(adaptProfileEmojiColor(peerColor.getBgColor1(isDark)), .15f);
+                }
+                if (CherrygramAppearanceConfig.INSTANCE.getNewProfileDesign()) {
+                    final float amount = ProfileActivity.PeerColorResourcesProvider.getCardDarkenAmount();
+                    btnColor = ColorUtils.compositeColors(Color.argb(Math.round(255 * amount), 0, 0, 0), btnColor);
+                }
+            } else {
+                final int actionBarColor = getThemedColor(Theme.key_actionBarDefault);
+                final float brightness = AndroidUtilities.computePerceivedBrightness(actionBarColor);
+                if (brightness > .8f) {
+                    btnColor = Color.WHITE;
+                } else if (brightness < .2f) {
+                    btnColor = Theme.multAlpha(Theme.adaptHSV(actionBarColor, +0.02f, +0.25f), .35f);
+                } else {
+                    btnColor = Theme.multAlpha(adaptProfileEmojiColor(actionBarColor), .15f);
+                }
+            }
+            actionsView.setActionsColor(btnColor, peerColor != null);
+            actionsView.invalidate();
         }
 
         public void setPremiumStatusVisible(boolean visible) {
@@ -1480,6 +1628,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
             }
 
             storyGradient.setColor(peerColor, animated);
+            updateActionsColor();
             invalidate();
         }
 
@@ -1531,9 +1680,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
         protected void dispatchDraw(@NonNull Canvas canvas) {
             rectF.set(
                 (getWidth() - dp(86)) / 2f,
-                getHeight() - dp(82 + 86),
+                getHeight() - getActionsOffset() - dp(82 + 86),
                 (getWidth() + dp(86)) / 2f,
-                getHeight() - dp(82)
+                getHeight() - getActionsOffset() - dp(82)
             );
 
             StarGiftPatterns.drawProfileAnimatedPattern(
@@ -1563,6 +1712,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseCGPreferencesEntry 
 
             super.dispatchDraw(canvas);
         }
+    }
+
+    private int getProfileHeaderHeight() {
+        return dp(220) + (int) actionsRowHeight;
     }
 
     public int adaptProfileEmojiColor(int color) {

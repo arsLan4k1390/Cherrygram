@@ -87,7 +87,9 @@ public class FoldersPreferencesEntry extends BaseCGPreferencesEntry {
                     .slug("includeMutedInCounters")
             );
         }
-        items.add(UItem.asButton(tabIconTypeRow, getString(R.string.AP_Tab_Style), getTabModeValue()));
+        items.add(UItem.asButton(tabIconTypeRow, getString(R.string.AP_Tab_Style), getTabModeValue())
+                .slug("tabStyle")
+        );
         items.add(SettingsHelper.asSwitchCG(addStrokeRow, getString(R.string.AP_Tab_Style_Stroke))
                 .setChecked(CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke())
                 .slug("stroke")

@@ -342,7 +342,7 @@ public class SimpleActionBar extends FrameLayout implements FactorAnimator.Targe
         if (glassBack != null && backButton.getVisibility() == VISIBLE && backButton.getAlpha() > 0) {
             final float cx = backButton.getX() + backButton.getWidth() / 2f, cy = backButton.getY() + backButton.getHeight() / 2f;
             final float hw = backButton.getWidth() / 2f * backButton.getScaleX(), hh = backButton.getHeight() / 2f * backButton.getScaleY();
-            glassBack.setBounds((int) (cx - hw) - p, (int) (cy - hh) - p, (int) (cx + hw) + p + cgBackGlassExtra, (int) (cy + hh) + p); // Cherrygram
+            glassBack.setBounds((int) (cx - hw) - p, (int) (cy - hh) - p, (int) (cx + hw) + p + cgBackGlassExtra, (int) (cy + hh) + p);
             glassBack.setAlpha((int) (255 * backButton.getAlpha()));
             glassBack.draw(canvas);
         }

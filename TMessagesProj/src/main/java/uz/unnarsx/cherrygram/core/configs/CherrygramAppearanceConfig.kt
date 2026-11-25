@@ -102,7 +102,8 @@ object CherrygramAppearanceConfig {
     var profileBusinessPreview by sharedPreferences.boolean("CP_ProfileBusinessPreview", true)
     var profileBackgroundColor by sharedPreferences.boolean("CP_ProfileBackgroundColor", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var profileBackgroundEmoji by sharedPreferences.boolean("CP_ProfileBackgroundEmoji", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
-    var newProfileDesign by sharedPreferences.boolean("AP_NewProfileDesign", false)
+    var newProfileDesign by sharedPreferences.boolean("AP_NewProfileDesign", true)
+    var roundProfileActions by sharedPreferences.boolean("AP_RoundProfileActions", newProfileDesign)
     /** Messages and profiles finish */
 
     /** Drawer items start */

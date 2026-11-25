@@ -122,10 +122,13 @@ public class UpdaterBottomSheet extends BottomSheet {
         this.available = available;
         this.update = update;
 
+        if (fragment == null) fragment = LaunchActivity.getSafeLastFragment();
+
+        this.fragment = fragment;
+        this.resourcesProvider = resourcesProvider;
+
         setOpenNoDelay(true);
         fixNavigationBar();
-
-        if (fragment == null) fragment = LaunchActivity.getSafeLastFragment();
 
         UniversalRecyclerView listView = new UniversalRecyclerView(fragment, this::fillItems, this::onClick, null) {
             @Override
@@ -359,6 +362,7 @@ public class UpdaterBottomSheet extends BottomSheet {
 
     private void addChangelogSection(ArrayList<UItem> items) {
 //        items.add(UItem.asShadow(null));
+        if (update == null) return;
         List<ChangelogPart> parts = splitChangelogParts();
         for (int i = 0; i < parts.size(); i++) {
             ChangelogPart part = parts.get(i);

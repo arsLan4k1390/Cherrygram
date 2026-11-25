@@ -186,17 +186,18 @@
 
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Настройки Cherrygram</string>
-    <string name="CGP_About_Desc">Экспериментальная модификация официального приложения Telegram. Нажмите здесь, чтобы получить информацию о всех функциях приложения.</string>
-    <string name="CGP_Header_About">О Cherrygram</string>
+    <string name="CGP_Header_About">О приложении</string>
     <string name="CGP_Header_About_Desc">Обновления, исходный код и другое</string>
-    <string name="CGP_Links">Ссылки</string>
     <string name="CGP_ToChannel">Новости и обновления</string>
     <string name="CGP_ToBetaChannel">Бета-версии</string>
     <string name="CGP_ToChat">Основной чат</string>
     <string name="CGP_ToOfftopicChat">Чат для флуда</string>
+    <string name="CGP_About_Project">Проект</string>
+    <string name="CGP_About_Website">Сайт</string>
+    <string name="CGP_About_Credits">Основано на Telegram для Android. Спасибо авторам форков, чей код используется в Cherrygram.</string>
+    <string name="CGP_About_Community">Сообщество</string>
     <string name="CGP_Source">Исходный код</string>
     <string name="CGP_Crowdin">Помогите нам с переводом</string>
-    <string name="CGP_Header_Categories">Категории</string>
 
     <string name="CGP_General_Desc">Основные настройки приложения и функции, не относящиеся к отдельным разделам</string>
     <string name="CGP_Appearance_Desc">Внешний вид приложения и настройка интерфейса</string>
@@ -244,6 +245,9 @@
     <string name="AP_ChangeIcon_Lavanda">Лаванда</string>
     <string name="AP_ChangeIcon_Sunset">Закат</string>
     <string name="AP_ChangeIcon_Sunrise">Восход</string>
+    <string name="AP_ChangeIcon_Palms">Пальмы</string>
+    <string name="AP_AppIcon_Hint">Нажмите на иконку, чтобы посмотреть превью. Иконка сменится только после нажатия «Применить».</string>
+    <string name="AP_AppIcon_Current_Desc">Эта иконка уже используется.</string>
     <string name="AP_IconReplacement_Solar">Иконки Solar от @Design480</string>
     <string name="AP_OneUI_Switch_Style">Переключатели в стиле OneUI</string>
     <string name="AP_SystemEmoji">Системные эмодзи</string>
@@ -273,6 +277,8 @@
     <string name="CP_ReplyBackgroundEmoji">Эмодзи в ответах и превью ссылок</string>
     <string name="CG_NewProfileDesign">Новый дизайн профиля</string>
     <string name="CG_NewProfileDesign_Desc">Цвет профиля заполняет весь экран, а карточки, текст и иконки подстраиваются под него.</string>
+    <string name="CP_RoundProfileActions">Круглые кнопки профиля</string>
+    <string name="CP_RoundProfileActions_Desc">Кнопки под именем в виде кругов с подписью снизу, как в iOS.</string>
     <string name="CP_HideStories">Скрыть Истории (локально)</string>
     <string name="CP_HideStories_Desc">Истории исчезнут из списка чатов и из профилей.</string>
     <string name="CP_ArchiveStories">Архивация историй</string>
